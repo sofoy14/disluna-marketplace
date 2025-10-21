@@ -1,0 +1,67 @@
+# Variables de entorno para integración Wompi
+# Copia este archivo como .env.local y configura tus valores reales
+
+# ===========================================
+# WOMPI CONFIGURATION
+# ===========================================
+
+# Ambiente (sandbox para desarrollo, production para producción)
+WOMPI_ENVIRONMENT=sandbox
+
+# Llaves de Sandbox (obtener de https://comercios.wompi.co/)
+WOMPI_PUBLIC_KEY=pub_test_XXX
+WOMPI_PRIVATE_KEY=priv_test_XXX
+WOMPI_EVENTS_SECRET=test_events_XXX
+
+# Llaves públicas para el frontend (sin priv_)
+NEXT_PUBLIC_WOMPI_PUBLIC_KEY=pub_test_XXX
+NEXT_PUBLIC_WOMPI_BASE_URL=https://sandbox.wompi.co
+
+# ===========================================
+# FEATURE FLAGS
+# ===========================================
+
+# Habilitar sistema de billing
+NEXT_PUBLIC_BILLING_ENABLED=true
+
+# ===========================================
+# CRON JOBS
+# ===========================================
+
+# Secreto para validar llamadas de cron jobs
+CRON_SECRET=your_cron_secret_here
+
+# ===========================================
+# SUPABASE (ya configurado)
+# ===========================================
+
+# Estas variables ya deberían estar configuradas
+# NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+# NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+# SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# ===========================================
+# PRODUCTION CONFIGURATION (comentado)
+# ===========================================
+
+# Descomenta estas líneas cuando estés listo para producción
+# WOMPI_ENVIRONMENT=production
+# WOMPI_PUBLIC_KEY=pub_prod_XXX
+# WOMPI_PRIVATE_KEY=priv_prod_XXX
+# WOMPI_EVENTS_SECRET=prod_events_XXX
+# NEXT_PUBLIC_WOMPI_PUBLIC_KEY=pub_prod_XXX
+# NEXT_PUBLIC_WOMPI_BASE_URL=https://production.wompi.co
+
+# ===========================================
+# INSTRUCCIONES DE CONFIGURACIÓN
+# ===========================================
+
+# 1. Ve a https://comercios.wompi.co/
+# 2. Crea una cuenta o inicia sesión
+# 3. Ve a "Configuración" > "API Keys"
+# 4. Copia las llaves de Sandbox
+# 5. Reemplaza los valores XXX en este archivo
+# 6. Configura el webhook URL: https://tu-dominio.com/api/billing/webhook
+# 7. Ejecuta: npm run db-migrate
+# 8. Prueba con las tarjetas de prueba de Wompi
+

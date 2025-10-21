@@ -22,10 +22,20 @@
     "db-types": "supabase gen types typescript --local > supabase/types.ts",
     "db-pull": "supabase db remote commit",
     "db-push": "supabase db push",
-    "test": "jest"
+    "test": "jest",
+      "test:wompi": "node scripts/test-wompi-integration.js",
+      "test:special-offer": "node scripts/test-special-offer-flow.js",
+      "test:web-checkout": "node scripts/test-web-checkout.js",
+      "test:payment-sources": "node scripts/test-payment-sources-flow.js",
+      "billing:test": "npm run test:wompi",
+      "billing:test-offer": "npm run test:special-offer",
+      "billing:test-checkout": "npm run test:web-checkout",
+      "billing:test-sources": "npm run test:payment-sources",
+      "billing:setup": "echo 'Configura las variables de entorno y ejecuta: npm run db-migrate'"
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.2.1",
+    "@hookform/resolvers": "^5.2.2",
     "@mendable/firecrawl-js": "^4.4.1",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -90,7 +100,7 @@
     "react": "^18",
     "react-day-picker": "^8.9.1",
     "react-dom": "^18",
-    "react-hook-form": "^7.48.2",
+    "react-hook-form": "^7.65.0",
     "react-i18next": "^14.0.0",
     "react-markdown": "^9.0.1",
     "react-syntax-highlighter": "^15.5.0",
@@ -101,7 +111,8 @@
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "turndown": "^7.2.1",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.2.0",

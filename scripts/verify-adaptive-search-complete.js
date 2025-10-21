@@ -100,3 +100,4 @@ console.log('');
 console.log('✨ El modelo ahora decide inteligentemente cuántas búsquedas hacer');
 console.log('🚀 Respuestas más rápidas y eficientes');
 console.log('🎯 Información más relevante y precisa');
+

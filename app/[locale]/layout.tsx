@@ -13,10 +13,10 @@ import { ReactNode } from "react"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
-const APP_NAME = "Asistente Legal Inteligente"
-const APP_DEFAULT_TITLE = "Asistente Legal Inteligente"
-const APP_TITLE_TEMPLATE = "%s - Asistente Legal Inteligente"
-const APP_DESCRIPTION = "Asistente de IA especializado en asuntos legales"
+const APP_NAME = "ALI"
+const APP_DEFAULT_TITLE = "ALI"
+const APP_TITLE_TEMPLATE = "%s - ALI"
+const APP_DESCRIPTION = "ALI, Inteligencia artificial con todas las de la ley"
 
 interface RootLayoutProps {
   children: ReactNode
@@ -49,15 +49,24 @@ export const metadata: Metadata = {
       default: APP_DEFAULT_TITLE,
       template: APP_TITLE_TEMPLATE
     },
-    description: APP_DESCRIPTION
+    description: APP_DESCRIPTION,
+    images: [
+      {
+        url: "/ali-og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: "ALI - Inteligencia artificial con todas las de la ley"
+      }
+    ]
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: {
       default: APP_DEFAULT_TITLE,
       template: APP_TITLE_TEMPLATE
     },
-    description: APP_DESCRIPTION
+    description: APP_DESCRIPTION,
+    images: ["/ali-og-image.svg"]
   }
 }
 
@@ -90,9 +99,9 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning className="dark" style={{ colorScheme: 'dark' }}>
       <head>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon-ali.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
-        <link rel="shortcut icon" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon-ali.svg" />
         <style
           dangerouslySetInnerHTML={{
             __html: `
