@@ -173,6 +173,3 @@ La integración Wompi está **100% completa** y lista para ser desplegada. Todos
 **El sistema puede manejar desde 1 hasta 10,000+ suscripciones mensuales con confiabilidad y eficiencia.**
 
 
-
-
-

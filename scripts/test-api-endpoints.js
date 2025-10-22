@@ -59,6 +59,3 @@ async function testBillingEndpoints() {
 testBillingEndpoints().catch(console.error);
 
 
-
-
-

@@ -228,6 +228,3 @@ import { AddCardForm } from '@/components/billing/AddCardForm';
 - **3DS/3RI**: Wompi maneja automáticamente en cobros recurrentes
 
 
-
-
-

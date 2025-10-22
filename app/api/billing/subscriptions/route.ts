@@ -137,54 +137,53 @@ export async function POST(req: NextRequest) {
       billing_day: now.getDate()
     });
 
-        // Si es oferta especial, aplicar descuento
-        if (special_offer) {
-          // Obtener oferta especial activa para este plan específico
-          const { data: offer, error: offerError } = await supabase
-            .from('special_offers')
-            .select('*')
-            .eq('is_active', true)
-            .eq('applies_to', 'specific_plan')
-            .eq('plan_id', plan_id)
-            .gte('valid_until', now.toISOString())
-            .single();
-
-          if (offer && !offerError) {
-            // Aplicar oferta a la suscripción
-            await supabase
-              .from('subscription_offers')
-              .insert({
-                subscription_id: subscription.id,
-                offer_id: offer.id,
-                expires_at: periodEnd.toISOString(),
-                discount_applied: offer.discount_value
-              });
-
-            // Obtener el plan para calcular el descuento
-            const { data: plan } = await supabase
-              .from('plans')
-              .select('amount_in_cents')
-              .eq('id', plan_id)
-              .single();
-
-            if (plan) {
-              // Crear invoice con descuento para el primer mes
-              const discountedAmount = Math.max(100, plan.amount_in_cents - offer.discount_value); // Mínimo $1 USD
-
-              await supabase
-                .from('invoices')
-                .insert({
-                  subscription_id: subscription.id,
-                  workspace_id: finalWorkspaceId,
-                  period_start: now.toISOString(),
-                  period_end: periodEnd.toISOString(),
-                  amount_in_cents: discountedAmount,
-                  currency: offer.currency,
-                  status: 'pending'
-                });
-            }
-          }
+    // Si es oferta especial, aplicar descuento
+    if (special_offer) {
+      // Obtener oferta especial activa
+      const { data: offer, error: offerError } = await supabase
+        .from('special_offers')
+        .select('*')
+        .eq('is_active', true)
+        .eq('applies_to', 'first_month')
+        .gte('valid_until', now.toISOString())
+        .single();
+      
+      if (offer && !offerError) {
+        // Aplicar oferta a la suscripción
+        await supabase
+          .from('subscription_offers')
+          .insert({
+            subscription_id: subscription.id,
+            offer_id: offer.id,
+            expires_at: periodEnd.toISOString(),
+            discount_applied: offer.discount_value
+          });
+        
+        // Obtener el plan para calcular el descuento
+        const { data: plan } = await supabase
+          .from('plans')
+          .select('amount_in_cents')
+          .eq('id', plan_id)
+          .single();
+        
+        if (plan) {
+          // Crear invoice con descuento para el primer mes
+          const discountedAmount = Math.max(100, plan.amount_in_cents - offer.discount_value); // Mínimo $1 USD
+          
+          await supabase
+            .from('invoices')
+            .insert({
+              subscription_id: subscription.id,
+              workspace_id: finalWorkspaceId,
+              period_start: now.toISOString(),
+              period_end: periodEnd.toISOString(),
+              amount_in_cents: discountedAmount,
+              currency: offer.currency,
+              status: 'pending'
+            });
         }
+      }
+    }
 
     return NextResponse.json({ 
       subscription,

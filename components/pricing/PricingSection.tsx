@@ -139,7 +139,3 @@ export function PricingSection({ plans, onSelectPlan }: PricingSectionProps) {
 }
 
 
-
-
-
-

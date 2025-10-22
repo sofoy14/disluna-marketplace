@@ -1,17 +1,14 @@
-// app/api/billing/subscriptions/[id]/route.ts
+// app/api/billing/payment-sources/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { updateSubscription, getSubscriptionById } from '@/db/billing';
+import { getPaymentSourcesByUserId } from '@/db/billing';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(req: NextRequest) {
   try {
     // Get user from Authorization header
     const authHeader = req.headers.get('Authorization');
@@ -39,36 +36,14 @@ export async function DELETE(
       );
     }
 
-    // Get subscription and verify ownership
-    const subscription = await getSubscriptionById(params.id);
-    
-    // Verify workspace belongs to user
-    const { data: workspace } = await supabase
-      .from('workspaces')
-      .select('id')
-      .eq('id', subscription.workspace_id)
-      .eq('user_id', user.id)
-      .single();
-    
-    if (!workspace) {
-      return NextResponse.json(
-        { error: 'Subscription not found' }, 
-        { status: 404 }
-      );
-    }
+    const paymentSources = await getPaymentSourcesByUserId(user.id);
 
-    // Cancel subscription (set to cancel at period end)
-    await updateSubscription(params.id, {
-      cancel_at_period_end: true,
-      canceled_at: new Date().toISOString()
-    });
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ payment_sources: paymentSources });
 
   } catch (error) {
-    console.error('Error canceling subscription:', error);
+    console.error('Error getting payment sources:', error);
     return NextResponse.json(
-      { error: 'Failed to cancel subscription' }, 
+      { error: 'Failed to get payment sources' }, 
       { status: 500 }
     );
   }

@@ -1,23 +1,46 @@
-// middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createClient } from "@/lib/supabase/middleware"
+import { i18nRouter } from "next-i18n-router"
+import { NextResponse, type NextRequest } from "next/server"
+import i18nConfig from "./i18nConfig"
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  
-  // Redirigir después del login exitoso a selección de plan
-  if (pathname === '/login' && request.nextUrl.searchParams.get('redirect') === 'select-plan') {
-    return NextResponse.redirect(new URL('/select-plan', request.url));
+export async function middleware(request: NextRequest) {
+  const i18nResult = i18nRouter(request, i18nConfig)
+  if (i18nResult) return i18nResult
+
+  try {
+    const { supabase, response } = createClient(request)
+
+    const session = await supabase.auth.getSession()
+
+    const redirectToChat = session && request.nextUrl.pathname === "/"
+
+    if (redirectToChat) {
+      const { data: homeWorkspace, error } = await supabase
+        .from("workspaces")
+        .select("*")
+        .eq("user_id", session.data.session?.user.id)
+        .eq("is_home", true)
+        .single()
+
+      if (!homeWorkspace) {
+        throw new Error(error?.message)
+      }
+
+      return NextResponse.redirect(
+        new URL(`/${homeWorkspace.id}/chat`, request.url)
+      )
+    }
+
+    return response
+  } catch (e) {
+    return NextResponse.next({
+      request: {
+        headers: request.headers
+      }
+    })
   }
-  
-  // Si el usuario viene del login y no tiene plan seleccionado, redirigir a selección
-  if (pathname === '/dashboard' && request.nextUrl.searchParams.get('from') === 'login') {
-    return NextResponse.redirect(new URL('/select-plan', request.url));
-  }
-  
-  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/login', '/dashboard', '/select-plan', '/payment']
-};
+  matcher: "/((?!api|static|.*\\..*|_next|auth).*)"
+}

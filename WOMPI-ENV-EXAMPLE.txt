@@ -65,3 +65,4 @@ CRON_SECRET=your_cron_secret_here
 # 7. Ejecuta: npm run db-migrate
 # 8. Prueba con las tarjetas de prueba de Wompi
 
+

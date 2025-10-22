@@ -181,3 +181,4 @@ INSERT INTO plans (name, description, amount_in_cents, features) VALUES
   ('Profesional', 'Plan profesional para estudios jurídicos', 300000, '["Chat ilimitado", "Documentos ilimitados", "Soporte prioritario", "Análisis avanzado"]'),
   ('Empresarial', 'Plan empresarial para grandes firmas', 500000, '["Todo del Profesional", "Múltiples usuarios", "API access", "Soporte 24/7"]');
 
+

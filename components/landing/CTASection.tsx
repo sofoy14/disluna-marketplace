@@ -57,7 +57,7 @@ export function CTASection({ className = '' }: CTASectionProps) {
               </div>
             </div>
             
-            <Link href="/login">
+            <Link href="/onboarding">
               <Button 
                 size="lg" 
                 className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg font-semibold"
@@ -109,3 +109,5 @@ export function CTASection({ className = '' }: CTASectionProps) {
     </div>
   );
 }
+
+

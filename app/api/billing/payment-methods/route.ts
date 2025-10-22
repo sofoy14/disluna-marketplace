@@ -1,7 +1,9 @@
 // app/api/billing/payment-methods/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { wompiClient } from '@/lib/wompi/client';
 import { wompiConfig } from '@/lib/wompi/config';
+import { createPaymentSource } from '@/db/billing';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,75 +32,76 @@ export async function POST(req: NextRequest) {
     // Validate required fields
     if (!token || !type || !customer_email || !acceptance_token || !accept_personal_auth) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields' }, 
         { status: 400 }
       );
     }
 
+    // Get user from Authorization header
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return NextResponse.json(
+        { error: 'Authorization header required' }, 
+        { status: 401 }
+      );
+    }
+
+    const tokenParts = authHeader.split(' ');
+    if (tokenParts.length !== 2 || tokenParts[0] !== 'Bearer') {
+      return NextResponse.json(
+        { error: 'Invalid authorization format' }, 
+        { status: 401 }
+      );
+    }
+
+    // Verify JWT token with Supabase
+    const { data: { user }, error: authError } = await supabase.auth.getUser(tokenParts[1]);
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Invalid or expired token' }, 
+        { status: 401 }
+      );
+    }
+
     // Create payment source in Wompi
-    console.log('Creating payment source in Wompi...');
-    console.log('Request data:', { type, token, customer_email });
-    
-    const wompiResponse = await fetch(`${wompiConfig.baseUrl}/v1/payment_sources`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${wompiConfig.privateKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        type,
-        token,
-        customer_email,
-        acceptance_token,
-        accept_personal_auth
-      })
+    const wompiSource = await wompiClient.createPaymentSource({
+      type: type as 'CARD' | 'NEQUI',
+      token,
+      customer_email,
+      acceptance_token,
+      accept_personal_auth
     });
 
-    console.log('Wompi response status:', wompiResponse.status);
-    
-    if (!wompiResponse.ok) {
-      const errorData = await wompiResponse.json();
-      console.error('Wompi error:', errorData);
-      throw new Error(errorData.error?.reason || 'Error creating payment source in Wompi');
-    }
-
-    const wompiData = await wompiResponse.json();
-    const source = wompiData.data;
-
-    // Save to database
-    const { data: paymentSource, error: dbError } = await supabase
-      .from('payment_sources')
-      .insert({
-        user_id: '00000000-0000-0000-0000-000000000000', // Test user ID
-        workspace_id: workspace_id || null,
-        wompi_id: source.id.toString(),
-        type: source.type,
-        status: source.status,
-        brand: source.public_data?.card_brand || null,
-        last_four: source.public_data?.last_four || null,
-        holder_name: source.public_data?.card_holder || null,
-        customer_email,
-        is_default: true,
-        raw_payload: wompiData
-      })
-      .select()
-      .single();
-
-    if (dbError) {
-      console.error('Database error:', dbError);
-      throw new Error('Error saving payment source to database');
-    }
+    // Save payment source to database
+    const paymentSource = await createPaymentSource({
+      user_id: user.id,
+      workspace_id: workspace_id || null,
+      wompi_id: wompiSource.id,
+      type: wompiSource.type,
+      status: wompiSource.status,
+      brand: wompiSource.public_data?.brand || null,
+      last_four: wompiSource.public_data?.last_four || null,
+      holder_name: wompiSource.public_data?.card_holder || null,
+      customer_email,
+      is_default: true, // First source becomes default
+      expires_at: wompiSource.public_data?.exp_year && wompiSource.public_data?.exp_month 
+        ? new Date(parseInt(wompiSource.public_data.exp_year), parseInt(wompiSource.public_data.exp_month) - 1)
+        : null,
+      raw_payload: wompiSource
+    });
 
     return NextResponse.json({ 
       payment_source: paymentSource,
-      wompi_response: wompiData
+      wompi_source: wompiSource
     });
 
   } catch (error) {
-    console.error('Error creating payment source:', error);
+    console.error('Error creating payment method:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create payment source' },
+      { error: 'Failed to create payment method' }, 
       { status: 500 }
     );
   }
 }
+
+

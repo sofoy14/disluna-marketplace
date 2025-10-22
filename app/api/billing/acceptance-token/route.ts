@@ -1,5 +1,6 @@
 // app/api/billing/acceptance-token/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { wompiClient } from '@/lib/wompi/client';
 import { wompiConfig } from '@/lib/wompi/config';
 
 export async function GET(req: NextRequest) {
@@ -13,23 +14,12 @@ export async function GET(req: NextRequest) {
     }
 
     // Get merchant information and acceptance tokens
-    const response = await fetch(`${wompiConfig.baseUrl}/v1/merchants/${wompiConfig.publicKey}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch merchant data');
-    }
-
-    const data = await response.json();
+    const merchant = await wompiClient.getMerchant();
     
     return NextResponse.json({
-      acceptance_token: data.data.presigned_acceptance.acceptance_token,
-      accept_personal_auth: data.data.presigned_acceptance.acceptance_token, // Same token for both
-      permalink: data.data.presigned_acceptance.permalink,
-      type: data.data.presigned_acceptance.type
+      acceptance_token: merchant.presigned_acceptance.acceptance_token,
+      permalink: merchant.presigned_acceptance.permalink,
+      type: merchant.presigned_acceptance.type
     });
 
   } catch (error) {
@@ -40,3 +30,5 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+
