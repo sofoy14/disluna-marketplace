@@ -23,13 +23,13 @@
     "db-pull": "supabase db remote commit",
     "db-push": "supabase db push",
     "test": "jest",
-      "test:wompi": "node scripts/test-wompi-integration.js",
-      "test:special-offer": "node scripts/test-special-offer-flow.js",
-      "test:web-checkout": "node scripts/test-web-checkout.js",
-      "billing:test": "npm run test:wompi",
-      "billing:test-offer": "npm run test:special-offer",
-      "billing:test-checkout": "npm run test:web-checkout",
-      "billing:setup": "echo 'Configura las variables de entorno y ejecuta: npm run db-migrate'"
+    "test:wompi": "node scripts/test-wompi-integration.js",
+    "test:special-offer": "node scripts/test-special-offer-flow.js",
+    "test:web-checkout": "node scripts/test-web-checkout.js",
+    "billing:test": "npm run test:wompi",
+    "billing:test-offer": "npm run test:special-offer",
+    "billing:test-checkout": "npm run test:web-checkout",
+    "billing:setup": "echo 'Configura las variables de entorno y ejecuta: npm run db-migrate'"
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.2.1",
@@ -63,6 +63,7 @@
     "@radix-ui/react-toggle-group": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.76.1",
     "@tabler/icons-react": "^2.40.0",
     "@tailwindcss/typography": "^0.5.19",
     "@tiptap/extension-character-count": "^3.7.2",
