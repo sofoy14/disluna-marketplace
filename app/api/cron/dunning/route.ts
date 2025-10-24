@@ -1,19 +1,30 @@
 // app/api/cron/dunning/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { wompiClient } from '@/lib/wompi/client';
-import { wompiConfig } from '@/lib/wompi/config';
-import { 
-  getFailedInvoicesForRetry, 
-  getSuspendedInvoices,
-  updateInvoice,
-  updateSubscription,
-  createTransaction 
-} from '@/db/billing';
-import { generateRetryReference } from '@/lib/wompi/utils';
+// ELIMINADO - Sistema de billing removido
+// import { wompiClient } from '@/lib/wompi/client';
+// import { wompiConfig } from '@/lib/wompi/config';
+// import { 
+//   getFailedInvoicesForRetry, 
+//   getSuspendedInvoices,
+//   updateInvoice,
+//   updateSubscription,
+//   createTransaction 
+// } from '@/db/billing';
+// import { generateRetryReference } from '@/lib/wompi/utils';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
+  // ELIMINADO - Sistema de billing removido
+  return NextResponse.json(
+    { 
+      message: 'Sistema de dunning temporalmente deshabilitado',
+      status: 'disabled'
+    }, 
+    { status: 200 }
+  );
+  
+  /*
   try {
     // Validate cron secret
     const authHeader = req.headers.get('Authorization');
@@ -145,6 +156,9 @@ export async function GET(req: NextRequest) {
       { status: 500 }
     );
   }
+  */
 }
+
+
 
 

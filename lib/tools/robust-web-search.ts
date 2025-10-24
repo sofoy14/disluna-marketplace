@@ -1,3 +1,4 @@
+// CONFIRMAR USO ANTES DE ELIMINACIÓN - Herramienta redundante con legal-search-specialized.ts
 /**
  * Sistema de búsqueda web con fallback robusto
  * Intenta Serper primero, luego Google CSE como fallback

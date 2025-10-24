@@ -100,7 +100,9 @@ export const Message: FC<MessageProps> = ({
   }
 
   // Mapear tipos de fuente a tipos de bibliografía
-  const mapTypeToBibliographyType = (type: string): 'sentencia' | 'ley' | 'decreto' | 'articulo' | 'jurisprudencia' | 'doctrina' => {
+  const mapTypeToBibliographyType = (type: string | undefined): 'sentencia' | 'ley' | 'decreto' | 'articulo' | 'jurisprudencia' | 'doctrina' => {
+    if (!type) return 'ley' // Valor por defecto si type es undefined
+    
     const typeLower = type.toLowerCase()
     if (typeLower.includes('jurisprudencia') || typeLower.includes('sentencia')) return 'jurisprudencia'
     if (typeLower.includes('ley')) return 'ley'

@@ -1,0 +1,292 @@
+2a7867572ebf32672661f865ba2f060b
+"use strict";
+
+/* istanbul ignore next */
+function cov_1si01n8562() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\components\\chat\\modern\\index.ts";
+  var hash = "b05b256ff972a3f31ca22b5a0cd109faca7c27ab";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\components\\chat\\modern\\index.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 80
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 22
+        },
+        end: {
+          line: 4,
+          column: 48
+        }
+      },
+      "3": {
+        start: {
+          line: 5,
+          column: 0
+        },
+        end: {
+          line: 5,
+          column: 130
+        }
+      },
+      "4": {
+        start: {
+          line: 5,
+          column: 87
+        },
+        end: {
+          line: 5,
+          column: 124
+        }
+      },
+      "5": {
+        start: {
+          line: 6,
+          column: 24
+        },
+        end: {
+          line: 6,
+          column: 52
+        }
+      },
+      "6": {
+        start: {
+          line: 7,
+          column: 0
+        },
+        end: {
+          line: 7,
+          column: 136
+        }
+      },
+      "7": {
+        start: {
+          line: 7,
+          column: 89
+        },
+        end: {
+          line: 7,
+          column: 130
+        }
+      },
+      "8": {
+        start: {
+          line: 8,
+          column: 21
+        },
+        end: {
+          line: 8,
+          column: 46
+        }
+      },
+      "9": {
+        start: {
+          line: 9,
+          column: 0
+        },
+        end: {
+          line: 9,
+          column: 127
+        }
+      },
+      "10": {
+        start: {
+          line: 9,
+          column: 86
+        },
+        end: {
+          line: 9,
+          column: 121
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 5,
+            column: 73
+          },
+          end: {
+            line: 5,
+            column: 74
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 85
+          },
+          end: {
+            line: 5,
+            column: 126
+          }
+        },
+        line: 5
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 7,
+            column: 75
+          },
+          end: {
+            line: 7,
+            column: 76
+          }
+        },
+        loc: {
+          start: {
+            line: 7,
+            column: 87
+          },
+          end: {
+            line: 7,
+            column: 132
+          }
+        },
+        line: 7
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 9,
+            column: 72
+          },
+          end: {
+            line: 9,
+            column: 73
+          }
+        },
+        loc: {
+          start: {
+            line: 9,
+            column: 84
+          },
+          end: {
+            line: 9,
+            column: 123
+          }
+        },
+        line: 9
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\components\\chat\\modern\\index.ts",
+      mappings: ";;;AAAA,iDAA+C;AAAtC,8GAAA,aAAa,OAAA;AACtB,qDAAmD;AAA1C,kHAAA,eAAe,OAAA;AACxB,+CAA6C;AAApC,4GAAA,YAAY,OAAA",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\components\\chat\\modern\\index.ts"],
+      sourcesContent: ["export { MessageBubble } from './MessageBubble'\r\nexport { TypingIndicator } from './TypingIndicator'\r\nexport { QuickReplies } from './QuickReplies'\r\n\r\n\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "b05b256ff972a3f31ca22b5a0cd109faca7c27ab"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1si01n8562 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1si01n8562();
+cov_1si01n8562().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_1si01n8562().s[1]++;
+exports.QuickReplies = exports.TypingIndicator = exports.MessageBubble = void 0;
+var MessageBubble_1 =
+/* istanbul ignore next */
+(cov_1si01n8562().s[2]++, require("./MessageBubble"));
+/* istanbul ignore next */
+cov_1si01n8562().s[3]++;
+Object.defineProperty(exports, "MessageBubble", {
+  enumerable: true,
+  get: function () {
+    /* istanbul ignore next */
+    cov_1si01n8562().f[0]++;
+    cov_1si01n8562().s[4]++;
+    return MessageBubble_1.MessageBubble;
+  }
+});
+var TypingIndicator_1 =
+/* istanbul ignore next */
+(cov_1si01n8562().s[5]++, require("./TypingIndicator"));
+/* istanbul ignore next */
+cov_1si01n8562().s[6]++;
+Object.defineProperty(exports, "TypingIndicator", {
+  enumerable: true,
+  get: function () {
+    /* istanbul ignore next */
+    cov_1si01n8562().f[1]++;
+    cov_1si01n8562().s[7]++;
+    return TypingIndicator_1.TypingIndicator;
+  }
+});
+var QuickReplies_1 =
+/* istanbul ignore next */
+(cov_1si01n8562().s[8]++, require("./QuickReplies"));
+/* istanbul ignore next */
+cov_1si01n8562().s[9]++;
+Object.defineProperty(exports, "QuickReplies", {
+  enumerable: true,
+  get: function () {
+    /* istanbul ignore next */
+    cov_1si01n8562().f[2]++;
+    cov_1si01n8562().s[10]++;
+    return QuickReplies_1.QuickReplies;
+  }
+});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJNZXNzYWdlQnViYmxlXzEiLCJjb3ZfMXNpMDFuODU2MiIsInMiLCJyZXF1aXJlIiwiT2JqZWN0IiwiZGVmaW5lUHJvcGVydHkiLCJleHBvcnRzIiwiZW51bWVyYWJsZSIsImdldCIsImYiLCJNZXNzYWdlQnViYmxlIiwiVHlwaW5nSW5kaWNhdG9yXzEiLCJUeXBpbmdJbmRpY2F0b3IiLCJRdWlja1JlcGxpZXNfMSIsIlF1aWNrUmVwbGllcyJdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xccGVkcm9cXERvY3VtZW50c1xcR2l0SHViXFxBc2lzdGVudGUtTGVnYWwtSW50ZWxpZ2VudGVcXGNvbXBvbmVudHNcXGNoYXRcXG1vZGVyblxcaW5kZXgudHMiXSwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IHsgTWVzc2FnZUJ1YmJsZSB9IGZyb20gJy4vTWVzc2FnZUJ1YmJsZSdcclxuZXhwb3J0IHsgVHlwaW5nSW5kaWNhdG9yIH0gZnJvbSAnLi9UeXBpbmdJbmRpY2F0b3InXHJcbmV4cG9ydCB7IFF1aWNrUmVwbGllcyB9IGZyb20gJy4vUXVpY2tSZXBsaWVzJ1xyXG5cclxuXHJcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFBQSxJQUFBQSxlQUFBO0FBQUE7QUFBQSxDQUFBQyxjQUFBLEdBQUFDLENBQUEsT0FBQUMsT0FBQTtBQUErQztBQUFBRixjQUFBLEdBQUFDLENBQUE7QUFBdENFLE1BQUEsQ0FBQUMsY0FBQSxDQUFBQyxPQUFBO0VBQUFDLFVBQUE7RUFBQUMsR0FBQSxXQUFBQSxDQUFBO0lBQUE7SUFBQVAsY0FBQSxHQUFBUSxDQUFBO0lBQUFSLGNBQUEsR0FBQUMsQ0FBQTtJQUFBLE9BQUFGLGVBQUEsQ0FBQVUsYUFBYTtFQUFBO0FBQUE7QUFDdEIsSUFBQUMsaUJBQUE7QUFBQTtBQUFBLENBQUFWLGNBQUEsR0FBQUMsQ0FBQSxPQUFBQyxPQUFBO0FBQW1EO0FBQUFGLGNBQUEsR0FBQUMsQ0FBQTtBQUExQ0UsTUFBQSxDQUFBQyxjQUFBLENBQUFDLE9BQUE7RUFBQUMsVUFBQTtFQUFBQyxHQUFBLFdBQUFBLENBQUE7SUFBQTtJQUFBUCxjQUFBLEdBQUFRLENBQUE7SUFBQVIsY0FBQSxHQUFBQyxDQUFBO0lBQUEsT0FBQVMsaUJBQUEsQ0FBQUMsZUFBZTtFQUFBO0FBQUE7QUFDeEIsSUFBQUMsY0FBQTtBQUFBO0FBQUEsQ0FBQVosY0FBQSxHQUFBQyxDQUFBLE9BQUFDLE9BQUE7QUFBNkM7QUFBQUYsY0FBQSxHQUFBQyxDQUFBO0FBQXBDRSxNQUFBLENBQUFDLGNBQUEsQ0FBQUMsT0FBQTtFQUFBQyxVQUFBO0VBQUFDLEdBQUEsV0FBQUEsQ0FBQTtJQUFBO0lBQUFQLGNBQUEsR0FBQVEsQ0FBQTtJQUFBUixjQUFBLEdBQUFDLENBQUE7SUFBQSxPQUFBVyxjQUFBLENBQUFDLFlBQVk7RUFBQTtBQUFBIiwiaWdub3JlTGlzdCI6W119

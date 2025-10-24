@@ -1,0 +1,209 @@
+2d42e9c2b018fb05c76e8a8fc8684165
+"use strict";
+
+/* istanbul ignore next */
+function cov_14x4n9ndx1() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\models\\llm\\mistral-llm-list.ts";
+  var hash = "15ca23147248472865b02bb3217cc43abe466e55";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\models\\llm\\mistral-llm-list.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 34
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 29
+        },
+        end: {
+          line: 4,
+          column: 55
+        }
+      },
+      "3": {
+        start: {
+          line: 7,
+          column: 19
+        },
+        end: {
+          line: 14,
+          column: 1
+        }
+      },
+      "4": {
+        start: {
+          line: 16,
+          column: 16
+        },
+        end: {
+          line: 29,
+          column: 1
+        }
+      },
+      "5": {
+        start: {
+          line: 31,
+          column: 23
+        },
+        end: {
+          line: 44,
+          column: 1
+        }
+      },
+      "6": {
+        start: {
+          line: 46,
+          column: 22
+        },
+        end: {
+          line: 59,
+          column: 1
+        }
+      },
+      "7": {
+        start: {
+          line: 60,
+          column: 0
+        },
+        end: {
+          line: 65,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\models\\llm\\mistral-llm-list.ts",
+      mappings: ";;;AAEA,MAAM,oBAAoB,GAAG,0BAA0B,CAAA;AAEvD,kEAAkE;AAElE,gCAAgC;AAChC,MAAM,UAAU,GAAQ;IACtB,OAAO,EAAE,cAAc;IACvB,SAAS,EAAE,cAAc;IACzB,QAAQ,EAAE,SAAS;IACnB,QAAQ,EAAE,cAAc;IACxB,YAAY,EAAE,oBAAoB;IAClC,UAAU,EAAE,KAAK;CAClB,CAAA;AAED,6BAA6B;AAC7B,MAAM,OAAO,GAAQ;IACnB,OAAO,EAAE,sBAAsB;IAC/B,SAAS,EAAE,eAAe;IAC1B,QAAQ,EAAE,SAAS;IACnB,QAAQ,EAAE,sBAAsB;IAChC,YAAY,EAAE,oBAAoB;IAClC,UAAU,EAAE,KAAK;IACjB,OAAO,EAAE;QACP,QAAQ,EAAE,KAAK;QACf,IAAI,EAAE,WAAW;QACjB,SAAS,EAAE,CAAC;QACZ,UAAU,EAAE,CAAC;KACd;CACF,CAAA;AAED,oCAAoC;AACpC,MAAM,cAAc,GAAQ;IAC1B,OAAO,EAAE,uBAAuB;IAChC,SAAS,EAAE,gBAAgB;IAC3B,QAAQ,EAAE,SAAS;IACnB,QAAQ,EAAE,uBAAuB;IACjC,YAAY,EAAE,oBAAoB;IAClC,UAAU,EAAE,KAAK;IACjB,OAAO,EAAE;QACP,QAAQ,EAAE,KAAK;QACf,IAAI,EAAE,WAAW;QACjB,SAAS,EAAE,GAAG;QACd,UAAU,EAAE,GAAG;KAChB;CACF,CAAA;AAED,mCAAmC;AACnC,MAAM,aAAa,GAAQ;IACzB,OAAO,EAAE,sBAAsB;IAC/B,SAAS,EAAE,eAAe;IAC1B,QAAQ,EAAE,SAAS;IACnB,QAAQ,EAAE,sBAAsB;IAChC,YAAY,EAAE,oBAAoB;IAClC,UAAU,EAAE,KAAK;IACjB,OAAO,EAAE;QACP,QAAQ,EAAE,KAAK;QACf,IAAI,EAAE,WAAW;QACjB,SAAS,EAAE,CAAC;QACZ,UAAU,EAAE,EAAE;KACf;CACF,CAAA;AAEY,QAAA,gBAAgB,GAAU;IACrC,UAAU;IACV,OAAO;IACP,cAAc;IACd,aAAa;CACd,CAAA",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\models\\llm\\mistral-llm-list.ts"],
+      sourcesContent: ["import { LLM } from \"@/types\"\r\n\r\nconst MISTRAL_PLATORM_LINK = \"https://docs.mistral.ai/\"\r\n\r\n// Mistral Models (UPDATED 12/21/23) -----------------------------\r\n\r\n// Mistral 7B (UPDATED 12/21/23)\r\nconst MISTRAL_7B: LLM = {\r\n  modelId: \"mistral-tiny\",\r\n  modelName: \"Mistral Tiny\",\r\n  provider: \"mistral\",\r\n  hostedId: \"mistral-tiny\",\r\n  platformLink: MISTRAL_PLATORM_LINK,\r\n  imageInput: false\r\n}\r\n\r\n// Mixtral (UPDATED 12/21/23)\r\nconst MIXTRAL: LLM = {\r\n  modelId: \"mistral-small-latest\",\r\n  modelName: \"Mistral Small\",\r\n  provider: \"mistral\",\r\n  hostedId: \"mistral-small-latest\",\r\n  platformLink: MISTRAL_PLATORM_LINK,\r\n  imageInput: false,\r\n  pricing: {\r\n    currency: \"USD\",\r\n    unit: \"1M tokens\",\r\n    inputCost: 2,\r\n    outputCost: 6\r\n  }\r\n}\r\n\r\n// Mistral Medium (UPDATED 12/21/23)\r\nconst MISTRAL_MEDIUM: LLM = {\r\n  modelId: \"mistral-medium-latest\",\r\n  modelName: \"Mistral Medium\",\r\n  provider: \"mistral\",\r\n  hostedId: \"mistral-medium-latest\",\r\n  platformLink: MISTRAL_PLATORM_LINK,\r\n  imageInput: false,\r\n  pricing: {\r\n    currency: \"USD\",\r\n    unit: \"1M tokens\",\r\n    inputCost: 2.7,\r\n    outputCost: 8.1\r\n  }\r\n}\r\n\r\n// Mistral Large (UPDATED 03/05/24)\r\nconst MISTRAL_LARGE: LLM = {\r\n  modelId: \"mistral-large-latest\",\r\n  modelName: \"Mistral Large\",\r\n  provider: \"mistral\",\r\n  hostedId: \"mistral-large-latest\",\r\n  platformLink: MISTRAL_PLATORM_LINK,\r\n  imageInput: false,\r\n  pricing: {\r\n    currency: \"USD\",\r\n    unit: \"1M tokens\",\r\n    inputCost: 8,\r\n    outputCost: 24\r\n  }\r\n}\r\n\r\nexport const MISTRAL_LLM_LIST: LLM[] = [\r\n  MISTRAL_7B,\r\n  MIXTRAL,\r\n  MISTRAL_MEDIUM,\r\n  MISTRAL_LARGE\r\n]\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "15ca23147248472865b02bb3217cc43abe466e55"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_14x4n9ndx1 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_14x4n9ndx1();
+cov_14x4n9ndx1().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_14x4n9ndx1().s[1]++;
+exports.MISTRAL_LLM_LIST = void 0;
+const MISTRAL_PLATORM_LINK =
+/* istanbul ignore next */
+(cov_14x4n9ndx1().s[2]++, "https://docs.mistral.ai/");
+// Mistral Models (UPDATED 12/21/23) -----------------------------
+// Mistral 7B (UPDATED 12/21/23)
+const MISTRAL_7B =
+/* istanbul ignore next */
+(cov_14x4n9ndx1().s[3]++, {
+  modelId: "mistral-tiny",
+  modelName: "Mistral Tiny",
+  provider: "mistral",
+  hostedId: "mistral-tiny",
+  platformLink: MISTRAL_PLATORM_LINK,
+  imageInput: false
+});
+// Mixtral (UPDATED 12/21/23)
+const MIXTRAL =
+/* istanbul ignore next */
+(cov_14x4n9ndx1().s[4]++, {
+  modelId: "mistral-small-latest",
+  modelName: "Mistral Small",
+  provider: "mistral",
+  hostedId: "mistral-small-latest",
+  platformLink: MISTRAL_PLATORM_LINK,
+  imageInput: false,
+  pricing: {
+    currency: "USD",
+    unit: "1M tokens",
+    inputCost: 2,
+    outputCost: 6
+  }
+});
+// Mistral Medium (UPDATED 12/21/23)
+const MISTRAL_MEDIUM =
+/* istanbul ignore next */
+(cov_14x4n9ndx1().s[5]++, {
+  modelId: "mistral-medium-latest",
+  modelName: "Mistral Medium",
+  provider: "mistral",
+  hostedId: "mistral-medium-latest",
+  platformLink: MISTRAL_PLATORM_LINK,
+  imageInput: false,
+  pricing: {
+    currency: "USD",
+    unit: "1M tokens",
+    inputCost: 2.7,
+    outputCost: 8.1
+  }
+});
+// Mistral Large (UPDATED 03/05/24)
+const MISTRAL_LARGE =
+/* istanbul ignore next */
+(cov_14x4n9ndx1().s[6]++, {
+  modelId: "mistral-large-latest",
+  modelName: "Mistral Large",
+  provider: "mistral",
+  hostedId: "mistral-large-latest",
+  platformLink: MISTRAL_PLATORM_LINK,
+  imageInput: false,
+  pricing: {
+    currency: "USD",
+    unit: "1M tokens",
+    inputCost: 8,
+    outputCost: 24
+  }
+});
+/* istanbul ignore next */
+cov_14x4n9ndx1().s[7]++;
+exports.MISTRAL_LLM_LIST = [MISTRAL_7B, MIXTRAL, MISTRAL_MEDIUM, MISTRAL_LARGE];
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTR4NG45bmR4MSIsImFjdHVhbENvdmVyYWdlIiwicyIsIk1JU1RSQUxfUExBVE9STV9MSU5LIiwiTUlTVFJBTF83QiIsIm1vZGVsSWQiLCJtb2RlbE5hbWUiLCJwcm92aWRlciIsImhvc3RlZElkIiwicGxhdGZvcm1MaW5rIiwiaW1hZ2VJbnB1dCIsIk1JWFRSQUwiLCJwcmljaW5nIiwiY3VycmVuY3kiLCJ1bml0IiwiaW5wdXRDb3N0Iiwib3V0cHV0Q29zdCIsIk1JU1RSQUxfTUVESVVNIiwiTUlTVFJBTF9MQVJHRSIsImV4cG9ydHMiLCJNSVNUUkFMX0xMTV9MSVNUIl0sInNvdXJjZXMiOlsiQzpcXFVzZXJzXFxwZWRyb1xcRG9jdW1lbnRzXFxHaXRIdWJcXEFzaXN0ZW50ZS1MZWdhbC1JbnRlbGlnZW50ZVxcbGliXFxtb2RlbHNcXGxsbVxcbWlzdHJhbC1sbG0tbGlzdC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBMTE0gfSBmcm9tIFwiQC90eXBlc1wiXHJcblxyXG5jb25zdCBNSVNUUkFMX1BMQVRPUk1fTElOSyA9IFwiaHR0cHM6Ly9kb2NzLm1pc3RyYWwuYWkvXCJcclxuXHJcbi8vIE1pc3RyYWwgTW9kZWxzIChVUERBVEVEIDEyLzIxLzIzKSAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLVxyXG5cclxuLy8gTWlzdHJhbCA3QiAoVVBEQVRFRCAxMi8yMS8yMylcclxuY29uc3QgTUlTVFJBTF83QjogTExNID0ge1xyXG4gIG1vZGVsSWQ6IFwibWlzdHJhbC10aW55XCIsXHJcbiAgbW9kZWxOYW1lOiBcIk1pc3RyYWwgVGlueVwiLFxyXG4gIHByb3ZpZGVyOiBcIm1pc3RyYWxcIixcclxuICBob3N0ZWRJZDogXCJtaXN0cmFsLXRpbnlcIixcclxuICBwbGF0Zm9ybUxpbms6IE1JU1RSQUxfUExBVE9STV9MSU5LLFxyXG4gIGltYWdlSW5wdXQ6IGZhbHNlXHJcbn1cclxuXHJcbi8vIE1peHRyYWwgKFVQREFURUQgMTIvMjEvMjMpXHJcbmNvbnN0IE1JWFRSQUw6IExMTSA9IHtcclxuICBtb2RlbElkOiBcIm1pc3RyYWwtc21hbGwtbGF0ZXN0XCIsXHJcbiAgbW9kZWxOYW1lOiBcIk1pc3RyYWwgU21hbGxcIixcclxuICBwcm92aWRlcjogXCJtaXN0cmFsXCIsXHJcbiAgaG9zdGVkSWQ6IFwibWlzdHJhbC1zbWFsbC1sYXRlc3RcIixcclxuICBwbGF0Zm9ybUxpbms6IE1JU1RSQUxfUExBVE9STV9MSU5LLFxyXG4gIGltYWdlSW5wdXQ6IGZhbHNlLFxyXG4gIHByaWNpbmc6IHtcclxuICAgIGN1cnJlbmN5OiBcIlVTRFwiLFxyXG4gICAgdW5pdDogXCIxTSB0b2tlbnNcIixcclxuICAgIGlucHV0Q29zdDogMixcclxuICAgIG91dHB1dENvc3Q6IDZcclxuICB9XHJcbn1cclxuXHJcbi8vIE1pc3RyYWwgTWVkaXVtIChVUERBVEVEIDEyLzIxLzIzKVxyXG5jb25zdCBNSVNUUkFMX01FRElVTTogTExNID0ge1xyXG4gIG1vZGVsSWQ6IFwibWlzdHJhbC1tZWRpdW0tbGF0ZXN0XCIsXHJcbiAgbW9kZWxOYW1lOiBcIk1pc3RyYWwgTWVkaXVtXCIsXHJcbiAgcHJvdmlkZXI6IFwibWlzdHJhbFwiLFxyXG4gIGhvc3RlZElkOiBcIm1pc3RyYWwtbWVkaXVtLWxhdGVzdFwiLFxyXG4gIHBsYXRmb3JtTGluazogTUlTVFJBTF9QTEFUT1JNX0xJTkssXHJcbiAgaW1hZ2VJbnB1dDogZmFsc2UsXHJcbiAgcHJpY2luZzoge1xyXG4gICAgY3VycmVuY3k6IFwiVVNEXCIsXHJcbiAgICB1bml0OiBcIjFNIHRva2Vuc1wiLFxyXG4gICAgaW5wdXRDb3N0OiAyLjcsXHJcbiAgICBvdXRwdXRDb3N0OiA4LjFcclxuICB9XHJcbn1cclxuXHJcbi8vIE1pc3RyYWwgTGFyZ2UgKFVQREFURUQgMDMvMDUvMjQpXHJcbmNvbnN0IE1JU1RSQUxfTEFSR0U6IExMTSA9IHtcclxuICBtb2RlbElkOiBcIm1pc3RyYWwtbGFyZ2UtbGF0ZXN0XCIsXHJcbiAgbW9kZWxOYW1lOiBcIk1pc3RyYWwgTGFyZ2VcIixcclxuICBwcm92aWRlcjogXCJtaXN0cmFsXCIsXHJcbiAgaG9zdGVkSWQ6IFwibWlzdHJhbC1sYXJnZS1sYXRlc3RcIixcclxuICBwbGF0Zm9ybUxpbms6IE1JU1RSQUxfUExBVE9STV9MSU5LLFxyXG4gIGltYWdlSW5wdXQ6IGZhbHNlLFxyXG4gIHByaWNpbmc6IHtcclxuICAgIGN1cnJlbmN5OiBcIlVTRFwiLFxyXG4gICAgdW5pdDogXCIxTSB0b2tlbnNcIixcclxuICAgIGlucHV0Q29zdDogOCxcclxuICAgIG91dHB1dENvc3Q6IDI0XHJcbiAgfVxyXG59XHJcblxyXG5leHBvcnQgY29uc3QgTUlTVFJBTF9MTE1fTElTVDogTExNW10gPSBbXHJcbiAgTUlTVFJBTF83QixcclxuICBNSVhUUkFMLFxyXG4gIE1JU1RSQUxfTUVESVVNLFxyXG4gIE1JU1RSQUxfTEFSR0VcclxuXVxyXG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWlCTTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBQUFBLGNBQUEsR0FBQUUsQ0FBQTs7Ozs7OztBQWZOLE1BQU1DLG9CQUFvQjtBQUFBO0FBQUEsQ0FBQUgsY0FBQSxHQUFBRSxDQUFBLE9BQUcsMEJBQTBCO0FBRXZEO0FBRUE7QUFDQSxNQUFNRSxVQUFVO0FBQUE7QUFBQSxDQUFBSixjQUFBLEdBQUFFLENBQUEsT0FBUTtFQUN0QkcsT0FBTyxFQUFFLGNBQWM7RUFDdkJDLFNBQVMsRUFBRSxjQUFjO0VBQ3pCQyxRQUFRLEVBQUUsU0FBUztFQUNuQkMsUUFBUSxFQUFFLGNBQWM7RUFDeEJDLFlBQVksRUFBRU4sb0JBQW9CO0VBQ2xDTyxVQUFVLEVBQUU7Q0FDYjtBQUVEO0FBQ0EsTUFBTUMsT0FBTztBQUFBO0FBQUEsQ0FBQVgsY0FBQSxHQUFBRSxDQUFBLE9BQVE7RUFDbkJHLE9BQU8sRUFBRSxzQkFBc0I7RUFDL0JDLFNBQVMsRUFBRSxlQUFlO0VBQzFCQyxRQUFRLEVBQUUsU0FBUztFQUNuQkMsUUFBUSxFQUFFLHNCQUFzQjtFQUNoQ0MsWUFBWSxFQUFFTixvQkFBb0I7RUFDbENPLFVBQVUsRUFBRSxLQUFLO0VBQ2pCRSxPQUFPLEVBQUU7SUFDUEMsUUFBUSxFQUFFLEtBQUs7SUFDZkMsSUFBSSxFQUFFLFdBQVc7SUFDakJDLFNBQVMsRUFBRSxDQUFDO0lBQ1pDLFVBQVUsRUFBRTs7Q0FFZjtBQUVEO0FBQ0EsTUFBTUMsY0FBYztBQUFBO0FBQUEsQ0FBQWpCLGNBQUEsR0FBQUUsQ0FBQSxPQUFRO0VBQzFCRyxPQUFPLEVBQUUsdUJBQXVCO0VBQ2hDQyxTQUFTLEVBQUUsZ0JBQWdCO0VBQzNCQyxRQUFRLEVBQUUsU0FBUztFQUNuQkMsUUFBUSxFQUFFLHVCQUF1QjtFQUNqQ0MsWUFBWSxFQUFFTixvQkFBb0I7RUFDbENPLFVBQVUsRUFBRSxLQUFLO0VBQ2pCRSxPQUFPLEVBQUU7SUFDUEMsUUFBUSxFQUFFLEtBQUs7SUFDZkMsSUFBSSxFQUFFLFdBQVc7SUFDakJDLFNBQVMsRUFBRSxHQUFHO0lBQ2RDLFVBQVUsRUFBRTs7Q0FFZjtBQUVEO0FBQ0EsTUFBTUUsYUFBYTtBQUFBO0FBQUEsQ0FBQWxCLGNBQUEsR0FBQUUsQ0FBQSxPQUFRO0VBQ3pCRyxPQUFPLEVBQUUsc0JBQXNCO0VBQy9CQyxTQUFTLEVBQUUsZUFBZTtFQUMxQkMsUUFBUSxFQUFFLFNBQVM7RUFDbkJDLFFBQVEsRUFBRSxzQkFBc0I7RUFDaENDLFlBQVksRUFBRU4sb0JBQW9CO0VBQ2xDTyxVQUFVLEVBQUUsS0FBSztFQUNqQkUsT0FBTyxFQUFFO0lBQ1BDLFFBQVEsRUFBRSxLQUFLO0lBQ2ZDLElBQUksRUFBRSxXQUFXO0lBQ2pCQyxTQUFTLEVBQUUsQ0FBQztJQUNaQyxVQUFVLEVBQUU7O0NBRWY7QUFBQTtBQUFBaEIsY0FBQSxHQUFBRSxDQUFBO0FBRVlpQixPQUFBLENBQUFDLGdCQUFnQixHQUFVLENBQ3JDaEIsVUFBVSxFQUNWTyxPQUFPLEVBQ1BNLGNBQWMsRUFDZEMsYUFBYSxDQUNkIiwiaWdub3JlTGlzdCI6W119

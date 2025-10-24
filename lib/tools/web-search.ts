@@ -1,4 +1,5 @@
-﻿/**
+﻿// CONFIRMAR USO ANTES DE ELIMINACIÓN - Herramienta redundante con legal-search-specialized.ts
+/**
  * Herramientas de busqueda web de codigo abierto para Tongyi
  * Usa SearXNG (metabuscador open source) + Jina AI Reader (gratuito)
  */
@@ -31,7 +32,7 @@ const SEARXNG_INSTANCES = [
   'https://searx.fmac.xyz'
 ]
 
-import { extractWithFirecrawl, searchWithFirecrawl } from './firecrawl-extractor'
+// import { extractWithFirecrawl, searchWithFirecrawl } from './firecrawl-extractor' // ELIMINADO - archivo movido
 import { getConstitutionArticle, isConstitutionalArticle } from '../constitucion-sources'
 import { normalizeLegalQuery } from '../prompts/legal-agent'
 const OFFICIAL_DOMAINS = [

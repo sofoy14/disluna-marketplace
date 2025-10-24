@@ -1,0 +1,504 @@
+9ce747c346ff7c80c8141a59852f72e8
+"use strict";
+
+/* istanbul ignore next */
+function cov_xc61g092n() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\hooks\\use-copy-to-clipboard.tsx";
+  var hash = "df8b89997ce2792a2850ab57f796efad3f4f0e3d";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\hooks\\use-copy-to-clipboard.tsx",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 48
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 16
+        },
+        end: {
+          line: 4,
+          column: 32
+        }
+      },
+      "3": {
+        start: {
+          line: 6,
+          column: 36
+        },
+        end: {
+          line: 6,
+          column: 64
+        }
+      },
+      "4": {
+        start: {
+          line: 7,
+          column: 28
+        },
+        end: {
+          line: 20,
+          column: 5
+        }
+      },
+      "5": {
+        start: {
+          line: 8,
+          column: 8
+        },
+        end: {
+          line: 10,
+          column: 9
+        }
+      },
+      "6": {
+        start: {
+          line: 9,
+          column: 12
+        },
+        end: {
+          line: 9,
+          column: 19
+        }
+      },
+      "7": {
+        start: {
+          line: 11,
+          column: 8
+        },
+        end: {
+          line: 13,
+          column: 9
+        }
+      },
+      "8": {
+        start: {
+          line: 12,
+          column: 12
+        },
+        end: {
+          line: 12,
+          column: 19
+        }
+      },
+      "9": {
+        start: {
+          line: 14,
+          column: 8
+        },
+        end: {
+          line: 19,
+          column: 11
+        }
+      },
+      "10": {
+        start: {
+          line: 15,
+          column: 12
+        },
+        end: {
+          line: 15,
+          column: 30
+        }
+      },
+      "11": {
+        start: {
+          line: 16,
+          column: 12
+        },
+        end: {
+          line: 18,
+          column: 24
+        }
+      },
+      "12": {
+        start: {
+          line: 17,
+          column: 16
+        },
+        end: {
+          line: 17,
+          column: 35
+        }
+      },
+      "13": {
+        start: {
+          line: 21,
+          column: 4
+        },
+        end: {
+          line: 21,
+          column: 41
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "useCopyToClipboard",
+        decl: {
+          start: {
+            line: 5,
+            column: 9
+          },
+          end: {
+            line: 5,
+            column: 27
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 48
+          },
+          end: {
+            line: 22,
+            column: 1
+          }
+        },
+        line: 5
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 7,
+            column: 28
+          },
+          end: {
+            line: 7,
+            column: 29
+          }
+        },
+        loc: {
+          start: {
+            line: 7,
+            column: 39
+          },
+          end: {
+            line: 20,
+            column: 5
+          }
+        },
+        line: 7
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 14,
+            column: 50
+          },
+          end: {
+            line: 14,
+            column: 51
+          }
+        },
+        loc: {
+          start: {
+            line: 14,
+            column: 56
+          },
+          end: {
+            line: 19,
+            column: 9
+          }
+        },
+        line: 14
+      },
+      "3": {
+        name: "(anonymous_3)",
+        decl: {
+          start: {
+            line: 16,
+            column: 23
+          },
+          end: {
+            line: 16,
+            column: 24
+          }
+        },
+        loc: {
+          start: {
+            line: 16,
+            column: 29
+          },
+          end: {
+            line: 18,
+            column: 13
+          }
+        },
+        line: 16
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 5,
+            column: 30
+          },
+          end: {
+            line: 5,
+            column: 44
+          }
+        },
+        type: "default-arg",
+        locations: [{
+          start: {
+            line: 5,
+            column: 40
+          },
+          end: {
+            line: 5,
+            column: 44
+          }
+        }],
+        line: 5
+      },
+      "1": {
+        loc: {
+          start: {
+            line: 8,
+            column: 8
+          },
+          end: {
+            line: 10,
+            column: 9
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 8,
+            column: 8
+          },
+          end: {
+            line: 10,
+            column: 9
+          }
+        }, {
+          start: {
+            line: undefined,
+            column: undefined
+          },
+          end: {
+            line: undefined,
+            column: undefined
+          }
+        }],
+        line: 8
+      },
+      "2": {
+        loc: {
+          start: {
+            line: 8,
+            column: 12
+          },
+          end: {
+            line: 8,
+            column: 76
+          }
+        },
+        type: "binary-expr",
+        locations: [{
+          start: {
+            line: 8,
+            column: 12
+          },
+          end: {
+            line: 8,
+            column: 41
+          }
+        }, {
+          start: {
+            line: 8,
+            column: 45
+          },
+          end: {
+            line: 8,
+            column: 76
+          }
+        }],
+        line: 8
+      },
+      "3": {
+        loc: {
+          start: {
+            line: 11,
+            column: 8
+          },
+          end: {
+            line: 13,
+            column: 9
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 11,
+            column: 8
+          },
+          end: {
+            line: 13,
+            column: 9
+          }
+        }, {
+          start: {
+            line: undefined,
+            column: undefined
+          },
+          end: {
+            line: undefined,
+            column: undefined
+          }
+        }],
+        line: 11
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    b: {
+      "0": [0],
+      "1": [0, 0],
+      "2": [0, 0],
+      "3": [0, 0]
+    },
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\hooks\\use-copy-to-clipboard.tsx",
+      mappings: ";;AAMA,gDAwBC;AA9BD,iCAAgC;AAMhC,SAAgB,kBAAkB,CAAC,EACjC,OAAO,GAAG,IAAI,EACU;IACxB,MAAM,CAAC,QAAQ,EAAE,WAAW,CAAC,GAAG,IAAA,gBAAQ,EAAU,KAAK,CAAC,CAAA;IAExD,MAAM,eAAe,GAAG,CAAC,KAAa,EAAE,EAAE;QACxC,IAAI,OAAO,MAAM,KAAK,WAAW,IAAI,CAAC,SAAS,CAAC,SAAS,EAAE,SAAS,EAAE,CAAC;YACrE,OAAM;QACR,CAAC;QAED,IAAI,CAAC,KAAK,EAAE,CAAC;YACX,OAAM;QACR,CAAC;QAED,SAAS,CAAC,SAAS,CAAC,SAAS,CAAC,KAAK,CAAC,CAAC,IAAI,CAAC,GAAG,EAAE;YAC7C,WAAW,CAAC,IAAI,CAAC,CAAA;YAEjB,UAAU,CAAC,GAAG,EAAE;gBACd,WAAW,CAAC,KAAK,CAAC,CAAA;YACpB,CAAC,EAAE,OAAO,CAAC,CAAA;QACb,CAAC,CAAC,CAAA;IACJ,CAAC,CAAA;IAED,OAAO,EAAE,QAAQ,EAAE,eAAe,EAAE,CAAA;AACtC,CAAC",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\hooks\\use-copy-to-clipboard.tsx"],
+      sourcesContent: ["import { useState } from \"react\"\r\n\r\nexport interface useCopyToClipboardProps {\r\n  timeout?: number\r\n}\r\n\r\nexport function useCopyToClipboard({\r\n  timeout = 2000\r\n}: useCopyToClipboardProps) {\r\n  const [isCopied, setIsCopied] = useState<Boolean>(false)\r\n\r\n  const copyToClipboard = (value: string) => {\r\n    if (typeof window === \"undefined\" || !navigator.clipboard?.writeText) {\r\n      return\r\n    }\r\n\r\n    if (!value) {\r\n      return\r\n    }\r\n\r\n    navigator.clipboard.writeText(value).then(() => {\r\n      setIsCopied(true)\r\n\r\n      setTimeout(() => {\r\n        setIsCopied(false)\r\n      }, timeout)\r\n    })\r\n  }\r\n\r\n  return { isCopied, copyToClipboard }\r\n}\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "df8b89997ce2792a2850ab57f796efad3f4f0e3d"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_xc61g092n = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_xc61g092n();
+cov_xc61g092n().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_xc61g092n().s[1]++;
+exports.useCopyToClipboard = useCopyToClipboard;
+const react_1 =
+/* istanbul ignore next */
+(cov_xc61g092n().s[2]++, require("react"));
+function useCopyToClipboard({
+  timeout =
+  /* istanbul ignore next */
+  (cov_xc61g092n().b[0][0]++, 2000)
+}) {
+  /* istanbul ignore next */
+  cov_xc61g092n().f[0]++;
+  const [isCopied, setIsCopied] =
+  /* istanbul ignore next */
+  (cov_xc61g092n().s[3]++, (0, react_1.useState)(false));
+  /* istanbul ignore next */
+  cov_xc61g092n().s[4]++;
+  const copyToClipboard = value => {
+    /* istanbul ignore next */
+    cov_xc61g092n().f[1]++;
+    cov_xc61g092n().s[5]++;
+    if (
+    /* istanbul ignore next */
+    (cov_xc61g092n().b[2][0]++, typeof window === "undefined") ||
+    /* istanbul ignore next */
+    (cov_xc61g092n().b[2][1]++, !navigator.clipboard?.writeText)) {
+      /* istanbul ignore next */
+      cov_xc61g092n().b[1][0]++;
+      cov_xc61g092n().s[6]++;
+      return;
+    } else
+    /* istanbul ignore next */
+    {
+      cov_xc61g092n().b[1][1]++;
+    }
+    cov_xc61g092n().s[7]++;
+    if (!value) {
+      /* istanbul ignore next */
+      cov_xc61g092n().b[3][0]++;
+      cov_xc61g092n().s[8]++;
+      return;
+    } else
+    /* istanbul ignore next */
+    {
+      cov_xc61g092n().b[3][1]++;
+    }
+    cov_xc61g092n().s[9]++;
+    navigator.clipboard.writeText(value).then(() => {
+      /* istanbul ignore next */
+      cov_xc61g092n().f[2]++;
+      cov_xc61g092n().s[10]++;
+      setIsCopied(true);
+      /* istanbul ignore next */
+      cov_xc61g092n().s[11]++;
+      setTimeout(() => {
+        /* istanbul ignore next */
+        cov_xc61g092n().f[3]++;
+        cov_xc61g092n().s[12]++;
+        setIsCopied(false);
+      }, timeout);
+    });
+  };
+  /* istanbul ignore next */
+  cov_xc61g092n().s[13]++;
+  return {
+    isCopied,
+    copyToClipboard
+  };
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfeGM2MWcwOTJuIiwiYWN0dWFsQ292ZXJhZ2UiLCJzIiwiZXhwb3J0cyIsInVzZUNvcHlUb0NsaXBib2FyZCIsInJlYWN0XzEiLCJyZXF1aXJlIiwidGltZW91dCIsImIiLCJmIiwiaXNDb3BpZWQiLCJzZXRJc0NvcGllZCIsInVzZVN0YXRlIiwiY29weVRvQ2xpcGJvYXJkIiwidmFsdWUiLCJ3aW5kb3ciLCJuYXZpZ2F0b3IiLCJjbGlwYm9hcmQiLCJ3cml0ZVRleHQiLCJ0aGVuIiwic2V0VGltZW91dCJdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xccGVkcm9cXERvY3VtZW50c1xcR2l0SHViXFxBc2lzdGVudGUtTGVnYWwtSW50ZWxpZ2VudGVcXGxpYlxcaG9va3NcXHVzZS1jb3B5LXRvLWNsaXBib2FyZC50c3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgdXNlU3RhdGUgfSBmcm9tIFwicmVhY3RcIlxyXG5cclxuZXhwb3J0IGludGVyZmFjZSB1c2VDb3B5VG9DbGlwYm9hcmRQcm9wcyB7XHJcbiAgdGltZW91dD86IG51bWJlclxyXG59XHJcblxyXG5leHBvcnQgZnVuY3Rpb24gdXNlQ29weVRvQ2xpcGJvYXJkKHtcclxuICB0aW1lb3V0ID0gMjAwMFxyXG59OiB1c2VDb3B5VG9DbGlwYm9hcmRQcm9wcykge1xyXG4gIGNvbnN0IFtpc0NvcGllZCwgc2V0SXNDb3BpZWRdID0gdXNlU3RhdGU8Qm9vbGVhbj4oZmFsc2UpXHJcblxyXG4gIGNvbnN0IGNvcHlUb0NsaXBib2FyZCA9ICh2YWx1ZTogc3RyaW5nKSA9PiB7XHJcbiAgICBpZiAodHlwZW9mIHdpbmRvdyA9PT0gXCJ1bmRlZmluZWRcIiB8fCAhbmF2aWdhdG9yLmNsaXBib2FyZD8ud3JpdGVUZXh0KSB7XHJcbiAgICAgIHJldHVyblxyXG4gICAgfVxyXG5cclxuICAgIGlmICghdmFsdWUpIHtcclxuICAgICAgcmV0dXJuXHJcbiAgICB9XHJcblxyXG4gICAgbmF2aWdhdG9yLmNsaXBib2FyZC53cml0ZVRleHQodmFsdWUpLnRoZW4oKCkgPT4ge1xyXG4gICAgICBzZXRJc0NvcGllZCh0cnVlKVxyXG5cclxuICAgICAgc2V0VGltZW91dCgoKSA9PiB7XHJcbiAgICAgICAgc2V0SXNDb3BpZWQoZmFsc2UpXHJcbiAgICAgIH0sIHRpbWVvdXQpXHJcbiAgICB9KVxyXG4gIH1cclxuXHJcbiAgcmV0dXJuIHsgaXNDb3BpZWQsIGNvcHlUb0NsaXBib2FyZCB9XHJcbn1cclxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUF1Qk07SUFBQUEsYUFBQSxZQUFBQSxDQUFBO01BQUEsT0FBQUMsY0FBQTtJQUFBO0VBQUE7RUFBQSxPQUFBQSxjQUFBO0FBQUE7QUFBQUQsYUFBQTtBQUFBQSxhQUFBLEdBQUFFLENBQUE7Ozs7OztBQWpCTkMsT0FBQSxDQUFBQyxrQkFBQSxHQUFBQSxrQkFBQTtBQU5BLE1BQUFDLE9BQUE7QUFBQTtBQUFBLENBQUFMLGFBQUEsR0FBQUUsQ0FBQSxPQUFBSSxPQUFBO0FBTUEsU0FBZ0JGLGtCQUFrQkEsQ0FBQztFQUNqQ0csT0FBTztFQUFBO0VBQUEsQ0FBQVAsYUFBQSxHQUFBUSxDQUFBLFVBQUcsSUFBSTtBQUFBLENBQ1U7RUFBQTtFQUFBUixhQUFBLEdBQUFTLENBQUE7RUFDeEIsTUFBTSxDQUFDQyxRQUFRLEVBQUVDLFdBQVcsQ0FBQztFQUFBO0VBQUEsQ0FBQVgsYUFBQSxHQUFBRSxDQUFBLE9BQUcsSUFBQUcsT0FBQSxDQUFBTyxRQUFRLEVBQVUsS0FBSyxDQUFDO0VBQUE7RUFBQVosYUFBQSxHQUFBRSxDQUFBO0VBRXhELE1BQU1XLGVBQWUsR0FBSUMsS0FBYSxJQUFJO0lBQUE7SUFBQWQsYUFBQSxHQUFBUyxDQUFBO0lBQUFULGFBQUEsR0FBQUUsQ0FBQTtJQUN4QztJQUFJO0lBQUEsQ0FBQUYsYUFBQSxHQUFBUSxDQUFBLGlCQUFPTyxNQUFNLEtBQUssV0FBVztJQUFBO0lBQUEsQ0FBQWYsYUFBQSxHQUFBUSxDQUFBLFVBQUksQ0FBQ1EsU0FBUyxDQUFDQyxTQUFTLEVBQUVDLFNBQVMsR0FBRTtNQUFBO01BQUFsQixhQUFBLEdBQUFRLENBQUE7TUFBQVIsYUFBQSxHQUFBRSxDQUFBO01BQ3BFO0lBQ0YsQ0FBQztJQUFBO0lBQUE7TUFBQUYsYUFBQSxHQUFBUSxDQUFBO0lBQUE7SUFBQVIsYUFBQSxHQUFBRSxDQUFBO0lBRUQsSUFBSSxDQUFDWSxLQUFLLEVBQUU7TUFBQTtNQUFBZCxhQUFBLEdBQUFRLENBQUE7TUFBQVIsYUFBQSxHQUFBRSxDQUFBO01BQ1Y7SUFDRixDQUFDO0lBQUE7SUFBQTtNQUFBRixhQUFBLEdBQUFRLENBQUE7SUFBQTtJQUFBUixhQUFBLEdBQUFFLENBQUE7SUFFRGMsU0FBUyxDQUFDQyxTQUFTLENBQUNDLFNBQVMsQ0FBQ0osS0FBSyxDQUFDLENBQUNLLElBQUksQ0FBQyxNQUFLO01BQUE7TUFBQW5CLGFBQUEsR0FBQVMsQ0FBQTtNQUFBVCxhQUFBLEdBQUFFLENBQUE7TUFDN0NTLFdBQVcsQ0FBQyxJQUFJLENBQUM7TUFBQTtNQUFBWCxhQUFBLEdBQUFFLENBQUE7TUFFakJrQixVQUFVLENBQUMsTUFBSztRQUFBO1FBQUFwQixhQUFBLEdBQUFTLENBQUE7UUFBQVQsYUFBQSxHQUFBRSxDQUFBO1FBQ2RTLFdBQVcsQ0FBQyxLQUFLLENBQUM7TUFDcEIsQ0FBQyxFQUFFSixPQUFPLENBQUM7SUFDYixDQUFDLENBQUM7RUFDSixDQUFDO0VBQUE7RUFBQVAsYUFBQSxHQUFBRSxDQUFBO0VBRUQsT0FBTztJQUFFUSxRQUFRO0lBQUVHO0VBQWUsQ0FBRTtBQUN0QyIsImlnbm9yZUxpc3QiOltdfQ==

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle, CreditCard, User, Settings } from 'lucide-react';
-import { WompiCheckout } from '@/components/billing/WompiCheckout';
+// import { WompiCheckout } from '@/components/billing/WompiCheckout'; // ELIMINADO - Sistema de billing removido
 
 interface OnboardingFlowProps {
   planId: string;
@@ -232,6 +232,7 @@ export function OnboardingFlow({ planId, planName, onComplete }: OnboardingFlowP
                   </p>
                 </div>
                 
+                {/* ELIMINADO - Sistema de billing removido
                 <WompiCheckout
                   planId={planId}
                   customerEmail={profile.email}
@@ -239,6 +240,15 @@ export function OnboardingFlow({ planId, planName, onComplete }: OnboardingFlowP
                   specialOffer={true}
                   onSuccess={() => setCurrentStep(3)}
                 />
+                */}
+                <div className="text-center p-8 bg-gray-50 rounded-lg">
+                  <p className="text-gray-600 mb-4">
+                    Sistema de facturación temporalmente deshabilitado
+                  </p>
+                  <Button onClick={() => setCurrentStep(3)}>
+                    Continuar sin pago
+                  </Button>
+                </div>
               </div>
             )}
 

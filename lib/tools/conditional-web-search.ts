@@ -1,9 +1,10 @@
+// CONFIRMAR USO ANTES DE ELIMINACIÓN - Herramienta redundante con legal-search-specialized.ts
 /**
  * Sistema de búsqueda condicional inteligente
  * Solo busca en internet cuando es necesario información legal colombiana específica
  */
 
-import { detectLegalQuery, logLegalDetection, LegalDetectionResult } from './smart-legal-detector'
+// import { detectLegalQuery, logLegalDetection, LegalDetectionResult } from './smart-legal-detector' // ELIMINADO - archivo movido
 import { searchWithSerperSimple, formatSimpleSearchResults } from './simple-serper-search'
 
 interface QueryComplexity {

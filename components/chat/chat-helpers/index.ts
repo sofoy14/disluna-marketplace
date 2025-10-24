@@ -216,23 +216,8 @@ export const handleHostedChat = async (
     formattedMessages = draftMessages
   }
 
-  // Detectar si es una consulta legal para usar el endpoint especializado
-  const lastMessage = formattedMessages[formattedMessages.length - 1]
-  const isLegalQuery = lastMessage?.content && (
-    lastMessage.content.toLowerCase().includes('constitución') ||
-    lastMessage.content.toLowerCase().includes('artículo') ||
-    lastMessage.content.toLowerCase().includes('ley') ||
-    lastMessage.content.toLowerCase().includes('legal') ||
-    lastMessage.content.toLowerCase().includes('jurídico') ||
-    lastMessage.content.toLowerCase().includes('norma') ||
-    lastMessage.content.toLowerCase().includes('código') ||
-    lastMessage.content.toLowerCase().includes('sentencia') ||
-    lastMessage.content.toLowerCase().includes('tribunal')
-  )
-
-  const apiEndpoint = isLegalQuery 
-    ? "/api/chat/legal" 
-    : provider === "custom" ? "/api/chat/custom" : "/api/chat/simple-direct"
+  // Siempre usar tools-agent para modelos hosted - el modelo decide si buscar
+  const apiEndpoint = provider === "custom" ? "/api/chat/custom" : "/api/chat/tools-agent"
 
   const requestBody = {
     chatSettings: payload.chatSettings,
@@ -240,7 +225,7 @@ export const handleHostedChat = async (
     customModelId: provider === "custom" ? modelData.hostedId : ""
   }
 
-  console.log(`🔍 Consulta ${isLegalQuery ? 'LEGAL' : 'GENERAL'} detectada, usando endpoint: ${apiEndpoint}`)
+  console.log(`🤖 Usando endpoint: ${apiEndpoint} - el modelo decidirá si buscar`)
 
   const response = await fetchChatResponse(
     apiEndpoint,
@@ -314,6 +299,44 @@ export const processResponse = async (
 
   console.log('📄 Procesando respuesta:', { contentType, isPlainText, status: response.status })
 
+  if (contentType.includes('application/json')) {
+    try {
+      const data = await response.json()
+      const messageText =
+        typeof data === "string"
+          ? data
+          : typeof data?.message === "string"
+          ? data.message
+          : JSON.stringify(data)
+      const bibliography = Array.isArray(data?.bibliography)
+        ? data.bibliography
+        : undefined
+
+      fullText = messageText
+
+      setChatMessages(prev =>
+        prev.map(chatMessage => {
+          if (chatMessage.message.id === lastChatMessage.message.id) {
+            return {
+              ...chatMessage,
+              message: {
+                ...chatMessage.message,
+                content: messageText
+              },
+              bibliography: bibliography ?? chatMessage.bibliography
+            }
+          }
+          return chatMessage
+        })
+      )
+
+      return messageText
+    } catch (error) {
+      console.error('Error parsing JSON response:', error)
+      return ""
+    }
+  }
+
   if (isPlainText) {
     // Si es texto plano, leer toda la respuesta de una vez
     const text = await response.text()
@@ -329,7 +352,8 @@ export const processResponse = async (
               ...chatMessage.message,
               content: fullText
             },
-            fileItems: chatMessage.fileItems
+            fileItems: chatMessage.fileItems,
+            bibliography: chatMessage.bibliography
           }
           return updatedChatMessage
         }

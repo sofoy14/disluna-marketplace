@@ -1,5 +1,7 @@
+// CONFIRMAR USO ANTES DE ELIMINACIÓN - Este endpoint parece redundante con /api/chat/legal
 import { NextResponse } from "next/server"
 import { executeConditionalWebSearch, generateSystemMessage } from "@/lib/tools/conditional-web-search"
+import { runDynamicSearchWorkflow } from "@/lib/tools/dynamic-search-orchestrator"
 
 // Dominios oficiales y académicos para filtrar fuentes de calidad
 const OFFICIAL_DOMAINS = [
@@ -287,41 +289,64 @@ export async function POST(request: Request) {
     console.log(`🔍 Consulta: "${userQuery}"`)
     console.log(`📡 Analizando si requiere búsqueda web...`)
     
-    // Ejecutar búsqueda condicional inteligente
-    const searchResult = await executeConditionalWebSearch(userQuery, {
-      logDetection: true
-    })
-    
-    console.log(`✅ Análisis completado: ${searchResult.shouldSearch ? 'Búsqueda requerida' : 'Sin búsqueda necesaria'}`)
-
     // Intentar procesar con IA usando OpenRouter
     const openrouterApiKey = process.env.OPENROUTER_API_KEY
     
-    if (openrouterApiKey && openrouterApiKey !== "sk-or-v1-your-api-key-here" && openrouterApiKey !== "tu_api_key_aqui") {
+    // Detectar si es consulta legal para usar sistema dinámico
+    const legalKeywords = [
+      'constitución', 'artículo', 'ley', 'legal', 'jurídico', 'norma', 'código',
+      'sentencia', 'tribunal', 'corte', 'constitucional', 'consejo', 'estado',
+      'decreto', 'resolución', 'circular', 'jurisprudencia', 'doctrina',
+      'sociedad', 'SAS', 'SRL', 'SA', 'contrato', 'obligación', 'responsabilidad',
+      'daño', 'penal', 'civil', 'comercial', 'laboral', 'administrativo',
+      'tributario', 'fiscal', 'impuesto', 'DIAN', 'superintendencia',
+      'ministerio', 'gobierno', 'municipio', 'departamento', 'colombia',
+      'colombiano', 'derecho', 'proceso', 'trámite', 'procedimiento',
+      'requisito', 'documento', 'certificado', 'registro', 'matrícula',
+      'reforma', 'modificación', 'vigencia', 'derogación', 'vigente',
+      'actualizado', 'reciente', 'nuevo', 'último', 'buscar', 'investigar',
+      'encontrar', 'información', 'datos', 'consulta', 'pregunta'
+    ]
+    
+    const queryText = userQuery.toLowerCase()
+    const isLegalQuery = legalKeywords.some(keyword => queryText.includes(keyword)) ||
+                        queryText.length > 30 ||
+                        (queryText.match(/\?/g) || []).length > 0
+    
+    let searchResult: any
+    let systemPrompt: string
+    
+    if (isLegalQuery && openrouterApiKey && openrouterApiKey !== "sk-or-v1-your-api-key-here" && openrouterApiKey !== "tu_api_key_aqui") {
+      console.log(`🧠 Detectada consulta legal - Usando sistema de búsqueda dinámica`)
+      
       try {
-        console.log(`🤖 Procesando con Tongyi Deep Research 30B A3B...`)
-        
         const openai = new OpenAI({
           apiKey: openrouterApiKey,
           baseURL: "https://openrouter.ai/api/v1"
         })
+        
+        // Usar el nuevo sistema de búsqueda dinámica
+        const dynamicSearchResult = await runDynamicSearchWorkflow(userQuery, {
+          client: openai,
+          model: "tongyi/deepresearch-30b-a3b",
+          maxSearchRounds: 10,
+          maxSearchesPerRound: 8,
+          searchTimeoutMs: 45000,
+          enableModelDecision: true
+        })
+        
+        systemPrompt = `Eres un Asistente Legal Colombiano especializado en derecho civil, procesal y constitucional. Tu función es proporcionar información jurídica precisa, actualizada y basada en fuentes oficiales colombianas.
 
-        const systemPrompt = `Eres un Asistente Legal Colombiano especializado en derecho civil, procesal y constitucional. Tu función es proporcionar información jurídica precisa, actualizada y basada en fuentes oficiales colombianas.
+**INFORMACIÓN VERIFICADA DISPONIBLE:**
+${dynamicSearchResult.finalContext}
 
 **INSTRUCCIONES CRÍTICAS:**
-1. **USA ÚNICAMENTE** la información encontrada en internet para responder
+1. **USA ÚNICAMENTE** la información verificada proporcionada arriba
 2. **PRIORIZA** fuentes oficiales (.gov.co) y académicas (.edu.co) colombianas
 3. **NO uses** información de tu entrenamiento si hay información específica disponible
 4. **Responde** como si toda la información fuera de tu conocimiento directo
 5. **NO menciones** que realizaste búsquedas web
 6. **Proporciona** respuestas estructuradas y completas sobre derecho colombiano
-
-**REGLAS OBLIGATORIAS PARA ARTÍCULOS:**
-- **SIEMPRE** encuentra y cita textualmente el artículo solicitado
-- **NUNCA** respondas que "no encontraste" un artículo específico
-- **SIEMPRE** incluye el texto completo del artículo cuando esté disponible
-- **PRIORIZA** fuentes oficiales que contengan el texto íntegro del artículo
-- **Si hay múltiples fuentes**, elige la más oficial y completa
 
 **FORMATO DE RESPUESTA OBLIGATORIO:**
 - **Marco Normativo**: Identifica la ley, código o norma específica relevante
@@ -336,23 +361,46 @@ export async function POST(request: Request) {
 - Incluye referencias a artículos, leyes y códigos específicos
 - Proporciona información práctica y aplicable
 - Explica conceptos jurídicos de manera clara
-- **PRIORIZA** información de fuentes oficiales colombianas
-- **CALIDAD SOBRE CANTIDAD**: Incluye solo fuentes relevantes y de alta calidad
-**PROHIBICIÓN ABSOLUTA**: NUNCA incluyas fuentes de Wikipedia, wikimedia, o cualquier dominio .wiki
-- Al final de tu respuesta, después de "---", incluye SOLO fuentes oficiales (.gov.co) o académicas (.edu.co):
+- **PRIORIZA** información de fuentes oficiales colombianas`
 
-## 📚 Fuentes Consultadas
+        console.log(`✅ Búsqueda dinámica completada: ${dynamicSearchResult.metadata.totalRounds} rondas, ${dynamicSearchResult.metadata.totalResults} resultados`)
+        
+      } catch (dynamicSearchError) {
+        console.error(`❌ Error en búsqueda dinámica, usando fallback:`, dynamicSearchError)
+        
+        // Fallback al sistema tradicional
+        searchResult = await executeConditionalWebSearch(userQuery, {
+          logDetection: true
+        })
+        
+        systemPrompt = generateSystemMessage(userQuery, searchResult)
+      }
+    } else {
+      // Sistema tradicional para otros modelos
+      searchResult = await executeConditionalWebSearch(userQuery, {
+        logDetection: true
+      })
+      
+      systemPrompt = generateSystemMessage(userQuery, searchResult)
+    }
+    
+    console.log(`✅ Análisis completado: ${searchResult?.shouldSearch ? 'Búsqueda requerida' : 'Sin búsqueda necesaria'}`)
 
-1. [Título](URL exacta)
-2. [Título](URL exacta)
-...
+    if (openrouterApiKey && openrouterApiKey !== "sk-or-v1-your-api-key-here" && openrouterApiKey !== "tu_api_key_aqui") {
+      try {
+        console.log(`🤖 Procesando con Tongyi Deep Research 30B A3B...`)
+        
+        const openai = new OpenAI({
+          apiKey: openrouterApiKey,
+          baseURL: "https://openrouter.ai/api/v1"
+        })
 
-**IMPORTANTE**: NUNCA menciones que realizaste búsquedas en internet. Responde en español colombiano con terminología jurídica precisa. PRIORIZA siempre las fuentes oficiales y académicas colombianas. SIEMPRE encuentra el artículo solicitado.`
+        // El systemPrompt ya fue definido arriba según el tipo de búsqueda
 
         const finalPrompt = `${systemPrompt}
 
 INFORMACIÓN JURÍDICA ENCONTRADA EN INTERNET:
-${searchResult.webSearchContext}
+${isTongyiModel ? 'Información ya incluida en el contexto del sistema' : searchResult.webSearchContext}
 
 CONSULTA DEL USUARIO: "${userQuery}"
 

@@ -1,0 +1,367 @@
+6b236bcceb0cb6ec8a055666188d2a0a
+"use strict";
+
+/* istanbul ignore next */
+function cov_1pljw5ei9e() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\auth\\callback\\route.ts";
+  var hash = "b9405b3b3528692ab1d7aca369a7d08468e130c2";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\auth\\callback\\route.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 18
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 17
+        },
+        end: {
+          line: 4,
+          column: 49
+        }
+      },
+      "3": {
+        start: {
+          line: 5,
+          column: 18
+        },
+        end: {
+          line: 5,
+          column: 41
+        }
+      },
+      "4": {
+        start: {
+          line: 6,
+          column: 17
+        },
+        end: {
+          line: 6,
+          column: 39
+        }
+      },
+      "5": {
+        start: {
+          line: 8,
+          column: 23
+        },
+        end: {
+          line: 8,
+          column: 43
+        }
+      },
+      "6": {
+        start: {
+          line: 9,
+          column: 17
+        },
+        end: {
+          line: 9,
+          column: 52
+        }
+      },
+      "7": {
+        start: {
+          line: 10,
+          column: 17
+        },
+        end: {
+          line: 10,
+          column: 52
+        }
+      },
+      "8": {
+        start: {
+          line: 11,
+          column: 4
+        },
+        end: {
+          line: 15,
+          column: 5
+        }
+      },
+      "9": {
+        start: {
+          line: 12,
+          column: 28
+        },
+        end: {
+          line: 12,
+          column: 52
+        }
+      },
+      "10": {
+        start: {
+          line: 13,
+          column: 25
+        },
+        end: {
+          line: 13,
+          column: 64
+        }
+      },
+      "11": {
+        start: {
+          line: 14,
+          column: 8
+        },
+        end: {
+          line: 14,
+          column: 57
+        }
+      },
+      "12": {
+        start: {
+          line: 16,
+          column: 4
+        },
+        end: {
+          line: 21,
+          column: 5
+        }
+      },
+      "13": {
+        start: {
+          line: 17,
+          column: 8
+        },
+        end: {
+          line: 17,
+          column: 72
+        }
+      },
+      "14": {
+        start: {
+          line: 20,
+          column: 8
+        },
+        end: {
+          line: 20,
+          column: 65
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "GET",
+        decl: {
+          start: {
+            line: 7,
+            column: 15
+          },
+          end: {
+            line: 7,
+            column: 18
+          }
+        },
+        loc: {
+          start: {
+            line: 7,
+            column: 28
+          },
+          end: {
+            line: 22,
+            column: 1
+          }
+        },
+        line: 7
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 11,
+            column: 4
+          },
+          end: {
+            line: 15,
+            column: 5
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 11,
+            column: 4
+          },
+          end: {
+            line: 15,
+            column: 5
+          }
+        }, {
+          start: {
+            line: undefined,
+            column: undefined
+          },
+          end: {
+            line: undefined,
+            column: undefined
+          }
+        }],
+        line: 11
+      },
+      "1": {
+        loc: {
+          start: {
+            line: 16,
+            column: 4
+          },
+          end: {
+            line: 21,
+            column: 5
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 16,
+            column: 4
+          },
+          end: {
+            line: 21,
+            column: 5
+          }
+        }, {
+          start: {
+            line: 19,
+            column: 9
+          },
+          end: {
+            line: 21,
+            column: 5
+          }
+        }],
+        line: 16
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {
+      "0": [0, 0],
+      "1": [0, 0]
+    },
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\auth\\callback\\route.ts",
+      mappings: ";;AAIA,kBAgBC;AApBD,kDAAoD;AACpD,0CAAsC;AACtC,wCAA0C;AAEnC,KAAK,UAAU,GAAG,CAAC,OAAgB;IACxC,MAAM,UAAU,GAAG,IAAI,GAAG,CAAC,OAAO,CAAC,GAAG,CAAC,CAAA;IACvC,MAAM,IAAI,GAAG,UAAU,CAAC,YAAY,CAAC,GAAG,CAAC,MAAM,CAAC,CAAA;IAChD,MAAM,IAAI,GAAG,UAAU,CAAC,YAAY,CAAC,GAAG,CAAC,MAAM,CAAC,CAAA;IAEhD,IAAI,IAAI,EAAE,CAAC;QACT,MAAM,WAAW,GAAG,IAAA,iBAAO,GAAE,CAAA;QAC7B,MAAM,QAAQ,GAAG,IAAA,qBAAY,EAAC,WAAW,CAAC,CAAA;QAC1C,MAAM,QAAQ,CAAC,IAAI,CAAC,sBAAsB,CAAC,IAAI,CAAC,CAAA;IAClD,CAAC;IAED,IAAI,IAAI,EAAE,CAAC;QACT,OAAO,qBAAY,CAAC,QAAQ,CAAC,UAAU,CAAC,MAAM,GAAG,IAAI,CAAC,CAAA;IACxD,CAAC;SAAM,CAAC;QACN,OAAO,qBAAY,CAAC,QAAQ,CAAC,UAAU,CAAC,MAAM,CAAC,CAAA;IACjD,CAAC;AACH,CAAC",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\auth\\callback\\route.ts"],
+      sourcesContent: ["import { createClient } from \"@/lib/supabase/server\"\r\nimport { cookies } from \"next/headers\"\r\nimport { NextResponse } from \"next/server\"\r\n\r\nexport async function GET(request: Request) {\r\n  const requestUrl = new URL(request.url)\r\n  const code = requestUrl.searchParams.get(\"code\")\r\n  const next = requestUrl.searchParams.get(\"next\")\r\n\r\n  if (code) {\r\n    const cookieStore = cookies()\r\n    const supabase = createClient(cookieStore)\r\n    await supabase.auth.exchangeCodeForSession(code)\r\n  }\r\n\r\n  if (next) {\r\n    return NextResponse.redirect(requestUrl.origin + next)\r\n  } else {\r\n    return NextResponse.redirect(requestUrl.origin)\r\n  }\r\n}\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "b9405b3b3528692ab1d7aca369a7d08468e130c2"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1pljw5ei9e = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1pljw5ei9e();
+cov_1pljw5ei9e().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_1pljw5ei9e().s[1]++;
+exports.GET = GET;
+const server_1 =
+/* istanbul ignore next */
+(cov_1pljw5ei9e().s[2]++, require("@/lib/supabase/server"));
+const headers_1 =
+/* istanbul ignore next */
+(cov_1pljw5ei9e().s[3]++, require("next/headers"));
+const server_2 =
+/* istanbul ignore next */
+(cov_1pljw5ei9e().s[4]++, require("next/server"));
+async function GET(request) {
+  /* istanbul ignore next */
+  cov_1pljw5ei9e().f[0]++;
+  const requestUrl =
+  /* istanbul ignore next */
+  (cov_1pljw5ei9e().s[5]++, new URL(request.url));
+  const code =
+  /* istanbul ignore next */
+  (cov_1pljw5ei9e().s[6]++, requestUrl.searchParams.get("code"));
+  const next =
+  /* istanbul ignore next */
+  (cov_1pljw5ei9e().s[7]++, requestUrl.searchParams.get("next"));
+  /* istanbul ignore next */
+  cov_1pljw5ei9e().s[8]++;
+  if (code) {
+    /* istanbul ignore next */
+    cov_1pljw5ei9e().b[0][0]++;
+    const cookieStore =
+    /* istanbul ignore next */
+    (cov_1pljw5ei9e().s[9]++, (0, headers_1.cookies)());
+    const supabase =
+    /* istanbul ignore next */
+    (cov_1pljw5ei9e().s[10]++, (0, server_1.createClient)(cookieStore));
+    /* istanbul ignore next */
+    cov_1pljw5ei9e().s[11]++;
+    await supabase.auth.exchangeCodeForSession(code);
+  } else
+  /* istanbul ignore next */
+  {
+    cov_1pljw5ei9e().b[0][1]++;
+  }
+  cov_1pljw5ei9e().s[12]++;
+  if (next) {
+    /* istanbul ignore next */
+    cov_1pljw5ei9e().b[1][0]++;
+    cov_1pljw5ei9e().s[13]++;
+    return server_2.NextResponse.redirect(requestUrl.origin + next);
+  } else {
+    /* istanbul ignore next */
+    cov_1pljw5ei9e().b[1][1]++;
+    cov_1pljw5ei9e().s[14]++;
+    return server_2.NextResponse.redirect(requestUrl.origin);
+  }
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXBsanc1ZWk5ZSIsImFjdHVhbENvdmVyYWdlIiwicyIsImV4cG9ydHMiLCJHRVQiLCJzZXJ2ZXJfMSIsInJlcXVpcmUiLCJoZWFkZXJzXzEiLCJzZXJ2ZXJfMiIsInJlcXVlc3QiLCJmIiwicmVxdWVzdFVybCIsIlVSTCIsInVybCIsImNvZGUiLCJzZWFyY2hQYXJhbXMiLCJnZXQiLCJuZXh0IiwiYiIsImNvb2tpZVN0b3JlIiwiY29va2llcyIsInN1cGFiYXNlIiwiY3JlYXRlQ2xpZW50IiwiYXV0aCIsImV4Y2hhbmdlQ29kZUZvclNlc3Npb24iLCJOZXh0UmVzcG9uc2UiLCJyZWRpcmVjdCIsIm9yaWdpbiJdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xccGVkcm9cXERvY3VtZW50c1xcR2l0SHViXFxBc2lzdGVudGUtTGVnYWwtSW50ZWxpZ2VudGVcXGFwcFxcYXV0aFxcY2FsbGJhY2tcXHJvdXRlLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IGNyZWF0ZUNsaWVudCB9IGZyb20gXCJAL2xpYi9zdXBhYmFzZS9zZXJ2ZXJcIlxyXG5pbXBvcnQgeyBjb29raWVzIH0gZnJvbSBcIm5leHQvaGVhZGVyc1wiXHJcbmltcG9ydCB7IE5leHRSZXNwb25zZSB9IGZyb20gXCJuZXh0L3NlcnZlclwiXHJcblxyXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gR0VUKHJlcXVlc3Q6IFJlcXVlc3QpIHtcclxuICBjb25zdCByZXF1ZXN0VXJsID0gbmV3IFVSTChyZXF1ZXN0LnVybClcclxuICBjb25zdCBjb2RlID0gcmVxdWVzdFVybC5zZWFyY2hQYXJhbXMuZ2V0KFwiY29kZVwiKVxyXG4gIGNvbnN0IG5leHQgPSByZXF1ZXN0VXJsLnNlYXJjaFBhcmFtcy5nZXQoXCJuZXh0XCIpXHJcblxyXG4gIGlmIChjb2RlKSB7XHJcbiAgICBjb25zdCBjb29raWVTdG9yZSA9IGNvb2tpZXMoKVxyXG4gICAgY29uc3Qgc3VwYWJhc2UgPSBjcmVhdGVDbGllbnQoY29va2llU3RvcmUpXHJcbiAgICBhd2FpdCBzdXBhYmFzZS5hdXRoLmV4Y2hhbmdlQ29kZUZvclNlc3Npb24oY29kZSlcclxuICB9XHJcblxyXG4gIGlmIChuZXh0KSB7XHJcbiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLnJlZGlyZWN0KHJlcXVlc3RVcmwub3JpZ2luICsgbmV4dClcclxuICB9IGVsc2Uge1xyXG4gICAgcmV0dXJuIE5leHRSZXNwb25zZS5yZWRpcmVjdChyZXF1ZXN0VXJsLm9yaWdpbilcclxuICB9XHJcbn1cclxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7SUFlVTtJQUFBQSxjQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxjQUFBO0FBQUFBLGNBQUEsR0FBQUUsQ0FBQTs7Ozs7O0FBWFZDLE9BQUEsQ0FBQUMsR0FBQSxHQUFBQSxHQUFBO0FBSkEsTUFBQUMsUUFBQTtBQUFBO0FBQUEsQ0FBQUwsY0FBQSxHQUFBRSxDQUFBLE9BQUFJLE9BQUE7QUFDQSxNQUFBQyxTQUFBO0FBQUE7QUFBQSxDQUFBUCxjQUFBLEdBQUFFLENBQUEsT0FBQUksT0FBQTtBQUNBLE1BQUFFLFFBQUE7QUFBQTtBQUFBLENBQUFSLGNBQUEsR0FBQUUsQ0FBQSxPQUFBSSxPQUFBO0FBRU8sZUFBZUYsR0FBR0EsQ0FBQ0ssT0FBZ0I7RUFBQTtFQUFBVCxjQUFBLEdBQUFVLENBQUE7RUFDeEMsTUFBTUMsVUFBVTtFQUFBO0VBQUEsQ0FBQVgsY0FBQSxHQUFBRSxDQUFBLE9BQUcsSUFBSVUsR0FBRyxDQUFDSCxPQUFPLENBQUNJLEdBQUcsQ0FBQztFQUN2QyxNQUFNQyxJQUFJO0VBQUE7RUFBQSxDQUFBZCxjQUFBLEdBQUFFLENBQUEsT0FBR1MsVUFBVSxDQUFDSSxZQUFZLENBQUNDLEdBQUcsQ0FBQyxNQUFNLENBQUM7RUFDaEQsTUFBTUMsSUFBSTtFQUFBO0VBQUEsQ0FBQWpCLGNBQUEsR0FBQUUsQ0FBQSxPQUFHUyxVQUFVLENBQUNJLFlBQVksQ0FBQ0MsR0FBRyxDQUFDLE1BQU0sQ0FBQztFQUFBO0VBQUFoQixjQUFBLEdBQUFFLENBQUE7RUFFaEQsSUFBSVksSUFBSSxFQUFFO0lBQUE7SUFBQWQsY0FBQSxHQUFBa0IsQ0FBQTtJQUNSLE1BQU1DLFdBQVc7SUFBQTtJQUFBLENBQUFuQixjQUFBLEdBQUFFLENBQUEsT0FBRyxJQUFBSyxTQUFBLENBQUFhLE9BQU8sR0FBRTtJQUM3QixNQUFNQyxRQUFRO0lBQUE7SUFBQSxDQUFBckIsY0FBQSxHQUFBRSxDQUFBLFFBQUcsSUFBQUcsUUFBQSxDQUFBaUIsWUFBWSxFQUFDSCxXQUFXLENBQUM7SUFBQTtJQUFBbkIsY0FBQSxHQUFBRSxDQUFBO0lBQzFDLE1BQU1tQixRQUFRLENBQUNFLElBQUksQ0FBQ0Msc0JBQXNCLENBQUNWLElBQUksQ0FBQztFQUNsRCxDQUFDO0VBQUE7RUFBQTtJQUFBZCxjQUFBLEdBQUFrQixDQUFBO0VBQUE7RUFBQWxCLGNBQUEsR0FBQUUsQ0FBQTtFQUVELElBQUllLElBQUksRUFBRTtJQUFBO0lBQUFqQixjQUFBLEdBQUFrQixDQUFBO0lBQUFsQixjQUFBLEdBQUFFLENBQUE7SUFDUixPQUFPTSxRQUFBLENBQUFpQixZQUFZLENBQUNDLFFBQVEsQ0FBQ2YsVUFBVSxDQUFDZ0IsTUFBTSxHQUFHVixJQUFJLENBQUM7RUFDeEQsQ0FBQyxNQUFNO0lBQUE7SUFBQWpCLGNBQUEsR0FBQWtCLENBQUE7SUFBQWxCLGNBQUEsR0FBQUUsQ0FBQTtJQUNMLE9BQU9NLFFBQUEsQ0FBQWlCLFlBQVksQ0FBQ0MsUUFBUSxDQUFDZixVQUFVLENBQUNnQixNQUFNLENBQUM7RUFDakQ7QUFDRiIsImlnbm9yZUxpc3QiOltdfQ==

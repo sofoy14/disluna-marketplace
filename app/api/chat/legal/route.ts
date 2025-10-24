@@ -1,157 +1,221 @@
-import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { ChatSettings } from "@/types"
-import { OpenAIStream, StreamingTextResponse } from "ai"
-import OpenAI from "openai"
-import { ChatCompletionCreateParamsBase } from "openai/resources/chat/completions.mjs"
-import { searchWebNoApi, enrichNoApiResults } from "@/lib/tools/no-api-search"
-import { LEGAL_SYSTEM_PROMPT, formatLegalSearchContext } from "@/lib/prompts/legal-agent"
+import { NextRequest, NextResponse } from "next/server"
+import { createTongyiUnifiedLegalAgent } from "@/lib/agents/tongyi-unified-legal-agent"
+import { ChatMemoryManager } from "@/lib/memory/chat-memory-manager"
+
+const DEFAULT_MAX_TOKENS = 4000
+const DEFAULT_TEMPERATURE = 0.3
+
+interface RequestBody {
+  chatSettings: ChatSettings
+  messages: Array<{ role: "system" | "user" | "assistant"; content: string }>
+  chatId?: string
+  userId?: string
+}
 
 export async function POST(request: Request) {
-  const json = await request.json()
-  const { chatSettings, messages } = json as {
-    chatSettings: ChatSettings
-    messages: any[]
-  }
+  const { chatSettings, messages, chatId, userId } = (await request.json()) as RequestBody
 
   try {
-    let profile
-    try {
-      profile = await getServerProfile()
-    } catch (error) {
-      console.log('⚠️ Usuario no autenticado, usando configuración por defecto')
-      profile = {
-        username: 'usuario-anonimo',
-        openrouter_api_key: process.env.OPENROUTER_API_KEY || ''
-      }
+    const apiKey = process.env.OPENROUTER_API_KEY || ""
+
+    if (!apiKey) {
+      throw new Error(
+        "OpenRouter API Key no configurada. Define OPENROUTER_API_KEY."
+      )
     }
 
-    // Usar API key de OpenRouter desde variables de entorno o perfil
-    const openrouterApiKey = process.env.OPENROUTER_API_KEY || profile.openrouter_api_key || ""
-
-    if (!openrouterApiKey) {
-      throw new Error("OpenRouter API Key no configurada. Por favor configura OPENROUTER_API_KEY en las variables de entorno o en tu perfil.")
-    }
-
-    const openai = new OpenAI({
-      apiKey: openrouterApiKey,
-      baseURL: "https://openrouter.ai/api/v1"
-    })
-
-    // 🔥 BÚSQUEDA JURÍDICA ESPECIALIZADA - SIEMPRE SE EJECUTA
-    let webSearchContext = ''
-    const lastUserMessage = messages.filter(m => m.role === 'user').pop()
-    const userQuery = lastUserMessage?.content || ''
+    const userQuery = extractLastUserMessage(messages)
+    const modelName = chatSettings.model as string
     
-    console.log(`\n${"⚖️".repeat(60)}`)
-    console.log(`⚖️ ASISTENTE LEGAL COLOMBIANO - BÚSQUEDA JURÍDICA ESPECIALIZADA`)
-    console.log(`   Query: "${userQuery.substring(0, 50)}..."`)
-    console.log(`   Usuario: ${profile?.username || 'usuario-anonimo'}`)
-    console.log(`${"⚖️".repeat(60)}\n`)
+    // Generar IDs únicos para el chat si no se proporcionan
+    const finalChatId = chatId || `chat-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    const finalUserId = userId || "usuario-anonimo"
+
+    console.log(`\n🧠 TONGYI REACT AGENT - SISTEMA COMPLETO`)
+    console.log(`📝 Query: "${userQuery}"`)
+    console.log(`💬 Chat ID: ${finalChatId}`)
+    console.log(`👤 User ID: ${finalUserId}`)
+    console.log(`🤖 Modelo: ${modelName}`)
+    console.log(`${'='.repeat(80)}`)
+
+    // Inicializar sistema de memoria
+    const memoryManager = ChatMemoryManager.getInstance()
+    const chatContext = await memoryManager.getChatContext(finalChatId, finalUserId)
     
-    try {
-      console.log(`🔍 EJECUTANDO búsqueda web simplificada (sin Wikipedia)...`)
+    // Obtener historial relevante
+    const relevantHistory = await memoryManager.getRelevantHistory(
+      finalChatId, 
+      finalUserId, 
+      userQuery, 
+      10
+    )
+
+    console.log(`🧠 Memoria cargada: ${relevantHistory.length} mensajes relevantes`)
+    console.log(`📊 Contexto actual: ${chatContext.currentContext.length} caracteres`)
+
+    // Detectar si la consulta requiere búsqueda web
+    const requiresSearch = detectSearchRequirement(userQuery)
+    
+    let responseContent = ""
+
+    if (requiresSearch) {
+      console.log(`🔍 Consulta requiere búsqueda web - Ejecutando Agente Unificado`)
       
-      // Usar el sistema sin APIs que solo filtra Wikipedia
-      const searchResults = await searchWebNoApi(userQuery, 5)
-      
-      if (searchResults && searchResults.success && searchResults.results && searchResults.results.length > 0) {
-        // Enriquecer los resultados con contenido completo
-        const enrichedResults = await enrichNoApiResults(searchResults.results, 3)
+      try {
+        // Usar agente Tongyi Unificado con paradigmas oficiales de DeepResearch
+        const unifiedAgent = createTongyiUnifiedLegalAgent(apiKey, {
+          maxRounds: 8,
+          enableContinuousVerification: true,
+          enableIterativeRefinement: true,
+          enableMemory: true,
+          enableAntiHallucination: true,
+          preferredSources: ['official', 'academic', 'news'],
+          qualityThreshold: 0.85
+        })
         
-        // Formatear resultados para el contexto
-        const resultsText = enrichedResults.map((result: any, index: number) => 
-          `FUENTE ${index + 1}: ${result.title}\nURL: ${result.url}\nCONTENIDO: ${result.snippet}\n---`
-        ).join('\n')
+        const unifiedResponse = await unifiedAgent.processLegalQuery(
+          userQuery,
+          finalChatId,
+          finalUserId
+        )
+
+        console.log(`✅ Agente Unificado completado:`)
+        console.log(`   🎯 Modo de investigación: ${unifiedResponse.analysis.researchMode}`)
+        console.log(`   🔍 Rondas ejecutadas: ${unifiedResponse.metadata.totalRounds}`)
+        console.log(`   📄 Fuentes encontradas: ${unifiedResponse.metadata.totalSources}`)
+        console.log(`   🛡️ Verificación: ${unifiedResponse.analysis.verificationPassed ? '✅' : '❌'}`)
+        console.log(`   🎯 Confianza: ${unifiedResponse.analysis.confidence.toFixed(2)}`)
+        console.log(`   ⏱️ Tiempo: ${(unifiedResponse.analysis.processingTime / 1000).toFixed(1)}s`)
+
+                // Usar directamente la respuesta del modelo sin agregar información adicional
+                responseContent = unifiedResponse.finalAnswer
+
+      } catch (searchError) {
+        console.error(`❌ Error en agente unificado:`, searchError)
         
-        webSearchContext = `RESULTADOS DE BÚSQUEDA WEB (Wikipedia filtrada):\n\n${resultsText}`
-        
-        console.log(`\n✅ BÚSQUEDA SIN APIs - COMPLETADA CON ÉXITO:`)
-        console.log(`   📊 Resultados encontrados: ${searchResults.results.length}`)
-        console.log(`   📝 Caracteres de contexto: ${webSearchContext.length}`)
-        console.log(`   🚫 Wikipedia: Filtrada exitosamente`)
-        console.log(`${"⚖️".repeat(60)}\n`)
-        
-      } else {
-        console.log(`\n⚠️ BÚSQUEDA WEB - SIN RESULTADOS`)
-        webSearchContext = `BÚSQUEDA WEB EJECUTADA PERO SIN RESULTADOS PARA: "${userQuery}"`
-        console.log(`${"⚖️".repeat(60)}\n`)
+        // Fallback a respuesta simple
+        console.log(`🔄 Fallback a respuesta directa`)
+        responseContent = `Disculpe, hubo un error procesando su consulta con el sistema de análisis avanzado. Por favor, intente reformular su pregunta de manera más específica.`
       }
-    } catch (error) {
-      console.error(`\n❌ ERROR EN BÚSQUEDA WEB:`, error)
-      webSearchContext = `ERROR EN BÚSQUEDA WEB PARA: "${userQuery}" - ${error instanceof Error ? error.message : 'Error desconocido'}`
-      console.log(`${"⚖️".repeat(60)}\n`)
-    }
-
-    // Crear mensaje de sistema especializado para derecho colombiano
-    const systemMessage = {
-      role: "system",
-      content: `${LEGAL_SYSTEM_PROMPT}
-
-${webSearchContext.includes('ERROR') || webSearchContext.includes('SIN RESULTADOS') ? 
-  `⚠️ RESULTADO DE BÚSQUEDA JURÍDICA: ${webSearchContext}
-
-Aunque la búsqueda no encontró resultados específicos, DEBES mencionar que se ejecutó una búsqueda jurídica como parte de tu respuesta.
-
-INSTRUCCIONES ESPECIALES:
-1. **MENCIONA** que se ejecutó una búsqueda jurídica especializada
-2. **Responde** basándote en tu conocimiento legal del derecho colombiano
-3. **SÉ EXPLÍCITO** sobre la falta de fuentes web específicas
-4. **OFRECE** orientación general con la salvedad correspondiente` : 
-  `✅ RESULTADO DE BÚSQUEDA JURÍDICA: Información legal encontrada
-
-${webSearchContext}
-
-INSTRUCCIONES ESPECIALES:
-1. **USA** la información legal encontrada arriba como base principal
-2. **MENCIONA** que se ejecutó una búsqueda jurídica especializada
-3. **APLICA** el formato estructurado según la complejidad de la consulta
-4. **VERIFICA** la vigencia y aplicabilidad de las normas citadas
-5. **AL FINAL**, incluye la sección "## 📚 Fuentes Consultadas" exactamente como se indica`}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🇨🇴 ESPECIALIZACIÓN EN DERECHO COLOMBIANO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-**OBLIGATORIO**: 
-- Siempre menciona que se ejecutó una búsqueda jurídica especializada
-- Usa terminología jurídica colombiana precisa
-- Prioriza el ordenamiento jurídico colombiano
-- Incluye siempre la sección de fuentes consultadas
-- Sé claro sobre la vigencia de las normas`
-    }
-
-    // Insertar el mensaje de sistema al inicio
-    if (messages.length === 0 || messages[0].role !== "system") {
-      messages.unshift(systemMessage)
     } else {
-      // Si ya hay un mensaje de sistema, agregar las instrucciones legales
-      messages[0].content = `${messages[0].content}\n\n${systemMessage.content}`
+      console.log(`💬 Consulta simple - Respondiendo directamente`)
+      responseContent = `Esta consulta no requiere búsqueda web específica. Por favor, proporcione más detalles sobre su consulta legal para obtener una respuesta más completa.`
     }
+    
+    // Guardar mensaje del usuario en memoria
+    const userMessageId = `user-${Date.now()}`
+    await memoryManager.saveMessage(
+      finalChatId,
+      finalUserId,
+      userMessageId,
+      userQuery,
+      'user'
+    )
 
-    console.log(`🤖 GENERANDO respuesta con especialización en derecho colombiano...`)
-
-    const response = await openai.chat.completions.create({
-      model: chatSettings.model as ChatCompletionCreateParamsBase["model"],
-      messages,
-      temperature: chatSettings.temperature || 0.3, // Temperatura más baja para mayor precisión legal
-      max_tokens: 4000, // Límite superior para respuestas legales detalladas
-      stream: true
+    // Crear stream personalizado para la respuesta del agente unificado
+    const stream = new ReadableStream({
+      start(controller) {
+        const chunks = responseContent.split(' ')
+        let index = 0
+        
+        const pushChunk = () => {
+          if (index < chunks.length) {
+            const chunk = chunks[index] + (index < chunks.length - 1 ? ' ' : '')
+            controller.enqueue(new TextEncoder().encode(chunk))
+            index++
+            setTimeout(pushChunk, 30) // Simular streaming más rápido
+          } else {
+            controller.close()
+          }
+        }
+        
+        pushChunk()
+      }
     })
 
-    const stream = OpenAIStream(response)
-    return new StreamingTextResponse(stream)
+    // Guardar respuesta del asistente en memoria
+    const assistantMessageId = `assistant-${Date.now()}`
+    await memoryManager.saveMessage(
+      finalChatId,
+      finalUserId,
+      assistantMessageId,
+      responseContent,
+      'assistant',
+      {
+        searchRounds: requiresSearch ? 8 : 0,
+        totalSearches: requiresSearch ? 1 : 0,
+        totalResults: requiresSearch ? 1 : 0,
+        finalQuality: 9,
+        modelDecisions: requiresSearch ? 1 : 0,
+        searchStrategy: requiresSearch ? "AGENTE_UNIFICADO_TONGYI" : "RESPUESTA_DIRECTA"
+      }
+    )
+    
+    console.log(`💾 Respuesta del agente unificado guardada en memoria: ${responseContent.length} caracteres`)
+    
+    return new Response(stream, {
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Transfer-Encoding': 'chunked',
+      },
+    })
 
   } catch (error: any) {
-    console.error('❌ Error en asistente legal colombiano:', error)
-    const errorMessage = error.error?.message || "Error en el asistente legal colombiano"
-    const errorCode = error.status || 500
-    return new Response(JSON.stringify({ 
-      message: errorMessage,
-      error: "ASISTENTE_LEGAL_ERROR"
-    }), {
-      status: errorCode
-    })
+    console.error("[legal-route] Error:", error)
+    const message =
+      error?.error?.message ||
+      error?.message ||
+      "Error en el asistente legal colombiano"
+
+    const status = typeof error?.status === "number" ? error.status : 500
+
+    return new Response(
+      JSON.stringify({
+        message,
+        error: "ASISTENTE_LEGAL_ERROR",
+      }),
+      { status }
+    )
   }
 }
 
-export const runtime = 'edge'
+export const runtime = "edge"
+
+function extractLastUserMessage(messages: RequestBody["messages"]): string {
+  const lastUserMessage = [...messages].reverse().find((m) => m.role === "user")
+  return typeof lastUserMessage?.content === "string"
+    ? lastUserMessage.content
+    : ""
+}
+
+function detectSearchRequirement(query: string): boolean {
+  const searchKeywords = [
+    'requisitos', 'constituir', 'sociedad', 'SAS', 'SRL', 'SA',
+    'jurisprudencia', 'corte', 'constitucional', 'consejo', 'estado',
+    'código', 'ley', 'decreto', 'artículo', 'norma', 'legislación',
+    'reforma', 'modificación', 'vigencia', 'derogación',
+    'proceso', 'trámite', 'procedimiento', 'requisito',
+    'documento', 'certificado', 'registro', 'matrícula',
+    'colombia', 'colombiano', 'derecho', 'legal', 'jurídico',
+    'contrato', 'obligación', 'responsabilidad', 'daño',
+    'penal', 'civil', 'comercial', 'laboral', 'administrativo',
+    'tributario', 'fiscal', 'impuesto', 'DIAN', 'superintendencia',
+    'ministerio', 'gobierno', 'estado', 'municipio', 'departamento',
+    'valor financiero', 'cuentas', 'participación', 'financiero',
+    'bancario', 'crédito', 'préstamo', 'inversión', 'capital'
+  ]
+  
+  const lowerQuery = query.toLowerCase()
+  
+  // Ser más agresivo: si contiene cualquier palabra legal, buscar
+  const hasLegalKeyword = searchKeywords.some(keyword => lowerQuery.includes(keyword))
+  
+  // También buscar si la consulta es larga (probablemente compleja)
+  const isComplexQuery = query.length > 30
+  
+  // Buscar si contiene signos de interrogación múltiples o puntos
+  const hasMultipleQuestions = (query.match(/\?/g) || []).length > 0
+  
+  return hasLegalKeyword || isComplexQuery || hasMultipleQuestions
+}

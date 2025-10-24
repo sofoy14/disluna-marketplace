@@ -316,12 +316,18 @@ export const useChatHandler = () => {
           chatImages
         )
 
-        const response = await fetch("/api/chat/simple-direct", {
+        // Siempre usar tools-agent - el modelo decide si buscar
+        const endpoint = "/api/chat/tools-agent"
+        
+        console.log(`🤖 Usando endpoint: ${endpoint} - el modelo decidirá si buscar`)
+        
+        const response = await fetch(endpoint, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
+            chatSettings: payload.chatSettings,
             messages: formattedMessages
           })
         })

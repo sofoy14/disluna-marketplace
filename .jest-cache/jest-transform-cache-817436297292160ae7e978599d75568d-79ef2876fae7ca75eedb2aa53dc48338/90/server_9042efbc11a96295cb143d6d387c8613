@@ -1,0 +1,366 @@
+67734f8e19f152c052e8101f6f57c167
+"use strict";
+
+/* istanbul ignore next */
+function cov_1ez2xkiwcz() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\server.ts";
+  var hash = "b786ef3e828c67745082089f328bcefda8cb8435";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\server.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 30
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 14
+        },
+        end: {
+          line: 4,
+          column: 38
+        }
+      },
+      "3": {
+        start: {
+          line: 5,
+          column: 24
+        },
+        end: {
+          line: 5,
+          column: 63
+        }
+      },
+      "4": {
+        start: {
+          line: 6,
+          column: 21
+        },
+        end: {
+          line: 35,
+          column: 1
+        }
+      },
+      "5": {
+        start: {
+          line: 7,
+          column: 36
+        },
+        end: {
+          line: 7,
+          column: 82
+        }
+      },
+      "6": {
+        start: {
+          line: 8,
+          column: 4
+        },
+        end: {
+          line: 34,
+          column: 7
+        }
+      },
+      "7": {
+        start: {
+          line: 11,
+          column: 16
+        },
+        end: {
+          line: 11,
+          column: 52
+        }
+      },
+      "8": {
+        start: {
+          line: 14,
+          column: 16
+        },
+        end: {
+          line: 21,
+          column: 17
+        }
+      },
+      "9": {
+        start: {
+          line: 15,
+          column: 20
+        },
+        end: {
+          line: 15,
+          column: 65
+        }
+      },
+      "10": {
+        start: {
+          line: 24,
+          column: 16
+        },
+        end: {
+          line: 31,
+          column: 17
+        }
+      },
+      "11": {
+        start: {
+          line: 25,
+          column: 20
+        },
+        end: {
+          line: 25,
+          column: 69
+        }
+      },
+      "12": {
+        start: {
+          line: 36,
+          column: 0
+        },
+        end: {
+          line: 36,
+          column: 36
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 21
+          },
+          end: {
+            line: 6,
+            column: 22
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 38
+          },
+          end: {
+            line: 35,
+            column: 1
+          }
+        },
+        line: 6
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 10,
+            column: 12
+          },
+          end: {
+            line: 10,
+            column: 13
+          }
+        },
+        loc: {
+          start: {
+            line: 10,
+            column: 22
+          },
+          end: {
+            line: 12,
+            column: 13
+          }
+        },
+        line: 10
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 13,
+            column: 12
+          },
+          end: {
+            line: 13,
+            column: 13
+          }
+        },
+        loc: {
+          start: {
+            line: 13,
+            column: 38
+          },
+          end: {
+            line: 22,
+            column: 13
+          }
+        },
+        line: 13
+      },
+      "3": {
+        name: "(anonymous_3)",
+        decl: {
+          start: {
+            line: 23,
+            column: 12
+          },
+          end: {
+            line: 23,
+            column: 13
+          }
+        },
+        loc: {
+          start: {
+            line: 23,
+            column: 34
+          },
+          end: {
+            line: 32,
+            column: 13
+          }
+        },
+        line: 23
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\server.ts",
+      mappings: ";;;AAAA,uCAAsE;AAEtE,gEAAsE;AAE/D,MAAM,YAAY,GAAG,CAAC,WAAuC,EAAE,EAAE;IACtE,MAAM,EAAE,GAAG,EAAE,cAAc,EAAE,GAAG,IAAA,uCAAuB,GAAE,CAAA;IAEzD,OAAO,IAAA,wBAAkB,EAAC,GAAG,EAAE,cAAc,EAAE;QAC7C,OAAO,EAAE;YACP,GAAG,CAAC,IAAY;gBACd,OAAO,WAAW,CAAC,GAAG,CAAC,IAAI,CAAC,EAAE,KAAK,CAAA;YACrC,CAAC;YACD,GAAG,CAAC,IAAY,EAAE,KAAa,EAAE,OAAsB;gBACrD,IAAI,CAAC;oBACH,WAAW,CAAC,GAAG,CAAC,EAAE,IAAI,EAAE,KAAK,EAAE,GAAG,OAAO,EAAE,CAAC,CAAA;gBAC9C,CAAC;gBAAC,OAAO,KAAK,EAAE,CAAC;oBACf,uDAAuD;oBACvD,wDAAwD;oBACxD,iBAAiB;gBACnB,CAAC;YACH,CAAC;YACD,MAAM,CAAC,IAAY,EAAE,OAAsB;gBACzC,IAAI,CAAC;oBACH,WAAW,CAAC,GAAG,CAAC,EAAE,IAAI,EAAE,KAAK,EAAE,EAAE,EAAE,GAAG,OAAO,EAAE,CAAC,CAAA;gBAClD,CAAC;gBAAC,OAAO,KAAK,EAAE,CAAC;oBACf,0DAA0D;oBAC1D,wDAAwD;oBACxD,iBAAiB;gBACnB,CAAC;YACH,CAAC;SACF;KACF,CAAC,CAAA;AACJ,CAAC,CAAA;AA5BY,QAAA,YAAY,gBA4BxB",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\server.ts"],
+      sourcesContent: ["import { createServerClient, type CookieOptions } from \"@supabase/ssr\"\r\nimport { cookies } from \"next/headers\"\r\nimport { getServerSupabaseConfig } from \"@/lib/supabase/robust-client\"\r\n\r\nexport const createClient = (cookieStore: ReturnType<typeof cookies>) => {\r\n  const { url, serviceRoleKey } = getServerSupabaseConfig()\r\n  \r\n  return createServerClient(url, serviceRoleKey, {\r\n    cookies: {\r\n      get(name: string) {\r\n        return cookieStore.get(name)?.value\r\n      },\r\n      set(name: string, value: string, options: CookieOptions) {\r\n        try {\r\n          cookieStore.set({ name, value, ...options })\r\n        } catch (error) {\r\n          // The `set` method was called from a Server Component.\r\n          // This can be ignored if you have middleware refreshing\r\n          // user sessions.\r\n        }\r\n      },\r\n      remove(name: string, options: CookieOptions) {\r\n        try {\r\n          cookieStore.set({ name, value: \"\", ...options })\r\n        } catch (error) {\r\n          // The `delete` method was called from a Server Component.\r\n          // This can be ignored if you have middleware refreshing\r\n          // user sessions.\r\n        }\r\n      }\r\n    }\r\n  })\r\n}\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "b786ef3e828c67745082089f328bcefda8cb8435"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1ez2xkiwcz = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1ez2xkiwcz();
+cov_1ez2xkiwcz().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_1ez2xkiwcz().s[1]++;
+exports.createClient = void 0;
+const ssr_1 =
+/* istanbul ignore next */
+(cov_1ez2xkiwcz().s[2]++, require("@supabase/ssr"));
+const robust_client_1 =
+/* istanbul ignore next */
+(cov_1ez2xkiwcz().s[3]++, require("@/lib/supabase/robust-client"));
+/* istanbul ignore next */
+cov_1ez2xkiwcz().s[4]++;
+const createClient = cookieStore => {
+  /* istanbul ignore next */
+  cov_1ez2xkiwcz().f[0]++;
+  const {
+    url,
+    serviceRoleKey
+  } =
+  /* istanbul ignore next */
+  (cov_1ez2xkiwcz().s[5]++, (0, robust_client_1.getServerSupabaseConfig)());
+  /* istanbul ignore next */
+  cov_1ez2xkiwcz().s[6]++;
+  return (0, ssr_1.createServerClient)(url, serviceRoleKey, {
+    cookies: {
+      get(name) {
+        /* istanbul ignore next */
+        cov_1ez2xkiwcz().f[1]++;
+        cov_1ez2xkiwcz().s[7]++;
+        return cookieStore.get(name)?.value;
+      },
+      set(name, value, options) {
+        /* istanbul ignore next */
+        cov_1ez2xkiwcz().f[2]++;
+        cov_1ez2xkiwcz().s[8]++;
+        try {
+          /* istanbul ignore next */
+          cov_1ez2xkiwcz().s[9]++;
+          cookieStore.set({
+            name,
+            value,
+            ...options
+          });
+        } catch (error) {
+          // The `set` method was called from a Server Component.
+          // This can be ignored if you have middleware refreshing
+          // user sessions.
+        }
+      },
+      remove(name, options) {
+        /* istanbul ignore next */
+        cov_1ez2xkiwcz().f[3]++;
+        cov_1ez2xkiwcz().s[10]++;
+        try {
+          /* istanbul ignore next */
+          cov_1ez2xkiwcz().s[11]++;
+          cookieStore.set({
+            name,
+            value: "",
+            ...options
+          });
+        } catch (error) {
+          // The `delete` method was called from a Server Component.
+          // This can be ignored if you have middleware refreshing
+          // user sessions.
+        }
+      }
+    }
+  });
+};
+/* istanbul ignore next */
+cov_1ez2xkiwcz().s[12]++;
+exports.createClient = createClient;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJzc3JfMSIsImNvdl8xZXoyeGtpd2N6IiwicyIsInJlcXVpcmUiLCJyb2J1c3RfY2xpZW50XzEiLCJjcmVhdGVDbGllbnQiLCJjb29raWVTdG9yZSIsImYiLCJ1cmwiLCJzZXJ2aWNlUm9sZUtleSIsImdldFNlcnZlclN1cGFiYXNlQ29uZmlnIiwiY3JlYXRlU2VydmVyQ2xpZW50IiwiY29va2llcyIsImdldCIsIm5hbWUiLCJ2YWx1ZSIsInNldCIsIm9wdGlvbnMiLCJlcnJvciIsInJlbW92ZSIsImV4cG9ydHMiXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXHBlZHJvXFxEb2N1bWVudHNcXEdpdEh1YlxcQXNpc3RlbnRlLUxlZ2FsLUludGVsaWdlbnRlXFxsaWJcXHN1cGFiYXNlXFxzZXJ2ZXIudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgY3JlYXRlU2VydmVyQ2xpZW50LCB0eXBlIENvb2tpZU9wdGlvbnMgfSBmcm9tIFwiQHN1cGFiYXNlL3NzclwiXHJcbmltcG9ydCB7IGNvb2tpZXMgfSBmcm9tIFwibmV4dC9oZWFkZXJzXCJcclxuaW1wb3J0IHsgZ2V0U2VydmVyU3VwYWJhc2VDb25maWcgfSBmcm9tIFwiQC9saWIvc3VwYWJhc2Uvcm9idXN0LWNsaWVudFwiXHJcblxyXG5leHBvcnQgY29uc3QgY3JlYXRlQ2xpZW50ID0gKGNvb2tpZVN0b3JlOiBSZXR1cm5UeXBlPHR5cGVvZiBjb29raWVzPikgPT4ge1xyXG4gIGNvbnN0IHsgdXJsLCBzZXJ2aWNlUm9sZUtleSB9ID0gZ2V0U2VydmVyU3VwYWJhc2VDb25maWcoKVxyXG4gIFxyXG4gIHJldHVybiBjcmVhdGVTZXJ2ZXJDbGllbnQodXJsLCBzZXJ2aWNlUm9sZUtleSwge1xyXG4gICAgY29va2llczoge1xyXG4gICAgICBnZXQobmFtZTogc3RyaW5nKSB7XHJcbiAgICAgICAgcmV0dXJuIGNvb2tpZVN0b3JlLmdldChuYW1lKT8udmFsdWVcclxuICAgICAgfSxcclxuICAgICAgc2V0KG5hbWU6IHN0cmluZywgdmFsdWU6IHN0cmluZywgb3B0aW9uczogQ29va2llT3B0aW9ucykge1xyXG4gICAgICAgIHRyeSB7XHJcbiAgICAgICAgICBjb29raWVTdG9yZS5zZXQoeyBuYW1lLCB2YWx1ZSwgLi4ub3B0aW9ucyB9KVxyXG4gICAgICAgIH0gY2F0Y2ggKGVycm9yKSB7XHJcbiAgICAgICAgICAvLyBUaGUgYHNldGAgbWV0aG9kIHdhcyBjYWxsZWQgZnJvbSBhIFNlcnZlciBDb21wb25lbnQuXHJcbiAgICAgICAgICAvLyBUaGlzIGNhbiBiZSBpZ25vcmVkIGlmIHlvdSBoYXZlIG1pZGRsZXdhcmUgcmVmcmVzaGluZ1xyXG4gICAgICAgICAgLy8gdXNlciBzZXNzaW9ucy5cclxuICAgICAgICB9XHJcbiAgICAgIH0sXHJcbiAgICAgIHJlbW92ZShuYW1lOiBzdHJpbmcsIG9wdGlvbnM6IENvb2tpZU9wdGlvbnMpIHtcclxuICAgICAgICB0cnkge1xyXG4gICAgICAgICAgY29va2llU3RvcmUuc2V0KHsgbmFtZSwgdmFsdWU6IFwiXCIsIC4uLm9wdGlvbnMgfSlcclxuICAgICAgICB9IGNhdGNoIChlcnJvcikge1xyXG4gICAgICAgICAgLy8gVGhlIGBkZWxldGVgIG1ldGhvZCB3YXMgY2FsbGVkIGZyb20gYSBTZXJ2ZXIgQ29tcG9uZW50LlxyXG4gICAgICAgICAgLy8gVGhpcyBjYW4gYmUgaWdub3JlZCBpZiB5b3UgaGF2ZSBtaWRkbGV3YXJlIHJlZnJlc2hpbmdcclxuICAgICAgICAgIC8vIHVzZXIgc2Vzc2lvbnMuXHJcbiAgICAgICAgfVxyXG4gICAgICB9XHJcbiAgICB9XHJcbiAgfSlcclxufVxyXG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFBQSxNQUFBQSxLQUFBO0FBQUE7QUFBQSxDQUFBQyxjQUFBLEdBQUFDLENBQUEsT0FBQUMsT0FBQTtBQUVBLE1BQUFDLGVBQUE7QUFBQTtBQUFBLENBQUFILGNBQUEsR0FBQUMsQ0FBQSxPQUFBQyxPQUFBO0FBQXNFO0FBQUFGLGNBQUEsR0FBQUMsQ0FBQTtBQUUvRCxNQUFNRyxZQUFZLEdBQUlDLFdBQXVDLElBQUk7RUFBQTtFQUFBTCxjQUFBLEdBQUFNLENBQUE7RUFDdEUsTUFBTTtJQUFFQyxHQUFHO0lBQUVDO0VBQWMsQ0FBRTtFQUFBO0VBQUEsQ0FBQVIsY0FBQSxHQUFBQyxDQUFBLE9BQUcsSUFBQUUsZUFBQSxDQUFBTSx1QkFBdUIsR0FBRTtFQUFBO0VBQUFULGNBQUEsR0FBQUMsQ0FBQTtFQUV6RCxPQUFPLElBQUFGLEtBQUEsQ0FBQVcsa0JBQWtCLEVBQUNILEdBQUcsRUFBRUMsY0FBYyxFQUFFO0lBQzdDRyxPQUFPLEVBQUU7TUFDUEMsR0FBR0EsQ0FBQ0MsSUFBWTtRQUFBO1FBQUFiLGNBQUEsR0FBQU0sQ0FBQTtRQUFBTixjQUFBLEdBQUFDLENBQUE7UUFDZCxPQUFPSSxXQUFXLENBQUNPLEdBQUcsQ0FBQ0MsSUFBSSxDQUFDLEVBQUVDLEtBQUs7TUFDckMsQ0FBQztNQUNEQyxHQUFHQSxDQUFDRixJQUFZLEVBQUVDLEtBQWEsRUFBRUUsT0FBc0I7UUFBQTtRQUFBaEIsY0FBQSxHQUFBTSxDQUFBO1FBQUFOLGNBQUEsR0FBQUMsQ0FBQTtRQUNyRCxJQUFJO1VBQUE7VUFBQUQsY0FBQSxHQUFBQyxDQUFBO1VBQ0ZJLFdBQVcsQ0FBQ1UsR0FBRyxDQUFDO1lBQUVGLElBQUk7WUFBRUMsS0FBSztZQUFFLEdBQUdFO1VBQU8sQ0FBRSxDQUFDO1FBQzlDLENBQUMsQ0FBQyxPQUFPQyxLQUFLLEVBQUU7VUFDZDtVQUNBO1VBQ0E7UUFBQTtNQUVKLENBQUM7TUFDREMsTUFBTUEsQ0FBQ0wsSUFBWSxFQUFFRyxPQUFzQjtRQUFBO1FBQUFoQixjQUFBLEdBQUFNLENBQUE7UUFBQU4sY0FBQSxHQUFBQyxDQUFBO1FBQ3pDLElBQUk7VUFBQTtVQUFBRCxjQUFBLEdBQUFDLENBQUE7VUFDRkksV0FBVyxDQUFDVSxHQUFHLENBQUM7WUFBRUYsSUFBSTtZQUFFQyxLQUFLLEVBQUUsRUFBRTtZQUFFLEdBQUdFO1VBQU8sQ0FBRSxDQUFDO1FBQ2xELENBQUMsQ0FBQyxPQUFPQyxLQUFLLEVBQUU7VUFDZDtVQUNBO1VBQ0E7UUFBQTtNQUVKOztHQUVILENBQUM7QUFDSixDQUFDO0FBQUE7QUFBQWpCLGNBQUEsR0FBQUMsQ0FBQTtBQTVCWWtCLE9BQUEsQ0FBQWYsWUFBWSxHQUFBQSxZQUFBIiwiaWdub3JlTGlzdCI6W119

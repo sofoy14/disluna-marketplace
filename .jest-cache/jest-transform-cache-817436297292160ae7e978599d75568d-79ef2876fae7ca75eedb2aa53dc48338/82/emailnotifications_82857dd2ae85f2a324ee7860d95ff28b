@@ -1,0 +1,747 @@
+38408a6421e2b16a3e4c6068b3814fe7
+"use strict";
+
+/* istanbul ignore next */
+function cov_felx4v4l1() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\billing\\email-notifications.ts";
+  var hash = "e69a6cf3b5eca908e564a20ea4b8a7a2ac0a59a1";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\billing\\email-notifications.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 32
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 0
+        },
+        end: {
+          line: 4,
+          column: 30
+        }
+      },
+      "3": {
+        start: {
+          line: 5,
+          column: 0
+        },
+        end: {
+          line: 112,
+          column: 2
+        }
+      },
+      "4": {
+        start: {
+          line: 6,
+          column: 34
+        },
+        end: {
+          line: 25,
+          column: 5
+        }
+      },
+      "5": {
+        start: {
+          line: 26,
+          column: 42
+        },
+        end: {
+          line: 56,
+          column: 5
+        }
+      },
+      "6": {
+        start: {
+          line: 57,
+          column: 46
+        },
+        end: {
+          line: 84,
+          column: 5
+        }
+      },
+      "7": {
+        start: {
+          line: 85,
+          column: 47
+        },
+        end: {
+          line: 111,
+          column: 5
+        }
+      },
+      "8": {
+        start: {
+          line: 115,
+          column: 4
+        },
+        end: {
+          line: 120,
+          column: 29
+        }
+      },
+      "9": {
+        start: {
+          line: 125,
+          column: 4
+        },
+        end: {
+          line: 125,
+          column: 61
+        }
+      },
+      "10": {
+        start: {
+          line: 127,
+          column: 4
+        },
+        end: {
+          line: 146,
+          column: 5
+        }
+      },
+      "11": {
+        start: {
+          line: 128,
+          column: 25
+        },
+        end: {
+          line: 137,
+          column: 10
+        }
+      },
+      "12": {
+        start: {
+          line: 138,
+          column: 8
+        },
+        end: {
+          line: 140,
+          column: 9
+        }
+      },
+      "13": {
+        start: {
+          line: 139,
+          column: 12
+        },
+        end: {
+          line: 139,
+          column: 76
+        }
+      },
+      "14": {
+        start: {
+          line: 143,
+          column: 8
+        },
+        end: {
+          line: 143,
+          column: 53
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 20
+          },
+          end: {
+            line: 6,
+            column: 21
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 34
+          },
+          end: {
+            line: 25,
+            column: 5
+          }
+        },
+        line: 6
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 26,
+            column: 19
+          },
+          end: {
+            line: 26,
+            column: 20
+          }
+        },
+        loc: {
+          start: {
+            line: 26,
+            column: 42
+          },
+          end: {
+            line: 56,
+            column: 5
+          }
+        },
+        line: 26
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 57,
+            column: 27
+          },
+          end: {
+            line: 57,
+            column: 28
+          }
+        },
+        loc: {
+          start: {
+            line: 57,
+            column: 46
+          },
+          end: {
+            line: 84,
+            column: 5
+          }
+        },
+        line: 57
+      },
+      "3": {
+        name: "(anonymous_3)",
+        decl: {
+          start: {
+            line: 85,
+            column: 27
+          },
+          end: {
+            line: 85,
+            column: 28
+          }
+        },
+        loc: {
+          start: {
+            line: 85,
+            column: 47
+          },
+          end: {
+            line: 111,
+            column: 5
+          }
+        },
+        line: 85
+      },
+      "4": {
+        name: "formatCurrency",
+        decl: {
+          start: {
+            line: 114,
+            column: 9
+          },
+          end: {
+            line: 114,
+            column: 23
+          }
+        },
+        loc: {
+          start: {
+            line: 114,
+            column: 39
+          },
+          end: {
+            line: 121,
+            column: 1
+          }
+        },
+        line: 114
+      },
+      "5": {
+        name: "sendEmail",
+        decl: {
+          start: {
+            line: 123,
+            column: 15
+          },
+          end: {
+            line: 123,
+            column: 24
+          }
+        },
+        loc: {
+          start: {
+            line: 123,
+            column: 39
+          },
+          end: {
+            line: 147,
+            column: 1
+          }
+        },
+        line: 123
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 38,
+            column: 49
+          },
+          end: {
+            line: 38,
+            column: 110
+          }
+        },
+        type: "cond-expr",
+        locations: [{
+          start: {
+            line: 38,
+            column: 63
+          },
+          end: {
+            line: 38,
+            column: 74
+          }
+        }, {
+          start: {
+            line: 38,
+            column: 77
+          },
+          end: {
+            line: 38,
+            column: 110
+          }
+        }],
+        line: 38
+      },
+      "1": {
+        loc: {
+          start: {
+            line: 40,
+            column: 10
+          },
+          end: {
+            line: 50,
+            column: 9
+          }
+        },
+        type: "cond-expr",
+        locations: [{
+          start: {
+            line: 40,
+            column: 24
+          },
+          end: {
+            line: 47,
+            column: 9
+          }
+        }, {
+          start: {
+            line: 47,
+            column: 12
+          },
+          end: {
+            line: 50,
+            column: 9
+          }
+        }],
+        line: 40
+      },
+      "2": {
+        loc: {
+          start: {
+            line: 55,
+            column: 104
+          },
+          end: {
+            line: 55,
+            column: 179
+          }
+        },
+        type: "cond-expr",
+        locations: [{
+          start: {
+            line: 55,
+            column: 118
+          },
+          end: {
+            line: 55,
+            column: 146
+          }
+        }, {
+          start: {
+            line: 55,
+            column: 149
+          },
+          end: {
+            line: 55,
+            column: 179
+          }
+        }],
+        line: 55
+      },
+      "3": {
+        loc: {
+          start: {
+            line: 66,
+            column: 38
+          },
+          end: {
+            line: 66,
+            column: 71
+          }
+        },
+        type: "binary-expr",
+        locations: [{
+          start: {
+            line: 66,
+            column: 38
+          },
+          end: {
+            line: 66,
+            column: 62
+          }
+        }, {
+          start: {
+            line: 66,
+            column: 66
+          },
+          end: {
+            line: 66,
+            column: 71
+          }
+        }],
+        line: 66
+      },
+      "4": {
+        loc: {
+          start: {
+            line: 138,
+            column: 8
+          },
+          end: {
+            line: 140,
+            column: 9
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 138,
+            column: 8
+          },
+          end: {
+            line: 140,
+            column: 9
+          }
+        }, {
+          start: {
+            line: undefined,
+            column: undefined
+          },
+          end: {
+            line: undefined,
+            column: undefined
+          }
+        }],
+        line: 138
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    b: {
+      "0": [0, 0],
+      "1": [0, 0],
+      "2": [0, 0],
+      "3": [0, 0],
+      "4": [0, 0]
+    },
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\billing\\email-notifications.ts",
+      mappings: "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",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\billing\\email-notifications.ts"],
+      sourcesContent: ["// lib/billing/email-notifications.ts\r\nexport interface EmailTemplate {\r\n  subject: string;\r\n  html: string;\r\n  text: string;\r\n}\r\n\r\nexport const emailTemplates = {\r\n  paymentSuccess: (invoice: any): EmailTemplate => ({\r\n    subject: `Pago exitoso - Factura ${invoice.id}`,\r\n    html: `\r\n      <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\r\n        <h2 style=\"color: #22c55e;\">\u2705 Pago Exitoso</h2>\r\n        <p>Hola,</p>\r\n        <p>Tu pago de <strong>${formatCurrency(invoice.amount_in_cents)}</strong> ha sido procesado exitosamente.</p>\r\n        <div style=\"background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;\">\r\n          <h3>Detalles del Pago</h3>\r\n          <p><strong>Factura:</strong> ${invoice.id}</p>\r\n          <p><strong>Per\xEDodo:</strong> ${new Date(invoice.period_start).toLocaleDateString('es-CO')} - ${new Date(invoice.period_end).toLocaleDateString('es-CO')}</p>\r\n          <p><strong>Monto:</strong> ${formatCurrency(invoice.amount_in_cents)}</p>\r\n          <p><strong>Fecha de pago:</strong> ${new Date(invoice.paid_at).toLocaleDateString('es-CO')}</p>\r\n        </div>\r\n        <p>Gracias por tu confianza. Tu suscripci\xF3n est\xE1 activa.</p>\r\n        <p>Saludos,<br>El equipo de Asistente Legal Inteligente</p>\r\n      </div>\r\n    `,\r\n    text: `Pago exitoso de ${formatCurrency(invoice.amount_in_cents)}. Factura ${invoice.id}. Per\xEDodo: ${new Date(invoice.period_start).toLocaleDateString('es-CO')} - ${new Date(invoice.period_end).toLocaleDateString('es-CO')}.`\r\n  }),\r\n\r\n  paymentFailed: (invoice: any, attempt: number): EmailTemplate => ({\r\n    subject: `Pago rechazado - Intento ${attempt} de 3`,\r\n    html: `\r\n      <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\r\n        <h2 style=\"color: #ef4444;\">\u26A0\uFE0F Pago Rechazado</h2>\r\n        <p>Hola,</p>\r\n        <p>Tu pago de <strong>${formatCurrency(invoice.amount_in_cents)}</strong> no pudo ser procesado.</p>\r\n        <div style=\"background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;\">\r\n          <h3>Detalles del Pago</h3>\r\n          <p><strong>Factura:</strong> ${invoice.id}</p>\r\n          <p><strong>Monto:</strong> ${formatCurrency(invoice.amount_in_cents)}</p>\r\n          <p><strong>Intento:</strong> ${attempt} de 3</p>\r\n          <p><strong>Pr\xF3ximo intento:</strong> ${attempt < 3 ? 'En 2 d\xEDas' : 'No hay m\xE1s intentos autom\xE1ticos'}</p>\r\n        </div>\r\n        ${attempt < 3 ? `\r\n          <p><strong>\xBFQu\xE9 puedes hacer?</strong></p>\r\n          <ul>\r\n            <li>Verifica que tu m\xE9todo de pago tenga fondos suficientes</li>\r\n            <li>Actualiza tu m\xE9todo de pago si es necesario</li>\r\n            <li>Contacta a tu banco si el problema persiste</li>\r\n          </ul>\r\n        ` : `\r\n          <p><strong>Acci\xF3n requerida:</strong></p>\r\n          <p>Tu suscripci\xF3n ser\xE1 suspendida si no actualizas tu m\xE9todo de pago. <a href=\"${process.env.NEXT_PUBLIC_APP_URL}/billing\" style=\"color: #3b82f6;\">Actualizar m\xE9todo de pago</a></p>\r\n        `}\r\n        <p>Si tienes preguntas, cont\xE1ctanos.</p>\r\n        <p>Saludos,<br>El equipo de Asistente Legal Inteligente</p>\r\n      </div>\r\n    `,\r\n    text: `Pago rechazado de ${formatCurrency(invoice.amount_in_cents)}. Intento ${attempt} de 3. ${attempt < 3 ? 'Pr\xF3ximo intento en 2 d\xEDas.' : 'Actualiza tu m\xE9todo de pago.'}`\r\n  }),\r\n\r\n  subscriptionSuspended: (subscription: any): EmailTemplate => ({\r\n    subject: 'Suscripci\xF3n suspendida - Acci\xF3n requerida',\r\n    html: `\r\n      <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\r\n        <h2 style=\"color: #ef4444;\">\uD83D\uDEAB Suscripci\xF3n Suspendida</h2>\r\n        <p>Hola,</p>\r\n        <p>Tu suscripci\xF3n ha sido suspendida debido a fallos repetidos en el procesamiento del pago.</p>\r\n        <div style=\"background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;\">\r\n          <h3>Detalles de la Suscripci\xF3n</h3>\r\n          <p><strong>Plan:</strong> ${subscription.plans?.name || 'N/A'}</p>\r\n          <p><strong>Estado:</strong> Suspendida</p>\r\n          <p><strong>Fecha de suspensi\xF3n:</strong> ${new Date().toLocaleDateString('es-CO')}</p>\r\n        </div>\r\n        <p><strong>Para reactivar tu suscripci\xF3n:</strong></p>\r\n        <ol>\r\n          <li>Actualiza tu m\xE9todo de pago</li>\r\n          <li>Realiza el pago pendiente</li>\r\n          <li>Tu acceso ser\xE1 restaurado inmediatamente</li>\r\n        </ol>\r\n        <div style=\"text-align: center; margin: 30px 0;\">\r\n          <a href=\"${process.env.NEXT_PUBLIC_APP_URL}/billing\" style=\"background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;\">Actualizar M\xE9todo de Pago</a>\r\n        </div>\r\n        <p>Si necesitas ayuda, cont\xE1ctanos.</p>\r\n        <p>Saludos,<br>El equipo de Asistente Legal Inteligente</p>\r\n      </div>\r\n    `,\r\n    text: `Suscripci\xF3n suspendida. Actualiza tu m\xE9todo de pago para reactivar: ${process.env.NEXT_PUBLIC_APP_URL}/billing`\r\n  }),\r\n\r\n  paymentMethodExpiring: (paymentSource: any): EmailTemplate => ({\r\n    subject: 'Tu m\xE9todo de pago est\xE1 pr\xF3ximo a vencer',\r\n    html: `\r\n      <div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;\">\r\n        <h2 style=\"color: #f59e0b;\">\u26A0\uFE0F M\xE9todo de Pago Pr\xF3ximo a Vencer</h2>\r\n        <p>Hola,</p>\r\n        <p>Tu m\xE9todo de pago est\xE1 pr\xF3ximo a vencer y necesita ser actualizado.</p>\r\n        <div style=\"background: #fffbeb; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;\">\r\n          <h3>Detalles del M\xE9todo de Pago</h3>\r\n          <p><strong>Tipo:</strong> ${paymentSource.type}</p>\r\n          <p><strong>\xDAltimos 4 d\xEDgitos:</strong> \u2022\u2022\u2022\u2022 ${paymentSource.last_four}</p>\r\n          <p><strong>Fecha de vencimiento:</strong> ${new Date(paymentSource.expires_at).toLocaleDateString('es-CO')}</p>\r\n        </div>\r\n        <p><strong>Para evitar interrupciones en tu servicio:</strong></p>\r\n        <ol>\r\n          <li>Actualiza tu m\xE9todo de pago antes de la fecha de vencimiento</li>\r\n          <li>Tu suscripci\xF3n continuar\xE1 sin interrupciones</li>\r\n        </ol>\r\n        <div style=\"text-align: center; margin: 30px 0;\">\r\n          <a href=\"${process.env.NEXT_PUBLIC_APP_URL}/billing\" style=\"background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;\">Actualizar M\xE9todo de Pago</a>\r\n        </div>\r\n        <p>Si tienes preguntas, cont\xE1ctanos.</p>\r\n        <p>Saludos,<br>El equipo de Asistente Legal Inteligente</p>\r\n      </div>\r\n    `,\r\n    text: `M\xE9todo de pago pr\xF3ximo a vencer (${new Date(paymentSource.expires_at).toLocaleDateString('es-CO')}). Actualiza en: ${process.env.NEXT_PUBLIC_APP_URL}/billing`\r\n  })\r\n};\r\n\r\n// Funci\xF3n helper para formatear moneda\r\nfunction formatCurrency(amountInCents: number): string {\r\n  return new Intl.NumberFormat('es-CO', {\r\n    style: 'currency',\r\n    currency: 'COP',\r\n    minimumFractionDigits: 0,\r\n    maximumFractionDigits: 0\r\n  }).format(amountInCents);\r\n}\r\n\r\n// Funci\xF3n para enviar emails (implementar seg\xFAn tu proveedor de email)\r\nexport async function sendEmail(to: string, template: EmailTemplate): Promise<void> {\r\n  // Implementar seg\xFAn tu proveedor de email (SendGrid, Resend, etc.)\r\n  console.log(`Sending email to ${to}:`, template.subject);\r\n  \r\n  // Ejemplo con fetch a tu API de email\r\n  try {\r\n    const response = await fetch('/api/send-email', {\r\n      method: 'POST',\r\n      headers: { 'Content-Type': 'application/json' },\r\n      body: JSON.stringify({\r\n        to,\r\n        subject: template.subject,\r\n        html: template.html,\r\n        text: template.text\r\n      })\r\n    });\r\n    \r\n    if (!response.ok) {\r\n      throw new Error(`Failed to send email: ${response.statusText}`);\r\n    }\r\n  } catch (error) {\r\n    console.error('Error sending email:', error);\r\n    // En producci\xF3n, podr\xEDas querer usar un servicio de cola como BullMQ\r\n    // para reintentar el env\xEDo de emails\r\n  }\r\n}\r\n\r\n\r\n\r\n\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "e69a6cf3b5eca908e564a20ea4b8a7a2ac0a59a1"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_felx4v4l1 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_felx4v4l1();
+cov_felx4v4l1().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_felx4v4l1().s[1]++;
+exports.emailTemplates = void 0;
+/* istanbul ignore next */
+cov_felx4v4l1().s[2]++;
+exports.sendEmail = sendEmail;
+/* istanbul ignore next */
+cov_felx4v4l1().s[3]++;
+exports.emailTemplates = {
+  paymentSuccess: invoice => {
+    /* istanbul ignore next */
+    cov_felx4v4l1().f[0]++;
+    cov_felx4v4l1().s[4]++;
+    return {
+      subject: `Pago exitoso - Factura ${invoice.id}`,
+      html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #22c55e;">✅ Pago Exitoso</h2>
+        <p>Hola,</p>
+        <p>Tu pago de <strong>${formatCurrency(invoice.amount_in_cents)}</strong> ha sido procesado exitosamente.</p>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <h3>Detalles del Pago</h3>
+          <p><strong>Factura:</strong> ${invoice.id}</p>
+          <p><strong>Período:</strong> ${new Date(invoice.period_start).toLocaleDateString('es-CO')} - ${new Date(invoice.period_end).toLocaleDateString('es-CO')}</p>
+          <p><strong>Monto:</strong> ${formatCurrency(invoice.amount_in_cents)}</p>
+          <p><strong>Fecha de pago:</strong> ${new Date(invoice.paid_at).toLocaleDateString('es-CO')}</p>
+        </div>
+        <p>Gracias por tu confianza. Tu suscripción está activa.</p>
+        <p>Saludos,<br>El equipo de Asistente Legal Inteligente</p>
+      </div>
+    `,
+      text: `Pago exitoso de ${formatCurrency(invoice.amount_in_cents)}. Factura ${invoice.id}. Período: ${new Date(invoice.period_start).toLocaleDateString('es-CO')} - ${new Date(invoice.period_end).toLocaleDateString('es-CO')}.`
+    };
+  },
+  paymentFailed: (invoice, attempt) => {
+    /* istanbul ignore next */
+    cov_felx4v4l1().f[1]++;
+    cov_felx4v4l1().s[5]++;
+    return {
+      subject: `Pago rechazado - Intento ${attempt} de 3`,
+      html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #ef4444;">⚠️ Pago Rechazado</h2>
+        <p>Hola,</p>
+        <p>Tu pago de <strong>${formatCurrency(invoice.amount_in_cents)}</strong> no pudo ser procesado.</p>
+        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
+          <h3>Detalles del Pago</h3>
+          <p><strong>Factura:</strong> ${invoice.id}</p>
+          <p><strong>Monto:</strong> ${formatCurrency(invoice.amount_in_cents)}</p>
+          <p><strong>Intento:</strong> ${attempt} de 3</p>
+          <p><strong>Próximo intento:</strong> ${attempt < 3 ?
+      /* istanbul ignore next */
+      (cov_felx4v4l1().b[0][0]++, 'En 2 días') :
+      /* istanbul ignore next */
+      (cov_felx4v4l1().b[0][1]++, 'No hay más intentos automáticos')}</p>
+        </div>
+        ${attempt < 3 ?
+      /* istanbul ignore next */
+      (cov_felx4v4l1().b[1][0]++, `
+          <p><strong>¿Qué puedes hacer?</strong></p>
+          <ul>
+            <li>Verifica que tu método de pago tenga fondos suficientes</li>
+            <li>Actualiza tu método de pago si es necesario</li>
+            <li>Contacta a tu banco si el problema persiste</li>
+          </ul>
+        `) :
+      /* istanbul ignore next */
+      (cov_felx4v4l1().b[1][1]++, `
+          <p><strong>Acción requerida:</strong></p>
+          <p>Tu suscripción será suspendida si no actualizas tu método de pago. <a href="${process.env.NEXT_PUBLIC_APP_URL}/billing" style="color: #3b82f6;">Actualizar método de pago</a></p>
+        `)}
+        <p>Si tienes preguntas, contáctanos.</p>
+        <p>Saludos,<br>El equipo de Asistente Legal Inteligente</p>
+      </div>
+    `,
+      text: `Pago rechazado de ${formatCurrency(invoice.amount_in_cents)}. Intento ${attempt} de 3. ${attempt < 3 ?
+      /* istanbul ignore next */
+      (cov_felx4v4l1().b[2][0]++, 'Próximo intento en 2 días.') :
+      /* istanbul ignore next */
+      (cov_felx4v4l1().b[2][1]++, 'Actualiza tu método de pago.')}`
+    };
+  },
+  subscriptionSuspended: subscription => {
+    /* istanbul ignore next */
+    cov_felx4v4l1().f[2]++;
+    cov_felx4v4l1().s[6]++;
+    return {
+      subject: 'Suscripción suspendida - Acción requerida',
+      html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #ef4444;">🚫 Suscripción Suspendida</h2>
+        <p>Hola,</p>
+        <p>Tu suscripción ha sido suspendida debido a fallos repetidos en el procesamiento del pago.</p>
+        <div style="background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
+          <h3>Detalles de la Suscripción</h3>
+          <p><strong>Plan:</strong> ${
+      /* istanbul ignore next */
+      (cov_felx4v4l1().b[3][0]++, subscription.plans?.name) ||
+      /* istanbul ignore next */
+      (cov_felx4v4l1().b[3][1]++, 'N/A')}</p>
+          <p><strong>Estado:</strong> Suspendida</p>
+          <p><strong>Fecha de suspensión:</strong> ${new Date().toLocaleDateString('es-CO')}</p>
+        </div>
+        <p><strong>Para reactivar tu suscripción:</strong></p>
+        <ol>
+          <li>Actualiza tu método de pago</li>
+          <li>Realiza el pago pendiente</li>
+          <li>Tu acceso será restaurado inmediatamente</li>
+        </ol>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/billing" style="background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Actualizar Método de Pago</a>
+        </div>
+        <p>Si necesitas ayuda, contáctanos.</p>
+        <p>Saludos,<br>El equipo de Asistente Legal Inteligente</p>
+      </div>
+    `,
+      text: `Suscripción suspendida. Actualiza tu método de pago para reactivar: ${process.env.NEXT_PUBLIC_APP_URL}/billing`
+    };
+  },
+  paymentMethodExpiring: paymentSource => {
+    /* istanbul ignore next */
+    cov_felx4v4l1().f[3]++;
+    cov_felx4v4l1().s[7]++;
+    return {
+      subject: 'Tu método de pago está próximo a vencer',
+      html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #f59e0b;">⚠️ Método de Pago Próximo a Vencer</h2>
+        <p>Hola,</p>
+        <p>Tu método de pago está próximo a vencer y necesita ser actualizado.</p>
+        <div style="background: #fffbeb; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+          <h3>Detalles del Método de Pago</h3>
+          <p><strong>Tipo:</strong> ${paymentSource.type}</p>
+          <p><strong>Últimos 4 dígitos:</strong> •••• ${paymentSource.last_four}</p>
+          <p><strong>Fecha de vencimiento:</strong> ${new Date(paymentSource.expires_at).toLocaleDateString('es-CO')}</p>
+        </div>
+        <p><strong>Para evitar interrupciones en tu servicio:</strong></p>
+        <ol>
+          <li>Actualiza tu método de pago antes de la fecha de vencimiento</li>
+          <li>Tu suscripción continuará sin interrupciones</li>
+        </ol>
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="${process.env.NEXT_PUBLIC_APP_URL}/billing" style="background: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">Actualizar Método de Pago</a>
+        </div>
+        <p>Si tienes preguntas, contáctanos.</p>
+        <p>Saludos,<br>El equipo de Asistente Legal Inteligente</p>
+      </div>
+    `,
+      text: `Método de pago próximo a vencer (${new Date(paymentSource.expires_at).toLocaleDateString('es-CO')}). Actualiza en: ${process.env.NEXT_PUBLIC_APP_URL}/billing`
+    };
+  }
+};
+// Función helper para formatear moneda
+function formatCurrency(amountInCents) {
+  /* istanbul ignore next */
+  cov_felx4v4l1().f[4]++;
+  cov_felx4v4l1().s[8]++;
+  return new Intl.NumberFormat('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  }).format(amountInCents);
+}
+// Función para enviar emails (implementar según tu proveedor de email)
+async function sendEmail(to, template) {
+  /* istanbul ignore next */
+  cov_felx4v4l1().f[5]++;
+  cov_felx4v4l1().s[9]++;
+  // Implementar según tu proveedor de email (SendGrid, Resend, etc.)
+  console.log(`Sending email to ${to}:`, template.subject);
+  // Ejemplo con fetch a tu API de email
+  /* istanbul ignore next */
+  cov_felx4v4l1().s[10]++;
+  try {
+    const response =
+    /* istanbul ignore next */
+    (cov_felx4v4l1().s[11]++, await fetch('/api/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        to,
+        subject: template.subject,
+        html: template.html,
+        text: template.text
+      })
+    }));
+    /* istanbul ignore next */
+    cov_felx4v4l1().s[12]++;
+    if (!response.ok) {
+      /* istanbul ignore next */
+      cov_felx4v4l1().b[4][0]++;
+      cov_felx4v4l1().s[13]++;
+      throw new Error(`Failed to send email: ${response.statusText}`);
+    } else
+    /* istanbul ignore next */
+    {
+      cov_felx4v4l1().b[4][1]++;
+    }
+  } catch (error) {
+    /* istanbul ignore next */
+    cov_felx4v4l1().s[14]++;
+    console.error('Error sending email:', error);
+    // En producción, podrías querer usar un servicio de cola como BullMQ
+    // para reintentar el envío de emails
+  }
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJleHBvcnRzIiwic2VuZEVtYWlsIiwiY292X2ZlbHg0djRsMSIsInMiLCJlbWFpbFRlbXBsYXRlcyIsInBheW1lbnRTdWNjZXNzIiwiaW52b2ljZSIsImYiLCJzdWJqZWN0IiwiaWQiLCJodG1sIiwiZm9ybWF0Q3VycmVuY3kiLCJhbW91bnRfaW5fY2VudHMiLCJEYXRlIiwicGVyaW9kX3N0YXJ0IiwidG9Mb2NhbGVEYXRlU3RyaW5nIiwicGVyaW9kX2VuZCIsInBhaWRfYXQiLCJ0ZXh0IiwicGF5bWVudEZhaWxlZCIsImF0dGVtcHQiLCJiIiwicHJvY2VzcyIsImVudiIsIk5FWFRfUFVCTElDX0FQUF9VUkwiLCJzdWJzY3JpcHRpb25TdXNwZW5kZWQiLCJzdWJzY3JpcHRpb24iLCJwbGFucyIsIm5hbWUiLCJwYXltZW50TWV0aG9kRXhwaXJpbmciLCJwYXltZW50U291cmNlIiwidHlwZSIsImxhc3RfZm91ciIsImV4cGlyZXNfYXQiLCJhbW91bnRJbkNlbnRzIiwiSW50bCIsIk51bWJlckZvcm1hdCIsInN0eWxlIiwiY3VycmVuY3kiLCJtaW5pbXVtRnJhY3Rpb25EaWdpdHMiLCJtYXhpbXVtRnJhY3Rpb25EaWdpdHMiLCJmb3JtYXQiLCJ0byIsInRlbXBsYXRlIiwiY29uc29sZSIsImxvZyIsInJlc3BvbnNlIiwiZmV0Y2giLCJtZXRob2QiLCJoZWFkZXJzIiwiYm9keSIsIkpTT04iLCJzdHJpbmdpZnkiLCJvayIsIkVycm9yIiwic3RhdHVzVGV4dCIsImVycm9yIl0sInNvdXJjZXMiOlsiQzpcXFVzZXJzXFxwZWRyb1xcRG9jdW1lbnRzXFxHaXRIdWJcXEFzaXN0ZW50ZS1MZWdhbC1JbnRlbGlnZW50ZVxcbGliXFxiaWxsaW5nXFxlbWFpbC1ub3RpZmljYXRpb25zLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIGxpYi9iaWxsaW5nL2VtYWlsLW5vdGlmaWNhdGlvbnMudHNcclxuZXhwb3J0IGludGVyZmFjZSBFbWFpbFRlbXBsYXRlIHtcclxuICBzdWJqZWN0OiBzdHJpbmc7XHJcbiAgaHRtbDogc3RyaW5nO1xyXG4gIHRleHQ6IHN0cmluZztcclxufVxyXG5cclxuZXhwb3J0IGNvbnN0IGVtYWlsVGVtcGxhdGVzID0ge1xyXG4gIHBheW1lbnRTdWNjZXNzOiAoaW52b2ljZTogYW55KTogRW1haWxUZW1wbGF0ZSA9PiAoe1xyXG4gICAgc3ViamVjdDogYFBhZ28gZXhpdG9zbyAtIEZhY3R1cmEgJHtpbnZvaWNlLmlkfWAsXHJcbiAgICBodG1sOiBgXHJcbiAgICAgIDxkaXYgc3R5bGU9XCJmb250LWZhbWlseTogQXJpYWwsIHNhbnMtc2VyaWY7IG1heC13aWR0aDogNjAwcHg7IG1hcmdpbjogMCBhdXRvO1wiPlxyXG4gICAgICAgIDxoMiBzdHlsZT1cImNvbG9yOiAjMjJjNTVlO1wiPuKchSBQYWdvIEV4aXRvc288L2gyPlxyXG4gICAgICAgIDxwPkhvbGEsPC9wPlxyXG4gICAgICAgIDxwPlR1IHBhZ28gZGUgPHN0cm9uZz4ke2Zvcm1hdEN1cnJlbmN5KGludm9pY2UuYW1vdW50X2luX2NlbnRzKX08L3N0cm9uZz4gaGEgc2lkbyBwcm9jZXNhZG8gZXhpdG9zYW1lbnRlLjwvcD5cclxuICAgICAgICA8ZGl2IHN0eWxlPVwiYmFja2dyb3VuZDogI2Y4ZjlmYTsgcGFkZGluZzogMjBweDsgYm9yZGVyLXJhZGl1czogOHB4OyBtYXJnaW46IDIwcHggMDtcIj5cclxuICAgICAgICAgIDxoMz5EZXRhbGxlcyBkZWwgUGFnbzwvaDM+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPkZhY3R1cmE6PC9zdHJvbmc+ICR7aW52b2ljZS5pZH08L3A+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPlBlcsOtb2RvOjwvc3Ryb25nPiAke25ldyBEYXRlKGludm9pY2UucGVyaW9kX3N0YXJ0KS50b0xvY2FsZURhdGVTdHJpbmcoJ2VzLUNPJyl9IC0gJHtuZXcgRGF0ZShpbnZvaWNlLnBlcmlvZF9lbmQpLnRvTG9jYWxlRGF0ZVN0cmluZygnZXMtQ08nKX08L3A+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPk1vbnRvOjwvc3Ryb25nPiAke2Zvcm1hdEN1cnJlbmN5KGludm9pY2UuYW1vdW50X2luX2NlbnRzKX08L3A+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPkZlY2hhIGRlIHBhZ286PC9zdHJvbmc+ICR7bmV3IERhdGUoaW52b2ljZS5wYWlkX2F0KS50b0xvY2FsZURhdGVTdHJpbmcoJ2VzLUNPJyl9PC9wPlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDxwPkdyYWNpYXMgcG9yIHR1IGNvbmZpYW56YS4gVHUgc3VzY3JpcGNpw7NuIGVzdMOhIGFjdGl2YS48L3A+XHJcbiAgICAgICAgPHA+U2FsdWRvcyw8YnI+RWwgZXF1aXBvIGRlIEFzaXN0ZW50ZSBMZWdhbCBJbnRlbGlnZW50ZTwvcD5cclxuICAgICAgPC9kaXY+XHJcbiAgICBgLFxyXG4gICAgdGV4dDogYFBhZ28gZXhpdG9zbyBkZSAke2Zvcm1hdEN1cnJlbmN5KGludm9pY2UuYW1vdW50X2luX2NlbnRzKX0uIEZhY3R1cmEgJHtpbnZvaWNlLmlkfS4gUGVyw61vZG86ICR7bmV3IERhdGUoaW52b2ljZS5wZXJpb2Rfc3RhcnQpLnRvTG9jYWxlRGF0ZVN0cmluZygnZXMtQ08nKX0gLSAke25ldyBEYXRlKGludm9pY2UucGVyaW9kX2VuZCkudG9Mb2NhbGVEYXRlU3RyaW5nKCdlcy1DTycpfS5gXHJcbiAgfSksXHJcblxyXG4gIHBheW1lbnRGYWlsZWQ6IChpbnZvaWNlOiBhbnksIGF0dGVtcHQ6IG51bWJlcik6IEVtYWlsVGVtcGxhdGUgPT4gKHtcclxuICAgIHN1YmplY3Q6IGBQYWdvIHJlY2hhemFkbyAtIEludGVudG8gJHthdHRlbXB0fSBkZSAzYCxcclxuICAgIGh0bWw6IGBcclxuICAgICAgPGRpdiBzdHlsZT1cImZvbnQtZmFtaWx5OiBBcmlhbCwgc2Fucy1zZXJpZjsgbWF4LXdpZHRoOiA2MDBweDsgbWFyZ2luOiAwIGF1dG87XCI+XHJcbiAgICAgICAgPGgyIHN0eWxlPVwiY29sb3I6ICNlZjQ0NDQ7XCI+4pqg77iPIFBhZ28gUmVjaGF6YWRvPC9oMj5cclxuICAgICAgICA8cD5Ib2xhLDwvcD5cclxuICAgICAgICA8cD5UdSBwYWdvIGRlIDxzdHJvbmc+JHtmb3JtYXRDdXJyZW5jeShpbnZvaWNlLmFtb3VudF9pbl9jZW50cyl9PC9zdHJvbmc+IG5vIHB1ZG8gc2VyIHByb2Nlc2Fkby48L3A+XHJcbiAgICAgICAgPGRpdiBzdHlsZT1cImJhY2tncm91bmQ6ICNmZWYyZjI7IHBhZGRpbmc6IDIwcHg7IGJvcmRlci1yYWRpdXM6IDhweDsgbWFyZ2luOiAyMHB4IDA7IGJvcmRlci1sZWZ0OiA0cHggc29saWQgI2VmNDQ0NDtcIj5cclxuICAgICAgICAgIDxoMz5EZXRhbGxlcyBkZWwgUGFnbzwvaDM+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPkZhY3R1cmE6PC9zdHJvbmc+ICR7aW52b2ljZS5pZH08L3A+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPk1vbnRvOjwvc3Ryb25nPiAke2Zvcm1hdEN1cnJlbmN5KGludm9pY2UuYW1vdW50X2luX2NlbnRzKX08L3A+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPkludGVudG86PC9zdHJvbmc+ICR7YXR0ZW1wdH0gZGUgMzwvcD5cclxuICAgICAgICAgIDxwPjxzdHJvbmc+UHLDs3hpbW8gaW50ZW50bzo8L3N0cm9uZz4gJHthdHRlbXB0IDwgMyA/ICdFbiAyIGTDrWFzJyA6ICdObyBoYXkgbcOhcyBpbnRlbnRvcyBhdXRvbcOhdGljb3MnfTwvcD5cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgICAke2F0dGVtcHQgPCAzID8gYFxyXG4gICAgICAgICAgPHA+PHN0cm9uZz7Cv1F1w6kgcHVlZGVzIGhhY2VyPzwvc3Ryb25nPjwvcD5cclxuICAgICAgICAgIDx1bD5cclxuICAgICAgICAgICAgPGxpPlZlcmlmaWNhIHF1ZSB0dSBtw6l0b2RvIGRlIHBhZ28gdGVuZ2EgZm9uZG9zIHN1ZmljaWVudGVzPC9saT5cclxuICAgICAgICAgICAgPGxpPkFjdHVhbGl6YSB0dSBtw6l0b2RvIGRlIHBhZ28gc2kgZXMgbmVjZXNhcmlvPC9saT5cclxuICAgICAgICAgICAgPGxpPkNvbnRhY3RhIGEgdHUgYmFuY28gc2kgZWwgcHJvYmxlbWEgcGVyc2lzdGU8L2xpPlxyXG4gICAgICAgICAgPC91bD5cclxuICAgICAgICBgIDogYFxyXG4gICAgICAgICAgPHA+PHN0cm9uZz5BY2Npw7NuIHJlcXVlcmlkYTo8L3N0cm9uZz48L3A+XHJcbiAgICAgICAgICA8cD5UdSBzdXNjcmlwY2nDs24gc2Vyw6Egc3VzcGVuZGlkYSBzaSBubyBhY3R1YWxpemFzIHR1IG3DqXRvZG8gZGUgcGFnby4gPGEgaHJlZj1cIiR7cHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfQVBQX1VSTH0vYmlsbGluZ1wiIHN0eWxlPVwiY29sb3I6ICMzYjgyZjY7XCI+QWN0dWFsaXphciBtw6l0b2RvIGRlIHBhZ288L2E+PC9wPlxyXG4gICAgICAgIGB9XHJcbiAgICAgICAgPHA+U2kgdGllbmVzIHByZWd1bnRhcywgY29udMOhY3Rhbm9zLjwvcD5cclxuICAgICAgICA8cD5TYWx1ZG9zLDxicj5FbCBlcXVpcG8gZGUgQXNpc3RlbnRlIExlZ2FsIEludGVsaWdlbnRlPC9wPlxyXG4gICAgICA8L2Rpdj5cclxuICAgIGAsXHJcbiAgICB0ZXh0OiBgUGFnbyByZWNoYXphZG8gZGUgJHtmb3JtYXRDdXJyZW5jeShpbnZvaWNlLmFtb3VudF9pbl9jZW50cyl9LiBJbnRlbnRvICR7YXR0ZW1wdH0gZGUgMy4gJHthdHRlbXB0IDwgMyA/ICdQcsOzeGltbyBpbnRlbnRvIGVuIDIgZMOtYXMuJyA6ICdBY3R1YWxpemEgdHUgbcOpdG9kbyBkZSBwYWdvLid9YFxyXG4gIH0pLFxyXG5cclxuICBzdWJzY3JpcHRpb25TdXNwZW5kZWQ6IChzdWJzY3JpcHRpb246IGFueSk6IEVtYWlsVGVtcGxhdGUgPT4gKHtcclxuICAgIHN1YmplY3Q6ICdTdXNjcmlwY2nDs24gc3VzcGVuZGlkYSAtIEFjY2nDs24gcmVxdWVyaWRhJyxcclxuICAgIGh0bWw6IGBcclxuICAgICAgPGRpdiBzdHlsZT1cImZvbnQtZmFtaWx5OiBBcmlhbCwgc2Fucy1zZXJpZjsgbWF4LXdpZHRoOiA2MDBweDsgbWFyZ2luOiAwIGF1dG87XCI+XHJcbiAgICAgICAgPGgyIHN0eWxlPVwiY29sb3I6ICNlZjQ0NDQ7XCI+8J+aqyBTdXNjcmlwY2nDs24gU3VzcGVuZGlkYTwvaDI+XHJcbiAgICAgICAgPHA+SG9sYSw8L3A+XHJcbiAgICAgICAgPHA+VHUgc3VzY3JpcGNpw7NuIGhhIHNpZG8gc3VzcGVuZGlkYSBkZWJpZG8gYSBmYWxsb3MgcmVwZXRpZG9zIGVuIGVsIHByb2Nlc2FtaWVudG8gZGVsIHBhZ28uPC9wPlxyXG4gICAgICAgIDxkaXYgc3R5bGU9XCJiYWNrZ3JvdW5kOiAjZmVmMmYyOyBwYWRkaW5nOiAyMHB4OyBib3JkZXItcmFkaXVzOiA4cHg7IG1hcmdpbjogMjBweCAwOyBib3JkZXItbGVmdDogNHB4IHNvbGlkICNlZjQ0NDQ7XCI+XHJcbiAgICAgICAgICA8aDM+RGV0YWxsZXMgZGUgbGEgU3VzY3JpcGNpw7NuPC9oMz5cclxuICAgICAgICAgIDxwPjxzdHJvbmc+UGxhbjo8L3N0cm9uZz4gJHtzdWJzY3JpcHRpb24ucGxhbnM/Lm5hbWUgfHwgJ04vQSd9PC9wPlxyXG4gICAgICAgICAgPHA+PHN0cm9uZz5Fc3RhZG86PC9zdHJvbmc+IFN1c3BlbmRpZGE8L3A+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPkZlY2hhIGRlIHN1c3BlbnNpw7NuOjwvc3Ryb25nPiAke25ldyBEYXRlKCkudG9Mb2NhbGVEYXRlU3RyaW5nKCdlcy1DTycpfTwvcD5cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgICA8cD48c3Ryb25nPlBhcmEgcmVhY3RpdmFyIHR1IHN1c2NyaXBjacOzbjo8L3N0cm9uZz48L3A+XHJcbiAgICAgICAgPG9sPlxyXG4gICAgICAgICAgPGxpPkFjdHVhbGl6YSB0dSBtw6l0b2RvIGRlIHBhZ288L2xpPlxyXG4gICAgICAgICAgPGxpPlJlYWxpemEgZWwgcGFnbyBwZW5kaWVudGU8L2xpPlxyXG4gICAgICAgICAgPGxpPlR1IGFjY2VzbyBzZXLDoSByZXN0YXVyYWRvIGlubWVkaWF0YW1lbnRlPC9saT5cclxuICAgICAgICA8L29sPlxyXG4gICAgICAgIDxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOiBjZW50ZXI7IG1hcmdpbjogMzBweCAwO1wiPlxyXG4gICAgICAgICAgPGEgaHJlZj1cIiR7cHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfQVBQX1VSTH0vYmlsbGluZ1wiIHN0eWxlPVwiYmFja2dyb3VuZDogIzNiODJmNjsgY29sb3I6IHdoaXRlOyBwYWRkaW5nOiAxMnB4IDI0cHg7IHRleHQtZGVjb3JhdGlvbjogbm9uZTsgYm9yZGVyLXJhZGl1czogNnB4OyBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XCI+QWN0dWFsaXphciBNw6l0b2RvIGRlIFBhZ288L2E+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgPHA+U2kgbmVjZXNpdGFzIGF5dWRhLCBjb250w6FjdGFub3MuPC9wPlxyXG4gICAgICAgIDxwPlNhbHVkb3MsPGJyPkVsIGVxdWlwbyBkZSBBc2lzdGVudGUgTGVnYWwgSW50ZWxpZ2VudGU8L3A+XHJcbiAgICAgIDwvZGl2PlxyXG4gICAgYCxcclxuICAgIHRleHQ6IGBTdXNjcmlwY2nDs24gc3VzcGVuZGlkYS4gQWN0dWFsaXphIHR1IG3DqXRvZG8gZGUgcGFnbyBwYXJhIHJlYWN0aXZhcjogJHtwcm9jZXNzLmVudi5ORVhUX1BVQkxJQ19BUFBfVVJMfS9iaWxsaW5nYFxyXG4gIH0pLFxyXG5cclxuICBwYXltZW50TWV0aG9kRXhwaXJpbmc6IChwYXltZW50U291cmNlOiBhbnkpOiBFbWFpbFRlbXBsYXRlID0+ICh7XHJcbiAgICBzdWJqZWN0OiAnVHUgbcOpdG9kbyBkZSBwYWdvIGVzdMOhIHByw7N4aW1vIGEgdmVuY2VyJyxcclxuICAgIGh0bWw6IGBcclxuICAgICAgPGRpdiBzdHlsZT1cImZvbnQtZmFtaWx5OiBBcmlhbCwgc2Fucy1zZXJpZjsgbWF4LXdpZHRoOiA2MDBweDsgbWFyZ2luOiAwIGF1dG87XCI+XHJcbiAgICAgICAgPGgyIHN0eWxlPVwiY29sb3I6ICNmNTllMGI7XCI+4pqg77iPIE3DqXRvZG8gZGUgUGFnbyBQcsOzeGltbyBhIFZlbmNlcjwvaDI+XHJcbiAgICAgICAgPHA+SG9sYSw8L3A+XHJcbiAgICAgICAgPHA+VHUgbcOpdG9kbyBkZSBwYWdvIGVzdMOhIHByw7N4aW1vIGEgdmVuY2VyIHkgbmVjZXNpdGEgc2VyIGFjdHVhbGl6YWRvLjwvcD5cclxuICAgICAgICA8ZGl2IHN0eWxlPVwiYmFja2dyb3VuZDogI2ZmZmJlYjsgcGFkZGluZzogMjBweDsgYm9yZGVyLXJhZGl1czogOHB4OyBtYXJnaW46IDIwcHggMDsgYm9yZGVyLWxlZnQ6IDRweCBzb2xpZCAjZjU5ZTBiO1wiPlxyXG4gICAgICAgICAgPGgzPkRldGFsbGVzIGRlbCBNw6l0b2RvIGRlIFBhZ288L2gzPlxyXG4gICAgICAgICAgPHA+PHN0cm9uZz5UaXBvOjwvc3Ryb25nPiAke3BheW1lbnRTb3VyY2UudHlwZX08L3A+XHJcbiAgICAgICAgICA8cD48c3Ryb25nPsOabHRpbW9zIDQgZMOtZ2l0b3M6PC9zdHJvbmc+IOKAouKAouKAouKAoiAke3BheW1lbnRTb3VyY2UubGFzdF9mb3VyfTwvcD5cclxuICAgICAgICAgIDxwPjxzdHJvbmc+RmVjaGEgZGUgdmVuY2ltaWVudG86PC9zdHJvbmc+ICR7bmV3IERhdGUocGF5bWVudFNvdXJjZS5leHBpcmVzX2F0KS50b0xvY2FsZURhdGVTdHJpbmcoJ2VzLUNPJyl9PC9wPlxyXG4gICAgICAgIDwvZGl2PlxyXG4gICAgICAgIDxwPjxzdHJvbmc+UGFyYSBldml0YXIgaW50ZXJydXBjaW9uZXMgZW4gdHUgc2VydmljaW86PC9zdHJvbmc+PC9wPlxyXG4gICAgICAgIDxvbD5cclxuICAgICAgICAgIDxsaT5BY3R1YWxpemEgdHUgbcOpdG9kbyBkZSBwYWdvIGFudGVzIGRlIGxhIGZlY2hhIGRlIHZlbmNpbWllbnRvPC9saT5cclxuICAgICAgICAgIDxsaT5UdSBzdXNjcmlwY2nDs24gY29udGludWFyw6Egc2luIGludGVycnVwY2lvbmVzPC9saT5cclxuICAgICAgICA8L29sPlxyXG4gICAgICAgIDxkaXYgc3R5bGU9XCJ0ZXh0LWFsaWduOiBjZW50ZXI7IG1hcmdpbjogMzBweCAwO1wiPlxyXG4gICAgICAgICAgPGEgaHJlZj1cIiR7cHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfQVBQX1VSTH0vYmlsbGluZ1wiIHN0eWxlPVwiYmFja2dyb3VuZDogIzNiODJmNjsgY29sb3I6IHdoaXRlOyBwYWRkaW5nOiAxMnB4IDI0cHg7IHRleHQtZGVjb3JhdGlvbjogbm9uZTsgYm9yZGVyLXJhZGl1czogNnB4OyBkaXNwbGF5OiBpbmxpbmUtYmxvY2s7XCI+QWN0dWFsaXphciBNw6l0b2RvIGRlIFBhZ288L2E+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgPHA+U2kgdGllbmVzIHByZWd1bnRhcywgY29udMOhY3Rhbm9zLjwvcD5cclxuICAgICAgICA8cD5TYWx1ZG9zLDxicj5FbCBlcXVpcG8gZGUgQXNpc3RlbnRlIExlZ2FsIEludGVsaWdlbnRlPC9wPlxyXG4gICAgICA8L2Rpdj5cclxuICAgIGAsXHJcbiAgICB0ZXh0OiBgTcOpdG9kbyBkZSBwYWdvIHByw7N4aW1vIGEgdmVuY2VyICgke25ldyBEYXRlKHBheW1lbnRTb3VyY2UuZXhwaXJlc19hdCkudG9Mb2NhbGVEYXRlU3RyaW5nKCdlcy1DTycpfSkuIEFjdHVhbGl6YSBlbjogJHtwcm9jZXNzLmVudi5ORVhUX1BVQkxJQ19BUFBfVVJMfS9iaWxsaW5nYFxyXG4gIH0pXHJcbn07XHJcblxyXG4vLyBGdW5jacOzbiBoZWxwZXIgcGFyYSBmb3JtYXRlYXIgbW9uZWRhXHJcbmZ1bmN0aW9uIGZvcm1hdEN1cnJlbmN5KGFtb3VudEluQ2VudHM6IG51bWJlcik6IHN0cmluZyB7XHJcbiAgcmV0dXJuIG5ldyBJbnRsLk51bWJlckZvcm1hdCgnZXMtQ08nLCB7XHJcbiAgICBzdHlsZTogJ2N1cnJlbmN5JyxcclxuICAgIGN1cnJlbmN5OiAnQ09QJyxcclxuICAgIG1pbmltdW1GcmFjdGlvbkRpZ2l0czogMCxcclxuICAgIG1heGltdW1GcmFjdGlvbkRpZ2l0czogMFxyXG4gIH0pLmZvcm1hdChhbW91bnRJbkNlbnRzKTtcclxufVxyXG5cclxuLy8gRnVuY2nDs24gcGFyYSBlbnZpYXIgZW1haWxzIChpbXBsZW1lbnRhciBzZWfDum4gdHUgcHJvdmVlZG9yIGRlIGVtYWlsKVxyXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gc2VuZEVtYWlsKHRvOiBzdHJpbmcsIHRlbXBsYXRlOiBFbWFpbFRlbXBsYXRlKTogUHJvbWlzZTx2b2lkPiB7XHJcbiAgLy8gSW1wbGVtZW50YXIgc2Vnw7puIHR1IHByb3ZlZWRvciBkZSBlbWFpbCAoU2VuZEdyaWQsIFJlc2VuZCwgZXRjLilcclxuICBjb25zb2xlLmxvZyhgU2VuZGluZyBlbWFpbCB0byAke3RvfTpgLCB0ZW1wbGF0ZS5zdWJqZWN0KTtcclxuICBcclxuICAvLyBFamVtcGxvIGNvbiBmZXRjaCBhIHR1IEFQSSBkZSBlbWFpbFxyXG4gIHRyeSB7XHJcbiAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKCcvYXBpL3NlbmQtZW1haWwnLCB7XHJcbiAgICAgIG1ldGhvZDogJ1BPU1QnLFxyXG4gICAgICBoZWFkZXJzOiB7ICdDb250ZW50LVR5cGUnOiAnYXBwbGljYXRpb24vanNvbicgfSxcclxuICAgICAgYm9keTogSlNPTi5zdHJpbmdpZnkoe1xyXG4gICAgICAgIHRvLFxyXG4gICAgICAgIHN1YmplY3Q6IHRlbXBsYXRlLnN1YmplY3QsXHJcbiAgICAgICAgaHRtbDogdGVtcGxhdGUuaHRtbCxcclxuICAgICAgICB0ZXh0OiB0ZW1wbGF0ZS50ZXh0XHJcbiAgICAgIH0pXHJcbiAgICB9KTtcclxuICAgIFxyXG4gICAgaWYgKCFyZXNwb25zZS5vaykge1xyXG4gICAgICB0aHJvdyBuZXcgRXJyb3IoYEZhaWxlZCB0byBzZW5kIGVtYWlsOiAke3Jlc3BvbnNlLnN0YXR1c1RleHR9YCk7XHJcbiAgICB9XHJcbiAgfSBjYXRjaCAoZXJyb3IpIHtcclxuICAgIGNvbnNvbGUuZXJyb3IoJ0Vycm9yIHNlbmRpbmcgZW1haWw6JywgZXJyb3IpO1xyXG4gICAgLy8gRW4gcHJvZHVjY2nDs24sIHBvZHLDrWFzIHF1ZXJlciB1c2FyIHVuIHNlcnZpY2lvIGRlIGNvbGEgY29tbyBCdWxsTVFcclxuICAgIC8vIHBhcmEgcmVpbnRlbnRhciBlbCBlbnbDrW8gZGUgZW1haWxzXHJcbiAgfVxyXG59XHJcblxyXG5cclxuXHJcblxyXG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFrSUFBLE9BQUEsQ0FBQUMsU0FBQSxHQUFBQSxTQUFBO0FBeUJDO0FBQUFDLGFBQUEsR0FBQUMsQ0FB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

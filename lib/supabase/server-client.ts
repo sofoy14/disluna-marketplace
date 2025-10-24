@@ -17,3 +17,5 @@ export const supabaseServer = createClient<Database>(supabaseUrl, supabaseServic
 });
 
 
+
+

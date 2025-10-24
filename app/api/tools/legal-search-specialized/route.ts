@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { searchLegalSpecialized, enrichLegalResults } from '@/lib/tools/legal-search-specialized'
+import { searchLegalSpecialized, enrichLegalResults } from '@/lib/tools/legal/legal-search-specialized'
 
 export async function POST(request: NextRequest) {
   try {

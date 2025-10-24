@@ -1,0 +1,282 @@
+2da653d96911473c2bc73373756b3e09
+"use strict";
+"use client";
+
+/* istanbul ignore next */
+function cov_1s6dyvk4o7() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\components\\utility\\theme-fix.tsx";
+  var hash = "8072abd83724ebb167587d4fe7b68a7f2105b9a3";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\components\\utility\\theme-fix.tsx",
+    statementMap: {
+      "0": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 4,
+          column: 0
+        },
+        end: {
+          line: 4,
+          column: 28
+        }
+      },
+      "2": {
+        start: {
+          line: 5,
+          column: 16
+        },
+        end: {
+          line: 5,
+          column: 32
+        }
+      },
+      "3": {
+        start: {
+          line: 7,
+          column: 4
+        },
+        end: {
+          line: 24,
+          column: 11
+        }
+      },
+      "4": {
+        start: {
+          line: 9,
+          column: 21
+        },
+        end: {
+          line: 9,
+          column: 45
+        }
+      },
+      "5": {
+        start: {
+          line: 10,
+          column: 21
+        },
+        end: {
+          line: 10,
+          column: 34
+        }
+      },
+      "6": {
+        start: {
+          line: 12,
+          column: 8
+        },
+        end: {
+          line: 12,
+          column: 35
+        }
+      },
+      "7": {
+        start: {
+          line: 14,
+          column: 8
+        },
+        end: {
+          line: 14,
+          column: 56
+        }
+      },
+      "8": {
+        start: {
+          line: 15,
+          column: 8
+        },
+        end: {
+          line: 15,
+          column: 45
+        }
+      },
+      "9": {
+        start: {
+          line: 16,
+          column: 8
+        },
+        end: {
+          line: 16,
+          column: 68
+        }
+      },
+      "10": {
+        start: {
+          line: 18,
+          column: 8
+        },
+        end: {
+          line: 23,
+          column: 11
+        }
+      },
+      "11": {
+        start: {
+          line: 25,
+          column: 4
+        },
+        end: {
+          line: 25,
+          column: 16
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "ThemeFix",
+        decl: {
+          start: {
+            line: 6,
+            column: 9
+          },
+          end: {
+            line: 6,
+            column: 17
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 20
+          },
+          end: {
+            line: 26,
+            column: 1
+          }
+        },
+        line: 6
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 7,
+            column: 27
+          },
+          end: {
+            line: 7,
+            column: 28
+          }
+        },
+        loc: {
+          start: {
+            line: 7,
+            column: 33
+          },
+          end: {
+            line: 24,
+            column: 5
+          }
+        },
+        line: 7
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\components\\utility\\theme-fix.tsx",
+      mappings: ";AAAA,YAAY,CAAA;;AAIZ,4BAwBC;AA1BD,iCAAiC;AAEjC,SAAgB,QAAQ;IACtB,IAAA,iBAAS,EAAC,GAAG,EAAE;QACb,oCAAoC;QACpC,MAAM,IAAI,GAAG,QAAQ,CAAC,eAAe,CAAA;QACrC,MAAM,IAAI,GAAG,QAAQ,CAAC,IAAI,CAAA;QAE1B,6BAA6B;QAC7B,IAAI,CAAC,SAAS,CAAC,GAAG,CAAC,MAAM,CAAC,CAAA;QAE1B,6CAA6C;QAC7C,IAAI,CAAC,KAAK,CAAC,eAAe,GAAG,kBAAkB,CAAA;QAC/C,IAAI,CAAC,KAAK,CAAC,KAAK,GAAG,iBAAiB,CAAA;QACpC,IAAI,CAAC,KAAK,CAAC,UAAU,GAAG,mCAAmC,CAAA;QAE3D,wCAAwC;QACxC,OAAO,CAAC,GAAG,CAAC,0BAA0B,EAAE;YACtC,WAAW,EAAE,IAAI,CAAC,SAAS;YAC3B,WAAW,EAAE,IAAI,CAAC,SAAS;YAC3B,cAAc,EAAE,IAAI,CAAC,KAAK,CAAC,eAAe;YAC1C,SAAS,EAAE,IAAI,CAAC,KAAK,CAAC,KAAK;SAC5B,CAAC,CAAA;IACJ,CAAC,EAAE,EAAE,CAAC,CAAA;IAEN,OAAO,IAAI,CAAA;AACb,CAAC",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\components\\utility\\theme-fix.tsx"],
+      sourcesContent: ["\"use client\"\r\n\r\nimport { useEffect } from \"react\"\r\n\r\nexport function ThemeFix() {\r\n  useEffect(() => {\r\n    // Forzar tema oscuro inmediatamente\r\n    const html = document.documentElement\r\n    const body = document.body\r\n    \r\n    // Agregar clase dark al HTML\r\n    html.classList.add(\"dark\")\r\n    \r\n    // Aplicar estilos de respaldo inmediatamente\r\n    body.style.backgroundColor = \"hsl(0, 0%, 3.9%)\"\r\n    body.style.color = \"hsl(0, 0%, 98%)\"\r\n    body.style.transition = \"background-color 0.2s, color 0.2s\"\r\n    \r\n    // Verificar que se aplic\xF3 correctamente\r\n    console.log(\"\uD83C\uDF19 Tema oscuro aplicado:\", {\r\n      htmlClasses: html.className,\r\n      bodyClasses: body.className,\r\n      bodyBackground: body.style.backgroundColor,\r\n      bodyColor: body.style.color\r\n    })\r\n  }, [])\r\n\r\n  return null\r\n}\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "8072abd83724ebb167587d4fe7b68a7f2105b9a3"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_1s6dyvk4o7 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_1s6dyvk4o7();
+cov_1s6dyvk4o7().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_1s6dyvk4o7().s[1]++;
+exports.ThemeFix = ThemeFix;
+const react_1 =
+/* istanbul ignore next */
+(cov_1s6dyvk4o7().s[2]++, require("react"));
+function ThemeFix() {
+  /* istanbul ignore next */
+  cov_1s6dyvk4o7().f[0]++;
+  cov_1s6dyvk4o7().s[3]++;
+  (0, react_1.useEffect)(() => {
+    /* istanbul ignore next */
+    cov_1s6dyvk4o7().f[1]++;
+    // Forzar tema oscuro inmediatamente
+    const html =
+    /* istanbul ignore next */
+    (cov_1s6dyvk4o7().s[4]++, document.documentElement);
+    const body =
+    /* istanbul ignore next */
+    (cov_1s6dyvk4o7().s[5]++, document.body);
+    // Agregar clase dark al HTML
+    /* istanbul ignore next */
+    cov_1s6dyvk4o7().s[6]++;
+    html.classList.add("dark");
+    // Aplicar estilos de respaldo inmediatamente
+    /* istanbul ignore next */
+    cov_1s6dyvk4o7().s[7]++;
+    body.style.backgroundColor = "hsl(0, 0%, 3.9%)";
+    /* istanbul ignore next */
+    cov_1s6dyvk4o7().s[8]++;
+    body.style.color = "hsl(0, 0%, 98%)";
+    /* istanbul ignore next */
+    cov_1s6dyvk4o7().s[9]++;
+    body.style.transition = "background-color 0.2s, color 0.2s";
+    // Verificar que se aplicó correctamente
+    /* istanbul ignore next */
+    cov_1s6dyvk4o7().s[10]++;
+    console.log("🌙 Tema oscuro aplicado:", {
+      htmlClasses: html.className,
+      bodyClasses: body.className,
+      bodyBackground: body.style.backgroundColor,
+      bodyColor: body.style.color
+    });
+  }, []);
+  /* istanbul ignore next */
+  cov_1s6dyvk4o7().s[11]++;
+  return null;
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMXM2ZHl2azRvNyIsInBhdGgiLCJoYXNoIiwiZ2xvYmFsIiwiRnVuY3Rpb24iLCJnY3YiLCJjb3ZlcmFnZURhdGEiLCJzdGF0ZW1lbnRNYXAiLCJzdGFydCIsImxpbmUiLCJjb2x1bW4iLCJlbmQiLCJmbk1hcCIsIm5hbWUiLCJkZWNsIiwibG9jIiwiYnJhbmNoTWFwIiwicyIsImYiLCJiIiwiaW5wdXRTb3VyY2VNYXAiLCJmaWxlIiwibWFwcGluZ3MiLCJuYW1lcyIsInNvdXJjZXMiLCJzb3VyY2VzQ29udGVudCIsInZlcnNpb24iLCJfY292ZXJhZ2VTY2hlbWEiLCJjb3ZlcmFnZSIsImFjdHVhbENvdmVyYWdlIiwiZXhwb3J0cyIsIlRoZW1lRml4IiwicmVhY3RfMSIsInJlcXVpcmUiLCJ1c2VFZmZlY3QiLCJodG1sIiwiZG9jdW1lbnQiLCJkb2N1bWVudEVsZW1lbnQiLCJib2R5IiwiY2xhc3NMaXN0IiwiYWRkIiwic3R5bGUiLCJiYWNrZ3JvdW5kQ29sb3IiLCJjb2xvciIsInRyYW5zaXRpb24iLCJjb25zb2xlIiwibG9nIiwiaHRtbENsYXNzZXMiLCJjbGFzc05hbWUiLCJib2R5Q2xhc3NlcyIsImJvZHlCYWNrZ3JvdW5kIiwiYm9keUNvbG9yIl0sInNvdXJjZXMiOlsiQzpcXFVzZXJzXFxwZWRyb1xcRG9jdW1lbnRzXFxHaXRIdWJcXEFzaXN0ZW50ZS1MZWdhbC1JbnRlbGlnZW50ZVxcY29tcG9uZW50c1xcdXRpbGl0eVxcdGhlbWUtZml4LnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJcInVzZSBjbGllbnRcIlxyXG5cclxuaW1wb3J0IHsgdXNlRWZmZWN0IH0gZnJvbSBcInJlYWN0XCJcclxuXHJcbmV4cG9ydCBmdW5jdGlvbiBUaGVtZUZpeCgpIHtcclxuICB1c2VFZmZlY3QoKCkgPT4ge1xyXG4gICAgLy8gRm9yemFyIHRlbWEgb3NjdXJvIGlubWVkaWF0YW1lbnRlXHJcbiAgICBjb25zdCBodG1sID0gZG9jdW1lbnQuZG9jdW1lbnRFbGVtZW50XHJcbiAgICBjb25zdCBib2R5ID0gZG9jdW1lbnQuYm9keVxyXG4gICAgXHJcbiAgICAvLyBBZ3JlZ2FyIGNsYXNlIGRhcmsgYWwgSFRNTFxyXG4gICAgaHRtbC5jbGFzc0xpc3QuYWRkKFwiZGFya1wiKVxyXG4gICAgXHJcbiAgICAvLyBBcGxpY2FyIGVzdGlsb3MgZGUgcmVzcGFsZG8gaW5tZWRpYXRhbWVudGVcclxuICAgIGJvZHkuc3R5bGUuYmFja2dyb3VuZENvbG9yID0gXCJoc2woMCwgMCUsIDMuOSUpXCJcclxuICAgIGJvZHkuc3R5bGUuY29sb3IgPSBcImhzbCgwLCAwJSwgOTglKVwiXHJcbiAgICBib2R5LnN0eWxlLnRyYW5zaXRpb24gPSBcImJhY2tncm91bmQtY29sb3IgMC4ycywgY29sb3IgMC4yc1wiXHJcbiAgICBcclxuICAgIC8vIFZlcmlmaWNhciBxdWUgc2UgYXBsaWPDsyBjb3JyZWN0YW1lbnRlXHJcbiAgICBjb25zb2xlLmxvZyhcIvCfjJkgVGVtYSBvc2N1cm8gYXBsaWNhZG86XCIsIHtcclxuICAgICAgaHRtbENsYXNzZXM6IGh0bWwuY2xhc3NOYW1lLFxyXG4gICAgICBib2R5Q2xhc3NlczogYm9keS5jbGFzc05hbWUsXHJcbiAgICAgIGJvZHlCYWNrZ3JvdW5kOiBib2R5LnN0eWxlLmJhY2tncm91bmRDb2xvcixcclxuICAgICAgYm9keUNvbG9yOiBib2R5LnN0eWxlLmNvbG9yXHJcbiAgICB9KVxyXG4gIH0sIFtdKVxyXG5cclxuICByZXR1cm4gbnVsbFxyXG59XHJcblxyXG5cclxuXHJcblxyXG5cclxuXHJcblxyXG5cclxuXHJcblxyXG5cclxuXHJcblxyXG5cclxuXHJcbiJdLCJtYXBwaW5ncyI6IjtBQUFBLFlBQVk7O0FBQUE7QUFBQSxTQUFBQSxlQUFBO0VBQUEsSUFBQUMsSUFBQTtFQUFBLElBQUFDLElBQUE7RUFBQSxJQUFBQyxNQUFBLE9BQUFDLFFBQUE7RUFBQSxJQUFBQyxHQUFBO0VBQUEsSUFBQUMsWUFBQTtJQUFBTCxJQUFBO0lBQUFNLFlBQUE7TUFBQTtRQUFBQyxLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7SUFBQTtJQUFBRSxLQUFBO01BQUE7UUFBQUMsSUFBQTtRQUFBQyxJQUFBO1VBQUFOLEtBQUE7WUFBQUMsSUFBQTtZQUFBQyxNQUFBO1VBQUE7VUFBQUMsR0FBQTtZQUFBRixJQUFBO1lBQUFDLE1BQUE7VUFBQTtRQUFBO1FBQUFLLEdBQUE7VUFBQVAsS0FBQTtZQUFBQyxJQUFBO1lBQUFDLE1BQUE7VUFBQTtVQUFBQyxHQUFBO1lBQUFGLElBQUE7WUFBQUMsTUFBQTtVQUFBO1FBQUE7UUFBQUQsSUFBQTtNQUFBO01BQUE7UUFBQUksSUFBQTtRQUFBQyxJQUFBO1VBQUFOLEtBQUE7WUFBQUMsSUFBQTtZQUFBQyxNQUFBO1VBQUE7VUFBQUMsR0FBQTtZQUFBRixJQUFBO1lBQUFDLE1BQUE7VUFBQTtRQUFBO1FBQUFLLEdBQUE7VUFBQVAsS0FBQTtZQUFBQyxJQUFBO1lBQUFDLE1BQUE7VUFBQTtVQUFBQyxHQUFBO1lBQUFGLElBQUE7WUFBQUMsTUFBQTtVQUFBO1FBQUE7UUFBQUQsSUFBQTtNQUFBO0lBQUE7SUFBQU8sU0FBQTtJQUFBQyxDQUFBO01BQUE7TUFBQTtNQUFBO01BQUE7TUFBQTtNQUFBO01BQUE7TUFBQTtNQUFBO01BQUE7TUFBQTtNQUFBO0lBQUE7SUFBQUMsQ0FBQTtNQUFBO01BQUE7SUFBQTtJQUFBQyxDQUFBO0lBQUFDLGNBQUE7TUFBQUMsSUFBQTtNQUFBQyxRQUFBO01BQUFDLEtBQUE7TUFBQUMsT0FBQTtNQUFBQyxjQUFBO01BQUFDLE9BQUE7SUFBQTtJQUFBQyxlQUFBO0lBQUF6QixJQUFBO0VBQUE7RUFBQSxJQUFBMEIsUUFBQSxHQUFBekIsTUFBQSxDQUFBRSxHQUFBLE1BQUFGLE1BQUEsQ0FBQUUsR0FBQTtFQUFBLEtBQUF1QixRQUFBLENBQUEzQixJQUFBLEtBQUEyQixRQUFBLENBQUEzQixJQUFBLEVBQUFDLElBQUEsS0FBQUEsSUFBQTtJQUFBMEIsUUFBQSxDQUFBM0IsSUFBQSxJQUFBSyxZQUFBO0VBQUE7RUFBQSxJQUFBdUIsY0FBQSxHQUFBRCxRQUFBLENBQUEzQixJQUFBO0VBQUE7SUFnQko7SUFBQUQsY0FBQSxZQUFBQSxDQUFBO01BQUEsT0FBQTZCLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUE3QixjQUFBO0FBQUFBLGNBQUEsR0FBQWlCLENBQUE7Ozs7OztBQVpSYSxPQUFBLENBQUFDLFFBQUEsR0FBQUEsUUFBQTtBQUZBLE1BQUFDLE9BQUE7QUFBQTtBQUFBLENBQUFoQyxjQUFBLEdBQUFpQixDQUFBLE9BQUFnQixPQUFBO0FBRUEsU0FBZ0JGLFFBQVFBLENBQUE7RUFBQTtFQUFBL0IsY0FBQSxHQUFBa0IsQ0FBQTtFQUFBbEIsY0FBQSxHQUFBaUIsQ0FBQTtFQUN0QixJQUFBZSxPQUFBLENBQUFFLFNBQVMsRUFBQyxNQUFLO0lBQUE7SUFBQWxDLGNBQUEsR0FBQWtCLENBQUE7SUFDYjtJQUNBLE1BQU1pQixJQUFJO0lBQUE7SUFBQSxDQUFBbkMsY0FBQSxHQUFBaUIsQ0FBQSxPQUFHbUIsUUFBUSxDQUFDQyxlQUFlO0lBQ3JDLE1BQU1DLElBQUk7SUFBQTtJQUFBLENBQUF0QyxjQUFBLEdBQUFpQixDQUFBLE9BQUdtQixRQUFRLENBQUNFLElBQUk7SUFFMUI7SUFBQTtJQUFBdEMsY0FBQSxHQUFBaUIsQ0FBQTtJQUNBa0IsSUFBSSxDQUFDSSxTQUFTLENBQUNDLEdBQUcsQ0FBQyxNQUFNLENBQUM7SUFFMUI7SUFBQTtJQUFBeEMsY0FBQSxHQUFBaUIsQ0FBQTtJQUNBcUIsSUFBSSxDQUFDRyxLQUFLLENBQUNDLGVBQWUsR0FBRyxrQkFBa0I7SUFBQTtJQUFBMUMsY0FBQSxHQUFBaUIsQ0FBQTtJQUMvQ3FCLElBQUksQ0FBQ0csS0FBSyxDQUFDRSxLQUFLLEdBQUcsaUJBQWlCO0lBQUE7SUFBQTNDLGNBQUEsR0FBQWlCLENBQUE7SUFDcENxQixJQUFJLENBQUNHLEtBQUssQ0FBQ0csVUFBVSxHQUFHLG1DQUFtQztJQUUzRDtJQUFBO0lBQUE1QyxjQUFBLEdBQUFpQixDQUFBO0lBQ0E0QixPQUFPLENBQUNDLEdBQUcsQ0FBQywwQkFBMEIsRUFBRTtNQUN0Q0MsV0FBVyxFQUFFWixJQUFJLENBQUNhLFNBQVM7TUFDM0JDLFdBQVcsRUFBRVgsSUFBSSxDQUFDVSxTQUFTO01BQzNCRSxjQUFjLEVBQUVaLElBQUksQ0FBQ0csS0FBSyxDQUFDQyxlQUFlO01BQzFDUyxTQUFTLEVBQUViLElBQUksQ0FBQ0csS0FBSyxDQUFDRTtLQUN2QixDQUFDO0VBQ0osQ0FBQyxFQUFFLEVBQUUsQ0FBQztFQUFBO0VBQUEzQyxjQUFBLEdBQUFpQixDQUFBO0VBRU4sT0FBTyxJQUFJO0FBQ2IiLCJpZ25vcmVMaXN0IjpbXX0=

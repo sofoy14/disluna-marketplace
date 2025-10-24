@@ -1,0 +1,421 @@
+30f59655aef758413d8cad0dbf666529
+"use strict";
+
+/* istanbul ignore next */
+function cov_27976f2zv() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\middleware.ts";
+  var hash = "51b3f5f01857f345d0c723f3c5422fdde53815d6";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\middleware.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 30
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 14
+        },
+        end: {
+          line: 4,
+          column: 38
+        }
+      },
+      "3": {
+        start: {
+          line: 5,
+          column: 17
+        },
+        end: {
+          line: 5,
+          column: 39
+        }
+      },
+      "4": {
+        start: {
+          line: 6,
+          column: 21
+        },
+        end: {
+          line: 57,
+          column: 1
+        }
+      },
+      "5": {
+        start: {
+          line: 8,
+          column: 19
+        },
+        end: {
+          line: 12,
+          column: 6
+        }
+      },
+      "6": {
+        start: {
+          line: 13,
+          column: 21
+        },
+        end: {
+          line: 55,
+          column: 6
+        }
+      },
+      "7": {
+        start: {
+          line: 16,
+          column: 16
+        },
+        end: {
+          line: 16,
+          column: 56
+        }
+      },
+      "8": {
+        start: {
+          line: 20,
+          column: 16
+        },
+        end: {
+          line: 24,
+          column: 19
+        }
+      },
+      "9": {
+        start: {
+          line: 25,
+          column: 16
+        },
+        end: {
+          line: 29,
+          column: 19
+        }
+      },
+      "10": {
+        start: {
+          line: 30,
+          column: 16
+        },
+        end: {
+          line: 34,
+          column: 19
+        }
+      },
+      "11": {
+        start: {
+          line: 38,
+          column: 16
+        },
+        end: {
+          line: 42,
+          column: 19
+        }
+      },
+      "12": {
+        start: {
+          line: 43,
+          column: 16
+        },
+        end: {
+          line: 47,
+          column: 19
+        }
+      },
+      "13": {
+        start: {
+          line: 48,
+          column: 16
+        },
+        end: {
+          line: 52,
+          column: 19
+        }
+      },
+      "14": {
+        start: {
+          line: 56,
+          column: 4
+        },
+        end: {
+          line: 56,
+          column: 34
+        }
+      },
+      "15": {
+        start: {
+          line: 58,
+          column: 0
+        },
+        end: {
+          line: 58,
+          column: 36
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 6,
+            column: 21
+          },
+          end: {
+            line: 6,
+            column: 22
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 34
+          },
+          end: {
+            line: 57,
+            column: 1
+          }
+        },
+        line: 6
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 15,
+            column: 12
+          },
+          end: {
+            line: 15,
+            column: 13
+          }
+        },
+        loc: {
+          start: {
+            line: 15,
+            column: 22
+          },
+          end: {
+            line: 17,
+            column: 13
+          }
+        },
+        line: 15
+      },
+      "2": {
+        name: "(anonymous_2)",
+        decl: {
+          start: {
+            line: 18,
+            column: 12
+          },
+          end: {
+            line: 18,
+            column: 13
+          }
+        },
+        loc: {
+          start: {
+            line: 18,
+            column: 38
+          },
+          end: {
+            line: 35,
+            column: 13
+          }
+        },
+        line: 18
+      },
+      "3": {
+        name: "(anonymous_3)",
+        decl: {
+          start: {
+            line: 36,
+            column: 12
+          },
+          end: {
+            line: 36,
+            column: 13
+          }
+        },
+        loc: {
+          start: {
+            line: 36,
+            column: 34
+          },
+          end: {
+            line: 53,
+            column: 13
+          }
+        },
+        line: 36
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\middleware.ts",
+      mappings: ";;;AAAA,uCAAsE;AACtE,wCAA4D;AAErD,MAAM,YAAY,GAAG,CAAC,OAAoB,EAAE,EAAE;IACnD,gCAAgC;IAChC,IAAI,QAAQ,GAAG,qBAAY,CAAC,IAAI,CAAC;QAC/B,OAAO,EAAE;YACP,OAAO,EAAE,OAAO,CAAC,OAAO;SACzB;KACF,CAAC,CAAA;IAEF,MAAM,QAAQ,GAAG,IAAA,wBAAkB,EACjC,OAAO,CAAC,GAAG,CAAC,wBAAyB,EACrC,OAAO,CAAC,GAAG,CAAC,6BAA8B,EAC1C;QACE,OAAO,EAAE;YACP,GAAG,CAAC,IAAY;gBACd,OAAO,OAAO,CAAC,OAAO,CAAC,GAAG,CAAC,IAAI,CAAC,EAAE,KAAK,CAAA;YACzC,CAAC;YACD,GAAG,CAAC,IAAY,EAAE,KAAa,EAAE,OAAsB;gBACrD,4EAA4E;gBAC5E,OAAO,CAAC,OAAO,CAAC,GAAG,CAAC;oBAClB,IAAI;oBACJ,KAAK;oBACL,GAAG,OAAO;iBACX,CAAC,CAAA;gBACF,QAAQ,GAAG,qBAAY,CAAC,IAAI,CAAC;oBAC3B,OAAO,EAAE;wBACP,OAAO,EAAE,OAAO,CAAC,OAAO;qBACzB;iBACF,CAAC,CAAA;gBACF,QAAQ,CAAC,OAAO,CAAC,GAAG,CAAC;oBACnB,IAAI;oBACJ,KAAK;oBACL,GAAG,OAAO;iBACX,CAAC,CAAA;YACJ,CAAC;YACD,MAAM,CAAC,IAAY,EAAE,OAAsB;gBACzC,4EAA4E;gBAC5E,OAAO,CAAC,OAAO,CAAC,GAAG,CAAC;oBAClB,IAAI;oBACJ,KAAK,EAAE,EAAE;oBACT,GAAG,OAAO;iBACX,CAAC,CAAA;gBACF,QAAQ,GAAG,qBAAY,CAAC,IAAI,CAAC;oBAC3B,OAAO,EAAE;wBACP,OAAO,EAAE,OAAO,CAAC,OAAO;qBACzB;iBACF,CAAC,CAAA;gBACF,QAAQ,CAAC,OAAO,CAAC,GAAG,CAAC;oBACnB,IAAI;oBACJ,KAAK,EAAE,EAAE;oBACT,GAAG,OAAO;iBACX,CAAC,CAAA;YACJ,CAAC;SACF;KACF,CACF,CAAA;IAED,OAAO,EAAE,QAAQ,EAAE,QAAQ,EAAE,CAAA;AAC/B,CAAC,CAAA;AAzDY,QAAA,YAAY,gBAyDxB",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\middleware.ts"],
+      sourcesContent: ["import { createServerClient, type CookieOptions } from \"@supabase/ssr\"\r\nimport { NextResponse, type NextRequest } from \"next/server\"\r\n\r\nexport const createClient = (request: NextRequest) => {\r\n  // Create an unmodified response\r\n  let response = NextResponse.next({\r\n    request: {\r\n      headers: request.headers\r\n    }\r\n  })\r\n\r\n  const supabase = createServerClient(\r\n    process.env.NEXT_PUBLIC_SUPABASE_URL!,\r\n    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,\r\n    {\r\n      cookies: {\r\n        get(name: string) {\r\n          return request.cookies.get(name)?.value\r\n        },\r\n        set(name: string, value: string, options: CookieOptions) {\r\n          // If the cookie is updated, update the cookies for the request and response\r\n          request.cookies.set({\r\n            name,\r\n            value,\r\n            ...options\r\n          })\r\n          response = NextResponse.next({\r\n            request: {\r\n              headers: request.headers\r\n            }\r\n          })\r\n          response.cookies.set({\r\n            name,\r\n            value,\r\n            ...options\r\n          })\r\n        },\r\n        remove(name: string, options: CookieOptions) {\r\n          // If the cookie is removed, update the cookies for the request and response\r\n          request.cookies.set({\r\n            name,\r\n            value: \"\",\r\n            ...options\r\n          })\r\n          response = NextResponse.next({\r\n            request: {\r\n              headers: request.headers\r\n            }\r\n          })\r\n          response.cookies.set({\r\n            name,\r\n            value: \"\",\r\n            ...options\r\n          })\r\n        }\r\n      }\r\n    }\r\n  )\r\n\r\n  return { supabase, response }\r\n}\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "51b3f5f01857f345d0c723f3c5422fdde53815d6"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_27976f2zv = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_27976f2zv();
+cov_27976f2zv().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_27976f2zv().s[1]++;
+exports.createClient = void 0;
+const ssr_1 =
+/* istanbul ignore next */
+(cov_27976f2zv().s[2]++, require("@supabase/ssr"));
+const server_1 =
+/* istanbul ignore next */
+(cov_27976f2zv().s[3]++, require("next/server"));
+/* istanbul ignore next */
+cov_27976f2zv().s[4]++;
+const createClient = request => {
+  /* istanbul ignore next */
+  cov_27976f2zv().f[0]++;
+  // Create an unmodified response
+  let response =
+  /* istanbul ignore next */
+  (cov_27976f2zv().s[5]++, server_1.NextResponse.next({
+    request: {
+      headers: request.headers
+    }
+  }));
+  const supabase =
+  /* istanbul ignore next */
+  (cov_27976f2zv().s[6]++, (0, ssr_1.createServerClient)(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+    cookies: {
+      get(name) {
+        /* istanbul ignore next */
+        cov_27976f2zv().f[1]++;
+        cov_27976f2zv().s[7]++;
+        return request.cookies.get(name)?.value;
+      },
+      set(name, value, options) {
+        /* istanbul ignore next */
+        cov_27976f2zv().f[2]++;
+        cov_27976f2zv().s[8]++;
+        // If the cookie is updated, update the cookies for the request and response
+        request.cookies.set({
+          name,
+          value,
+          ...options
+        });
+        /* istanbul ignore next */
+        cov_27976f2zv().s[9]++;
+        response = server_1.NextResponse.next({
+          request: {
+            headers: request.headers
+          }
+        });
+        /* istanbul ignore next */
+        cov_27976f2zv().s[10]++;
+        response.cookies.set({
+          name,
+          value,
+          ...options
+        });
+      },
+      remove(name, options) {
+        /* istanbul ignore next */
+        cov_27976f2zv().f[3]++;
+        cov_27976f2zv().s[11]++;
+        // If the cookie is removed, update the cookies for the request and response
+        request.cookies.set({
+          name,
+          value: "",
+          ...options
+        });
+        /* istanbul ignore next */
+        cov_27976f2zv().s[12]++;
+        response = server_1.NextResponse.next({
+          request: {
+            headers: request.headers
+          }
+        });
+        /* istanbul ignore next */
+        cov_27976f2zv().s[13]++;
+        response.cookies.set({
+          name,
+          value: "",
+          ...options
+        });
+      }
+    }
+  }));
+  /* istanbul ignore next */
+  cov_27976f2zv().s[14]++;
+  return {
+    supabase,
+    response
+  };
+};
+/* istanbul ignore next */
+cov_27976f2zv().s[15]++;
+exports.createClient = createClient;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJzc3JfMSIsImNvdl8yNzk3NmYyenYiLCJzIiwicmVxdWlyZSIsInNlcnZlcl8xIiwiY3JlYXRlQ2xpZW50IiwicmVxdWVzdCIsImYiLCJyZXNwb25zZSIsIk5leHRSZXNwb25zZSIsIm5leHQiLCJoZWFkZXJzIiwic3VwYWJhc2UiLCJjcmVhdGVTZXJ2ZXJDbGllbnQiLCJwcm9jZXNzIiwiZW52IiwiTkVYVF9QVUJMSUNfU1VQQUJBU0VfVVJMIiwiTkVYVF9QVUJMSUNfU1VQQUJBU0VfQU5PTl9LRVkiLCJjb29raWVzIiwiZ2V0IiwibmFtZSIsInZhbHVlIiwic2V0Iiwib3B0aW9ucyIsInJlbW92ZSIsImV4cG9ydHMiXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXHBlZHJvXFxEb2N1bWVudHNcXEdpdEh1YlxcQXNpc3RlbnRlLUxlZ2FsLUludGVsaWdlbnRlXFxsaWJcXHN1cGFiYXNlXFxtaWRkbGV3YXJlLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IGNyZWF0ZVNlcnZlckNsaWVudCwgdHlwZSBDb29raWVPcHRpb25zIH0gZnJvbSBcIkBzdXBhYmFzZS9zc3JcIlxyXG5pbXBvcnQgeyBOZXh0UmVzcG9uc2UsIHR5cGUgTmV4dFJlcXVlc3QgfSBmcm9tIFwibmV4dC9zZXJ2ZXJcIlxyXG5cclxuZXhwb3J0IGNvbnN0IGNyZWF0ZUNsaWVudCA9IChyZXF1ZXN0OiBOZXh0UmVxdWVzdCkgPT4ge1xyXG4gIC8vIENyZWF0ZSBhbiB1bm1vZGlmaWVkIHJlc3BvbnNlXHJcbiAgbGV0IHJlc3BvbnNlID0gTmV4dFJlc3BvbnNlLm5leHQoe1xyXG4gICAgcmVxdWVzdDoge1xyXG4gICAgICBoZWFkZXJzOiByZXF1ZXN0LmhlYWRlcnNcclxuICAgIH1cclxuICB9KVxyXG5cclxuICBjb25zdCBzdXBhYmFzZSA9IGNyZWF0ZVNlcnZlckNsaWVudChcclxuICAgIHByb2Nlc3MuZW52Lk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTCEsXHJcbiAgICBwcm9jZXNzLmVudi5ORVhUX1BVQkxJQ19TVVBBQkFTRV9BTk9OX0tFWSEsXHJcbiAgICB7XHJcbiAgICAgIGNvb2tpZXM6IHtcclxuICAgICAgICBnZXQobmFtZTogc3RyaW5nKSB7XHJcbiAgICAgICAgICByZXR1cm4gcmVxdWVzdC5jb29raWVzLmdldChuYW1lKT8udmFsdWVcclxuICAgICAgICB9LFxyXG4gICAgICAgIHNldChuYW1lOiBzdHJpbmcsIHZhbHVlOiBzdHJpbmcsIG9wdGlvbnM6IENvb2tpZU9wdGlvbnMpIHtcclxuICAgICAgICAgIC8vIElmIHRoZSBjb29raWUgaXMgdXBkYXRlZCwgdXBkYXRlIHRoZSBjb29raWVzIGZvciB0aGUgcmVxdWVzdCBhbmQgcmVzcG9uc2VcclxuICAgICAgICAgIHJlcXVlc3QuY29va2llcy5zZXQoe1xyXG4gICAgICAgICAgICBuYW1lLFxyXG4gICAgICAgICAgICB2YWx1ZSxcclxuICAgICAgICAgICAgLi4ub3B0aW9uc1xyXG4gICAgICAgICAgfSlcclxuICAgICAgICAgIHJlc3BvbnNlID0gTmV4dFJlc3BvbnNlLm5leHQoe1xyXG4gICAgICAgICAgICByZXF1ZXN0OiB7XHJcbiAgICAgICAgICAgICAgaGVhZGVyczogcmVxdWVzdC5oZWFkZXJzXHJcbiAgICAgICAgICAgIH1cclxuICAgICAgICAgIH0pXHJcbiAgICAgICAgICByZXNwb25zZS5jb29raWVzLnNldCh7XHJcbiAgICAgICAgICAgIG5hbWUsXHJcbiAgICAgICAgICAgIHZhbHVlLFxyXG4gICAgICAgICAgICAuLi5vcHRpb25zXHJcbiAgICAgICAgICB9KVxyXG4gICAgICAgIH0sXHJcbiAgICAgICAgcmVtb3ZlKG5hbWU6IHN0cmluZywgb3B0aW9uczogQ29va2llT3B0aW9ucykge1xyXG4gICAgICAgICAgLy8gSWYgdGhlIGNvb2tpZSBpcyByZW1vdmVkLCB1cGRhdGUgdGhlIGNvb2tpZXMgZm9yIHRoZSByZXF1ZXN0IGFuZCByZXNwb25zZVxyXG4gICAgICAgICAgcmVxdWVzdC5jb29raWVzLnNldCh7XHJcbiAgICAgICAgICAgIG5hbWUsXHJcbiAgICAgICAgICAgIHZhbHVlOiBcIlwiLFxyXG4gICAgICAgICAgICAuLi5vcHRpb25zXHJcbiAgICAgICAgICB9KVxyXG4gICAgICAgICAgcmVzcG9uc2UgPSBOZXh0UmVzcG9uc2UubmV4dCh7XHJcbiAgICAgICAgICAgIHJlcXVlc3Q6IHtcclxuICAgICAgICAgICAgICBoZWFkZXJzOiByZXF1ZXN0LmhlYWRlcnNcclxuICAgICAgICAgICAgfVxyXG4gICAgICAgICAgfSlcclxuICAgICAgICAgIHJlc3BvbnNlLmNvb2tpZXMuc2V0KHtcclxuICAgICAgICAgICAgbmFtZSxcclxuICAgICAgICAgICAgdmFsdWU6IFwiXCIsXHJcbiAgICAgICAgICAgIC4uLm9wdGlvbnNcclxuICAgICAgICAgIH0pXHJcbiAgICAgICAgfVxyXG4gICAgICB9XHJcbiAgICB9XHJcbiAgKVxyXG5cclxuICByZXR1cm4geyBzdXBhYmFzZSwgcmVzcG9uc2UgfVxyXG59XHJcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBLE1BQUFBLEtBQUE7QUFBQTtBQUFBLENBQUFDLGFBQUEsR0FBQUMsQ0FBQSxPQUFBQyxPQUFBO0FBQ0EsTUFBQUMsUUFBQTtBQUFBO0FBQUEsQ0FBQUgsYUFBQSxHQUFB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
