@@ -121,3 +121,5 @@ const endpoint = isLegalQuery ? "/api/chat/tools-agent" : "/api/chat/simple-dire
 4. **Optimizar** queries según resultados
 
 El sistema está listo para usar y seguirá el patrón de n8n con tool calling automático.
+
+

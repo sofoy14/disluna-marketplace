@@ -1,0 +1,317 @@
+099bb27582c33f6d51c59bd17d5bb3ed
+"use strict";
+
+/* istanbul ignore next */
+function cov_2jj21ebel() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\api\\keys\\route.ts";
+  var hash = "752f4d0fc0c0f09377bb4c2edfb29c8682be800d";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\api\\keys\\route.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 18
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 17
+        },
+        end: {
+          line: 4,
+          column: 39
+        }
+      },
+      "3": {
+        start: {
+          line: 5,
+          column: 23
+        },
+        end: {
+          line: 5,
+          column: 49
+        }
+      },
+      "4": {
+        start: {
+          line: 6,
+          column: 26
+        },
+        end: {
+          line: 6,
+          column: 55
+        }
+      },
+      "5": {
+        start: {
+          line: 7,
+          column: 30
+        },
+        end: {
+          line: 7,
+          column: 63
+        }
+      },
+      "6": {
+        start: {
+          line: 8,
+          column: 24
+        },
+        end: {
+          line: 8,
+          column: 51
+        }
+      },
+      "7": {
+        start: {
+          line: 9,
+          column: 21
+        },
+        end: {
+          line: 9,
+          column: 45
+        }
+      },
+      "8": {
+        start: {
+          line: 10,
+          column: 27
+        },
+        end: {
+          line: 10,
+          column: 57
+        }
+      },
+      "9": {
+        start: {
+          line: 11,
+          column: 29
+        },
+        end: {
+          line: 11,
+          column: 61
+        }
+      },
+      "10": {
+        start: {
+          line: 12,
+          column: 27
+        },
+        end: {
+          line: 12,
+          column: 57
+        }
+      },
+      "11": {
+        start: {
+          line: 14,
+          column: 4
+        },
+        end: {
+          line: 32,
+          column: 5
+        }
+      },
+      "12": {
+        start: {
+          line: 15,
+          column: 33
+        },
+        end: {
+          line: 24,
+          column: 9
+        }
+      },
+      "13": {
+        start: {
+          line: 25,
+          column: 8
+        },
+        end: {
+          line: 27,
+          column: 11
+        }
+      },
+      "14": {
+        start: {
+          line: 30,
+          column: 8
+        },
+        end: {
+          line: 30,
+          column: 53
+        }
+      },
+      "15": {
+        start: {
+          line: 31,
+          column: 8
+        },
+        end: {
+          line: 31,
+          column: 93
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "GET",
+        decl: {
+          start: {
+            line: 13,
+            column: 15
+          },
+          end: {
+            line: 13,
+            column: 18
+          }
+        },
+        loc: {
+          start: {
+            line: 13,
+            column: 21
+          },
+          end: {
+            line: 33,
+            column: 1
+          }
+        },
+        line: 13
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\api\\keys\\route.ts",
+      mappings: ";;AAYA,kBAuBC;AAnCD,wCAAuD;AAGvD,MAAM,cAAc,GAAG,OAAO,CAAC,GAAG,CAAC,cAAc,CAAA;AACjD,MAAM,iBAAiB,GAAG,OAAO,CAAC,GAAG,CAAC,iBAAiB,CAAA;AACvD,MAAM,qBAAqB,GAAG,OAAO,CAAC,GAAG,CAAC,qBAAqB,CAAA;AAC/D,MAAM,eAAe,GAAG,OAAO,CAAC,GAAG,CAAC,eAAe,CAAA;AACnD,MAAM,YAAY,GAAG,OAAO,CAAC,GAAG,CAAC,YAAY,CAAA;AAC7C,MAAM,kBAAkB,GAAG,OAAO,CAAC,GAAG,CAAC,kBAAkB,CAAA;AACzD,MAAM,oBAAoB,GAAG,OAAO,CAAC,GAAG,CAAC,oBAAoB,CAAA;AAC7D,MAAM,kBAAkB,GAAG,OAAO,CAAC,GAAG,CAAC,kBAAkB,CAAA;AAElD,KAAK,UAAU,GAAG;IACvB,IAAI,CAAC;QACH,MAAM,gBAAgB,GAA4B;YAChD,MAAM,EAAE,CAAC,CAAC,cAAc;YACxB,SAAS,EAAE,CAAC,CAAC,iBAAiB;YAC9B,MAAM,EAAE,CAAC,CAAC,qBAAqB;YAC/B,OAAO,EAAE,CAAC,CAAC,eAAe;YAC1B,IAAI,EAAE,CAAC,CAAC,YAAY;YACpB,UAAU,EAAE,CAAC,CAAC,kBAAkB;YAChC,KAAK,EAAE,CAAC,CAAC,oBAAoB;YAC7B,UAAU,EAAE,CAAC,CAAC,kBAAkB;SACjC,CAAA;QAED,OAAO,qBAAY,CAAC,IAAI,CAAC;YACvB,gBAAgB;SACjB,CAAC,CAAA;IACJ,CAAC;IAAC,OAAO,KAAK,EAAE,CAAC;QACf,OAAO,CAAC,KAAK,CAAC,sBAAsB,EAAE,KAAK,CAAC,CAAA;QAC5C,OAAO,qBAAY,CAAC,IAAI,CACtB,EAAE,KAAK,EAAE,qBAAqB,EAAE,EAChC,EAAE,MAAM,EAAE,GAAG,EAAE,CAChB,CAAA;IACH,CAAC;AACH,CAAC",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\api\\keys\\route.ts"],
+      sourcesContent: ["import { NextRequest, NextResponse } from \"next/server\"\r\nimport { VALID_ENV_KEYS } from \"@/types/valid-keys\"\r\n\r\nconst OPENAI_API_KEY = process.env.OPENAI_API_KEY\r\nconst ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY\r\nconst GOOGLE_GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY\r\nconst MISTRAL_API_KEY = process.env.MISTRAL_API_KEY\r\nconst GROQ_API_KEY = process.env.GROQ_API_KEY\r\nconst PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY\r\nconst AZURE_OPENAI_API_KEY = process.env.AZURE_OPENAI_API_KEY\r\nconst OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY\r\n\r\nexport async function GET() {\r\n  try {\r\n    const isUsingEnvKeyMap: Record<string, boolean> = {\r\n      openai: !!OPENAI_API_KEY,\r\n      anthropic: !!ANTHROPIC_API_KEY,\r\n      google: !!GOOGLE_GEMINI_API_KEY,\r\n      mistral: !!MISTRAL_API_KEY,\r\n      groq: !!GROQ_API_KEY,\r\n      perplexity: !!PERPLEXITY_API_KEY,\r\n      azure: !!AZURE_OPENAI_API_KEY,\r\n      openrouter: !!OPENROUTER_API_KEY\r\n    }\r\n\r\n    return NextResponse.json({\r\n      isUsingEnvKeyMap\r\n    })\r\n  } catch (error) {\r\n    console.error(\"Error fetching keys:\", error)\r\n    return NextResponse.json(\r\n      { error: \"Error fetching keys\" },\r\n      { status: 500 }\r\n    )\r\n  }\r\n}\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "752f4d0fc0c0f09377bb4c2edfb29c8682be800d"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2jj21ebel = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2jj21ebel();
+cov_2jj21ebel().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_2jj21ebel().s[1]++;
+exports.GET = GET;
+const server_1 =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[2]++, require("next/server"));
+const OPENAI_API_KEY =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[3]++, process.env.OPENAI_API_KEY);
+const ANTHROPIC_API_KEY =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[4]++, process.env.ANTHROPIC_API_KEY);
+const GOOGLE_GEMINI_API_KEY =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[5]++, process.env.GOOGLE_GEMINI_API_KEY);
+const MISTRAL_API_KEY =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[6]++, process.env.MISTRAL_API_KEY);
+const GROQ_API_KEY =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[7]++, process.env.GROQ_API_KEY);
+const PERPLEXITY_API_KEY =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[8]++, process.env.PERPLEXITY_API_KEY);
+const AZURE_OPENAI_API_KEY =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[9]++, process.env.AZURE_OPENAI_API_KEY);
+const OPENROUTER_API_KEY =
+/* istanbul ignore next */
+(cov_2jj21ebel().s[10]++, process.env.OPENROUTER_API_KEY);
+async function GET() {
+  /* istanbul ignore next */
+  cov_2jj21ebel().f[0]++;
+  cov_2jj21ebel().s[11]++;
+  try {
+    const isUsingEnvKeyMap =
+    /* istanbul ignore next */
+    (cov_2jj21ebel().s[12]++, {
+      openai: !!OPENAI_API_KEY,
+      anthropic: !!ANTHROPIC_API_KEY,
+      google: !!GOOGLE_GEMINI_API_KEY,
+      mistral: !!MISTRAL_API_KEY,
+      groq: !!GROQ_API_KEY,
+      perplexity: !!PERPLEXITY_API_KEY,
+      azure: !!AZURE_OPENAI_API_KEY,
+      openrouter: !!OPENROUTER_API_KEY
+    });
+    /* istanbul ignore next */
+    cov_2jj21ebel().s[13]++;
+    return server_1.NextResponse.json({
+      isUsingEnvKeyMap
+    });
+  } catch (error) {
+    /* istanbul ignore next */
+    cov_2jj21ebel().s[14]++;
+    console.error("Error fetching keys:", error);
+    /* istanbul ignore next */
+    cov_2jj21ebel().s[15]++;
+    return server_1.NextResponse.json({
+      error: "Error fetching keys"
+    }, {
+      status: 500
+    });
+  }
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmpqMjFlYmVsIiwiYWN0dWFsQ292ZXJhZ2UiLCJzIiwiZXhwb3J0cyIsIkdFVCIsInNlcnZlcl8xIiwicmVxdWlyZSIsIk9QRU5BSV9BUElfS0VZIiwicHJvY2VzcyIsImVudiIsIkFOVEhST1BJQ19BUElfS0VZIiwiR09PR0xFX0dFTUlOSV9BUElfS0VZIiwiTUlTVFJBTF9BUElfS0VZIiwiR1JPUV9BUElfS0VZIiwiUEVSUExFWElUWV9BUElfS0VZIiwiQVpVUkVfT1BFTkFJX0FQSV9LRVkiLCJPUEVOUk9VVEVSX0FQSV9LRVkiLCJmIiwiaXNVc2luZ0VudktleU1hcCIsIm9wZW5haSIsImFudGhyb3BpYyIsImdvb2dsZSIsIm1pc3RyYWwiLCJncm9xIiwicGVycGxleGl0eSIsImF6dXJlIiwib3BlbnJvdXRlciIsIk5leHRSZXNwb25zZSIsImpzb24iLCJlcnJvciIsImNvbnNvbGUiLCJzdGF0dXMiXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXHBlZHJvXFxEb2N1bWVudHNcXEdpdEh1YlxcQXNpc3RlbnRlLUxlZ2FsLUludGVsaWdlbnRlXFxhcHBcXGFwaVxca2V5c1xccm91dGUudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgTmV4dFJlcXVlc3QsIE5leHRSZXNwb25zZSB9IGZyb20gXCJuZXh0L3NlcnZlclwiXHJcbmltcG9ydCB7IFZBTElEX0VOVl9LRVlTIH0gZnJvbSBcIkAvdHlwZXMvdmFsaWQta2V5c1wiXHJcblxyXG5jb25zdCBPUEVOQUlfQVBJX0tFWSA9IHByb2Nlc3MuZW52Lk9QRU5BSV9BUElfS0VZXHJcbmNvbnN0IEFOVEhST1BJQ19BUElfS0VZID0gcHJvY2Vzcy5lbnYuQU5USFJPUElDX0FQSV9LRVlcclxuY29uc3QgR09PR0xFX0dFTUlOSV9BUElfS0VZID0gcHJvY2Vzcy5lbnYuR09PR0xFX0dFTUlOSV9BUElfS0VZXHJcbmNvbnN0IE1JU1RSQUxfQVBJX0tFWSA9IHByb2Nlc3MuZW52Lk1JU1RSQUxfQVBJX0tFWVxyXG5jb25zdCBHUk9RX0FQSV9LRVkgPSBwcm9jZXNzLmVudi5HUk9RX0FQSV9LRVlcclxuY29uc3QgUEVSUExFWElUWV9BUElfS0VZID0gcHJvY2Vzcy5lbnYuUEVSUExFWElUWV9BUElfS0VZXHJcbmNvbnN0IEFaVVJFX09QRU5BSV9BUElfS0VZID0gcHJvY2Vzcy5lbnYuQVpVUkVfT1BFTkFJX0FQSV9LRVlcclxuY29uc3QgT1BFTlJPVVRFUl9BUElfS0VZID0gcHJvY2Vzcy5lbnYuT1BFTlJPVVRFUl9BUElfS0VZXHJcblxyXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gR0VUKCkge1xyXG4gIHRyeSB7XHJcbiAgICBjb25zdCBpc1VzaW5nRW52S2V5TWFwOiBSZWNvcmQ8c3RyaW5nLCBib29sZWFuPiA9IHtcclxuICAgICAgb3BlbmFpOiAhIU9QRU5BSV9BUElfS0VZLFxyXG4gICAgICBhbnRocm9waWM6ICEhQU5USFJPUElDX0FQSV9LRVksXHJcbiAgICAgIGdvb2dsZTogISFHT09HTEVfR0VNSU5JX0FQSV9LRVksXHJcbiAgICAgIG1pc3RyYWw6ICEhTUlTVFJBTF9BUElfS0VZLFxyXG4gICAgICBncm9xOiAhIUdST1FfQVBJX0tFWSxcclxuICAgICAgcGVycGxleGl0eTogISFQRVJQTEVYSVRZX0FQSV9LRVksXHJcbiAgICAgIGF6dXJlOiAhIUFaVVJFX09QRU5BSV9BUElfS0VZLFxyXG4gICAgICBvcGVucm91dGVyOiAhIU9QRU5ST1VURVJfQVBJX0tFWVxyXG4gICAgfVxyXG5cclxuICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbih7XHJcbiAgICAgIGlzVXNpbmdFbnZLZXlNYXBcclxuICAgIH0pXHJcbiAgfSBjYXRjaCAoZXJyb3IpIHtcclxuICAgIGNvbnNvbGUuZXJyb3IoXCJFcnJvciBmZXRjaGluZyBrZXlzOlwiLCBlcnJvcilcclxuICAgIHJldHVybiBOZXh0UmVzcG9uc2UuanNvbihcclxuICAgICAgeyBlcnJvcjogXCJFcnJvciBmZXRjaGluZyBrZXlzXCIgfSxcclxuICAgICAgeyBzdGF0dXM6IDUwMCB9XHJcbiAgICApXHJcbiAgfVxyXG59XHJcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWVNO0lBQUFBLGFBQUEsWUFBQUEsQ0FBQTtNQUFBLE9BQUFDLGNBQUE7SUFBQTtFQUFBO0VBQUEsT0FBQUEsY0FBQTtBQUFBO0FBQUFELGFBQUE7QUFBQUEsYUFBQSxHQUFBRSxDQUFBOzs7Ozs7QUFITkMsT0FBQSxDQUFBQyxHQUFBLEdBQUFBLEdBQUE7QUFaQSxNQUFBQyxRQUFBO0FBQUE7QUFBQSxDQUFBTCxhQUFBLEdBQUFFLENBQUEsT0FBQUksT0FBQTtBQUdBLE1BQU1DLGNBQWM7QUFBQTtBQUFBLENBQUFQLGFBQUEsR0FBQUUsQ0FBQSxPQUFHTSxPQUFPLENBQUNDLEdBQUcsQ0FBQ0YsY0FBYztBQUNqRCxNQUFNRyxpQkFBaUI7QUFBQTtBQUFBLENBQUFWLGFBQUEsR0FBQUUsQ0FBQSxPQUFHTSxPQUFPLENBQUNDLEdBQUcsQ0FBQ0MsaUJBQWlCO0FBQ3ZELE1BQU1DLHFCQUFxQjtBQUFBO0FBQUEsQ0FBQVgsYUFBQSxHQUFBRSxDQUFBLE9BQUdNLE9BQU8sQ0FBQ0MsR0FBRyxDQUFDRSxxQkFBcUI7QUFDL0QsTUFBTUMsZUFBZTtBQUFBO0FBQUEsQ0FBQVosYUFBQSxHQUFBRSxDQUFBLE9BQUdNLE9BQU8sQ0FBQ0MsR0FBRyxDQUFDRyxlQUFlO0FBQ25ELE1BQU1DLFlBQVk7QUFBQTtBQUFBLENBQUFiLGFBQUEsR0FBQUUsQ0FBQSxPQUFHTSxPQUFPLENBQUNDLEdBQUcsQ0FBQ0ksWUFBWTtBQUM3QyxNQUFNQyxrQkFBa0I7QUFBQTtBQUFBLENBQUFkLGFBQUEsR0FBQUUsQ0FBQSxPQUFHTSxPQUFPLENBQUNDLEdBQUcsQ0FBQ0ssa0JBQWtCO0FBQ3pELE1BQU1DLG9CQUFvQjtBQUFBO0FBQUEsQ0FBQWYsYUFBQSxHQUFBRSxDQUFBLE9BQUdNLE9BQU8sQ0FBQ0MsR0FBRyxDQUFDTSxvQkFBb0I7QUFDN0QsTUFBTUMsa0JBQWtCO0FBQUE7QUFBQSxDQUFBaEIsYUFBQSxHQUFBRSxDQUFBLFFBQUdNLE9BQU8sQ0FBQ0MsR0FBRyxDQUFDTyxrQkFBa0I7QUFFbEQsZUFBZVosR0FBR0EsQ0FBQTtFQUFBO0VBQUFKLGFBQUEsR0FBQWlCLENBQUE7RUFBQWpCLGFBQUEsR0FBQUUsQ0FBQTtFQUN2QixJQUFJO0lBQ0YsTUFBTWdCLGdCQUFnQjtJQUFBO0lBQUEsQ0FBQWxCLGFBQUEsR0FBQUUsQ0FBQSxRQUE0QjtNQUNoRGlCLE1BQU0sRUFBRSxDQUFDLENBQUNaLGNBQWM7TUFDeEJhLFNBQVMsRUFBRSxDQUFDLENBQUNWLGlCQUFpQjtNQUM5QlcsTUFBTSxFQUFFLENBQUMsQ0FBQ1YscUJBQXFCO01BQy9CVyxPQUFPLEVBQUUsQ0FBQyxDQUFDVixlQUFlO01BQzFCVyxJQUFJLEVBQUUsQ0FBQyxDQUFDVixZQUFZO01BQ3BCVyxVQUFVLEVBQUUsQ0FBQyxDQUFDVixrQkFBa0I7TUFDaENXLEtBQUssRUFBRSxDQUFDLENBQUNWLG9CQUFvQjtNQUM3QlcsVUFBVSxFQUFFLENBQUMsQ0FBQ1Y7S0FDZjtJQUFBO0lBQUFoQixhQUFBLEdBQUFFLENBQUE7SUFFRCxPQUFPRyxRQUFBLENBQUFzQixZQUFZLENBQUNDLElBQUksQ0FBQztNQUN2QlY7S0FDRCxDQUFDO0VBQ0osQ0FBQyxDQUFDLE9BQU9XLEtBQUssRUFBRTtJQUFBO0lBQUE3QixhQUFBLEdBQUFFLENBQUE7SUFDZDRCLE9BQU8sQ0FBQ0QsS0FBSyxDQUFDLHNCQUFzQixFQUFFQSxLQUFLLENBQUM7SUFBQTtJQUFBN0IsYUFBQSxHQUFBRSxDQUFBO0lBQzVDLE9BQU9HLFFBQUEsQ0FBQXNCLFlBQVksQ0FBQ0MsSUFBSSxDQUN0QjtNQUFFQyxLQUFLLEVBQUU7SUFBcUIsQ0FBRSxFQUNoQztNQUFFRSxNQUFNLEVBQUU7SUFBRyxDQUFFLENBQ2hCO0VBQ0g7QUFDRiIsImlnbm9yZUxpc3QiOltdfQ==

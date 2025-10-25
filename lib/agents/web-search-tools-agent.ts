@@ -101,13 +101,13 @@ export class WebSearchToolsAgent {
           type: "function" as const,
           function: {
             name: "serper_search",
-            description: "Busca información en la web usando Serper.dev. Usa esta herramienta cuando necesites información actualizada, verificar datos legales, o buscar fuentes oficiales colombianas.",
+            description: "Busca información en la web usando Serper.dev. IMPORTANTE: Busca por materias legales generales, NO inventes números de artículos o leyes específicos. Solo usa números específicos si el usuario los mencionó en su consulta.",
             parameters: {
               type: "object",
               properties: {
                 query: {
                   type: "string",
-                  description: "Query de búsqueda optimizada. Ejemplo: 'cuentas en participación Colombia Código de Comercio'"
+                  description: "Query de búsqueda optimizada enfocada en materias legales generales. NUNCA incluyas números de artículos o leyes específicos por iniciativa propia. Ejemplo: 'extinción de dominio Colombia proceso legal prescripción'"
                 }
               },
               required: ["query"]
@@ -123,6 +123,21 @@ POLÍTICA DE HERRAMIENTA:
 - Usa la herramienta serper_search cuando necesites información actualizada o verificar datos
 - Llama a serper_search con: {"query":"<consulta optimizada>"}
 - No muestres la llamada a la herramienta, solo los resultados procesados
+
+ESTRATEGIA DE BÚSQUEDA LEGAL:
+- NUNCA busques artículos específicos por iniciativa propia (ej: "artículo 52", "artículo 15")
+- NUNCA busques números de leyes específicos por iniciativa propia (ej: "Ley 1978", "Decreto 1234")
+- ENFOQUE EN MATERIAS: Busca por conceptos legales generales y materias reguladas
+- EJEMPLOS CORRECTOS:
+  * "extinción de dominio Colombia proceso legal"
+  * "prescripción extinción de dominio Colombia"
+  * "cuentas en participación Colombia derecho comercial"
+  * "contratos Colombia Código Civil"
+- EJEMPLOS INCORRECTOS:
+  * "artículo 52 Código Civil prescripción"
+  * "Ley 1978 de 2019 extinción dominio"
+  * "artículo 15 Código de Comercio"
+- EXCEPCIÓN: Si el usuario menciona un número específico de ley o artículo en su consulta, inclúyelo en la búsqueda junto con la materia general
 
 CUÁNDO BUSCAR:
 - Información legal específica (leyes, decretos, sentencias)
@@ -218,12 +233,13 @@ IMPORTANTE: Siempre incluye las URLs de las fuentes en tu respuesta para que pue
         
         console.log(`📊 Respuesta final con búsqueda: ${finalText.substring(0, 100)}...`)
         
-        // Extraer fuentes del texto final
+        // Limpiar texto de respuesta y extraer fuentes
+        const cleanedText = this.cleanResponseText(finalText)
         const sources = this.extractSourcesFromText(finalText)
         
         return {
           type: "answer",
-          text: finalText,
+          text: cleanedText,
           sources
         }
       }
@@ -284,12 +300,13 @@ IMPORTANTE: Siempre incluye las URLs de las fuentes en tu respuesta para que pue
             
             console.log(`📊 Respuesta final con búsqueda: ${finalText.substring(0, 100)}...`)
             
-            // Extraer fuentes del texto final
+            // Limpiar texto de respuesta y extraer fuentes
+            const cleanedText = this.cleanResponseText(finalText)
             const sources = this.extractSourcesFromText(finalText)
             
             return {
               type: "answer",
-              text: finalText,
+              text: cleanedText,
               sources
             }
           } else {
@@ -319,6 +336,115 @@ IMPORTANTE: Siempre incluye las URLs de las fuentes en tu respuesta para que pue
     }
   }
 
+
+  /**
+   * Limpia el texto de respuesta separando contenido principal de bibliografía
+   */
+  private cleanResponseText(text: string): string {
+    if (!text || text.trim().length === 0) {
+      return text
+    }
+
+    console.log(`🧹 Limpiando texto de respuesta...`)
+
+    // Caso especial: Si el texto empieza con "Fuentes consultadas" o similar
+    const bibliographyStartPatterns = [
+      /^Fuentes consultadas\s*\d*\s*referencias?\s*/i,
+      /^Bibliografía\s*-\s*Fuentes Oficiales Colombianas\s*\d*\s*fuentes?\s*/i,
+      /^Fuentes:\s*\d*\s*/i,
+      /^Referencias:\s*\d*\s*/i
+    ]
+
+    for (const pattern of bibliographyStartPatterns) {
+      if (pattern.test(text)) {
+        console.log(`⚠️ Texto empieza con bibliografía, buscando contenido principal`)
+        
+        // Buscar el contenido principal después del número de fuentes
+        const contentMatch = text.match(new RegExp(pattern.source + '(.+?)(?=\\*\\*|$)', 's'))
+        if (contentMatch && contentMatch[1].trim().length > 50) {
+          console.log(`✅ Contenido principal encontrado después de bibliografía`)
+          return contentMatch[1].trim()
+        }
+        
+        // Si no se encuentra contenido claro, buscar después de la primera línea
+        const lines = text.split('\n')
+        if (lines.length > 2) {
+          const potentialContent = lines.slice(2).join('\n').trim()
+          if (potentialContent.length > 50) {
+            console.log(`✅ Contenido principal encontrado en líneas posteriores`)
+            return potentialContent
+          }
+        }
+      }
+    }
+
+    // Buscar si hay una sección de bibliografía explícita en el medio o al final
+    const bibliographyPatterns = [
+      /\*\*Bibliografía.*$/s,
+      /Bibliografía - Fuentes Oficiales Colombianas.*$/s,
+      /Fuentes consultadas.*$/s,
+      /Bibliografía.*$/s,
+      /## 📚 Fuentes Consultadas.*$/s,
+      /### Bibliografía.*$/s
+    ]
+    
+    for (const pattern of bibliographyPatterns) {
+      const match = text.match(pattern)
+      if (match) {
+        console.log(`📚 Sección de bibliografía encontrada, separando contenido`)
+        const contentBeforeBibliography = text.substring(0, match.index).trim()
+        if (contentBeforeBibliography.length > 50) {
+          console.log(`✅ Contenido principal separado de bibliografía`)
+          return contentBeforeBibliography
+        }
+      }
+    }
+
+    // Si no se encuentra bibliografía explícita, buscar líneas que parezcan ser fuentes al final
+    const lines = text.split('\n')
+    let contentEndIndex = lines.length
+    
+    // Buscar desde el final hacia arriba líneas que parezcan ser fuentes
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i].trim()
+      if (!line) continue
+      
+      // Si encuentra una línea que parece ser una fuente (URL, número, etc.)
+      if (line.includes('http') || 
+          /^\d+\./.test(line) || 
+          /^[-*]/.test(line) ||
+          line.includes('🔗') ||
+          line.includes('URL:')) {
+        contentEndIndex = i
+        continue
+      }
+      
+      // Si encuentra una línea que parece ser un título de sección de fuentes
+      if (line.toLowerCase().includes('fuentes') || 
+          line.toLowerCase().includes('bibliografía') ||
+          line.toLowerCase().includes('referencias')) {
+        contentEndIndex = i
+        break
+      }
+      
+      // Si encuentra contenido sustancial, parar
+      if (line.length > 20 && !line.includes('http')) {
+        break
+      }
+    }
+    
+    if (contentEndIndex < lines.length) {
+      const contentLines = lines.slice(0, contentEndIndex)
+      const cleanedContent = contentLines.join('\n').trim()
+      if (cleanedContent.length > 50) {
+        console.log(`✅ Contenido principal separado de fuentes al final`)
+        return cleanedContent
+      }
+    }
+
+    console.log(`ℹ️ No se encontró bibliografía para separar, devolviendo texto original`)
+    return text
+  }
 
   /**
    * Extrae fuentes del texto de respuesta con detección mejorada

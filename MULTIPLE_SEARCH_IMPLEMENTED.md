@@ -111,3 +111,5 @@ Ahora el sistema debería:
 - ✅ **Analizar información contradictoria** cuando exista
 
 El sistema ahora es mucho más robusto y debería proporcionar respuestas más completas y precisas.
+
+

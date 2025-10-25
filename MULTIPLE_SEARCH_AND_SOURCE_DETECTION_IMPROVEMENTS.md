@@ -187,3 +187,5 @@ Las respuestas ahora deberían ser:
 - **Más contextualizadas** (búsqueda académica cuando es necesario)
 
 El sistema ahora implementa una estrategia de búsqueda múltiple inteligente que asegura información precisa y completa para consultas legales colombianas.
+
+

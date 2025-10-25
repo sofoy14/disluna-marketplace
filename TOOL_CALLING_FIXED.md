@@ -97,3 +97,5 @@ Ahora el sistema debería:
 - ✅ **Funcionar consistentemente** sin errores
 
 El problema del tool calling está completamente solucionado con un enfoque más directo y confiable.
+
+

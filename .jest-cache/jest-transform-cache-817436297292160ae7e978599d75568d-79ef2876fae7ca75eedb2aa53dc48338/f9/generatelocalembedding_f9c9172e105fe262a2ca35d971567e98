@@ -1,0 +1,178 @@
+a93de45c10dfb4017aa53032c5221824
+"use strict";
+
+/* istanbul ignore next */
+function cov_aw85hf2o1() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\generate-local-embedding.ts";
+  var hash = "c01ebf8f21b5e3aa5fad1a97bdf7cfd755fa7a6c";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\generate-local-embedding.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 56
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 23
+        },
+        end: {
+          line: 4,
+          column: 54
+        }
+      },
+      "3": {
+        start: {
+          line: 6,
+          column: 30
+        },
+        end: {
+          line: 6,
+          column: 113
+        }
+      },
+      "4": {
+        start: {
+          line: 7,
+          column: 19
+        },
+        end: {
+          line: 10,
+          column: 6
+        }
+      },
+      "5": {
+        start: {
+          line: 11,
+          column: 22
+        },
+        end: {
+          line: 11,
+          column: 45
+        }
+      },
+      "6": {
+        start: {
+          line: 12,
+          column: 4
+        },
+        end: {
+          line: 12,
+          column: 21
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "generateLocalEmbedding",
+        decl: {
+          start: {
+            line: 5,
+            column: 15
+          },
+          end: {
+            line: 5,
+            column: 37
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 47
+          },
+          end: {
+            line: 13,
+            column: 1
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\generate-local-embedding.ts",
+      mappings: ";;AAEA,wDAcC;AAhBD,uDAA+C;AAExC,KAAK,UAAU,sBAAsB,CAAC,OAAe;IAC1D,MAAM,iBAAiB,GAAG,MAAM,IAAA,uBAAQ,EACtC,oBAAoB,EACpB,yBAAyB,CAC1B,CAAA;IAED,MAAM,MAAM,GAAG,MAAM,iBAAiB,CAAC,OAAO,EAAE;QAC9C,OAAO,EAAE,MAAM;QACf,SAAS,EAAE,IAAI;KAChB,CAAC,CAAA;IAEF,MAAM,SAAS,GAAG,KAAK,CAAC,IAAI,CAAC,MAAM,CAAC,IAAI,CAAC,CAAA;IAEzC,OAAO,SAAS,CAAA;AAClB,CAAC",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\generate-local-embedding.ts"],
+      sourcesContent: ["import { pipeline } from \"@xenova/transformers\"\r\n\r\nexport async function generateLocalEmbedding(content: string) {\r\n  const generateEmbedding = await pipeline(\r\n    \"feature-extraction\",\r\n    \"Xenova/all-MiniLM-L6-v2\"\r\n  )\r\n\r\n  const output = await generateEmbedding(content, {\r\n    pooling: \"mean\",\r\n    normalize: true\r\n  })\r\n\r\n  const embedding = Array.from(output.data)\r\n\r\n  return embedding\r\n}\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "c01ebf8f21b5e3aa5fad1a97bdf7cfd755fa7a6c"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_aw85hf2o1 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_aw85hf2o1();
+cov_aw85hf2o1().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_aw85hf2o1().s[1]++;
+exports.generateLocalEmbedding = generateLocalEmbedding;
+const transformers_1 =
+/* istanbul ignore next */
+(cov_aw85hf2o1().s[2]++, require("@xenova/transformers"));
+async function generateLocalEmbedding(content) {
+  /* istanbul ignore next */
+  cov_aw85hf2o1().f[0]++;
+  const generateEmbedding =
+  /* istanbul ignore next */
+  (cov_aw85hf2o1().s[3]++, await (0, transformers_1.pipeline)("feature-extraction", "Xenova/all-MiniLM-L6-v2"));
+  const output =
+  /* istanbul ignore next */
+  (cov_aw85hf2o1().s[4]++, await generateEmbedding(content, {
+    pooling: "mean",
+    normalize: true
+  }));
+  const embedding =
+  /* istanbul ignore next */
+  (cov_aw85hf2o1().s[5]++, Array.from(output.data));
+  /* istanbul ignore next */
+  cov_aw85hf2o1().s[6]++;
+  return embedding;
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJleHBvcnRzIiwiZ2VuZXJhdGVMb2NhbEVtYmVkZGluZyIsInRyYW5zZm9ybWVyc18xIiwiY292X2F3ODVoZjJvMSIsInMiLCJyZXF1aXJlIiwiY29udGVudCIsImYiLCJnZW5lcmF0ZUVtYmVkZGluZyIsInBpcGVsaW5lIiwib3V0cHV0IiwicG9vbGluZyIsIm5vcm1hbGl6ZSIsImVtYmVkZGluZyIsIkFycmF5IiwiZnJvbSIsImRhdGEiXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXHBlZHJvXFxEb2N1bWVudHNcXEdpdEh1YlxcQXNpc3RlbnRlLUxlZ2FsLUludGVsaWdlbnRlXFxsaWJcXGdlbmVyYXRlLWxvY2FsLWVtYmVkZGluZy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBwaXBlbGluZSB9IGZyb20gXCJAeGVub3ZhL3RyYW5zZm9ybWVyc1wiXHJcblxyXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gZ2VuZXJhdGVMb2NhbEVtYmVkZGluZyhjb250ZW50OiBzdHJpbmcpIHtcclxuICBjb25zdCBnZW5lcmF0ZUVtYmVkZGluZyA9IGF3YWl0IHBpcGVsaW5lKFxyXG4gICAgXCJmZWF0dXJlLWV4dHJhY3Rpb25cIixcclxuICAgIFwiWGVub3ZhL2FsbC1NaW5pTE0tTDYtdjJcIlxyXG4gIClcclxuXHJcbiAgY29uc3Qgb3V0cHV0ID0gYXdhaXQgZ2VuZXJhdGVFbWJlZGRpbmcoY29udGVudCwge1xyXG4gICAgcG9vbGluZzogXCJtZWFuXCIsXHJcbiAgICBub3JtYWxpemU6IHRydWVcclxuICB9KVxyXG5cclxuICBjb25zdCBlbWJlZGRpbmcgPSBBcnJheS5mcm9tKG91dHB1dC5kYXRhKVxyXG5cclxuICByZXR1cm4gZW1iZWRkaW5nXHJcbn1cclxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFFQUEsT0FBQSxDQUFBQyxzQkFBQSxHQUFBQSxzQkFBQTtBQUZBLE1BQUFDLGNBQUE7QUFBQTtBQUFBLENBQUFDLGFBQUEsR0FBQUMsQ0FBQSxPQUFBQyxPQUFBO0FBRU8sZUFBZUosc0JBQXNCQSxDQUFDSyxPQUFlO0VBQUE7RUFBQUgsYUFBQSxHQUFBSSxDQUFBO0VBQzFELE1BQU1DLGlCQUFpQjtFQUFBO0VBQUEsQ0FBQUwsYUFBQSxHQUFBQyxDQUFBLE9BQUcsTUFBTSxJQUFBRixjQUFBLENBQUFPLFFBQVEsRUFDdEMsb0JBQW9CLEVBQ3BCLHlCQUF5QixDQUMxQjtFQUVELE1BQU1DLE1BQU07RUFBQTtFQUFBLENBQUFQLGFBQUEsR0FBQUMsQ0FBQSxPQUFHLE1BQU1JLGlCQUFpQixDQUFDRixPQUFPLEVBQUU7SUFDOUNLLE9BQU8sRUFBRSxNQUFNO0lBQ2ZDLFNBQVMsRUFBRTtHQUNaLENBQUM7RUFFRixNQUFNQyxTQUFTO0VBQUE7RUFBQSxDQUFBVixhQUFBLEdBQUFDLENBQUEsT0FBR1UsS0FBSyxDQUFDQyxJQUFJLENBQUNMLE1BQU0sQ0FBQ00sSUFBSSxDQUFDO0VBQUE7RUFBQWIsYUFBQSxHQUFBQyxDQUFBO0VBRXpDLE9BQU9TLFNBQVM7QUFDbEIiLCJpZ25vcmVMaXN0IjpbXX0=

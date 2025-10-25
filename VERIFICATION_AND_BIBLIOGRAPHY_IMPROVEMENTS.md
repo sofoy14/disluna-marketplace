@@ -136,3 +136,5 @@ Las respuestas ahora deberían ser:
 - **Mejor formateadas** (fuentes organizadas y limpias)
 
 El sistema ahora implementa un flujo de verificación robusto que asegura la calidad y precisión de las respuestas legales.
+
+

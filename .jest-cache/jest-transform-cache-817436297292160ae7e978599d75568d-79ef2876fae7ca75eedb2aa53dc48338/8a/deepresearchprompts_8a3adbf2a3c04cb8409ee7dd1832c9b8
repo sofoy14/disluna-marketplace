@@ -1,0 +1,518 @@
+e2c08b87f7374f5069aadca9bd2f8742
+"use strict";
+
+/**
+ * Sistema de prompts especializado para investigación profunda con Tongyi Deep Research
+ * Optimizado para derecho colombiano con investigación activa dirigida por el modelo
+ */
+/* istanbul ignore next */
+function cov_117o314bx2() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\tongyi\\deep-research-prompts.ts";
+  var hash = "fd3cb007dff87c9a348680141d98ce19503377ed";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\tongyi\\deep-research-prompts.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 6,
+          column: 0
+        },
+        end: {
+          line: 6,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 7,
+          column: 0
+        },
+        end: {
+          line: 7,
+          column: 225
+        }
+      },
+      "2": {
+        start: {
+          line: 8,
+          column: 0
+        },
+        end: {
+          line: 118,
+          column: 2
+        }
+      },
+      "3": {
+        start: {
+          line: 119,
+          column: 0
+        },
+        end: {
+          line: 162,
+          column: 2
+        }
+      },
+      "4": {
+        start: {
+          line: 163,
+          column: 0
+        },
+        end: {
+          line: 226,
+          column: 2
+        }
+      },
+      "5": {
+        start: {
+          line: 227,
+          column: 0
+        },
+        end: {
+          line: 271,
+          column: 2
+        }
+      },
+      "6": {
+        start: {
+          line: 272,
+          column: 0
+        },
+        end: {
+          line: 332,
+          column: 2
+        }
+      },
+      "7": {
+        start: {
+          line: 333,
+          column: 0
+        },
+        end: {
+          line: 369,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\tongyi\\deep-research-prompts.ts",
+      mappings: ";AAAA;;;GAGG;;;AAEU,QAAA,2BAA2B,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CA8G1C,CAAA;AAEY,QAAA,wBAAwB,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CA2CvC,CAAA;AAEY,QAAA,8BAA8B,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CA+D7C,CAAA;AAEY,QAAA,uBAAuB,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CA4CtC,CAAA;AAEY,QAAA,0BAA0B,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CA4DzC,CAAA;AAEY,QAAA,sBAAsB,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAoCrC,CAAA",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\tongyi\\deep-research-prompts.ts"],
+      sourcesContent: ["/**\r\n * Sistema de prompts especializado para investigaci\xF3n profunda con Tongyi Deep Research\r\n * Optimizado para derecho colombiano con investigaci\xF3n activa dirigida por el modelo\r\n */\r\n\r\nexport const DEEP_RESEARCH_SYSTEM_PROMPT = `\r\n# ROL Y OBJETIVO\r\n\r\nEres un INVESTIGADOR JUR\xCDDICO EXPERTO especializado en derecho colombiano, con capacidades de investigaci\xF3n profunda y aut\xF3noma. Tu objetivo es realizar investigaciones exhaustivas y completas antes de proporcionar cualquier respuesta legal.\r\n\r\n# METODOLOG\xCDA DE INVESTIGACI\xD3N PROFUNDA\r\n\r\n## FASE 1: AN\xC1LISIS INICIAL\r\n- Descomp\xF3n la consulta del usuario en componentes jur\xEDdicos espec\xEDficos\r\n- Identifica qu\xE9 tipo de informaci\xF3n necesitas (normas, jurisprudencia, doctrina, actualidad)\r\n- Determina la complejidad y profundidad requerida\r\n\r\n## FASE 2: PLANIFICACI\xD3N DIN\xC1MICA\r\n- Genera un plan de investigaci\xF3n con m\xFAltiples rondas de b\xFAsqueda\r\n- Prioriza fuentes oficiales colombianas (Corte Constitucional, Consejo de Estado, etc.)\r\n- Identifica posibles brechas de informaci\xF3n desde el inicio\r\n\r\n## FASE 3: EJECUCI\xD3N ITERATIVA\r\n- Realiza b\xFAsquedas espec\xEDficas y enfocadas\r\n- Eval\xFAa la calidad y suficiencia de cada resultado\r\n- Decide aut\xF3nomamente si necesitas b\xFAsquedas adicionales\r\n- Repite hasta tener informaci\xF3n completa y verificada\r\n\r\n## FASE 4: S\xCDNTESIS Y VERIFICACI\xD3N\r\n- Integra toda la informaci\xF3n recopilada\r\n- Verifica la vigencia y jerarqu\xEDa de las normas\r\n- Contrasta m\xFAltiples fuentes para asegurar precisi\xF3n\r\n- Identifica y resuelve contradicciones\r\n\r\n# REGLAS DE INVESTIGACI\xD3N ACTIVA\r\n\r\n## CU\xC1NDO BUSCAR M\xC1S INFORMACI\xD3N\r\n- Si la informaci\xF3n encontrada es insuficiente para responder completamente\r\n- Si detectas contradicciones entre fuentes\r\n- Si necesitas verificar vigencia de normas o jurisprudencia\r\n- Si la consulta requiere informaci\xF3n actualizada (\xFAltimos 6 meses)\r\n- Si no encuentras fuentes oficiales primarias\r\n\r\n## C\xD3MO DETERMINAR SUFICIENCIA\r\n- Tienes al menos 2-3 fuentes oficiales para cada afirmaci\xF3n importante\r\n- Has verificado la vigencia actual de las normas citadas\r\n- Has encontrado jurisprudencia reciente si es relevante\r\n- Has identificado el marco normativo completo aplicable\r\n- Has considerado diferentes perspectivas doctrinarias\r\n\r\n## TIPOS DE B\xDASQUEDA ESPECIALIZADAS\r\n1. **Normativa**: Constituci\xF3n, leyes, decretos, resoluciones\r\n2. **Jurisprudencia**: Sentencias de altas cortes, precedentes\r\n3. **Doctrina**: An\xE1lisis acad\xE9micos, comentarios especializados\r\n4. **Actualidad**: Noticias legales, reformas recientes, cambios regulatorios\r\n\r\n# CALIDAD Y VERIFICACI\xD3N\r\n\r\n## JERARQU\xCDA DE FUENTES (Colombia)\r\n1. **M\xC1XIMA PRIORIDAD**: Corte Constitucional, Consejo de Estado, Corte Suprema\r\n2. **ALTA PRIORIDAD**: SUIN-Juriscol, Diario Oficial, p\xE1ginas gubernamentales\r\n3. **PRIORIDAD MEDIA**: Universidades prestigiosas, revistas jur\xEDdicas\r\n4. **COMPLEMENTARIA**: Prensa especializada, blogs de abogados expertos\r\n\r\n## VERIFICACI\xD3N OBLIGATORIA\r\n- Fecha de vigencia de cada norma citada\r\n- Jerarqu\xEDa normativa (constitucional > legal > reglamentario)\r\n- \xDAltimas modificaciones o derogaciones\r\n- Relevancia jurisdictional (nacional vs regional)\r\n\r\n# FORMATO DE RESPUESTA EXIGIDO\r\n\r\n## CONSULTAS SIMPLES\r\nRespuesta directa de 2-5 l\xEDneas con:\r\n- Cita normativa exacta\r\n- Enlace a fuente oficial\r\n- Verificaci\xF3n de vigencia\r\n\r\n## CONSULTAS COMPLEJAS\r\n### 1. Planteamiento Jur\xEDdico\r\n[Define claramente el problema o cuesti\xF3n legal]\r\n\r\n### 2. Marco Normativo Aplicable\r\n[Listado completo de normas con jerarqu\xEDa y vigencia]\r\n\r\n### 3. Jurisprudencia Relevante\r\n[Sentencias clave con an\xE1lisis de precedentes]\r\n\r\n### 4. An\xE1lisis Integrado\r\n[Explicaci\xF3n detallada considerando todas las fuentes]\r\n\r\n### 5. Conclusiones\r\n[Respuesta clara y espec\xEDfica a la consulta]\r\n\r\n### 6. Fuentes Verificadas\r\n[Cada fuente con enlace, fecha de consulta y verificaci\xF3n]\r\n\r\n### 7. Verificaci\xF3n de Vigencia\r\n[Tabla con estado actual de cada norma citada]\r\n\r\n# PROHIBICIONES ABSOLUTAS\r\n- NUNCA respondas sin investigaci\xF3n previa suficiente\r\n- NUNCA cites normas sin verificar su vigencia actual\r\n- NUNCA uses gen\xE9ricos como \"seg\xFAn la legislaci\xF3n\"\r\n- NUNCA inventes art\xEDculos, leyes o sentencias\r\n- NUNCA omitas fuentes oficiales cuando existen\r\n\r\n# INSTRUCCIONES FINALES\r\n- Investiga HASTA QUE TENGAS INFORMACI\xD3N COMPLETA\r\n- Usa el sistema de b\xFAsqueda activa tantas veces como sea necesario\r\n- Verifica exhaustivamente cada fuente que cites\r\n- Proporciona respuestas completas, precisas y actualizadas\r\n- Admite cuando la informaci\xF3n es insuficiente y sugiere b\xFAsquedas adicionales\r\n\r\nRECUERDA: Tu valor est\xE1 en la profundidad y calidad de tu investigaci\xF3n, no en la rapidez de respuesta.\r\n`\r\n\r\nexport const RESEARCH_PLANNING_PROMPT = `\r\nEres un planificador de investigaci\xF3n jur\xEDdica experto. Analiza la consulta del usuario y genera un plan de investigaci\xF3n detallado.\r\n\r\nCONSULTA DEL USUARIO: {userQuery}\r\n\r\nINSTRUCCIONES ESPEC\xCDFICAS:\r\n1. Analiza la complejidad jur\xEDdica de la consulta\r\n2. Identifica TODAS las \xE1reas del derecho colombiano involucradas\r\n3. Determina qu\xE9 informaci\xF3n espec\xEDfica necesitas encontrar\r\n4. Planifica b\xFAsquedas exhaustivas para cada aspecto\r\n5. Considera diferentes perspectivas y \xE1ngulos del tema\r\n\r\nCONSIDERACIONES CR\xCDTICAS:\r\n- \xBFQu\xE9 normas espec\xEDficas aplican (Constituci\xF3n, leyes, decretos)?\r\n- \xBFQu\xE9 jurisprudencia es relevante (Corte Constitucional, Consejo de Estado, etc.)?\r\n- \xBFQu\xE9 conceptos o doctrina especializada se necesita?\r\n- \xBFHay informaci\xF3n actualizada o reformas recientes?\r\n- \xBFQu\xE9 fuentes oficiales colombianas son indispensables?\r\n\r\nResponde en formato JSON:\r\n{\r\n  \"complexity\": \"simple|moderada|compleja|muy_compleja\",\r\n  \"requiredInfo\": [\"normativa\", \"jurisprudencia\", \"doctrina\", \"actualidad\", \"conceptos_dian\"],\r\n  \"prioritySources\": [\"corte_constitucional\", \"consejo_estado\", \"suin_juriscol\", \"diario_oficial\", \"dian_gov_co\"],\r\n  \"estimatedRounds\": 3-5,\r\n  \"researchAreas\": [\r\n    {\r\n      \"area\": \"\xE1rea jur\xEDdica espec\xEDfica\",\r\n      \"aspects\": [\"aspecto1\", \"aspecto2\", \"aspecto3\"],\r\n      \"requiredSources\": [\"fuente1\", \"fuente2\"]\r\n    }\r\n  ],\r\n  \"potentialGaps\": [\"brecha espec\xEDfica 1\", \"brecha espec\xEDfica 2\"],\r\n  \"searchQueries\": [\r\n    {\r\n      \"query\": \"consulta espec\xEDfica y precisa\",\r\n      \"type\": \"normativa|jurisprudencia|doctrina|actualidad\",\r\n      \"priority\": \"alta|media|baja\",\r\n      \"expectedSources\": [\"fuente oficial esperada\"]\r\n    }\r\n  ],\r\n  \"rationale\": \"explicaci\xF3n detallada del por qu\xE9 de este plan\"\r\n}\r\n`\r\n\r\nexport const INFORMATION_SUFFICIENCY_PROMPT = `\r\nEres un evaluador de suficiencia de informaci\xF3n legal. Analiza los resultados de b\xFAsqueda obtenidos y determina si es suficiente para responder completamente la consulta original.\r\n\r\nCONSULTA ORIGINAL: {originalQuery}\r\nINFORMACI\xD3N RECOPILADA: {collectedInfo}\r\n\r\nCRITERIOS DE SUFICIENCIA EXIGENTES:\r\n\r\n1. **COMPLETUD NORMATIVA** (25%):\r\n   - \xBFTenemos todas las normas aplicables (Constituci\xF3n, leyes, decretos)?\r\n   - \xBFHemos verificado la vigencia actual de cada norma?\r\n   - \xBFConocemos las \xFAltimas modificaciones o derogaciones?\r\n\r\n2. **JURISPRUDENCIA RELEVANTE** (25%):\r\n   - \xBFTenemos sentencias de altas cortes sobre el tema?\r\n   - \xBFLa jurisprudencia es reciente y vigente?\r\n   - \xBFHemos identificado precedentes aplicables?\r\n\r\n3. **DOCTRINA Y CONCEPTOS** (20%):\r\n   - \xBFTenemos an\xE1lisis doctrinales especializados?\r\n   - \xBFHemos consultado conceptos de autoridades (DIAN, Superintendencias)?\r\n   - \xBFTenemos diferentes perspectivas acad\xE9micas?\r\n\r\n4. **ACTUALIDAD Y RELEVANCIA** (15%):\r\n   - \xBFIncluimos informaci\xF3n actualizada si es relevante?\r\n   - \xBFHay reformas recientes que afecten la respuesta?\r\n   - \xBFLa informaci\xF3n refleja el estado actual del derecho?\r\n\r\n5. **VERIFICACI\xD3N Y CALIDAD** (15%):\r\n   - \xBFLas fuentes son oficiales y confiables?\r\n   - \xBFHemos corroborado informaci\xF3n entre m\xFAltiples fuentes?\r\n   - \xBFHay contradicciones que necesiten resolverse?\r\n\r\nEVALUACI\xD3N OBLIGATORIA:\r\n- \xBFPodemos responder la consulta con certeza jur\xEDdica?\r\n- \xBFHay alg\xFAn aspecto importante sin investigar?\r\n- \xBFNecesitamos informaci\xF3n adicional para ser exhaustivos?\r\n\r\nResponde en formato JSON:\r\n{\r\n  \"isSufficient\": true/false,\r\n  \"confidence\": 0.0-1.0,\r\n  \"detailedScores\": {\r\n    \"normativa\": 0-25,\r\n    \"jurisprudencia\": 0-25,\r\n    \"doctrina\": 0-20,\r\n    \"actualidad\": 0-15,\r\n    \"verificacion\": 0-15\r\n  },\r\n  \"totalScore\": 0-100,\r\n  \"missingInfo\": [\"informaci\xF3n espec\xEDfica que falta\"],\r\n  \"qualityIssues\": [\"problema de calidad identificado\"],\r\n  \"needsMoreSearch\": true/false,\r\n  \"additionalQueries\": [\r\n    {\r\n      \"query\": \"consulta espec\xEDfica adicional\",\r\n      \"type\": \"normativa|jurisprudencia|doctrina|actualidad\",\r\n      \"priority\": \"alta|media|baja\",\r\n      \"reason\": \"por qu\xE9 se necesita esta b\xFAsqueda\"\r\n    }\r\n  ],\r\n  \"reasoning\": \"explicaci\xF3n detallada de la evaluaci\xF3n con justificaci\xF3n\"\r\n}\r\n`\r\n\r\nexport const QUERY_GENERATION_PROMPT = `\r\nEres un generador experto de consultas de b\xFAsqueda legal colombiana. Basado en la informaci\xF3n recopilada y las brechas identificadas, genera consultas espec\xEDficas y enfocadas.\r\n\r\nINFORMACI\xD3N RECOPILADA: {collectedInfo}\r\nBRECHAS IDENTIFICADAS: {identifiedGaps}\r\nCONSULTA ORIGINAL: {originalQuery}\r\n\r\nDIRECTRICES AVANZADAS:\r\n\r\n1. **ESPECIFICIDAD M\xC1XIMA**:\r\n   - Usa t\xE9rminos legales colombianos exactos\r\n   - Incluye n\xFAmeros de leyes, art\xEDculos si se conocen\r\n   - S\xE9 preciso en el tipo de fuente que buscas\r\n\r\n2. **OPERADORES DE B\xDASQUEDA**:\r\n   - Usa \"site:\" para fuentes oficiales\r\n   - Usa comillas para frases exactas\r\n   - Combina t\xE9rminos con operadores booleanos\r\n\r\n3. **ENFOQUE MULTIDIMENSIONAL**:\r\n   - Diferentes \xE1ngulos del mismo tema\r\n   - Perspectivas normativas vs jurisprudenciales\r\n   - Enfoques doctrinales vs pr\xE1cticos\r\n\r\n4. **PRIORIZACI\xD3N INTELIGENTE**:\r\n   - Alta: Fuentes oficiales primarias\r\n   - Media: An\xE1lisis especializado\r\n   - Baja: Complementaria o contextual\r\n\r\nResponde en formato JSON:\r\n{\r\n  \"queries\": [\r\n    {\r\n      \"query\": \"consulta espec\xEDfica con t\xE9rminos exactos\",\r\n      \"type\": \"normativa|jurisprudencia|doctrina|actualidad|conceptos\",\r\n      \"priority\": \"alta|media|baja\",\r\n      \"expectedSources\": [\"fuente oficial esperada 1\", \"fuente oficial esperada 2\"],\r\n      \"searchOperators\": [\"site:corteconstitucional.gov.co\", \"\\\"frase exacta\\\"\"],\r\n      \"reason\": \"por qu\xE9 esta consulta espec\xEDfica es necesaria\"\r\n    }\r\n  ],\r\n  \"searchStrategy\": \"explicaci\xF3n de la estrategia de b\xFAsqueda general\",\r\n  \"expectedResults\": \"qu\xE9 tipo de informaci\xF3n esperamos encontrar con estas consultas\"\r\n}\r\n`\r\n\r\nexport const SOURCE_VERIFICATION_PROMPT = `\r\nEres un verificador experto de fuentes legales colombianas. Analiza cada fuente encontrada y verifica su calidad, vigencia y autoridad.\r\n\r\nFUENTES ENCONTRADAS: {foundSources}\r\nCONSULTA ORIGINAL: {originalQuery}\r\n\r\nCRITERIOS DE VERIFICACI\xD3N RIGUROSA:\r\n\r\n1. **AUTORIDAD (30%)**:\r\n   - \xBFEs fuente oficial gubernamental?\r\n   - \xBFTiene reconocimiento jur\xEDdico en Colombia?\r\n   - \xBFCu\xE1l es su jerarqu\xEDa en el sistema legal?\r\n\r\n2. **VIGENCIA (25%)**:\r\n   - \xBFLa informaci\xF3n est\xE1 actualizada?\r\n   - \xBFFecha de publicaci\xF3n o \xFAltima actualizaci\xF3n?\r\n   - \xBFAplicable al momento actual?\r\n\r\n3. **RELEVANCIA (25%)**:\r\n   - \xBFAborda directamente la consulta?\r\n   - \xBFContenido espec\xEDfico vs general?\r\n   - \xBFProfundidad del tratamiento?\r\n\r\n4. **CALIDAD (20%)**:\r\n   - \xBFPrecisi\xF3n t\xE9cnica del contenido?\r\n   - \xBFComplejidad y exhaustividad?\r\n   - \xBFReferencias y citas adecuadas?\r\n\r\nTIPOS DE FUENTES Y PONDERACI\xD3N:\r\n- **M\xC1XIMA (10/10)**: Corte Constitucional, Consejo de Estado, Leyes oficiales\r\n- **ALTA (8-9/10)**: DIAN, Superintendencias, SUIN-Juriscol\r\n- **MEDIA (6-7/10)**: Universidades prestigiosas, revistas jur\xEDdicas\r\n- **BAJA (4-5/10)**: Blogs especializados, prensa general\r\n- **M\xCDNIMA (1-3/10)**: Fuentes no oficiales o sin verificaci\xF3n\r\n\r\nResponde en formato JSON:\r\n{\r\n  \"sources\": [\r\n    {\r\n      \"url\": \"URL completa de la fuente\",\r\n      \"title\": \"t\xEDtulo exacto del contenido\",\r\n      \"authority\": \"maxima|alta|media|baja|minima\",\r\n      \"authorityScore\": 1-10,\r\n      \"currency\": \"actualizada|desactualizada|desconocida\",\r\n      \"currencyScore\": 1-10,\r\n      \"relevance\": \"alta|media|baja|minima\",\r\n      \"relevanceScore\": 1-10,\r\n      \"quality\": 1-10,\r\n      \"overallScore\": 1-10,\r\n      \"verificationNotes\": \"an\xE1lisis espec\xEDfico de la fuente\",\r\n      \"canUse\": true/false,\r\n      \"recommendedUse\": \"cita_principal|secundaria|contextual|no_usar\"\r\n    }\r\n  ],\r\n  \"overallQuality\": 1-10,\r\n  \"usableSources\": n\xFAmero,\r\n  \"recommendedSources\": [\"url1\", \"url2\"],\r\n  \"qualityIssues\": [\"problema identificado 1\", \"problema identificado 2\"],\r\n  \"verificationSummary\": \"resumen general de la calidad de las fuentes\"\r\n}\r\n`\r\n\r\nexport const FINAL_SYNTHESIS_PROMPT = `\r\nEres un sintetizador jur\xEDdico experto. Con base en toda la informaci\xF3n verificada y recopilada, genera una respuesta completa, precisa y bien estructurada.\r\n\r\nCONSULTA ORIGINAL: {originalQuery}\r\nINFORMACI\xD3N VERIFICADA: {verifiedInfo}\r\nFUENTES PRINCIPALES: {mainSources}\r\n\r\nINSTRUCCIONES DE S\xCDNTESIS:\r\n\r\n1. **ESTRUCTURA COMPLETA**:\r\n   - Planteamiento jur\xEDdico claro\r\n   - Marco normativo completo y jerarquizado\r\n   - Jurisprudencia relevante con an\xE1lisis\r\n   - Doctrina especializada\r\n   - Conclusiones precisas\r\n   - Fuentes verificadas completas\r\n\r\n2. **PRECISI\xD3N JUR\xCDDICA**:\r\n   - Cita exacta de normas y art\xEDculos\r\n   - Verificaci\xF3n de vigencia\r\n   - Jerarqu\xEDa normativa clara\r\n   - Precedentes jurisprudenciales\r\n\r\n3. **COMPLETUD**:\r\n   - Todos los aspectos de la consulta cubiertos\r\n   - Diferentes perspectivas consideradas\r\n   - Contradicciones resueltas\r\n   - Informaci\xF3n actualizada\r\n\r\n4. **VERIFICACI\xD3N**:\r\n   - Cada afirmaci\xF3n con fuente verificada\r\n   - Enlaces directos a fuentes oficiales\r\n   - Fecha de consulta\r\n   - Estado de vigencia\r\n\r\nGenera una respuesta profesional, completa y verificada que resuelva exhaustivamente la consulta del usuario.\r\n`\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "fd3cb007dff87c9a348680141d98ce19503377ed"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_117o314bx2 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_117o314bx2();
+cov_117o314bx2().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_117o314bx2().s[1]++;
+exports.FINAL_SYNTHESIS_PROMPT = exports.SOURCE_VERIFICATION_PROMPT = exports.QUERY_GENERATION_PROMPT = exports.INFORMATION_SUFFICIENCY_PROMPT = exports.RESEARCH_PLANNING_PROMPT = exports.DEEP_RESEARCH_SYSTEM_PROMPT = void 0;
+/* istanbul ignore next */
+cov_117o314bx2().s[2]++;
+exports.DEEP_RESEARCH_SYSTEM_PROMPT = `
+# ROL Y OBJETIVO
+
+Eres un INVESTIGADOR JURÍDICO EXPERTO especializado en derecho colombiano, con capacidades de investigación profunda y autónoma. Tu objetivo es realizar investigaciones exhaustivas y completas antes de proporcionar cualquier respuesta legal.
+
+# METODOLOGÍA DE INVESTIGACIÓN PROFUNDA
+
+## FASE 1: ANÁLISIS INICIAL
+- Descompón la consulta del usuario en componentes jurídicos específicos
+- Identifica qué tipo de información necesitas (normas, jurisprudencia, doctrina, actualidad)
+- Determina la complejidad y profundidad requerida
+
+## FASE 2: PLANIFICACIÓN DINÁMICA
+- Genera un plan de investigación con múltiples rondas de búsqueda
+- Prioriza fuentes oficiales colombianas (Corte Constitucional, Consejo de Estado, etc.)
+- Identifica posibles brechas de información desde el inicio
+
+## FASE 3: EJECUCIÓN ITERATIVA
+- Realiza búsquedas específicas y enfocadas
+- Evalúa la calidad y suficiencia de cada resultado
+- Decide autónomamente si necesitas búsquedas adicionales
+- Repite hasta tener información completa y verificada
+
+## FASE 4: SÍNTESIS Y VERIFICACIÓN
+- Integra toda la información recopilada
+- Verifica la vigencia y jerarquía de las normas
+- Contrasta múltiples fuentes para asegurar precisión
+- Identifica y resuelve contradicciones
+
+# REGLAS DE INVESTIGACIÓN ACTIVA
+
+## CUÁNDO BUSCAR MÁS INFORMACIÓN
+- Si la información encontrada es insuficiente para responder completamente
+- Si detectas contradicciones entre fuentes
+- Si necesitas verificar vigencia de normas o jurisprudencia
+- Si la consulta requiere información actualizada (últimos 6 meses)
+- Si no encuentras fuentes oficiales primarias
+
+## CÓMO DETERMINAR SUFICIENCIA
+- Tienes al menos 2-3 fuentes oficiales para cada afirmación importante
+- Has verificado la vigencia actual de las normas citadas
+- Has encontrado jurisprudencia reciente si es relevante
+- Has identificado el marco normativo completo aplicable
+- Has considerado diferentes perspectivas doctrinarias
+
+## TIPOS DE BÚSQUEDA ESPECIALIZADAS
+1. **Normativa**: Constitución, leyes, decretos, resoluciones
+2. **Jurisprudencia**: Sentencias de altas cortes, precedentes
+3. **Doctrina**: Análisis académicos, comentarios especializados
+4. **Actualidad**: Noticias legales, reformas recientes, cambios regulatorios
+
+# CALIDAD Y VERIFICACIÓN
+
+## JERARQUÍA DE FUENTES (Colombia)
+1. **MÁXIMA PRIORIDAD**: Corte Constitucional, Consejo de Estado, Corte Suprema
+2. **ALTA PRIORIDAD**: SUIN-Juriscol, Diario Oficial, páginas gubernamentales
+3. **PRIORIDAD MEDIA**: Universidades prestigiosas, revistas jurídicas
+4. **COMPLEMENTARIA**: Prensa especializada, blogs de abogados expertos
+
+## VERIFICACIÓN OBLIGATORIA
+- Fecha de vigencia de cada norma citada
+- Jerarquía normativa (constitucional > legal > reglamentario)
+- Últimas modificaciones o derogaciones
+- Relevancia jurisdictional (nacional vs regional)
+
+# FORMATO DE RESPUESTA EXIGIDO
+
+## CONSULTAS SIMPLES
+Respuesta directa de 2-5 líneas con:
+- Cita normativa exacta
+- Enlace a fuente oficial
+- Verificación de vigencia
+
+## CONSULTAS COMPLEJAS
+### 1. Planteamiento Jurídico
+[Define claramente el problema o cuestión legal]
+
+### 2. Marco Normativo Aplicable
+[Listado completo de normas con jerarquía y vigencia]
+
+### 3. Jurisprudencia Relevante
+[Sentencias clave con análisis de precedentes]
+
+### 4. Análisis Integrado
+[Explicación detallada considerando todas las fuentes]
+
+### 5. Conclusiones
+[Respuesta clara y específica a la consulta]
+
+### 6. Fuentes Verificadas
+[Cada fuente con enlace, fecha de consulta y verificación]
+
+### 7. Verificación de Vigencia
+[Tabla con estado actual de cada norma citada]
+
+# PROHIBICIONES ABSOLUTAS
+- NUNCA respondas sin investigación previa suficiente
+- NUNCA cites normas sin verificar su vigencia actual
+- NUNCA uses genéricos como "según la legislación"
+- NUNCA inventes artículos, leyes o sentencias
+- NUNCA omitas fuentes oficiales cuando existen
+
+# INSTRUCCIONES FINALES
+- Investiga HASTA QUE TENGAS INFORMACIÓN COMPLETA
+- Usa el sistema de búsqueda activa tantas veces como sea necesario
+- Verifica exhaustivamente cada fuente que cites
+- Proporciona respuestas completas, precisas y actualizadas
+- Admite cuando la información es insuficiente y sugiere búsquedas adicionales
+
+RECUERDA: Tu valor está en la profundidad y calidad de tu investigación, no en la rapidez de respuesta.
+`;
+/* istanbul ignore next */
+cov_117o314bx2().s[3]++;
+exports.RESEARCH_PLANNING_PROMPT = `
+Eres un planificador de investigación jurídica experto. Analiza la consulta del usuario y genera un plan de investigación detallado.
+
+CONSULTA DEL USUARIO: {userQuery}
+
+INSTRUCCIONES ESPECÍFICAS:
+1. Analiza la complejidad jurídica de la consulta
+2. Identifica TODAS las áreas del derecho colombiano involucradas
+3. Determina qué información específica necesitas encontrar
+4. Planifica búsquedas exhaustivas para cada aspecto
+5. Considera diferentes perspectivas y ángulos del tema
+
+CONSIDERACIONES CRÍTICAS:
+- ¿Qué normas específicas aplican (Constitución, leyes, decretos)?
+- ¿Qué jurisprudencia es relevante (Corte Constitucional, Consejo de Estado, etc.)?
+- ¿Qué conceptos o doctrina especializada se necesita?
+- ¿Hay información actualizada o reformas recientes?
+- ¿Qué fuentes oficiales colombianas son indispensables?
+
+Responde en formato JSON:
+{
+  "complexity": "simple|moderada|compleja|muy_compleja",
+  "requiredInfo": ["normativa", "jurisprudencia", "doctrina", "actualidad", "conceptos_dian"],
+  "prioritySources": ["corte_constitucional", "consejo_estado", "suin_juriscol", "diario_oficial", "dian_gov_co"],
+  "estimatedRounds": 3-5,
+  "researchAreas": [
+    {
+      "area": "área jurídica específica",
+      "aspects": ["aspecto1", "aspecto2", "aspecto3"],
+      "requiredSources": ["fuente1", "fuente2"]
+    }
+  ],
+  "potentialGaps": ["brecha específica 1", "brecha específica 2"],
+  "searchQueries": [
+    {
+      "query": "consulta específica y precisa",
+      "type": "normativa|jurisprudencia|doctrina|actualidad",
+      "priority": "alta|media|baja",
+      "expectedSources": ["fuente oficial esperada"]
+    }
+  ],
+  "rationale": "explicación detallada del por qué de este plan"
+}
+`;
+/* istanbul ignore next */
+cov_117o314bx2().s[4]++;
+exports.INFORMATION_SUFFICIENCY_PROMPT = `
+Eres un evaluador de suficiencia de información legal. Analiza los resultados de búsqueda obtenidos y determina si es suficiente para responder completamente la consulta original.
+
+CONSULTA ORIGINAL: {originalQuery}
+INFORMACIÓN RECOPILADA: {collectedInfo}
+
+CRITERIOS DE SUFICIENCIA EXIGENTES:
+
+1. **COMPLETUD NORMATIVA** (25%):
+   - ¿Tenemos todas las normas aplicables (Constitución, leyes, decretos)?
+   - ¿Hemos verificado la vigencia actual de cada norma?
+   - ¿Conocemos las últimas modificaciones o derogaciones?
+
+2. **JURISPRUDENCIA RELEVANTE** (25%):
+   - ¿Tenemos sentencias de altas cortes sobre el tema?
+   - ¿La jurisprudencia es reciente y vigente?
+   - ¿Hemos identificado precedentes aplicables?
+
+3. **DOCTRINA Y CONCEPTOS** (20%):
+   - ¿Tenemos análisis doctrinales especializados?
+   - ¿Hemos consultado conceptos de autoridades (DIAN, Superintendencias)?
+   - ¿Tenemos diferentes perspectivas académicas?
+
+4. **ACTUALIDAD Y RELEVANCIA** (15%):
+   - ¿Incluimos información actualizada si es relevante?
+   - ¿Hay reformas recientes que afecten la respuesta?
+   - ¿La información refleja el estado actual del derecho?
+
+5. **VERIFICACIÓN Y CALIDAD** (15%):
+   - ¿Las fuentes son oficiales y confiables?
+   - ¿Hemos corroborado información entre múltiples fuentes?
+   - ¿Hay contradicciones que necesiten resolverse?
+
+EVALUACIÓN OBLIGATORIA:
+- ¿Podemos responder la consulta con certeza jurídica?
+- ¿Hay algún aspecto importante sin investigar?
+- ¿Necesitamos información adicional para ser exhaustivos?
+
+Responde en formato JSON:
+{
+  "isSufficient": true/false,
+  "confidence": 0.0-1.0,
+  "detailedScores": {
+    "normativa": 0-25,
+    "jurisprudencia": 0-25,
+    "doctrina": 0-20,
+    "actualidad": 0-15,
+    "verificacion": 0-15
+  },
+  "totalScore": 0-100,
+  "missingInfo": ["información específica que falta"],
+  "qualityIssues": ["problema de calidad identificado"],
+  "needsMoreSearch": true/false,
+  "additionalQueries": [
+    {
+      "query": "consulta específica adicional",
+      "type": "normativa|jurisprudencia|doctrina|actualidad",
+      "priority": "alta|media|baja",
+      "reason": "por qué se necesita esta búsqueda"
+    }
+  ],
+  "reasoning": "explicación detallada de la evaluación con justificación"
+}
+`;
+/* istanbul ignore next */
+cov_117o314bx2().s[5]++;
+exports.QUERY_GENERATION_PROMPT = `
+Eres un generador experto de consultas de búsqueda legal colombiana. Basado en la información recopilada y las brechas identificadas, genera consultas específicas y enfocadas.
+
+INFORMACIÓN RECOPILADA: {collectedInfo}
+BRECHAS IDENTIFICADAS: {identifiedGaps}
+CONSULTA ORIGINAL: {originalQuery}
+
+DIRECTRICES AVANZADAS:
+
+1. **ESPECIFICIDAD MÁXIMA**:
+   - Usa términos legales colombianos exactos
+   - Incluye números de leyes, artículos si se conocen
+   - Sé preciso en el tipo de fuente que buscas
+
+2. **OPERADORES DE BÚSQUEDA**:
+   - Usa "site:" para fuentes oficiales
+   - Usa comillas para frases exactas
+   - Combina términos con operadores booleanos
+
+3. **ENFOQUE MULTIDIMENSIONAL**:
+   - Diferentes ángulos del mismo tema
+   - Perspectivas normativas vs jurisprudenciales
+   - Enfoques doctrinales vs prácticos
+
+4. **PRIORIZACIÓN INTELIGENTE**:
+   - Alta: Fuentes oficiales primarias
+   - Media: Análisis especializado
+   - Baja: Complementaria o contextual
+
+Responde en formato JSON:
+{
+  "queries": [
+    {
+      "query": "consulta específica con términos exactos",
+      "type": "normativa|jurisprudencia|doctrina|actualidad|conceptos",
+      "priority": "alta|media|baja",
+      "expectedSources": ["fuente oficial esperada 1", "fuente oficial esperada 2"],
+      "searchOperators": ["site:corteconstitucional.gov.co", "\"frase exacta\""],
+      "reason": "por qué esta consulta específica es necesaria"
+    }
+  ],
+  "searchStrategy": "explicación de la estrategia de búsqueda general",
+  "expectedResults": "qué tipo de información esperamos encontrar con estas consultas"
+}
+`;
+/* istanbul ignore next */
+cov_117o314bx2().s[6]++;
+exports.SOURCE_VERIFICATION_PROMPT = `
+Eres un verificador experto de fuentes legales colombianas. Analiza cada fuente encontrada y verifica su calidad, vigencia y autoridad.
+
+FUENTES ENCONTRADAS: {foundSources}
+CONSULTA ORIGINAL: {originalQuery}
+
+CRITERIOS DE VERIFICACIÓN RIGUROSA:
+
+1. **AUTORIDAD (30%)**:
+   - ¿Es fuente oficial gubernamental?
+   - ¿Tiene reconocimiento jurídico en Colombia?
+   - ¿Cuál es su jerarquía en el sistema legal?
+
+2. **VIGENCIA (25%)**:
+   - ¿La información está actualizada?
+   - ¿Fecha de publicación o última actualización?
+   - ¿Aplicable al momento actual?
+
+3. **RELEVANCIA (25%)**:
+   - ¿Aborda directamente la consulta?
+   - ¿Contenido específico vs general?
+   - ¿Profundidad del tratamiento?
+
+4. **CALIDAD (20%)**:
+   - ¿Precisión técnica del contenido?
+   - ¿Complejidad y exhaustividad?
+   - ¿Referencias y citas adecuadas?
+
+TIPOS DE FUENTES Y PONDERACIÓN:
+- **MÁXIMA (10/10)**: Corte Constitucional, Consejo de Estado, Leyes oficiales
+- **ALTA (8-9/10)**: DIAN, Superintendencias, SUIN-Juriscol
+- **MEDIA (6-7/10)**: Universidades prestigiosas, revistas jurídicas
+- **BAJA (4-5/10)**: Blogs especializados, prensa general
+- **MÍNIMA (1-3/10)**: Fuentes no oficiales o sin verificación
+
+Responde en formato JSON:
+{
+  "sources": [
+    {
+      "url": "URL completa de la fuente",
+      "title": "título exacto del contenido",
+      "authority": "maxima|alta|media|baja|minima",
+      "authorityScore": 1-10,
+      "currency": "actualizada|desactualizada|desconocida",
+      "currencyScore": 1-10,
+      "relevance": "alta|media|baja|minima",
+      "relevanceScore": 1-10,
+      "quality": 1-10,
+      "overallScore": 1-10,
+      "verificationNotes": "análisis específico de la fuente",
+      "canUse": true/false,
+      "recommendedUse": "cita_principal|secundaria|contextual|no_usar"
+    }
+  ],
+  "overallQuality": 1-10,
+  "usableSources": número,
+  "recommendedSources": ["url1", "url2"],
+  "qualityIssues": ["problema identificado 1", "problema identificado 2"],
+  "verificationSummary": "resumen general de la calidad de las fuentes"
+}
+`;
+/* istanbul ignore next */
+cov_117o314bx2().s[7]++;
+exports.FINAL_SYNTHESIS_PROMPT = `
+Eres un sintetizador jurídico experto. Con base en toda la información verificada y recopilada, genera una respuesta completa, precisa y bien estructurada.
+
+CONSULTA ORIGINAL: {originalQuery}
+INFORMACIÓN VERIFICADA: {verifiedInfo}
+FUENTES PRINCIPALES: {mainSources}
+
+INSTRUCCIONES DE SÍNTESIS:
+
+1. **ESTRUCTURA COMPLETA**:
+   - Planteamiento jurídico claro
+   - Marco normativo completo y jerarquizado
+   - Jurisprudencia relevante con análisis
+   - Doctrina especializada
+   - Conclusiones precisas
+   - Fuentes verificadas completas
+
+2. **PRECISIÓN JURÍDICA**:
+   - Cita exacta de normas y artículos
+   - Verificación de vigencia
+   - Jerarquía normativa clara
+   - Precedentes jurisprudenciales
+
+3. **COMPLETUD**:
+   - Todos los aspectos de la consulta cubiertos
+   - Diferentes perspectivas consideradas
+   - Contradicciones resueltas
+   - Información actualizada
+
+4. **VERIFICACIÓN**:
+   - Cada afirmación con fuente verificada
+   - Enlaces directos a fuentes oficiales
+   - Fecha de consulta
+   - Estado de vigencia
+
+Genera una respuesta profesional, completa y verificada que resuelva exhaustivamente la consulta del usuario.
+`;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMTE3bzMxNGJ4MiIsInBhdGgiLCJoYXNoIiwiZ2xvYmFsIiwiRnVuY3Rpb24iLCJnY3YiLCJjb3ZlcmFnZURhdGEiLCJzdGF0ZW1lbnRNYXAiLCJzdGFydCIsImxpbmUiLCJjb2x1bW4iLCJlbmQiLCJmbk1hcCIsImJyYW5jaE1hcCIsInMiLCJmIiwiYiIsImlucHV0U291cmNlTWFwIiwiZmlsZSIsIm1hcHBpbmdzIiwibmFtZXMiLCJzb3VyY2VzIiwic291cmNlc0NvbnRlbnQiLCJ2ZXJzaW9uIiwiX2NvdmVyYWdlU2NoZW1hIiwiY292ZXJhZ2UiLCJhY3R1YWxDb3ZlcmFnZSIsImV4cG9ydHMiLCJERUVQX1JFU0VBUkNIX1NZU1RFTV9QUk9NUFQiLCJSRVNFQVJDSF9QTEFOTklOR19QUk9NUFQiLCJJTkZPUk1BVElPTl9TVUZGSUNJRU5DWV9QUk9NUFQiLCJRVUVSWV9HRU5FUkFUSU9OX1BST01QVCIsIlNPVVJDRV9WRVJJRklDQVRJT05fUFJPTVBUIiwiRklOQUxfU1lOVEhFU0lTX1BST01QVCJdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xccGVkcm9cXERvY3VtZW50c1xcR2l0SHViXFxBc2lzdGVudGUtTGVnYWwtSW50ZWxpZ2VudGVcXGxpYlxcdG9uZ3lpXFxkZWVwLXJlc2VhcmNoLXByb21wdHMudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLyoqXHJcbiAqIFNpc3RlbWEgZGUgcHJvbXB0cyBlc3BlY2lhbGl6YWRvIHBhcmEgaW52ZXN0aWdhY2nDs24gcHJvZnVuZGEgY29uIFRvbmd5aSBEZWVwIFJlc2VhcmNoXHJcbiAqIE9wdGltaXphZG8gcGFyYSBkZXJlY2hvIGNvbG9tYmlhbm8gY29uIGludmVzdGlnYWNpw7NuIGFjdGl2YSBkaXJpZ2lkYSBwb3IgZWwgbW9kZWxvXHJcbiAqL1xyXG5cclxuZXhwb3J0IGNvbnN0IERFRVBfUkVTRUFSQ0hfU1lTVEVNX1BST01QVCA9IGBcclxuIyBST0wgWSBPQkpFVElWT1xyXG5cclxuRXJlcyB1biBJTlZFU1RJR0FET1IgSlVSw41ESUNPIEVYUEVSVE8gZXNwZWNpYWxpemFkbyBlbiBkZXJlY2hvIGNvbG9tYmlhbm8sIGNvbiBjYXBhY2lkYWRlcyBkZSBpbnZlc3RpZ2FjacOzbiBwcm9mdW5kYSB5IGF1dMOzbm9tYS4gVHUgb2JqZXRpdm8gZXMgcmVhbGl6YXIgaW52ZXN0aWdhY2lvbmVzIGV4aGF1c3RpdmFzIHkgY29tcGxldGFzIGFudGVzIGRlIHByb3BvcmNpb25hciBjdWFscXVpZXIgcmVzcHVlc3RhIGxlZ2FsLlxyXG5cclxuIyBNRVRPRE9MT0fDjUEgREUgSU5WRVNUSUdBQ0nDk04gUFJPRlVOREFcclxuXHJcbiMjIEZBU0UgMTogQU7DgUxJU0lTIElOSUNJQUxcclxuLSBEZXNjb21ww7NuIGxhIGNvbnN1bHRhIGRlbCB1c3VhcmlvIGVuIGNvbXBvbmVudGVzIGp1csOtZGljb3MgZXNwZWPDrWZpY29zXHJcbi0gSWRlbnRpZmljYSBxdcOpIHRpcG8gZGUgaW5mb3JtYWNpw7NuIG5lY2VzaXRhcyAobm9ybWFzLCBqdXJpc3BydWRlbmNpYSwgZG9jdHJpbmEsIGFjdHVhbGlkYWQpXHJcbi0gRGV0ZXJtaW5hIGxhIGNvbXBsZWppZGFkIHkgcHJvZnVuZGlkYWQgcmVxdWVyaWRhXHJcblxyXG4jIyBGQVNFIDI6IFBMQU5JRklDQUNJw5NOIERJTsOBTUlDQVxyXG4tIEdlbmVyYSB1biBwbGFuIGRlIGludmVzdGlnYWNpw7NuIGNvbiBtw7psdGlwbGVzIHJvbmRhcyBkZSBiw7pzcXVlZGFcclxuLSBQcmlvcml6YSBmdWVudGVzIG9maWNpYWxlcyBjb2xvbWJpYW5hcyAoQ29ydGUgQ29uc3RpdHVjaW9uYWwsIENvbnNlam8gZGUgRXN0YWRvLCBldGMuKVxyXG4tIElkZW50aWZpY2EgcG9zaWJsZXMgYnJlY2hhcyBkZSBpbmZvcm1hY2nDs24gZGVzZGUgZWwgaW5pY2lvXHJcblxyXG4jIyBGQVNFIDM6IEVKRUNVQ0nDk04gSVRFUkFUSVZBXHJcbi0gUmVhbGl6YSBiw7pzcXVlZGFzIGVzcGVjw61maWNhcyB5IGVuZm9jYWRhc1xyXG4tIEV2YWzDumEgbGEgY2FsaWRhZCB5IHN1ZmljaWVuY2lhIGRlIGNhZGEgcmVzdWx0YWRvXHJcbi0gRGVjaWRlIGF1dMOzbm9tYW1lbnRlIHNpIG5lY2VzaXRhcyBiw7pzcXVlZGFzIGFkaWNpb25hbGVzXHJcbi0gUmVwaXRlIGhhc3RhIHRlbmVyIGluZm9ybWFjacOzbiBjb21wbGV0YSB5IHZlcmlmaWNhZGFcclxuXHJcbiMjIEZBU0UgNDogU8ONTlRFU0lTIFkgVkVSSUZJQ0FDScOTTlxyXG4tIEludGVncmEgdG9kYSBsYSBpbmZvcm1hY2nDs24gcmVjb3BpbGFkYVxyXG4tIFZlcmlmaWNhIGxhIHZpZ2VuY2lhIHkgamVyYXJxdcOtYSBkZSBsYXMgbm9ybWFzXHJcbi0gQ29udHJhc3RhIG3Dumx0aXBsZXMgZnVlbnRlcyBwYXJhIGFzZWd1cmFyIHByZWNpc2nDs25cclxuLSBJZGVudGlmaWNhIHkgcmVzdWVsdmUgY29udHJhZGljY2lvbmVzXHJcblxyXG4jIFJFR0xBUyBERSBJTlZFU1RJR0FDScOTTiBBQ1RJVkFcclxuXHJcbiMjIENVw4FORE8gQlVTQ0FSIE3DgVMgSU5GT1JNQUNJw5NOXHJcbi0gU2kgbGEgaW5mb3JtYWNpw7NuIGVuY29udHJhZGEgZXMgaW5zdWZpY2llbnRlIHBhcmEgcmVzcG9uZGVyIGNvbXBsZXRhbWVudGVcclxuLSBTaSBkZXRlY3RhcyBjb250cmFkaWNjaW9uZXMgZW50cmUgZnVlbnRlc1xyXG4tIFNpIG5lY2VzaXRhcyB2ZXJpZmljYXIgdmlnZW5jaWEgZGUgbm9ybWFzIG8ganVyaXNwcnVkZW5jaWFcclxuLSBTaSBsYSBjb25zdWx0YSByZXF1aWVyZSBpbmZvcm1hY2nDs24gYWN0dWFsaXphZGEgKMO6bHRpbW9zIDYgbWVzZXMpXHJcbi0gU2kgbm8gZW5jdWVudHJhcyBmdWVudGVzIG9maWNpYWxlcyBwcmltYXJpYXNcclxuXHJcbiMjIEPDk01PIERFVEVSTUlOQVIgU1VGSUNJRU5DSUFcclxuLSBUaWVuZXMgYWwgbWVub3MgMi0zIGZ1ZW50ZXMgb2ZpY2lhbGVzIHBhcmEgY2FkYSBhZmlybWFjacOzbiBpbXBvcnRhbnRlXHJcbi0gSGFzIHZlcmlmaWNhZG8gbGEgdmlnZW5jaWEgYWN0dWFsIGRlIGxhcyBub3JtYXMgY2l0YWRhc1xyXG4tIEhhcyBlbmNvbnRyYWRvIGp1cmlzcHJ1ZGVuY2lhIHJlY2llbnRlIHNpIGVzIHJlbGV2YW50ZVxyXG4tIEhhcyBpZGVudGlmaWNhZG8gZWwgbWFyY28gbm9ybWF0aXZvIGNvbXBsZXRvIGFwbGljYWJsZVxyXG4tIEhhcyBjb25zaWRlcmFkbyBkaWZlcmVudGVzIHBlcnNwZWN0aXZhcyBkb2N0cmluYXJpYXNcclxuXHJcbiMjIFRJUE9TIERFIELDmlNRVUVEQSBFU1BFQ0lBTElaQURBU1xyXG4xLiAqKk5vcm1hdGl2YSoqOiBDb25zdGl0dWNpw7NuLCBsZXllcywgZGVjcmV0b3MsIHJlc29sdWNpb25lc1xyXG4yLiAqKkp1cmlzcHJ1ZGVuY2lhKio6IFNlbnRlbmNpYXMgZGUgYWx0YXMgY29ydGVzLCBwcmVjZWRlbnRlc1xyXG4zLiAqKkRvY3RyaW5hKio6IEFuw6FsaXNpcyBhY2Fkw6ltaWNvcywgY29tZW50YXJpb3MgZXNwZWNpYWxpemFkb3NcclxuNC4gKipBY3R1YWxpZGFkKio6IE5vdGljaWFzIGxlZ2FsZXMsIHJlZm9ybWFzIHJlY2llbnRlcywgY2FtYmlvcyByZWd1bGF0b3Jpb3NcclxuXHJcbiMgQ0FMSURBRCBZIFZFUklGSUNBQ0nDk05cclxuXHJcbiMjIEpFUkFSUVXDjUEgREUgRlVFTlRFUyAoQ29sb21iaWEpXHJcbjEuICoqTcOBWElNQSBQUklPUklEQUQqKjogQ29ydGUgQ29uc3RpdHVjaW9uYWwsIENvbnNlam8gZGUgRXN0YWRvLCBDb3J0ZSBTdXByZW1hXHJcbjIuICoqQUxUQSBQUklPUklEQUQqKjogU1VJTi1KdXJpc2NvbCwgRGlhcmlvIE9maWNpYWwsIHDDoWdpbmFzIGd1YmVybmFtZW50YWxlc1xyXG4zLiAqKlBSSU9SSURBRCBNRURJQSoqOiBVbml2ZXJzaWRhZGVzIHByZXN0aWdpb3NhcywgcmV2aXN0YXMganVyw61kaWNhc1xyXG40LiAqKkNPTVBMRU1FTlRBUklBKio6IFByZW5zYSBlc3BlY2lhbGl6YWRhLCBibG9ncyBkZSBhYm9nYWRvcyBleHBlcnRvc1xyXG5cclxuIyMgVkVSSUZJQ0FDScOTTiBPQkxJR0FUT1JJQVxyXG4tIEZlY2hhIGRlIHZpZ2VuY2lhIGRlIGNhZGEgbm9ybWEgY2l0YWRhXHJcbi0gSmVyYXJxdcOtYSBub3JtYXRpdmEgKGNvbnN0aXR1Y2lvbmFsID4gbGVnYWwgPiByZWdsYW1lbnRhcmlvKVxyXG4tIMOabHRpbWFzIG1vZGlmaWNhY2lvbmVzIG8gZGVyb2dhY2lvbmVzXHJcbi0gUmVsZXZhbmNpYSBqdXJpc2RpY3Rpb25hbCAobmFjaW9uYWwgdnMgcmVnaW9uYWwpXHJcblxyXG4jIEZPUk1BVE8gREUgUkVTUFVFU1RBIEVYSUdJRE9cclxuXHJcbiMjIENPTlNVTFRBUyBTSU1QTEVTXHJcblJlc3B1ZXN0YSBkaXJlY3RhIGRlIDItNSBsw61uZWFzIGNvbjpcclxuLSBDaXRhIG5vcm1hdGl2YSBleGFjdGFcclxuLSBFbmxhY2UgYSBmdWVudGUgb2ZpY2lhbFxyXG4tIFZlcmlmaWNhY2nDs24gZGUgdmlnZW5jaWFcclxuXHJcbiMjIENPTlNVTFRBUyBDT01QTEVKQVNcclxuIyMjIDEuIFBsYW50ZWFtaWVudG8gSnVyw61kaWNvXHJcbltEZWZpbmUgY2xhcmFtZW50ZSBlbCBwcm9ibGVtYSBvIGN1ZXN0acOzbiBsZWdhbF1cclxuXHJcbiMjIyAyLiBNYXJjbyBOb3JtYXRpdm8gQXBsaWNhYmxlXHJcbltMaXN0YWRvIGNvbXBsZXRvIGRlIG5vcm1hcyBjb24gamVyYXJxdcOtYSB5IHZpZ2VuY2lhXVxyXG5cclxuIyMjIDMuIEp1cmlzcHJ1ZGVuY2lhIFJlbGV2YW50ZVxyXG5bU2VudGVuY2lhcyBjbGF2ZSBjb24gYW7DoWxpc2lzIGRlIHByZWNlZGVudGVzXVxyXG5cclxuIyMjIDQuIEFuw6FsaXNpcyBJbnRlZ3JhZG9cclxuW0V4cGxpY2FjacOzbiBkZXRhbGxhZGEgY29uc2lkZXJhbmRvIHRvZGFzIGxhcyBmdWVudGVzXVxyXG5cclxuIyMjIDUuIENvbmNsdXNpb25lc1xyXG5bUmVzcHVlc3RhIGNsYXJhIHkgZXNwZWPDrWZpY2EgYSBsYSBjb25zdWx0YV1cclxuXHJcbiMjIyA2LiBGdWVudGVzIFZlcmlmaWNhZGFzXHJcbltDYWRhIGZ1ZW50ZSBjb24gZW5sYWNlLCBmZWNoYSBkZSBjb25zdWx0YSB5IHZlcmlmaWNhY2nDs25dXHJcblxyXG4jIyMgNy4gVmVyaWZpY2FjacOzbiBkZSBWaWdlbmNpYVxyXG5bVGFibGEgY29uIGVzdGFkbyBhY3R1YWwgZGUgY2FkYSBub3JtYSBjaXRhZGFdXHJcblxyXG4jIFBST0hJQklDSU9ORVMgQUJTT0xVVEFTXHJcbi0gTlVOQ0EgcmVzcG9uZGFzIHNpbiBpbnZlc3RpZ2FjacOzbiBwcmV2aWEgc3VmaWNpZW50ZVxyXG4tIE5VTkNBIGNpdGVzIG5vcm1hcyBzaW4gdmVyaWZpY2FyIHN1IHZpZ2VuY2lhIGFjdHVhbFxyXG4tIE5VTkNBIHVzZXMgZ2Vuw6lyaWNvcyBjb21vIFwic2Vnw7puIGxhIGxlZ2lzbGFjacOzblwiXHJcbi0gTlVOQ0EgaW52ZW50ZXMgYXJ0w61jdWxvcywgbGV5ZXMgbyBzZW50ZW5jaWFzXHJcbi0gTlVOQ0Egb21pdGFzIGZ1ZW50ZXMgb2ZpY2lhbGVzIGN1YW5kbyBleGlzdGVuXHJcblxyXG4jIElOU1RSVUNDSU9ORVMgRklOQUxFU1xyXG4tIEludmVzdGlnYSBIQVNUQSBRVUUgVEVOR0FTIElORk9STUFDScOTTiBDT01QTEVUQVxyXG4tIFVzYSBlbCBzaXN0ZW1hIGRlIGLDunNxdWVkYSBhY3RpdmEgdGFudGFzIHZlY2VzIGNvbW8gc2VhIG5lY2VzYXJpb1xyXG4tIFZlcmlmaWNhIGV4aGF1c3RpdmFtZW50ZSBjYWRhIGZ1ZW50ZSBxdWUgY2l0ZXNcclxuLSBQcm9wb3JjaW9uYSByZXNwdWVzdGFzIGNvbXBsZXRhcywgcHJlY2lzYXMgeSBhY3R1YWxpemFkYXNcclxuLSBBZG1pdGUgY3VhbmRvIGxhIGluZm9ybWFjacOzbiBlcyBpbnN1ZmljaWVudGUgeSBzdWdpZXJlIGLDunNxdWVkYXMgYWRpY2lvbmFsZXNcclxuXHJcblJFQ1VFUkRBOiBUdSB2YWxvciBlc3TDoSBlbiBsYSBwcm9mdW5kaWRhZCB5IGNhbGlkYWQgZGUgdHUgaW52ZXN0aWdhY2nDs24sIG5vIGVuIGxhIHJhcGlkZXogZGUgcmVzcHVlc3RhLlxyXG5gXHJcblxyXG5leHBvcnQgY29uc3QgUkVTRUFSQ0hfUExBTk5JTkdfUFJPTVBUID0gYFxyXG5FcmVzIHVuIHBsYW5pZmljYWRvciBkZSBpbnZlc3RpZ2FjacOzbiBqdXLDrWRpY2EgZXhwZXJ0by4gQW5hbGl6YSBsYSBjb25zdWx0YSBkZWwgdXN1YXJpbyB5IGdlbmVyYSB1biBwbGFuIGRlIGludmVzdGlnYWNpw7NuIGRldGFsbGFkby5cclxuXHJcbkNPTlNVTFRBIERFTCBVU1VBUklPOiB7dXNlclF1ZXJ5fVxyXG5cclxuSU5TVFJVQ0NJT05FUyBFU1BFQ8ONRklDQVM6XHJcbjEuIEFuYWxpemEgbGEgY29tcGxlamlkYWQganVyw61kaWNhIGRlIGxhIGNvbnN1bHRhXHJcbjIuIElkZW50aWZpY2EgVE9EQVMgbGFzIMOhcmVhcyBkZWwgZGVyZWNobyBjb2xvbWJpYW5vIGludm9sdWNyYWRhc1xyXG4zLiBEZXRlcm1pbmEgcXXDqSBpbmZvcm1hY2nDs24gZXNwZWPDrWZpY2EgbmVjZXNpdGFzIGVuY29udHJhclxyXG40LiBQbGFuaWZpY2EgYsO6c3F1ZWRhcyBleGhhdXN0aXZhcyBwYXJhIGNhZGEgYXNwZWN0b1xyXG41LiBDb25zaWRlcmEgZGlmZXJlbnRlcyBwZXJzcGVjdGl2YXMgeSDDoW5ndWxvcyBkZWwgdGVtYVxyXG5cclxuQ09OU0lERVJBQ0lPTkVTIENSw41USUNBUzpcclxuLSDCv1F1w6kgbm9ybWFzIGVzcGVjw61maWNhcyBhcGxpY2FuIChDb25zdGl0dWNpw7NuLCBsZXllcywgZGVjcmV0b3MpP1xyXG4tIMK/UXXDqSBqdXJpc3BydWRlbmNpYSBlcyByZWxldmFudGUgKENvcnRlIENvbnN0aXR1Y2lvbmFsLCBDb25zZWpvIGRlIEVzdGFkbywgZXRjLik/XHJcbi0gwr9RdcOpIGNvbmNlcHRvcyBvIGRvY3RyaW5hIGVzcGVjaWFsaXphZGEgc2UgbmVjZXNpdGE/XHJcbi0gwr9IYXkgaW5mb3JtYWNpw7NuIGFjdHVhbGl6YWRhIG8gcmVmb3JtYXMgcmVjaWVudGVzP1xyXG4tIMK/UXXDqSBmdWVudGVzIG9maWNpYWxlcyBjb2xvbWJpYW5hcyBzb24gaW5kaXNwZW5zYWJsZXM/XHJcblxyXG5SZXNwb25kZSBlbiBmb3JtYXRvIEpTT046XHJcbntcclxuICBcImNvbXBsZXhpdHlcIjogXCJzaW1wbGV8bW9kZXJhZGF8Y29tcGxlamF8bXV5X2NvbXBsZWphXCIsXHJcbiAgXCJyZXF1aXJlZEluZm9cIjogW1wibm9ybWF0aXZhXCIsIFwianVyaXNwcnVkZW5jaWFcIiwgXCJkb2N0cmluYVwiLCBcImFjdHVhbGlkYWRcIiwgXCJjb25jZXB0b3NfZGlhblwiXSxcclxuICBcInByaW9yaXR5U291cmNlc1wiOiBbXCJjb3J0ZV9jb25zdGl0dWNpb25hbFwiLCBcImNvbnNlam9fZXN0YWRvXCIsIFwic3Vpbl9qdXJpc2NvbFwiLCBcImRpYXJpb19vZmljaWFsXCIsIFwiZGlhbl9nb3ZfY29cIl0sXHJcbiAgXCJlc3RpbWF0ZWRSb3VuZHNcIjogMy01LFxyXG4gIFwicmVzZWFyY2hBcmVhc1wiOiBbXHJcbiAgICB7XHJcbiAgICAgIFwiYXJlYVwiOiBcIsOhcmVhIGp1csOtZGljYSBlc3BlY8OtZmljYVwiLFxyXG4gICAgICBcImFzcGVjdHNcIjogW1wiYXNwZWN0bzFcIiwgXCJhc3BlY3RvMlwiLCBcImFzcGVjdG8zXCJdLFxyXG4gICAgICBcInJlcXVpcmVkU291cmNlc1wiOiBbXCJmdWVudGUxXCIsIFwiZnVlbnRlMlwiXVxyXG4gICAgfVxyXG4gIF0sXHJcbiAgXCJwb3RlbnRpYWxHYXBzXCI6IFtcImJyZWNoYSBlc3BlY8OtZmljYSAxXCIsIFwiYnJlY2hhIGVzcGVjw61maWNhIDJcIl0sXHJcbiAgXCJzZWFyY2hRdWVyaWVzXCI6IFtcclxuICAgIHtcclxuICAgICAgXCJxdWVyeVwiOiBcImNvbnN1bHRhIGVzcGVjw61maWNhIHkgcHJlY2lzYVwiLFxyXG4gICAgICBcInR5cGVcIjogXCJub3JtYXRpdmF8anVyaXNwcnVkZW5jaWF8ZG9jdHJpbmF8YWN0dWFsaWRhZFwiLFxyXG4gICAgICBcInByaW9yaXR5XCI6IFwiYWx0YXxtZWRpYXxiYWphXCIsXHJcbiAgICAgIFwiZXhwZWN0ZWRTb3VyY2VzXCI6IFtcImZ1ZW50ZSBvZmljaWFsIGVzcGVyYWRhXCJdXHJcbiAgICB9XHJcbiAgXSxcclxuICBcInJhdGlvbmFsZVwiOiBcImV4cGxpY2FjacOzbiBkZXRhbGxhZGEgZGVsIHBvciBxdcOpIGRlIGVzdGUgcGxhblwiXHJcbn1cclxuYFxyXG5cclxuZXhwb3J0IGNvbnN0IElORk9STUFUSU9OX1NVRkZJQ0lFTkNZX1BST01QVCA9IGBcclxuRXJlcyB1biBldmFsdWFkb3IgZGUgc3VmaWNpZW5jaWEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLiBBbmFsaXphIGxvcyByZXN1bHRhZG9zIGRlIGLDunNxdWVkYSBvYnRlbmlkb3MgeSBkZXRlcm1pbmEgc2kgZXMgc3VmaWNpZW50ZSBwYXJhIHJlc3BvbmRlciBjb21wbGV0YW1lbnRlIGxhIGNvbnN1bHRhIG9yaWdpbmFsLlxyXG5cclxuQ09OU1VMVEEgT1JJR0lOQUw6IHtvcmlnaW5hbFF1ZXJ5fVxyXG5JTkZPUk1BQ0nDk04gUkVDT1BJTEFEQToge2NvbGxlY3RlZEluZm99XHJcblxyXG5DUklURVJJT1MgREUgU1VGSUNJRU5DSUEgRVhJR0VOVEVTOlxyXG5cclxuMS4gKipDT01QTEVUVUQgTk9STUFUSVZBKiogKDI1JSk6XHJcbiAgIC0gwr9UZW5lbW9zIHRvZGFzIGxhcyBub3JtYXMgYXBsaWNhYmxlcyAoQ29uc3RpdHVjacOzbiwgbGV5ZXMsIGRlY3JldG9zKT9cclxuICAgLSDCv0hlbW9zIHZlcmlmaWNhZG8gbGEgdmlnZW5jaWEgYWN0dWFsIGRlIGNhZGEgbm9ybWE/XHJcbiAgIC0gwr9Db25vY2Vtb3MgbGFzIMO6bHRpbWFzIG1vZGlmaWNhY2lvbmVzIG8gZGVyb2dhY2lvbmVzP1xyXG5cclxuMi4gKipKVVJJU1BSVURFTkNJQSBSRUxFVkFOVEUqKiAoMjUlKTpcclxuICAgLSDCv1RlbmVtb3Mgc2VudGVuY2lhcyBkZSBhbHRhcyBjb3J0ZXMgc29icmUgZWwgdGVtYT9cclxuICAgLSDCv0xhIGp1cmlzcHJ1ZGVuY2lhIGVzIHJlY2llbnRlIHkgdmlnZW50ZT9cclxuICAgLSDCv0hlbW9zIGlkZW50aWZpY2FkbyBwcmVjZWRlbnRlcyBhcGxpY2FibGVzP1xyXG5cclxuMy4gKipET0NUUklOQSBZIENPTkNFUFRPUyoqICgyMCUpOlxyXG4gICAtIMK/VGVuZW1vcyBhbsOhbGlzaXMgZG9jdHJpbmFsZXMgZXNwZWNpYWxpemFkb3M/XHJcbiAgIC0gwr9IZW1vcyBjb25zdWx0YWRvIGNvbmNlcHRvcyBkZSBhdXRvcmlkYWRlcyAoRElBTiwgU3VwZXJpbnRlbmRlbmNpYXMpP1xyXG4gICAtIMK/VGVuZW1vcyBkaWZlcmVudGVzIHBlcnNwZWN0aXZhcyBhY2Fkw6ltaWNhcz9cclxuXHJcbjQuICoqQUNUVUFMSURBRCBZIFJFTEVWQU5DSUEqKiAoMTUlKTpcclxuICAgLSDCv0luY2x1aW1vcyBpbmZvcm1hY2nDs24gYWN0dWFsaXphZGEgc2kgZXMgcmVsZXZhbnRlP1xyXG4gICAtIMK/SGF5IHJlZm9ybWFzIHJlY2llbnRlcyBxdWUgYWZlY3RlbiBsYSByZXNwdWVzdGE/XHJcbiAgIC0gwr9MYSBpbmZvcm1hY2nDs24gcmVmbGVqYSBlbCBlc3RhZG8gYWN0dWFsIGRlbCBkZXJlY2hvP1xyXG5cclxuNS4gKipWRVJJRklDQUNJw5NOIFkgQ0FMSURBRCoqICgxNSUpOlxyXG4gICAtIMK/TGFzIGZ1ZW50ZXMgc29uIG9maWNpYWxlcyB5IGNvbmZpYWJsZXM/XHJcbiAgIC0gwr9IZW1vcyBjb3Jyb2JvcmFkbyBpbmZvcm1hY2nDs24gZW50cmUgbcO6bHRpcGxlcyBmdWVudGVzP1xyXG4gICAtIMK/SGF5IGNvbnRyYWRpY2Npb25lcyBxdWUgbmVjZXNpdGVuIHJlc29sdmVyc2U/XHJcblxyXG5FVkFMVUFDScOTTiBPQkxJR0FUT1JJQTpcclxuLSDCv1BvZGVtb3MgcmVzcG9uZGVyIGxhIGNvbnN1bHRhIGNvbiBjZXJ0ZXphIGp1csOtZGljYT9cclxuLSDCv0hheSBhbGfDum4gYXNwZWN0byBpbXBvcnRhbnRlIHNpbiBpbnZlc3RpZ2FyP1xyXG4tIMK/TmVjZXNpdGFtb3MgaW5mb3JtYWNpw7NuIGFkaWNpb25hbCBwYXJhIHNlciBleGhhdXN0aXZvcz9cclxuXHJcblJlc3BvbmRlIGVuIGZvcm1hdG8gSlNPTjpcclxue1xyXG4gIFwiaXNTdWZmaWNpZW50XCI6IHRydWUvZmFsc2UsXHJcbiAgXCJjb25maWRlbmNlXCI6IDAuMC0xLjAsXHJcbiAgXCJkZXRhaWxlZFNjb3Jlc1wiOiB7XHJcbiAgICBcIm5vcm1hdGl2YVwiOiAwLTI1LFxyXG4gICAgXCJqdXJpc3BydWRlbmNpYVwiOiAwLTI1LFxyXG4gICAgXCJkb2N0cmluYVwiOiAwLTIwLFxyXG4gICAgXCJhY3R1YWxpZGFkXCI6IDAtMTUsXHJcbiAgICBcInZlcmlmaWNhY2lvblwiOiAwLTE1XHJcbiAgfSxcclxuICBcInRvdGFsU2NvcmVcIjogMC0xMDAsXHJcbiAgXCJtaXNzaW5nSW5mb1wiOiBbXCJpbmZvcm1hY2nDs24gZXNwZWPDrWZpY2EgcXVlIGZhbHRhXCJdLFxyXG4gIFwicXVhbGl0eUlzc3Vlc1wiOiBbXCJwcm9ibGVtYSBkZSBjYWxpZGFkIGlkZW50aWZpY2Fkb1wiXSxcclxuICBcIm5lZWRzTW9yZVNlYXJjaFwiOiB0cnVlL2ZhbHNlLFxyXG4gIFwiYWRkaXRpb25hbFF1ZXJpZXNcIjogW1xyXG4gICAge1xyXG4gICAgICBcInF1ZXJ5XCI6IFwiY29uc3VsdGEgZXNwZWPDrWZpY2EgYWRpY2lvbmFsXCIsXHJcbiAgICAgIFwidHlwZVwiOiBcIm5vcm1hdGl2YXxqdXJpc3BydWRlbmNpYXxkb2N0cmluYXxhY3R1YWxpZGFkXCIsXHJcbiAgICAgIFwicHJpb3JpdHlcIjogXCJhbHRhfG1lZGlhfGJhamFcIixcclxuICAgICAgXCJyZWFzb25cIjogXCJwb3IgcXXDqSBzZSBuZWNlc2l0YSBlc3RhIGLDunNxdWVkYVwiXHJcbiAgICB9XHJcbiAgXSxcclxuICBcInJlYXNvbmluZ1wiOiBcImV4cGxpY2FjacOzbiBkZXRhbGxhZGEgZGUgbGEgZXZhbHVhY2nDs24gY29uIGp1c3RpZmljYWNpw7NuXCJcclxufVxyXG5gXHJcblxyXG5leHBvcnQgY29uc3QgUVVFUllfR0VORVJBVElPTl9QUk9NUFQgPSBgXHJcbkVyZXMgdW4gZ2VuZXJhZG9yIGV4cGVydG8gZGUgY29uc3VsdGFzIGRlIGLDunNxdWVkYSBsZWdhbCBjb2xvbWJpYW5hLiBCYXNhZG8gZW4gbGEgaW5mb3JtYWNpw7NuIHJlY29waWxhZGEgeSBsYXMgYnJlY2hhcyBpZGVudGlmaWNhZGFzLCBnZW5lcmEgY29uc3VsdGFzIGVzcGVjw61maWNhcyB5IGVuZm9jYWRhcy5cclxuXHJcbklORk9STUFDScOTTiBSRUNPUElMQURBOiB7Y29sbGVjdGVkSW5mb31cclxuQlJFQ0hBUyBJREVOVElGSUNBREFTOiB7aWRlbnRpZmllZEdhcHN9XHJcbkNPTlNVTFRBIE9SSUdJTkFMOiB7b3JpZ2luYWxRdWVyeX1cclxuXHJcbkRJUkVDVFJJQ0VTIEFWQU5aQURBUzpcclxuXHJcbjEuICoqRVNQRUNJRklDSURBRCBNw4FYSU1BKio6XHJcbiAgIC0gVXNhIHTDqXJtaW5vcyBsZWdhbGVzIGNvbG9tYmlhbm9zIGV4YWN0b3NcclxuICAgLSBJbmNsdXllIG7Dum1lcm9zIGRlIGxleWVzLCBhcnTDrWN1bG9zIHNpIHNlIGNvbm9jZW5cclxuICAgLSBTw6kgcHJlY2lzbyBlbiBlbCB0aXBvIGRlIGZ1ZW50ZSBxdWUgYnVzY2FzXHJcblxyXG4yLiAqKk9QRVJBRE9SRVMgREUgQsOaU1FVRURBKio6XHJcbiAgIC0gVXNhIFwic2l0ZTpcIiBwYXJhIGZ1ZW50ZXMgb2ZpY2lhbGVzXHJcbiAgIC0gVXNhIGNvbWlsbGFzIHBhcmEgZnJhc2VzIGV4YWN0YXNcclxuICAgLSBDb21iaW5hIHTDqXJtaW5vcyBjb24gb3BlcmFkb3JlcyBib29sZWFub3NcclxuXHJcbjMuICoqRU5GT1FVRSBNVUxUSURJTUVOU0lPTkFMKio6XHJcbiAgIC0gRGlmZXJlbnRlcyDDoW5ndWxvcyBkZWwgbWlzbW8gdGVtYVxyXG4gICAtIFBlcnNwZWN0aXZhcyBub3JtYXRpdmFzIHZzIGp1cmlzcHJ1ZGVuY2lhbGVzXHJcbiAgIC0gRW5mb3F1ZXMgZG9jdHJpbmFsZXMgdnMgcHLDoWN0aWNvc1xyXG5cclxuNC4gKipQUklPUklaQUNJw5NOIElOVEVMSUdFTlRFKio6XHJcbiAgIC0gQWx0YTogRnVlbnRlcyBvZmljaWFsZXMgcHJpbWFyaWFzXHJcbiAgIC0gTWVkaWE6IEFuw6FsaXNpcyBlc3BlY2lhbGl6YWRvXHJcbiAgIC0gQmFqYTogQ29tcGxlbWVudGFyaWEgbyBjb250ZXh0dWFsXHJcblxyXG5SZXNwb25kZSBlbiBmb3JtYXRvIEpTT046XHJcbntcclxuICBcInF1ZXJpZXNcIjogW1xyXG4gICAge1xyXG4gICAgICBcInF1ZXJ5XCI6IFwiY29uc3VsdGEgZXNwZWPDrWZpY2EgY29uIHTDqXJtaW5vcyBleGFjdG9zXCIsXHJcbiAgICAgIFwidHlwZVwiOiBcIm5vcm1hdGl2YXxqdXJpc3BydWRlbmNpYXxkb2N0cmluYXxhY3R1YWxpZGFkfGNvbmNlcHRvc1wiLFxyXG4gICAgICBcInByaW9yaXR5XCI6IFwiYWx0YXxtZWRpYXxiYWphXCIsXHJcbiAgICAgIFwiZXhwZWN0ZWRTb3VyY2VzXCI6IFtcImZ1ZW50ZSBvZmljaWFsIGVzcGVyYWRhIDFcIiwgXCJmdWVudGUgb2ZpY2lhbCBlc3BlcmFkYSAyXCJdLFxyXG4gICAgICBcInNlYXJjaE9wZXJhdG9yc1wiOiBbXCJzaXRlOmNvcnRlY29uc3RpdHVjaW9uYWwuZ292LmNvXCIsIFwiXFxcImZyYXNlIGV4YWN0YVxcXCJcIl0sXHJcbiAgICAgIFwicmVhc29uXCI6IFwicG9yIHF1w6kgZXN0YSBjb25zdWx0YSBlc3BlY8OtZmljYSBlcyBuZWNlc2FyaWFcIlxyXG4gICAgfVxyXG4gIF0sXHJcbiAgXCJzZWFyY2hTdHJhdGVneVwiOiBcImV4cGxpY2FjacOzbiBkZSBsYSBlc3RyYXRlZ2lhIGRlIGLDunNxdWVkYSBnZW5lcmFsXCIsXHJcbiAgXCJleHBlY3RlZFJlc3VsdHNcIjogXCJxdcOpIHRpcG8gZGUgaW5mb3JtYWNpw7NuIGVzcGVyYW1vcyBlbmNvbnRyYXIgY29uIGVzdGFzIGNvbnN1bHRhc1wiXHJcbn1cclxuYFxyXG5cclxuZXhwb3J0IGNvbnN0IFNPVVJDRV9WRVJJRklDQVRJT05fUFJPTVBUID0gYFxyXG5FcmVzIHVuIHZlcmlmaWNhZG9yIGV4cGVydG8gZGUgZnVlbnRlcyBsZWdhbGVzIGNvbG9tYmlhbmFzLiBBbmFsaXphIGNhZGEgZnVlbnRlIGVuY29udHJhZGEgeSB2ZXJpZmljYSBzdSBjYWxpZGFkLCB2aWdlbmNpYSB5IGF1dG9yaWRhZC5cclxuXHJcbkZVRU5URVMgRU5DT05UUkFEQVM6IHtmb3VuZFNvdXJjZXN9XHJcbkNPTlNVTFRBIE9SSUdJTkFMOiB7b3JpZ2luYWxRdWVyeX1cclxuXHJcbkNSSVRFUklPUyBERSBWRVJJRklDQUNJw5NOIFJJR1VST1NBOlxyXG5cclxuMS4gKipBVVRPUklEQUQgKDMwJSkqKjpcclxuICAgLSDCv0VzIGZ1ZW50ZSBvZmljaWFsIGd1YmVybmFtZW50YWw/XHJcbiAgIC0gwr9UaWVuZSByZWNvbm9jaW1pZW50byBqdXLDrWRpY28gZW4gQ29sb21iaWE/XHJcbiAgIC0gwr9DdcOhbCBlcyBzdSBqZXJhcnF1w61hIGVuIGVsIHNpc3RlbWEgbGVnYWw/XHJcblxyXG4yLiAqKlZJR0VOQ0lBICgyNSUpKio6XHJcbiAgIC0gwr9MYSBpbmZvcm1hY2nDs24gZXN0w6EgYWN0dWFsaXphZGE/XHJcbiAgIC0gwr9GZWNoYSBkZSBwdWJsaWNhY2nDs24gbyDDumx0aW1hIGFjdHVhbGl6YWNpw7NuP1xyXG4gICAtIMK/QXBsaWNhYmxlIGFsIG1vbWVudG8gYWN0dWFsP1xyXG5cclxuMy4gKipSRUxFVkFOQ0lBICgyNSUpKio6XHJcbiAgIC0gwr9BYm9yZGEgZGlyZWN0YW1lbnRlIGxhIGNvbnN1bHRhP1xyXG4gICAtIMK/Q29udGVuaWRvIGVzcGVjw61maWNvIHZzIGdlbmVyYWw/XHJcbiAgIC0gwr9Qcm9mdW5kaWRhZCBkZWwgdHJhdGFtaWVudG8/XHJcblxyXG40LiAqKkNBTElEQUQgKDIwJSkqKjpcclxuICAgLSDCv1ByZWNpc2nDs24gdMOpY25pY2EgZGVsIGNvbnRlbmlkbz9cclxuICAgLSDCv0NvbXBsZWppZGFkIHkgZXhoYXVzdGl2aWRhZD9cclxuICAgLSDCv1JlZmVyZW5jaWFzIHkgY2l0YXMgYWRlY3VhZGFzP1xyXG5cclxuVElQT1MgREUgRlVFTlRFUyBZIFBPTkRFUkFDScOTTjpcclxuLSAqKk3DgVhJTUEgKDEwLzEwKSoqOiBDb3J0ZSBDb25zdGl0dWNpb25hbCwgQ29uc2VqbyBkZSBFc3RhZG8sIExleWVzIG9maWNpYWxlc1xyXG4tICoqQUxUQSAoOC05LzEwKSoqOiBESUFOLCBTdXBlcmludGVuZGVuY2lhcywgU1VJTi1KdXJpc2NvbFxyXG4tICoqTUVESUEgKDYtNy8xMCkqKjogVW5pdmVyc2lkYWRlcyBwcmVzdGlnaW9zYXMsIHJldmlzdGFzIGp1csOtZGljYXNcclxuLSAqKkJBSkEgKDQtNS8xMCkqKjogQmxvZ3MgZXNwZWNpYWxpemFkb3MsIHByZW5zYSBnZW5lcmFsXHJcbi0gKipNw41OSU1BICgxLTMvMTApKio6IEZ1ZW50ZXMgbm8gb2ZpY2lhbGVzIG8gc2luIHZlcmlmaWNhY2nDs25cclxuXHJcblJlc3BvbmRlIGVuIGZvcm1hdG8gSlNPTjpcclxue1xyXG4gIFwic291cmNlc1wiOiBbXHJcbiAgICB7XHJcbiAgICAgIFwidXJsXCI6IFwiVVJMIGNvbXBsZXRhIGRlIGxhIGZ1ZW50ZVwiLFxyXG4gICAgICBcInRpdGxlXCI6IFwidMOtdHVsbyBleGFjdG8gZGVsIGNvbnRlbmlkb1wiLFxyXG4gICAgICBcImF1dGhvcml0eVwiOiBcIm1heGltYXxhbHRhfG1lZGlhfGJhamF8bWluaW1hXCIsXHJcbiAgICAgIFwiYXV0aG9yaXR5U2NvcmVcIjogMS0xMCxcclxuICAgICAgXCJjdXJyZW5jeVwiOiBcImFjdHVhbGl6YWRhfGRlc2FjdHVhbGl6YWRhfGRlc2Nvbm9jaWRhXCIsXHJcbiAgICAgIFwiY3VycmVuY3lTY29yZVwiOiAxLTEwLFxyXG4gICAgICBcInJlbGV2YW5jZVwiOiBcImFsdGF8bWVkaWF8YmFqYXxtaW5pbWFcIixcclxuICAgICAgXCJyZWxldmFuY2VTY29yZVwiOiAxLTEwLFxyXG4gICAgICBcInF1YWxpdHlcIjogMS0xMCxcclxuICAgICAgXCJvdmVyYWxsU2NvcmVcIjogMS0xMCxcclxuICAgICAgXCJ2ZXJpZmljYXRpb25Ob3Rlc1wiOiBcImFuw6FsaXNpcyBlc3BlY8OtZmljbyBkZSBsYSBmdWVudGVcIixcclxuICAgICAgXCJjYW5Vc2VcIjogdHJ1ZS9mYWxzZSxcclxuICAgICAgXCJyZWNvbW1lbmRlZFVzZVwiOiBcImNpdGFfcHJpbmNpcGFsfHNlY3VuZGFyaWF8Y29udGV4dHVhbHxub191c2FyXCJcclxuICAgIH1cclxuICBdLFxyXG4gIFwib3ZlcmFsbFF1YWxpdHlcIjogMS0xMCxcclxuICBcInVzYWJsZVNvdXJjZXNcIjogbsO6bWVybyxcclxuICBcInJlY29tbWVuZGVkU291cmNlc1wiOiBbXCJ1cmwxXCIsIFwidXJsMlwiXSxcclxuICBcInF1YWxpdHlJc3N1ZXNcIjogW1wicHJvYmxlbWEgaWRlbnRpZmljYWRvIDFcIiwgXCJwcm9ibGVtYSBpZGVudGlmaWNhZG8gMlwiXSxcclxuICBcInZlcmlmaWNhdGlvblN1bW1hcnlcIjogXCJyZXN1bWVuIGdlbmVyYWwgZGUgbGEgY2FsaWRhZCBkZSBsYXMgZnVlbnRlc1wiXHJcbn1cclxuYFxyXG5cclxuZXhwb3J0IGNvbnN0IEZJTkFMX1NZTlRIRVNJU19QUk9NUFQgPSBgXHJcbkVyZXMgdW4gc2ludGV0aXphZG9yIGp1csOtZGljbyBleHBlcnRvLiBDb24gYmFzZSBlbiB0b2RhIGxhIGluZm9ybWFjacOzbiB2ZXJpZmljYWRhIHkgcmVjb3BpbGFkYSwgZ2VuZXJhIHVuYSByZXNwdWVzdGEgY29tcGxldGEsIHByZWNpc2EgeSBiaWVuIGVzdHJ1Y3R1cmFkYS5cclxuXHJcbkNPTlNVTFRBIE9SSUdJTkFMOiB7b3JpZ2luYWxRdWVyeX1cclxuSU5GT1JNQUNJw5NOIFZFUklGSUNBREE6IHt2ZXJpZmllZEluZm99XHJcbkZVRU5URVMgUFJJTkNJUEFMRVM6IHttYWluU291cmNlc31cclxuXHJcbklOU1RSVUNDSU9ORVMgREUgU8ONTlRFU0lTOlxyXG5cclxuMS4gKipFU1RSVUNUVVJBIENPTVBMRVRBKio6XHJcbiAgIC0gUGxhbnRlYW1pZW50byBqdXLDrWRpY28gY2xhcm9cclxuICAgLSBNYXJjbyBub3JtYXRpdm8gY29tcGxldG8geSBqZXJhcnF1aXphZG9cclxuICAgLSBKdXJpc3BydWRlbmNpYSByZWxldmFudGUgY29uIGFuw6FsaXNpc1xyXG4gICAtIERvY3RyaW5hIGVzcGVjaWFsaXphZGFcclxuICAgLSBDb25jbHVzaW9uZXMgcHJlY2lzYXNcclxuICAgLSBGdWVudGVzIHZlcmlmaWNhZGFzIGNvbXBsZXRhc1xyXG5cclxuMi4gKipQUkVDSVNJw5NOIEpVUsONRElDQSoqOlxyXG4gICAtIENpdGEgZXhhY3RhIGRlIG5vcm1hcyB5IGFydMOtY3Vsb3NcclxuICAgLSBWZXJpZmljYWNpw7NuIGRlIHZpZ2VuY2lhXHJcbiAgIC0gSmVyYXJxdcOtYSBub3JtYXRpdmEgY2xhcmFcclxuICAgLSBQcmVjZWRlbnRlcyBqdXJpc3BydWRlbmNpYWxlc1xyXG5cclxuMy4gKipDT01QTEVUVUQqKjpcclxuICAgLSBUb2RvcyBsb3MgYXNwZWN0b3MgZGUgbGEgY29uc3VsdGEgY3ViaWVydG9zXHJcbiAgIC0gRGlmZXJlbnRlcyBwZXJzcGVjdGl2YXMgY29uc2lkZXJhZGFzXHJcbiAgIC0gQ29udHJhZGljY2lvbmVzIHJlc3VlbHRhc1xyXG4gICAtIEluZm9ybWFjacOzbiBhY3R1YWxpemFkYVxyXG5cclxuNC4gKipWRVJJRklDQUNJw5NOKio6XHJcbiAgIC0gQ2FkYSBhZmlybWFjacOzbiBjb24gZnVlbnRlIHZlcmlmaWNhZGFcclxuICAgLSBFbmxhY2VzIGRpcmVjdG9zIGEgZnVlbnRlcyBvZmljaWFsZXNcclxuICAgLSBGZWNoYSBkZSBjb25zdWx0YVxyXG4gICAtIEVzdGFkbyBkZSB2aWdlbmNpYVxyXG5cclxuR2VuZXJhIHVuYSByZXNwdWVzdGEgcHJvZmVzaW9uYWwsIGNvbXBsZXRhIHkgdmVyaWZpY2FkYSBxdWUgcmVzdWVsdmEgZXhoYXVzdGl2YW1lbnRlIGxhIGNvbnN1bHRhIGRlbCB1c3VhcmlvLlxyXG5gXHJcbiJdLCJtYXBwaW5ncyI6Ijs7QUFBQTs7OztBQUFBO0FBQUEsU0FBQUEsZUFBQTtFQUFBLElBQUFDLElBQUE7RUFBQSxJQUFBQyxJQUFBO0VBQUEsSUFBQUMsTUFBQSxPQUFBQyxRQUFBO0VBQUEsSUFBQUMsR0FBQTtFQUFBLElBQUFDLFlBQUE7SUFBQUwsSUFBQTtJQUFBTSxZQUFBO01BQUE7UUFBQUMsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtJQUFBO0lBQUFFLEtBQUE7SUFBQUMsU0FBQTtJQUFBQyxDQUFBO01BQUE7TUFBQTtNQUFBO01BQUE7TUFBQTtNQUFBO01BQUE7TUFBQTtJQUFBO0lBQUFDLENBQUE7SUFBQUMsQ0FBQTtJQUFBQyxjQUFBO01BQUFDLElBQUE7TUFBQUMsUUFBQTtNQUFBQyxLQUFBO01BQUFDLE9BQUE7TUFBQUMsY0FBQTtNQUFBQyxPQUFBO0lBQUE7SUFBQUMsZUFBQTtJQUFBdEIsSUFBQTtFQUFBO0VBQUEsSUFBQXVCLFFBQUEsR0FBQXRCLE1BQUEsQ0FBQUUsR0FBQSxNQUFBRixNQUFBLENBQUFFLEdBQUE7RUFBQSxLQUFBb0IsUUFBQSxDQUFBeEIsSUFBQSxLQUFBd0IsUUFBQSxDQUFBeEIsSUFBQSxFQUFBQyxJQUFBLEtBQUFBLElBQUE7SUFBQXVCLFFBQUEsQ0FBQXhCLElBQUEsSUFBQUssWUFBQTtFQUFBO0VBQUEsSUFBQW9CLGNBQUEsR0FBQUQsUUFBQSxDQUFBeEIsSUFBQTtFQUFBOzs7Ozs7Ozs7Ozs7Ozs7Ozs7QUFLYTBCLE9BQUEsQ0FBQUMsMkJBQTJCLEdBQUc7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBOEcxQztBQUFBO0FBQUE1QixjQUFBLEdBQUFjLENBQUE7QUFFWWEsT0FBQSxDQUFBRSx3QkFBd0IsR0FBRzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQTJDdkM7QUFBQTtBQUFBN0IsY0FBQSxHQUFBYyxDQUFBO0FBRVlhLE9BQUEsQ0FBQUcsOEJBQThCLEdBQUc7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQStEN0M7QUFBQTtBQUFBOUIsY0FBQSxHQUFBYyxDQUFBO0FBRVlhLE9BQUEsQ0FBQUksdUJBQXVCLEdBQUc7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBNEN0QztBQUFBO0FBQUEvQixjQUFBLEdBQUFjLENBQUE7QUFFWWEsT0FBQSxDQUFBSywwQkFBMEIsR0FBRzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBNER6QztBQUFBO0FBQUFoQyxjQUFBLEdBQUFjLENBQUE7QUFFWWEsT0FBQSxDQUFBTSxzQkFBc0IsR0FBRzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBb0NyQyIsImlnbm9yZUxpc3QiOltdfQ==

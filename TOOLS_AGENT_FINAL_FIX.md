@@ -89,3 +89,5 @@ Ahora el sistema debería:
 7. **Frontend muestra** → Respuesta + fuentes en la interfaz
 
 El sistema ahora debería funcionar perfectamente tanto en los logs como en la interfaz de usuario.
+
+

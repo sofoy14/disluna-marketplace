@@ -163,3 +163,5 @@ En caso de incumplimiento reiterado, se puede declarar **desistimiento** de la a
 ```
 
 El sistema ahora maneja correctamente el caso específico donde el texto empieza con bibliografía y extrae el contenido principal mezclado, mostrando la información legal en el mensaje principal y las fuentes en la sección de bibliografía correspondiente.
+
+

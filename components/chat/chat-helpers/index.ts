@@ -19,6 +19,7 @@ import {
   LLM,
   MessageImage
 } from "@/types"
+import { BibliographyItem } from "@/types/chat-message"
 import React from "react"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
@@ -484,7 +485,8 @@ export const handleCreateMessages = async (
     React.SetStateAction<Tables<"file_items">[]>
   >,
   setChatImages: React.Dispatch<React.SetStateAction<MessageImage[]>>,
-  selectedAssistant: Tables<"assistants"> | null
+  selectedAssistant: Tables<"assistants"> | null,
+  bibliography?: BibliographyItem[]
 ) => {
   const finalUserMessage: TablesInsert<"messages"> = {
     chat_id: currentChat.id,
@@ -519,6 +521,9 @@ export const handleCreateMessages = async (
     })
 
     chatMessages[chatMessages.length - 1].message = updatedMessage
+    if (bibliography !== undefined) {
+      chatMessages[chatMessages.length - 1].bibliography = bibliography
+    }
 
     finalChatMessages = [...chatMessages]
 
@@ -579,7 +584,8 @@ export const handleCreateMessages = async (
       },
       {
         message: createdMessages[1],
-        fileItems: retrievedFileItems.map(fileItem => fileItem.id)
+        fileItems: retrievedFileItems.map(fileItem => fileItem.id),
+        ...(bibliography ? { bibliography } : {})
       }
     ]
 

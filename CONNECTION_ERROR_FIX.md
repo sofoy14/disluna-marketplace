@@ -165,3 +165,5 @@ Ahora el sistema debería:
 - **Mantener funcionalidad** de búsqueda Serper
 
 El sistema ahora es robusto contra errores de conexión y siempre proporciona una respuesta útil al usuario.
+
+

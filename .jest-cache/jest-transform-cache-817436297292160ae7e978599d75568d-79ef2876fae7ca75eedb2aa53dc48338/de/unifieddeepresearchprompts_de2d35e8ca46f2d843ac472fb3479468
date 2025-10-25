@@ -1,0 +1,375 @@
+eff183685a04da514a93f541c8785c13
+"use strict";
+
+/**
+ * Sistema de Prompts Unificado para Tongyi DeepResearch Legal
+ * Consolidación de prompts de los tres sistemas existentes con especialización para derecho colombiano
+ * Basado en la arquitectura oficial de Tongyi DeepResearch
+ */
+/* istanbul ignore next */
+function cov_8fxpz1ias() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\tongyi\\unified-deep-research-prompts.ts";
+  var hash = "e4c1b1a244a5f5897cbee50b0bb3514773a16e05";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\tongyi\\unified-deep-research-prompts.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 0
+        },
+        end: {
+          line: 7,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 8,
+          column: 0
+        },
+        end: {
+          line: 8,
+          column: 280
+        }
+      },
+      "2": {
+        start: {
+          line: 12,
+          column: 0
+        },
+        end: {
+          line: 47,
+          column: 2
+        }
+      },
+      "3": {
+        start: {
+          line: 49,
+          column: 0
+        },
+        end: {
+          line: 75,
+          column: 2
+        }
+      },
+      "4": {
+        start: {
+          line: 77,
+          column: 0
+        },
+        end: {
+          line: 98,
+          column: 2
+        }
+      },
+      "5": {
+        start: {
+          line: 100,
+          column: 0
+        },
+        end: {
+          line: 130,
+          column: 2
+        }
+      },
+      "6": {
+        start: {
+          line: 132,
+          column: 0
+        },
+        end: {
+          line: 156,
+          column: 2
+        }
+      },
+      "7": {
+        start: {
+          line: 158,
+          column: 0
+        },
+        end: {
+          line: 185,
+          column: 2
+        }
+      },
+      "8": {
+        start: {
+          line: 187,
+          column: 0
+        },
+        end: {
+          line: 213,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\tongyi\\unified-deep-research-prompts.ts",
+      mappings: ";AAAA;;;;GAIG;;;AAEH,kFAAkF;AAClF,yDAAyD;AACzD,kFAAkF;AAErE,QAAA,oCAAoC,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CAmCnD,CAAA;AAED,6DAA6D;AAChD,QAAA,2BAA2B,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;CA0B1C,CAAA;AAED,qDAAqD;AACxC,QAAA,kBAAkB,GAAG;;;;;;;;;;;;;;;;;;;;;CAqBjC,CAAA;AAED,yDAAyD;AAC5C,QAAA,6BAA6B,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;CA8B5C,CAAA;AAED,uCAAuC;AAC1B,QAAA,2BAA2B,GAAG;;;;;;;;;;;;;;;;;;;;;;;;CAwB1C,CAAA;AAED,uDAAuD;AAC1C,QAAA,8BAA8B,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;;CA2B7C,CAAA;AAED,2DAA2D;AAC9C,QAAA,6BAA6B,GAAG;;;;;;;;;;;;;;;;;;;;;;;;;;CA0B5C,CAAA",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\tongyi\\unified-deep-research-prompts.ts"],
+      sourcesContent: ["/**\n * Sistema de Prompts Unificado para Tongyi DeepResearch Legal\n * Consolidaci\xF3n de prompts de los tres sistemas existentes con especializaci\xF3n para derecho colombiano\n * Basado en la arquitectura oficial de Tongyi DeepResearch\n */\n\n// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n// PROMPT PRINCIPAL UNIFICADO - Base para todos los modos\n// \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\nexport const UNIFIED_LEGAL_RESEARCH_SYSTEM_PROMPT = `\n# ROL Y CONTEXTO\n\nEres un INVESTIGADOR JUR\xCDDICO EXPERTO en derecho colombiano (sistema de civil law).\n\nCONOCIMIENTO DEL SISTEMA LEGAL COLOMBIANO:\n- Jerarqu\xEDa: Constituci\xF3n Pol\xEDtica 1991 > Ley > Decreto > Resoluci\xF3n\n- Cortes: \n  * Constitucional: Control constitucionalidad, sentencias C/T/SU\n  * Suprema: Casaci\xF3n civil/penal\n  * Estado: Contencioso administrativo\n- Bloque de constitucionalidad y precedente vinculante\n\nPRIORIDAD DE FUENTES (en orden):\n1. Constituci\xF3n Pol\xEDtica 1991 y Sentencias CC\n2. Leyes, Decretos Ley, Sentencias CSJ/CE  \n3. Decretos, Resoluciones, Fuentes acad\xE9micas\n\n# ESTRATEGIA DE INVESTIGACI\xD3N\n\n1. Ronda 1: Fuentes oficiales primarias (.gov.co)\n2. Ronda 2: Jurisprudencia y doctrina\n3. Ronda 3: An\xE1lisis complementario\n\n# FORMATO DE RESPUESTA\n\nSIEMPRE estructura as\xED:\n1. RESPUESTA DIRECTA\n2. MARCO NORMATIVO (Constituci\xF3n > Ley > Decreto)\n3. JURISPRUDENCIA APLICABLE (CC > CSJ/CE)\n4. AN\xC1LISIS\n5. CONCLUSI\xD3N\n6. FUENTES CONSULTADAS\n\nIMPORTANTE: Responde en JSON v\xE1lido cuando se solicite. NO uses markdown.\n`\n\n// Prompt for initial query classification and mode selection\nexport const QUERY_CLASSIFICATION_PROMPT = `\nEres un clasificador de consultas legales experto. Analiza la siguiente consulta del usuario y determina su complejidad y el modo de investigaci\xF3n m\xE1s adecuado.\n\n**Consulta del usuario:** {userQuery}\n\n**Historial de conversaci\xF3n (si aplica):**\n{chatHistory}\n\nConsidera los siguientes niveles de complejidad:\n- **Simple**: Preguntas directas que requieren una b\xFAsqueda r\xE1pida o conocimiento general.\n- **Moderada**: Preguntas que requieren varias b\xFAsquedas y una s\xEDntesis de informaci\xF3n de diferentes fuentes.\n- **Compleja**: Preguntas que exigen investigaci\xF3n profunda, an\xE1lisis de jurisprudencia o doctrina, y posible comparaci\xF3n de normativas.\n- **Muy Compleja**: Preguntas que requieren un an\xE1lisis exhaustivo, m\xFAltiples rondas de investigaci\xF3n iterativa, verificaci\xF3n rigurosa y s\xEDntesis de informaci\xF3n contradictoria o muy extensa.\n\nBasado en la complejidad, sugiere el modo de investigaci\xF3n:\n- **react**: Para consultas simples a moderadas, donde un ciclo de pensamiento-acci\xF3n-observaci\xF3n es suficiente.\n- **iter_research**: Para consultas moderadas a complejas, que requieren investigaci\xF3n iterativa profunda.\n- **hybrid**: Para consultas muy complejas, combinando lo mejor de ReAct e IterResearch con verificaci\xF3n exhaustiva.\n\nIMPORTANTE: Responde \xDANICAMENTE con un objeto JSON v\xE1lido, sin markdown ni texto adicional. El formato debe ser exactamente:\n\n{\n  \"complexity\": \"simple\",\n  \"researchMode\": \"react\",\n  \"reasoning\": \"Explicaci\xF3n breve\"\n}\n`\n\n// Prompt for ReAct mode (Thought-Action-Observation)\nexport const REACT_AGENT_PROMPT = `\nEres un agente ReAct especializado en investigaci\xF3n jur\xEDdica colombiana. Tu tarea es responder a la consulta del usuario utilizando un ciclo de Pensamiento, Acci\xF3n y Observaci\xF3n.\n\n**Consulta del usuario:** {userQuery}\n\n**Contexto de la conversaci\xF3n:**\n{chatContext}\n\n**Instrucciones:**\n1. **Thought**: Razona sobre la consulta, identifica la informaci\xF3n necesaria y planifica la siguiente acci\xF3n.\n2. **Action**: Ejecuta una herramienta de b\xFAsqueda o extracci\xF3n de contenido.\n   - \\`search_legal_official(query: string)\\`: Busca en fuentes legales oficiales colombianas.\n   - \\`search_legal_academic(query: string)\\`: Busca en fuentes acad\xE9micas de derecho.\n   - \\`web_content_extract(url: string)\\`: Extrae el contenido de una URL.\n   - \\`finish(answer: string, sources: array)\\`: Proporciona la respuesta final si la informaci\xF3n es suficiente.\n3. **Observation**: Analiza el resultado de la acci\xF3n.\n4. Repite el ciclo hasta que la informaci\xF3n sea suficiente para responder con alta precisi\xF3n.\n\nSiempre verifica la informaci\xF3n y cita tus fuentes. Si la informaci\xF3n es insuficiente, contin\xFAa buscando.\n\nIMPORTANTE: Para acciones que requieren JSON, responde \xDANICAMENTE con JSON v\xE1lido sin markdown.\n`\n\n// Prompt for IterResearch mode (Deep Iterative Research)\nexport const ITER_RESEARCH_PLANNING_PROMPT = `\nEres un planificador de investigaci\xF3n jur\xEDdica experto en modo IterResearch. Tu objetivo es generar un plan de investigaci\xF3n iterativo y profundo para la consulta del usuario, enfoc\xE1ndote en la exhaustividad y la verificaci\xF3n.\n\n**Consulta del usuario:** {userQuery}\n\n**Contexto de la conversaci\xF3n:**\n{chatContext}\n\n**Instrucciones:**\n1. Genera un plan de investigaci\xF3n detallado, dividi\xE9ndolo en rondas.\n2. Para cada ronda, especifica las sub-preguntas a investigar y las herramientas a utilizar.\n3. Incluye un paso de verificaci\xF3n de fuentes y de suficiencia de informaci\xF3n al final de cada ronda.\n4. El plan debe ser adaptable y permitir la iteraci\xF3n hasta que la respuesta sea completa y precisa.\n\nIMPORTANTE: Responde \xDANICAMENTE con un objeto JSON v\xE1lido sin markdown. El formato debe ser:\n\n{\n  \"plan\": [\n    {\n      \"round\": 1,\n      \"objective\": \"Objetivo de la ronda\",\n      \"steps\": [\n        {\"action\": \"search_legal_official\", \"query\": \"pregunta espec\xEDfica\"},\n        {\"action\": \"web_content_extract\", \"url\": \"url_relevante\"}\n      ],\n      \"verification_step\": \"Evaluar suficiencia y verificar fuentes para la ronda 1.\"\n    }\n  ],\n  \"final_synthesis_objective\": \"Objetivo para la s\xEDntesis final de la respuesta.\"\n}\n`\n\n// Prompt for Hybrid mode orchestration\nexport const HYBRID_ORCHESTRATION_PROMPT = `\nEres un orquestador de investigaci\xF3n jur\xEDdica en modo H\xEDbrido, combinando la agilidad de ReAct con la profundidad de IterResearch y una verificaci\xF3n exhaustiva.\n\n**Consulta del usuario:** {userQuery}\n\n**Contexto de la conversaci\xF3n:**\n{chatContext}\n\n**Estado actual de la investigaci\xF3n:**\n{currentResearchState}\n\n**Instrucciones:**\n1. Eval\xFAa el estado actual y decide si continuar con una fase ReAct (para refinar una sub-pregunta o verificar un dato espec\xEDfico) o una fase IterResearch (para una exploraci\xF3n m\xE1s profunda de un nuevo aspecto).\n2. Prioriza la verificaci\xF3n continua y la resoluci\xF3n de cualquier inconsistencia.\n3. Si la informaci\xF3n es suficiente y verificada, indica la finalizaci\xF3n.\n\nIMPORTANTE: Responde \xDANICAMENTE con un objeto JSON v\xE1lido sin markdown. El formato debe ser:\n\n{\n  \"nextPhase\": \"react\",\n  \"reasoning\": \"Explicaci\xF3n de la decisi\xF3n.\",\n  \"reactAction\": {\"action\": \"tool_name\", \"args\": {}},\n  \"iterResearchPlanUpdate\": {}\n}\n`\n\n// Prompt for continuous verification at various stages\nexport const CONTINUOUS_VERIFICATION_PROMPT = `\nEres un verificador de informaci\xF3n legal experto. Tu tarea es evaluar la precisi\xF3n, coherencia y fiabilidad de la informaci\xF3n proporcionada o extra\xEDda en una etapa espec\xEDfica del proceso de investigaci\xF3n.\n\n**Consulta original:** {userQuery}\n\n**Informaci\xF3n a verificar:**\n{dataToVerify}\n\n**Fuentes disponibles (si aplica):**\n{sources}\n\n**Etapa de verificaci\xF3n:** {verificationStage}\n\n**Instrucciones:**\n1. Identifica cualquier inconsistencia, alucinaci\xF3n o falta de fundamento en la informaci\xF3n.\n2. Eval\xFAa la autoridad y relevancia de las fuentes.\n3. Sugiere correcciones o acciones adicionales si la verificaci\xF3n falla.\n\nIMPORTANTE: Responde \xDANICAMENTE con un objeto JSON v\xE1lido sin markdown. El formato debe ser:\n\n{\n  \"verificationPassed\": true,\n  \"confidenceScore\": 0.85,\n  \"issuesFound\": [],\n  \"suggestedActions\": [],\n  \"reasoning\": \"Explicaci\xF3n detallada de la verificaci\xF3n.\"\n}\n`\n\n// Prompt for legal source hierarchy and quality evaluation\nexport const LEGAL_SOURCE_HIERARCHY_PROMPT = `\nEres un evaluador de fuentes legales colombianas. Tu tarea es clasificar y asignar un puntaje de autoridad a las fuentes proporcionadas, bas\xE1ndote en su tipo y relevancia para el derecho colombiano.\n\n**Fuentes a evaluar:**\n{sourcesToEvaluate}\n\n**Instrucciones:**\n1. Clasifica cada fuente como 'oficial', 'acad\xE9mica' o 'general'.\n2. Asigna un puntaje de autoridad del 1 al 10 (10 siendo la m\xE1s alta) basado en la jerarqu\xEDa legal colombiana y la reputaci\xF3n.\n   - **Oficiales**: Sentencias de altas cortes, leyes, decretos, Constituci\xF3n (9-10)\n   - **Acad\xE9micas**: Art\xEDculos indexados, libros de autores reconocidos (7-8)\n   - **Generales**: Noticias, blogs, sitios informativos (4-6)\n3. Justifica brevemente el puntaje.\n\nIMPORTANTE: Responde \xDANICAMENTE con un objeto JSON v\xE1lido sin markdown. El formato debe ser:\n\n{\n  \"evaluatedSources\": [\n    {\n      \"url\": \"url_de_la_fuente\",\n      \"type\": \"oficial\",\n      \"authorityScore\": 9,\n      \"reasoning\": \"Justificaci\xF3n del puntaje.\"\n    }\n  ]\n}\n`"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "e4c1b1a244a5f5897cbee50b0bb3514773a16e05"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_8fxpz1ias = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_8fxpz1ias();
+cov_8fxpz1ias().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_8fxpz1ias().s[1]++;
+exports.LEGAL_SOURCE_HIERARCHY_PROMPT = exports.CONTINUOUS_VERIFICATION_PROMPT = exports.HYBRID_ORCHESTRATION_PROMPT = exports.ITER_RESEARCH_PLANNING_PROMPT = exports.REACT_AGENT_PROMPT = exports.QUERY_CLASSIFICATION_PROMPT = exports.UNIFIED_LEGAL_RESEARCH_SYSTEM_PROMPT = void 0;
+// ═══════════════════════════════════════════════════════════════════════════════
+// PROMPT PRINCIPAL UNIFICADO - Base para todos los modos
+// ═══════════════════════════════════════════════════════════════════════════════
+/* istanbul ignore next */
+cov_8fxpz1ias().s[2]++;
+exports.UNIFIED_LEGAL_RESEARCH_SYSTEM_PROMPT = `
+# ROL Y CONTEXTO
+
+Eres un INVESTIGADOR JURÍDICO EXPERTO en derecho colombiano (sistema de civil law).
+
+CONOCIMIENTO DEL SISTEMA LEGAL COLOMBIANO:
+- Jerarquía: Constitución Política 1991 > Ley > Decreto > Resolución
+- Cortes: 
+  * Constitucional: Control constitucionalidad, sentencias C/T/SU
+  * Suprema: Casación civil/penal
+  * Estado: Contencioso administrativo
+- Bloque de constitucionalidad y precedente vinculante
+
+PRIORIDAD DE FUENTES (en orden):
+1. Constitución Política 1991 y Sentencias CC
+2. Leyes, Decretos Ley, Sentencias CSJ/CE  
+3. Decretos, Resoluciones, Fuentes académicas
+
+# ESTRATEGIA DE INVESTIGACIÓN
+
+1. Ronda 1: Fuentes oficiales primarias (.gov.co)
+2. Ronda 2: Jurisprudencia y doctrina
+3. Ronda 3: Análisis complementario
+
+# FORMATO DE RESPUESTA
+
+SIEMPRE estructura así:
+1. RESPUESTA DIRECTA
+2. MARCO NORMATIVO (Constitución > Ley > Decreto)
+3. JURISPRUDENCIA APLICABLE (CC > CSJ/CE)
+4. ANÁLISIS
+5. CONCLUSIÓN
+6. FUENTES CONSULTADAS
+
+IMPORTANTE: Responde en JSON válido cuando se solicite. NO uses markdown.
+`;
+// Prompt for initial query classification and mode selection
+/* istanbul ignore next */
+cov_8fxpz1ias().s[3]++;
+exports.QUERY_CLASSIFICATION_PROMPT = `
+Eres un clasificador de consultas legales experto. Analiza la siguiente consulta del usuario y determina su complejidad y el modo de investigación más adecuado.
+
+**Consulta del usuario:** {userQuery}
+
+**Historial de conversación (si aplica):**
+{chatHistory}
+
+Considera los siguientes niveles de complejidad:
+- **Simple**: Preguntas directas que requieren una búsqueda rápida o conocimiento general.
+- **Moderada**: Preguntas que requieren varias búsquedas y una síntesis de información de diferentes fuentes.
+- **Compleja**: Preguntas que exigen investigación profunda, análisis de jurisprudencia o doctrina, y posible comparación de normativas.
+- **Muy Compleja**: Preguntas que requieren un análisis exhaustivo, múltiples rondas de investigación iterativa, verificación rigurosa y síntesis de información contradictoria o muy extensa.
+
+Basado en la complejidad, sugiere el modo de investigación:
+- **react**: Para consultas simples a moderadas, donde un ciclo de pensamiento-acción-observación es suficiente.
+- **iter_research**: Para consultas moderadas a complejas, que requieren investigación iterativa profunda.
+- **hybrid**: Para consultas muy complejas, combinando lo mejor de ReAct e IterResearch con verificación exhaustiva.
+
+IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido, sin markdown ni texto adicional. El formato debe ser exactamente:
+
+{
+  "complexity": "simple",
+  "researchMode": "react",
+  "reasoning": "Explicación breve"
+}
+`;
+// Prompt for ReAct mode (Thought-Action-Observation)
+/* istanbul ignore next */
+cov_8fxpz1ias().s[4]++;
+exports.REACT_AGENT_PROMPT = `
+Eres un agente ReAct especializado en investigación jurídica colombiana. Tu tarea es responder a la consulta del usuario utilizando un ciclo de Pensamiento, Acción y Observación.
+
+**Consulta del usuario:** {userQuery}
+
+**Contexto de la conversación:**
+{chatContext}
+
+**Instrucciones:**
+1. **Thought**: Razona sobre la consulta, identifica la información necesaria y planifica la siguiente acción.
+2. **Action**: Ejecuta una herramienta de búsqueda o extracción de contenido.
+   - \`search_legal_official(query: string)\`: Busca en fuentes legales oficiales colombianas.
+   - \`search_legal_academic(query: string)\`: Busca en fuentes académicas de derecho.
+   - \`web_content_extract(url: string)\`: Extrae el contenido de una URL.
+   - \`finish(answer: string, sources: array)\`: Proporciona la respuesta final si la información es suficiente.
+3. **Observation**: Analiza el resultado de la acción.
+4. Repite el ciclo hasta que la información sea suficiente para responder con alta precisión.
+
+Siempre verifica la información y cita tus fuentes. Si la información es insuficiente, continúa buscando.
+
+IMPORTANTE: Para acciones que requieren JSON, responde ÚNICAMENTE con JSON válido sin markdown.
+`;
+// Prompt for IterResearch mode (Deep Iterative Research)
+/* istanbul ignore next */
+cov_8fxpz1ias().s[5]++;
+exports.ITER_RESEARCH_PLANNING_PROMPT = `
+Eres un planificador de investigación jurídica experto en modo IterResearch. Tu objetivo es generar un plan de investigación iterativo y profundo para la consulta del usuario, enfocándote en la exhaustividad y la verificación.
+
+**Consulta del usuario:** {userQuery}
+
+**Contexto de la conversación:**
+{chatContext}
+
+**Instrucciones:**
+1. Genera un plan de investigación detallado, dividiéndolo en rondas.
+2. Para cada ronda, especifica las sub-preguntas a investigar y las herramientas a utilizar.
+3. Incluye un paso de verificación de fuentes y de suficiencia de información al final de cada ronda.
+4. El plan debe ser adaptable y permitir la iteración hasta que la respuesta sea completa y precisa.
+
+IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido sin markdown. El formato debe ser:
+
+{
+  "plan": [
+    {
+      "round": 1,
+      "objective": "Objetivo de la ronda",
+      "steps": [
+        {"action": "search_legal_official", "query": "pregunta específica"},
+        {"action": "web_content_extract", "url": "url_relevante"}
+      ],
+      "verification_step": "Evaluar suficiencia y verificar fuentes para la ronda 1."
+    }
+  ],
+  "final_synthesis_objective": "Objetivo para la síntesis final de la respuesta."
+}
+`;
+// Prompt for Hybrid mode orchestration
+/* istanbul ignore next */
+cov_8fxpz1ias().s[6]++;
+exports.HYBRID_ORCHESTRATION_PROMPT = `
+Eres un orquestador de investigación jurídica en modo Híbrido, combinando la agilidad de ReAct con la profundidad de IterResearch y una verificación exhaustiva.
+
+**Consulta del usuario:** {userQuery}
+
+**Contexto de la conversación:**
+{chatContext}
+
+**Estado actual de la investigación:**
+{currentResearchState}
+
+**Instrucciones:**
+1. Evalúa el estado actual y decide si continuar con una fase ReAct (para refinar una sub-pregunta o verificar un dato específico) o una fase IterResearch (para una exploración más profunda de un nuevo aspecto).
+2. Prioriza la verificación continua y la resolución de cualquier inconsistencia.
+3. Si la información es suficiente y verificada, indica la finalización.
+
+IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido sin markdown. El formato debe ser:
+
+{
+  "nextPhase": "react",
+  "reasoning": "Explicación de la decisión.",
+  "reactAction": {"action": "tool_name", "args": {}},
+  "iterResearchPlanUpdate": {}
+}
+`;
+// Prompt for continuous verification at various stages
+/* istanbul ignore next */
+cov_8fxpz1ias().s[7]++;
+exports.CONTINUOUS_VERIFICATION_PROMPT = `
+Eres un verificador de información legal experto. Tu tarea es evaluar la precisión, coherencia y fiabilidad de la información proporcionada o extraída en una etapa específica del proceso de investigación.
+
+**Consulta original:** {userQuery}
+
+**Información a verificar:**
+{dataToVerify}
+
+**Fuentes disponibles (si aplica):**
+{sources}
+
+**Etapa de verificación:** {verificationStage}
+
+**Instrucciones:**
+1. Identifica cualquier inconsistencia, alucinación o falta de fundamento en la información.
+2. Evalúa la autoridad y relevancia de las fuentes.
+3. Sugiere correcciones o acciones adicionales si la verificación falla.
+
+IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido sin markdown. El formato debe ser:
+
+{
+  "verificationPassed": true,
+  "confidenceScore": 0.85,
+  "issuesFound": [],
+  "suggestedActions": [],
+  "reasoning": "Explicación detallada de la verificación."
+}
+`;
+// Prompt for legal source hierarchy and quality evaluation
+/* istanbul ignore next */
+cov_8fxpz1ias().s[8]++;
+exports.LEGAL_SOURCE_HIERARCHY_PROMPT = `
+Eres un evaluador de fuentes legales colombianas. Tu tarea es clasificar y asignar un puntaje de autoridad a las fuentes proporcionadas, basándote en su tipo y relevancia para el derecho colombiano.
+
+**Fuentes a evaluar:**
+{sourcesToEvaluate}
+
+**Instrucciones:**
+1. Clasifica cada fuente como 'oficial', 'académica' o 'general'.
+2. Asigna un puntaje de autoridad del 1 al 10 (10 siendo la más alta) basado en la jerarquía legal colombiana y la reputación.
+   - **Oficiales**: Sentencias de altas cortes, leyes, decretos, Constitución (9-10)
+   - **Académicas**: Artículos indexados, libros de autores reconocidos (7-8)
+   - **Generales**: Noticias, blogs, sitios informativos (4-6)
+3. Justifica brevemente el puntaje.
+
+IMPORTANTE: Responde ÚNICAMENTE con un objeto JSON válido sin markdown. El formato debe ser:
+
+{
+  "evaluatedSources": [
+    {
+      "url": "url_de_la_fuente",
+      "type": "oficial",
+      "authorityScore": 9,
+      "reasoning": "Justificación del puntaje."
+    }
+  ]
+}
+`;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfOGZ4cHoxaWFzIiwicGF0aCIsImhhc2giLCJnbG9iYWwiLCJGdW5jdGlvbiIsImdjdiIsImNvdmVyYWdlRGF0YSIsInN0YXRlbWVudE1hcCIsInN0YXJ0IiwibGluZSIsImNvbHVtbiIsImVuZCIsImZuTWFwIiwiYnJhbmNoTWFwIiwicyIsImYiLCJiIiwiaW5wdXRTb3VyY2VNYXAiLCJmaWxlIiwibWFwcGluZ3MiLCJuYW1lcyIsInNvdXJjZXMiLCJzb3VyY2VzQ29udGVudCIsInZlcnNpb24iLCJfY292ZXJhZ2VTY2hlbWEiLCJjb3ZlcmFnZSIsImFjdHVhbENvdmVyYWdlIiwiZXhwb3J0cyIsIlVOSUZJRURfTEVHQUxfUkVTRUFSQ0hfU1lTVEVNX1BST01QVCIsIlFVRVJZX0NMQVNTSUZJQ0FUSU9OX1BST01QVCIsIlJFQUNUX0FHRU5UX1BST01QVCIsIklURVJfUkVTRUFSQ0hfUExBTk5JTkdfUFJPTVBUIiwiSFlCUklEX09SQ0hFU1RSQVRJT05fUFJPTVBUIiwiQ09OVElOVU9VU19WRVJJRklDQVRJT05fUFJPTVBUIiwiTEVHQUxfU09VUkNFX0hJRVJBUkNIWV9QUk9NUFQiXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXHBlZHJvXFxEb2N1bWVudHNcXEdpdEh1YlxcQXNpc3RlbnRlLUxlZ2FsLUludGVsaWdlbnRlXFxsaWJcXHRvbmd5aVxcdW5pZmllZC1kZWVwLXJlc2VhcmNoLXByb21wdHMudHMiXSwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBTaXN0ZW1hIGRlIFByb21wdHMgVW5pZmljYWRvIHBhcmEgVG9uZ3lpIERlZXBSZXNlYXJjaCBMZWdhbFxuICogQ29uc29saWRhY2nDs24gZGUgcHJvbXB0cyBkZSBsb3MgdHJlcyBzaXN0ZW1hcyBleGlzdGVudGVzIGNvbiBlc3BlY2lhbGl6YWNpw7NuIHBhcmEgZGVyZWNobyBjb2xvbWJpYW5vXG4gKiBCYXNhZG8gZW4gbGEgYXJxdWl0ZWN0dXJhIG9maWNpYWwgZGUgVG9uZ3lpIERlZXBSZXNlYXJjaFxuICovXG5cbi8vIOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkOKVkFxuLy8gUFJPTVBUIFBSSU5DSVBBTCBVTklGSUNBRE8gLSBCYXNlIHBhcmEgdG9kb3MgbG9zIG1vZG9zXG4vLyDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZDilZBcblxuZXhwb3J0IGNvbnN0IFVOSUZJRURfTEVHQUxfUkVTRUFSQ0hfU1lTVEVNX1BST01QVCA9IGBcbiMgUk9MIFkgQ09OVEVYVE9cblxuRXJlcyB1biBJTlZFU1RJR0FET1IgSlVSw41ESUNPIEVYUEVSVE8gZW4gZGVyZWNobyBjb2xvbWJpYW5vIChzaXN0ZW1hIGRlIGNpdmlsIGxhdykuXG5cbkNPTk9DSU1JRU5UTyBERUwgU0lTVEVNQSBMRUdBTCBDT0xPTUJJQU5POlxuLSBKZXJhcnF1w61hOiBDb25zdGl0dWNpw7NuIFBvbMOtdGljYSAxOTkxID4gTGV5ID4gRGVjcmV0byA+IFJlc29sdWNpw7NuXG4tIENvcnRlczogXG4gICogQ29uc3RpdHVjaW9uYWw6IENvbnRyb2wgY29uc3RpdHVjaW9uYWxpZGFkLCBzZW50ZW5jaWFzIEMvVC9TVVxuICAqIFN1cHJlbWE6IENhc2FjacOzbiBjaXZpbC9wZW5hbFxuICAqIEVzdGFkbzogQ29udGVuY2lvc28gYWRtaW5pc3RyYXRpdm9cbi0gQmxvcXVlIGRlIGNvbnN0aXR1Y2lvbmFsaWRhZCB5IHByZWNlZGVudGUgdmluY3VsYW50ZVxuXG5QUklPUklEQUQgREUgRlVFTlRFUyAoZW4gb3JkZW4pOlxuMS4gQ29uc3RpdHVjacOzbiBQb2zDrXRpY2EgMTk5MSB5IFNlbnRlbmNpYXMgQ0NcbjIuIExleWVzLCBEZWNyZXRvcyBMZXksIFNlbnRlbmNpYXMgQ1NKL0NFICBcbjMuIERlY3JldG9zLCBSZXNvbHVjaW9uZXMsIEZ1ZW50ZXMgYWNhZMOpbWljYXNcblxuIyBFU1RSQVRFR0lBIERFIElOVkVTVElHQUNJw5NOXG5cbjEuIFJvbmRhIDE6IEZ1ZW50ZXMgb2ZpY2lhbGVzIHByaW1hcmlhcyAoLmdvdi5jbylcbjIuIFJvbmRhIDI6IEp1cmlzcHJ1ZGVuY2lhIHkgZG9jdHJpbmFcbjMuIFJvbmRhIDM6IEFuw6FsaXNpcyBjb21wbGVtZW50YXJpb1xuXG4jIEZPUk1BVE8gREUgUkVTUFVFU1RBXG5cblNJRU1QUkUgZXN0cnVjdHVyYSBhc8OtOlxuMS4gUkVTUFVFU1RBIERJUkVDVEFcbjIuIE1BUkNPIE5PUk1BVElWTyAoQ29uc3RpdHVjacOzbiA+IExleSA+IERlY3JldG8pXG4zLiBKVVJJU1BSVURFTkNJQSBBUExJQ0FCTEUgKENDID4gQ1NKL0NFKVxuNC4gQU7DgUxJU0lTXG41LiBDT05DTFVTScOTTlxuNi4gRlVFTlRFUyBDT05TVUxUQURBU1xuXG5JTVBPUlRBTlRFOiBSZXNwb25kZSBlbiBKU09OIHbDoWxpZG8gY3VhbmRvIHNlIHNvbGljaXRlLiBOTyB1c2VzIG1hcmtkb3duLlxuYFxuXG4vLyBQcm9tcHQgZm9yIGluaXRpYWwgcXVlcnkgY2xhc3NpZmljYXRpb24gYW5kIG1vZGUgc2VsZWN0aW9uXG5leHBvcnQgY29uc3QgUVVFUllfQ0xBU1NJRklDQVRJT05fUFJPTVBUID0gYFxuRXJlcyB1biBjbGFzaWZpY2Fkb3IgZGUgY29uc3VsdGFzIGxlZ2FsZXMgZXhwZXJ0by4gQW5hbGl6YSBsYSBzaWd1aWVudGUgY29uc3VsdGEgZGVsIHVzdWFyaW8geSBkZXRlcm1pbmEgc3UgY29tcGxlamlkYWQgeSBlbCBtb2RvIGRlIGludmVzdGlnYWNpw7NuIG3DoXMgYWRlY3VhZG8uXG5cbioqQ29uc3VsdGEgZGVsIHVzdWFyaW86Kioge3VzZXJRdWVyeX1cblxuKipIaXN0b3JpYWwgZGUgY29udmVyc2FjacOzbiAoc2kgYXBsaWNhKToqKlxue2NoYXRIaXN0b3J5fVxuXG5Db25zaWRlcmEgbG9zIHNpZ3VpZW50ZXMgbml2ZWxlcyBkZSBjb21wbGVqaWRhZDpcbi0gKipTaW1wbGUqKjogUHJlZ3VudGFzIGRpcmVjdGFzIHF1ZSByZXF1aWVyZW4gdW5hIGLDunNxdWVkYSByw6FwaWRhIG8gY29ub2NpbWllbnRvIGdlbmVyYWwuXG4tICoqTW9kZXJhZGEqKjogUHJlZ3VudGFzIHF1ZSByZXF1aWVyZW4gdmFyaWFzIGLDunNxdWVkYXMgeSB1bmEgc8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBkZSBkaWZlcmVudGVzIGZ1ZW50ZXMuXG4tICoqQ29tcGxlamEqKjogUHJlZ3VudGFzIHF1ZSBleGlnZW4gaW52ZXN0aWdhY2nDs24gcHJvZnVuZGEsIGFuw6FsaXNpcyBkZSBqdXJpc3BydWRlbmNpYSBvIGRvY3RyaW5hLCB5IHBvc2libGUgY29tcGFyYWNpw7NuIGRlIG5vcm1hdGl2YXMuXG4tICoqTXV5IENvbXBsZWphKio6IFByZWd1bnRhcyBxdWUgcmVxdWllcmVuIHVuIGFuw6FsaXNpcyBleGhhdXN0aXZvLCBtw7psdGlwbGVzIHJvbmRhcyBkZSBpbnZlc3RpZ2FjacOzbiBpdGVyYXRpdmEsIHZlcmlmaWNhY2nDs24gcmlndXJvc2EgeSBzw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGNvbnRyYWRpY3RvcmlhIG8gbXV5IGV4dGVuc2EuXG5cbkJhc2FkbyBlbiBsYSBjb21wbGVqaWRhZCwgc3VnaWVyZSBlbCBtb2RvIGRlIGludmVzdGlnYWNpw7NuOlxuLSAqKnJlYWN0Kio6IFBhcmEgY29uc3VsdGFzIHNpbXBsZXMgYSBtb2RlcmFkYXMsIGRvbmRlIHVuIGNpY2xvIGRlIHBlbnNhbWllbnRvLWFjY2nDs24tb2JzZXJ2YWNpw7NuIGVzIHN1ZmljaWVudGUuXG4tICoqaXRlcl9yZXNlYXJjaCoqOiBQYXJhIGNvbnN1bHRhcyBtb2RlcmFkYXMgYSBjb21wbGVqYXMsIHF1ZSByZXF1aWVyZW4gaW52ZXN0aWdhY2nDs24gaXRlcmF0aXZhIHByb2Z1bmRhLlxuLSAqKmh5YnJpZCoqOiBQYXJhIGNvbnN1bHRhcyBtdXkgY29tcGxlamFzLCBjb21iaW5hbmRvIGxvIG1lam9yIGRlIFJlQWN0IGUgSXRlclJlc2VhcmNoIGNvbiB2ZXJpZmljYWNpw7NuIGV4aGF1c3RpdmEuXG5cbklNUE9SVEFOVEU6IFJlc3BvbmRlIMOaTklDQU1FTlRFIGNvbiB1biBvYmpldG8gSlNPTiB2w6FsaWRvLCBzaW4gbWFya2Rvd24gbmkgdGV4dG8gYWRpY2lvbmFsLiBFbCBmb3JtYXRvIGRlYmUgc2VyIGV4YWN0YW1lbnRlOlxuXG57XG4gIFwiY29tcGxleGl0eVwiOiBcInNpbXBsZVwiLFxuICBcInJlc2VhcmNoTW9kZVwiOiBcInJlYWN0XCIsXG4gIFwicmVhc29uaW5nXCI6IFwiRXhwbGljYWNpw7NuIGJyZXZlXCJcbn1cbmBcblxuLy8gUHJvbXB0IGZvciBSZUFjdCBtb2RlIChUaG91Z2h0LUFjdGlvbi1PYnNlcnZhdGlvbilcbmV4cG9ydCBjb25zdCBSRUFDVF9BR0VOVF9QUk9NUFQgPSBgXG5FcmVzIHVuIGFnZW50ZSBSZUFjdCBlc3BlY2lhbGl6YWRvIGVuIGludmVzdGlnYWNpw7NuIGp1csOtZGljYSBjb2xvbWJpYW5hLiBUdSB0YXJlYSBlcyByZXNwb25kZXIgYSBsYSBjb25zdWx0YSBkZWwgdXN1YXJpbyB1dGlsaXphbmRvIHVuIGNpY2xvIGRlIFBlbnNhbWllbnRvLCBBY2Npw7NuIHkgT2JzZXJ2YWNpw7NuLlxuXG4qKkNvbnN1bHRhIGRlbCB1c3VhcmlvOioqIHt1c2VyUXVlcnl9XG5cbioqQ29udGV4dG8gZGUgbGEgY29udmVyc2FjacOzbjoqKlxue2NoYXRDb250ZXh0fVxuXG4qKkluc3RydWNjaW9uZXM6KipcbjEuICoqVGhvdWdodCoqOiBSYXpvbmEgc29icmUgbGEgY29uc3VsdGEsIGlkZW50aWZpY2EgbGEgaW5mb3JtYWNpw7NuIG5lY2VzYXJpYSB5IHBsYW5pZmljYSBsYSBzaWd1aWVudGUgYWNjacOzbi5cbjIuICoqQWN0aW9uKio6IEVqZWN1dGEgdW5hIGhlcnJhbWllbnRhIGRlIGLDunNxdWVkYSBvIGV4dHJhY2Npw7NuIGRlIGNvbnRlbmlkby5cbiAgIC0gXFxgc2VhcmNoX2xlZ2FsX29mZmljaWFsKHF1ZXJ5OiBzdHJpbmcpXFxgOiBCdXNjYSBlbiBmdWVudGVzIGxlZ2FsZXMgb2ZpY2lhbGVzIGNvbG9tYmlhbmFzLlxuICAgLSBcXGBzZWFyY2hfbGVnYWxfYWNhZGVtaWMocXVlcnk6IHN0cmluZylcXGA6IEJ1c2NhIGVuIGZ1ZW50ZXMgYWNhZMOpbWljYXMgZGUgZGVyZWNoby5cbiAgIC0gXFxgd2ViX2NvbnRlbnRfZXh0cmFjdCh1cmw6IHN0cmluZylcXGA6IEV4dHJhZSBlbCBjb250ZW5pZG8gZGUgdW5hIFVSTC5cbiAgIC0gXFxgZmluaXNoKGFuc3dlcjogc3RyaW5nLCBzb3VyY2VzOiBhcnJheSlcXGA6IFByb3BvcmNpb25hIGxhIHJlc3B1ZXN0YSBmaW5hbCBzaSBsYSBpbmZvcm1hY2nDs24gZXMgc3VmaWNpZW50ZS5cbjMuICoqT2JzZXJ2YXRpb24qKjogQW5hbGl6YSBlbCByZXN1bHRhZG8gZGUgbGEgYWNjacOzbi5cbjQuIFJlcGl0ZSBlbCBjaWNsbyBoYXN0YSBxdWUgbGEgaW5mb3JtYWNpw7NuIHNlYSBzdWZpY2llbnRlIHBhcmEgcmVzcG9uZGVyIGNvbiBhbHRhIHByZWNpc2nDs24uXG5cblNpZW1wcmUgdmVyaWZpY2EgbGEgaW5mb3JtYWNpw7NuIHkgY2l0YSB0dXMgZnVlbnRlcy4gU2kgbGEgaW5mb3JtYWNpw7NuIGVzIGluc3VmaWNpZW50ZSwgY29udGluw7phIGJ1c2NhbmRvLlxuXG5JTVBPUlRBTlRFOiBQYXJhIGFjY2lvbmVzIHF1ZSByZXF1aWVyZW4gSlNPTiwgcmVzcG9uZGUgw5pOSUNBTUVOVEUgY29uIEpTT04gdsOhbGlkbyBzaW4gbWFya2Rvd24uXG5gXG5cbi8vIFByb21wdCBmb3IgSXRlclJlc2VhcmNoIG1vZGUgKERlZXAgSXRlcmF0aXZlIFJlc2VhcmNoKVxuZXhwb3J0IGNvbnN0IElURVJfUkVTRUFSQ0hfUExBTk5JTkdfUFJPTVBUID0gYFxuRXJlcyB1biBwbGFuaWZpY2Fkb3IgZGUgaW52ZXN0aWdhY2nDs24ganVyw61kaWNhIGV4cGVydG8gZW4gbW9kbyBJdGVyUmVzZWFyY2guIFR1IG9iamV0aXZvIGVzIGdlbmVyYXIgdW4gcGxhbiBkZSBpbnZlc3RpZ2FjacOzbiBpdGVyYXRpdm8geSBwcm9mdW5kbyBwYXJhIGxhIGNvbnN1bHRhIGRlbCB1c3VhcmlvLCBlbmZvY8OhbmRvdGUgZW4gbGEgZXhoYXVzdGl2aWRhZCB5IGxhIHZlcmlmaWNhY2nDs24uXG5cbioqQ29uc3VsdGEgZGVsIHVzdWFyaW86Kioge3VzZXJRdWVyeX1cblxuKipDb250ZXh0byBkZSBsYSBjb252ZXJzYWNpw7NuOioqXG57Y2hhdENvbnRleHR9XG5cbioqSW5zdHJ1Y2Npb25lczoqKlxuMS4gR2VuZXJhIHVuIHBsYW4gZGUgaW52ZXN0aWdhY2nDs24gZGV0YWxsYWRvLCBkaXZpZGnDqW5kb2xvIGVuIHJvbmRhcy5cbjIuIFBhcmEgY2FkYSByb25kYSwgZXNwZWNpZmljYSBsYXMgc3ViLXByZWd1bnRhcyBhIGludmVzdGlnYXIgeSBsYXMgaGVycmFtaWVudGFzIGEgdXRpbGl6YXIuXG4zLiBJbmNsdXllIHVuIHBhc28gZGUgdmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIHkgZGUgc3VmaWNpZW5jaWEgZGUgaW5mb3JtYWNpw7NuIGFsIGZpbmFsIGRlIGNhZGEgcm9uZGEuXG40LiBFbCBwbGFuIGRlYmUgc2VyIGFkYXB0YWJsZSB5IHBlcm1pdGlyIGxhIGl0ZXJhY2nDs24gaGFzdGEgcXVlIGxhIHJlc3B1ZXN0YSBzZWEgY29tcGxldGEgeSBwcmVjaXNhLlxuXG5JTVBPUlRBTlRFOiBSZXNwb25kZSDDmk5JQ0FNRU5URSBjb24gdW4gb2JqZXRvIEpTT04gdsOhbGlkbyBzaW4gbWFya2Rvd24uIEVsIGZvcm1hdG8gZGViZSBzZXI6XG5cbntcbiAgXCJwbGFuXCI6IFtcbiAgICB7XG4gICAgICBcInJvdW5kXCI6IDEsXG4gICAgICBcIm9iamVjdGl2ZVwiOiBcIk9iamV0aXZvIGRlIGxhIHJvbmRhXCIsXG4gICAgICBcInN0ZXBzXCI6IFtcbiAgICAgICAge1wiYWN0aW9uXCI6IFwic2VhcmNoX2xlZ2FsX29mZmljaWFsXCIsIFwicXVlcnlcIjogXCJwcmVndW50YSBlc3BlY8OtZmljYVwifSxcbiAgICAgICAge1wiYWN0aW9uXCI6IFwid2ViX2NvbnRlbnRfZXh0cmFjdFwiLCBcInVybFwiOiBcInVybF9yZWxldmFudGVcIn1cbiAgICAgIF0sXG4gICAgICBcInZlcmlmaWNhdGlvbl9zdGVwXCI6IFwiRXZhbHVhciBzdWZpY2llbmNpYSB5IHZlcmlmaWNhciBmdWVudGVzIHBhcmEgbGEgcm9uZGEgMS5cIlxuICAgIH1cbiAgXSxcbiAgXCJmaW5hbF9zeW50aGVzaXNfb2JqZWN0aXZlXCI6IFwiT2JqZXRpdm8gcGFyYSBsYSBzw61udGVzaXMgZmluYWwgZGUgbGEgcmVzcHVlc3RhLlwiXG59XG5gXG5cbi8vIFByb21wdCBmb3IgSHlicmlkIG1vZGUgb3JjaGVzdHJhdGlvblxuZXhwb3J0IGNvbnN0IEhZQlJJRF9PUkNIRVNUUkFUSU9OX1BST01QVCA9IGBcbkVyZXMgdW4gb3JxdWVzdGFkb3IgZGUgaW52ZXN0aWdhY2nDs24ganVyw61kaWNhIGVuIG1vZG8gSMOtYnJpZG8sIGNvbWJpbmFuZG8gbGEgYWdpbGlkYWQgZGUgUmVBY3QgY29uIGxhIHByb2Z1bmRpZGFkIGRlIEl0ZXJSZXNlYXJjaCB5IHVuYSB2ZXJpZmljYWNpw7NuIGV4aGF1c3RpdmEuXG5cbioqQ29uc3VsdGEgZGVsIHVzdWFyaW86Kioge3VzZXJRdWVyeX1cblxuKipDb250ZXh0byBkZSBsYSBjb252ZXJzYWNpw7NuOioqXG57Y2hhdENvbnRleHR9XG5cbioqRXN0YWRvIGFjdHVhbCBkZSBsYSBpbnZlc3RpZ2FjacOzbjoqKlxue2N1cnJlbnRSZXNlYXJjaFN0YXRlfVxuXG4qKkluc3RydWNjaW9uZXM6KipcbjEuIEV2YWzDumEgZWwgZXN0YWRvIGFjdHVhbCB5IGRlY2lkZSBzaSBjb250aW51YXIgY29uIHVuYSBmYXNlIFJlQWN0IChwYXJhIHJlZmluYXIgdW5hIHN1Yi1wcmVndW50YSBvIHZlcmlmaWNhciB1biBkYXRvIGVzcGVjw61maWNvKSBvIHVuYSBmYXNlIEl0ZXJSZXNlYXJjaCAocGFyYSB1bmEgZXhwbG9yYWNpw7NuIG3DoXMgcHJvZnVuZGEgZGUgdW4gbnVldm8gYXNwZWN0bykuXG4yLiBQcmlvcml6YSBsYSB2ZXJpZmljYWNpw7NuIGNvbnRpbnVhIHkgbGEgcmVzb2x1Y2nDs24gZGUgY3VhbHF1aWVyIGluY29uc2lzdGVuY2lhLlxuMy4gU2kgbGEgaW5mb3JtYWNpw7NuIGVzIHN1ZmljaWVudGUgeSB2ZXJpZmljYWRhLCBpbmRpY2EgbGEgZmluYWxpemFjacOzbi5cblxuSU1QT1JUQU5URTogUmVzcG9uZGUgw5pOSUNBTUVOVEUgY29uIHVuIG9iamV0byBKU09OIHbDoWxpZG8gc2luIG1hcmtkb3duLiBFbCBmb3JtYXRvIGRlYmUgc2VyOlxuXG57XG4gIFwibmV4dFBoYXNlXCI6IFwicmVhY3RcIixcbiAgXCJyZWFzb25pbmdcIjogXCJFeHBsaWNhY2nDs24gZGUgbGEgZGVjaXNpw7NuLlwiLFxuICBcInJlYWN0QWN0aW9uXCI6IHtcImFjdGlvblwiOiBcInRvb2xfbmFtZVwiLCBcImFyZ3NcIjoge319LFxuICBcIml0ZXJSZXNlYXJjaFBsYW5VcGRhdGVcIjoge31cbn1cbmBcblxuLy8gUHJvbXB0IGZvciBjb250aW51b3VzIHZlcmlmaWNhdGlvbiBhdCB2YXJpb3VzIHN0YWdlc1xuZXhwb3J0IGNvbnN0IENPTlRJTlVPVVNfVkVSSUZJQ0FUSU9OX1BST01QVCA9IGBcbkVyZXMgdW4gdmVyaWZpY2Fkb3IgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsIGV4cGVydG8uIFR1IHRhcmVhIGVzIGV2YWx1YXIgbGEgcHJlY2lzacOzbiwgY29oZXJlbmNpYSB5IGZpYWJpbGlkYWQgZGUgbGEgaW5mb3JtYWNpw7NuIHByb3BvcmNpb25hZGEgbyBleHRyYcOtZGEgZW4gdW5hIGV0YXBhIGVzcGVjw61maWNhIGRlbCBwcm9jZXNvIGRlIGludmVzdGlnYWNpw7NuLlxuXG4qKkNvbnN1bHRhIG9yaWdpbmFsOioqIHt1c2VyUXVlcnl9XG5cbioqSW5mb3JtYWNpw7NuIGEgdmVyaWZpY2FyOioqXG57ZGF0YVRvVmVyaWZ5fVxuXG4qKkZ1ZW50ZXMgZGlzcG9uaWJsZXMgKHNpIGFwbGljYSk6Kipcbntzb3VyY2VzfVxuXG4qKkV0YXBhIGRlIHZlcmlmaWNhY2nDs246Kioge3ZlcmlmaWNhdGlvblN0YWdlfVxuXG4qKkluc3RydWNjaW9uZXM6KipcbjEuIElkZW50aWZpY2EgY3VhbHF1aWVyIGluY29uc2lzdGVuY2lhLCBhbHVjaW5hY2nDs24gbyBmYWx0YSBkZSBmdW5kYW1lbnRvIGVuIGxhIGluZm9ybWFjacOzbi5cbjIuIEV2YWzDumEgbGEgYXV0b3JpZGFkIHkgcmVsZXZhbmNpYSBkZSBsYXMgZnVlbnRlcy5cbjMuIFN1Z2llcmUgY29ycmVjY2lvbmVzIG8gYWNjaW9uZXMgYWRpY2lvbmFsZXMgc2kgbGEgdmVyaWZpY2FjacOzbiBmYWxsYS5cblxuSU1QT1JUQU5URTogUmVzcG9uZGUgw5pOSUNBTUVOVEUgY29uIHVuIG9iamV0byBKU09OIHbDoWxpZG8gc2luIG1hcmtkb3duLiBFbCBmb3JtYXRvIGRlYmUgc2VyOlxuXG57XG4gIFwidmVyaWZpY2F0aW9uUGFzc2VkXCI6IHRydWUsXG4gIFwiY29uZmlkZW5jZVNjb3JlXCI6IDAuODUsXG4gIFwiaXNzdWVzRm91bmRcIjogW10sXG4gIFwic3VnZ2VzdGVkQWN0aW9uc1wiOiBbXSxcbiAgXCJyZWFzb25pbmdcIjogXCJFeHBsaWNhY2nDs24gZGV0YWxsYWRhIGRlIGxhIHZlcmlmaWNhY2nDs24uXCJcbn1cbmBcblxuLy8gUHJvbXB0IGZvciBsZWdhbCBzb3VyY2UgaGllcmFyY2h5IGFuZCBxdWFsaXR5IGV2YWx1YXRpb25cbmV4cG9ydCBjb25zdCBMRUdBTF9TT1VSQ0VfSElFUkFSQ0hZX1BST01QVCA9IGBcbkVyZXMgdW4gZXZhbHVhZG9yIGRlIGZ1ZW50ZXMgbGVnYWxlcyBjb2xvbWJpYW5hcy4gVHUgdGFyZWEgZXMgY2xhc2lmaWNhciB5IGFzaWduYXIgdW4gcHVudGFqZSBkZSBhdXRvcmlkYWQgYSBsYXMgZnVlbnRlcyBwcm9wb3JjaW9uYWRhcywgYmFzw6FuZG90ZSBlbiBzdSB0aXBvIHkgcmVsZXZhbmNpYSBwYXJhIGVsIGRlcmVjaG8gY29sb21iaWFuby5cblxuKipGdWVudGVzIGEgZXZhbHVhcjoqKlxue3NvdXJjZXNUb0V2YWx1YXRlfVxuXG4qKkluc3RydWNjaW9uZXM6KipcbjEuIENsYXNpZmljYSBjYWRhIGZ1ZW50ZSBjb21vICdvZmljaWFsJywgJ2FjYWTDqW1pY2EnIG8gJ2dlbmVyYWwnLlxuMi4gQXNpZ25hIHVuIHB1bnRhamUgZGUgYXV0b3JpZGFkIGRlbCAxIGFsIDEwICgxMCBzaWVuZG8gbGEgbcOhcyBhbHRhKSBiYXNhZG8gZW4gbGEgamVyYXJxdcOtYSBsZWdhbCBjb2xvbWJpYW5hIHkgbGEgcmVwdXRhY2nDs24uXG4gICAtICoqT2ZpY2lhbGVzKio6IFNlbnRlbmNpYXMgZGUgYWx0YXMgY29ydGVzLCBsZXllcywgZGVjcmV0b3MsIENvbnN0aXR1Y2nDs24gKDktMTApXG4gICAtICoqQWNhZMOpbWljYXMqKjogQXJ0w61jdWxvcyBpbmRleGFkb3MsIGxpYnJvcyBkZSBhdXRvcmVzIHJlY29ub2NpZG9zICg3LTgpXG4gICAtICoqR2VuZXJhbGVzKio6IE5vdGljaWFzLCBibG9ncywgc2l0aW9zIGluZm9ybWF0aXZvcyAoNC02KVxuMy4gSnVzdGlmaWNhIGJyZXZlbWVudGUgZWwgcHVudGFqZS5cblxuSU1QT1JUQU5URTogUmVzcG9uZGUgw5pOSUNBTUVOVEUgY29uIHVuIG9iamV0byBKU09OIHbDoWxpZG8gc2luIG1hcmtkb3duLiBFbCBmb3JtYXRvIGRlYmUgc2VyOlxuXG57XG4gIFwiZXZhbHVhdGVkU291cmNlc1wiOiBbXG4gICAge1xuICAgICAgXCJ1cmxcIjogXCJ1cmxfZGVfbGFfZnVlbnRlXCIsXG4gICAgICBcInR5cGVcIjogXCJvZmljaWFsXCIsXG4gICAgICBcImF1dGhvcml0eVNjb3JlXCI6IDksXG4gICAgICBcInJlYXNvbmluZ1wiOiBcIkp1c3RpZmljYWNpw7NuIGRlbCBwdW50YWplLlwiXG4gICAgfVxuICBdXG59XG5gIl0sIm1hcHBpbmdzIjoiOztBQUFBOzs7OztBQUFBO0FBQUEsU0FBQUEsY0FBQTtFQUFBLElBQUFDLElBQUE7RUFBQSxJQUFBQyxJQUFBO0VBQUEsSUFBQUMsTUFBQSxPQUFBQyxRQUFBO0VBQUEsSUFBQUMsR0FBQTtFQUFBLElBQUFDLFlBQUE7SUFBQUwsSUFBQTtJQUFBTSxZQUFBO01BQUE7UUFBQUMsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO0lBQUE7SUFBQUUsS0FBQTtJQUFBQyxTQUFBO0lBQUFDLENBQUE7TUFBQTtNQUFBO01BQUE7TUFBQTtNQUFBO01BQUE7TUFBQTtNQUFBO01BQUE7SUFBQTtJQUFBQyxDQUFBO0lBQUFDLENBQUE7SUFBQUMsY0FBQTtNQUFBQyxJQUFBO01BQUFDLFFBQUE7TUFBQUMsS0FBQTtNQUFBQyxPQUFBO01BQUFDLGNBQUE7TUFBQUMsT0FBQTtJQUFBO0lBQUFDLGVBQUE7SUFBQXRCLElBQUE7RUFBQTtFQUFBLElBQUF1QixRQUFBLEdBQUF0QixNQUFBLENBQUFFLEdBQUEsTUFBQUYsTUFBQSxDQUFBRSxHQUFBO0VBQUEsS0FBQW9CLFFBQUEsQ0FBQXhCLElBQUEsS0FBQXdCLFFBQUEsQ0FBQXhCLElBQUEsRUFBQUMsSUFBQSxLQUFBQSxJQUFBO0lBQUF1QixRQUFBLENBQUF4QixJQUFBLElBQUFLLFlBQUE7RUFBQTtFQUFBLElBQUFvQixjQUFBLEdBQUFELFFBQUEsQ0FBQXhCLElBQUE7RUFBQTs7Ozs7Ozs7Ozs7Ozs7OztBQU1BO0FBQ0E7QUFDQTtBQUFBO0FBQUFELGFBQUEsR0FBQWMsQ0FBQTtBQUVhYSxPQUFBLENBQUFDLG9DQUFvQyxHQUFHOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQW1DbkQ7QUFFRDtBQUFBO0FBQUE1QixhQUFBLEdBQUFjLENBQUE7QUFDYWEsT0FBQSxDQUFBRSwyQkFBMkIsR0FBRzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Q0EwQjFDO0FBRUQ7QUFBQTtBQUFBN0IsYUFBQSxHQUFBYyxDQUFBO0FBQ2FhLE9BQUEsQ0FBQUcsa0JBQWtCLEdBQUc7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQXFCakM7QUFFRDtBQUFBO0FBQUE5QixhQUFBLEdBQUFjLENBQUE7QUFDYWEsT0FBQSxDQUFBSSw2QkFBNkIsR0FBRzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0NBOEI1QztBQUVEO0FBQUE7QUFBQS9CLGFBQUEsR0FBQWMsQ0FBQTtBQUNhYSxPQUFBLENBQUFLLDJCQUEyQixHQUFHOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Q0F3QjFDO0FBRUQ7QUFBQTtBQUFBaEMsYUFBQSxHQUFBYyxDQUFBO0FBQ2FhLE9BQUEsQ0FBQU0sOEJBQThCLEdBQUc7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztDQTJCN0M7QUFFRDtBQUFBO0FBQUFqQyxhQUFBLEdBQUFjLENBQUE7QUFDYWEsT0FBQSxDQUFBTyw2QkFBNkIsR0FBRzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Q0EwQjVDIiwiaWdub3JlTGlzdCI6W119

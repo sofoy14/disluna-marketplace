@@ -1,0 +1,123 @@
+8f5f2f01b9265f568720adf3ac62b211
+"use strict";
+
+/* istanbul ignore next */
+function cov_vwm55oto6() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\server\\server-utils.ts";
+  var hash = "edafee62bb46aed5ac7776963a3fb8cf7f84d420";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\server\\server-utils.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 40
+        }
+      },
+      "2": {
+        start: {
+          line: 5,
+          column: 4
+        },
+        end: {
+          line: 10,
+          column: 7
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "createResponse",
+        decl: {
+          start: {
+            line: 4,
+            column: 9
+          },
+          end: {
+            line: 4,
+            column: 23
+          }
+        },
+        loc: {
+          start: {
+            line: 4,
+            column: 38
+          },
+          end: {
+            line: 11,
+            column: 1
+          }
+        },
+        line: 4
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\server\\server-utils.ts",
+      mappings: ";;AAAA,wCAOC;AAPD,SAAgB,cAAc,CAAC,IAAY,EAAE,MAAc;IACzD,OAAO,IAAI,QAAQ,CAAC,IAAI,CAAC,SAAS,CAAC,IAAI,CAAC,EAAE;QACxC,MAAM;QACN,OAAO,EAAE;YACP,cAAc,EAAE,kBAAkB;SACnC;KACF,CAAC,CAAA;AACJ,CAAC",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\server\\server-utils.ts"],
+      sourcesContent: ["export function createResponse(data: object, status: number): Response {\r\n  return new Response(JSON.stringify(data), {\r\n    status,\r\n    headers: {\r\n      \"Content-Type\": \"application/json\"\r\n    }\r\n  })\r\n}\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "edafee62bb46aed5ac7776963a3fb8cf7f84d420"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_vwm55oto6 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_vwm55oto6();
+cov_vwm55oto6().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_vwm55oto6().s[1]++;
+exports.createResponse = createResponse;
+function createResponse(data, status) {
+  /* istanbul ignore next */
+  cov_vwm55oto6().f[0]++;
+  cov_vwm55oto6().s[2]++;
+  return new Response(JSON.stringify(data), {
+    status,
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJleHBvcnRzIiwiY3JlYXRlUmVzcG9uc2UiLCJkYXRhIiwic3RhdHVzIiwiY292X3Z3bTU1b3RvNiIsImYiLCJzIiwiUmVzcG9uc2UiLCJKU09OIiwic3RyaW5naWZ5IiwiaGVhZGVycyJdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xccGVkcm9cXERvY3VtZW50c1xcR2l0SHViXFxBc2lzdGVudGUtTGVnYWwtSW50ZWxpZ2VudGVcXGxpYlxcc2VydmVyXFxzZXJ2ZXItdXRpbHMudHMiXSwic291cmNlc0NvbnRlbnQiOlsiZXhwb3J0IGZ1bmN0aW9uIGNyZWF0ZVJlc3BvbnNlKGRhdGE6IG9iamVjdCwgc3RhdHVzOiBudW1iZXIpOiBSZXNwb25zZSB7XHJcbiAgcmV0dXJuIG5ldyBSZXNwb25zZShKU09OLnN0cmluZ2lmeShkYXRhKSwge1xyXG4gICAgc3RhdHVzLFxyXG4gICAgaGVhZGVyczoge1xyXG4gICAgICBcIkNvbnRlbnQtVHlwZVwiOiBcImFwcGxpY2F0aW9uL2pzb25cIlxyXG4gICAgfVxyXG4gIH0pXHJcbn1cclxuIl0sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBQUFBLE9BQUEsQ0FBQUMsY0FBQSxHQUFBQSxjQUFBO0FBQUEsU0FBZ0JBLGNBQWNBLENBQUNDLElBQVksRUFBRUMsTUFBYztFQUFBO0VBQUFDLGFBQUEsR0FBQUMsQ0FBQTtFQUFBRCxhQUFBLEdBQUFFLENBQUE7RUFDekQsT0FBTyxJQUFJQyxRQUFRLENBQUNDLElBQUksQ0FBQ0MsU0FBUyxDQUFDUCxJQUFJLENBQUMsRUFBRTtJQUN4Q0MsTUFBTTtJQUNOTyxPQUFPLEVBQUU7TUFDUCxjQUFjLEVBQUU7O0dBRW5CLENBQUM7QUFDSiIsImlnbm9yZUxpc3QiOltdfQ==

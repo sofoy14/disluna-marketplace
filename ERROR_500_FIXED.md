@@ -49,3 +49,5 @@ Ahora el endpoint:
    - Se muestre la respuesta con fuentes
 
 El error 500 está completamente solucionado y el sistema debería funcionar correctamente.
+
+

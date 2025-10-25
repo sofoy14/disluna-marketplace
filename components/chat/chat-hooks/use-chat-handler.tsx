@@ -8,6 +8,7 @@ import { deleteMessagesIncludingAndAfter } from "@/db/messages"
 import { buildFinalMessages } from "@/lib/build-prompt"
 import { Tables } from "@/supabase/types"
 import { ChatMessage, ChatPayload, LLMID, ModelProvider } from "@/types"
+import { BibliographyItem } from "@/types/chat-message"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useRef } from "react"
 import { LLM_LIST } from "../../../lib/models/llm/llm-list"
@@ -306,6 +307,7 @@ export const useChatHandler = () => {
       }
 
       let generatedText = ""
+      let bibliography: BibliographyItem[] | undefined
 
       if (selectedTools.length > 0) {
         setToolInUse("Tools")
@@ -334,36 +336,40 @@ export const useChatHandler = () => {
 
         setToolInUse("none")
 
-        // Manejar respuesta del endpoint simple-direct (JSON con bibliografía separada)
+        // Manejar respuesta del endpoint simple-direct (JSON con bibliografia separada)
         if (response.ok) {
-          const contentType = response.headers.get('content-type') || ''
-          const isPlainText = contentType.includes('text/plain')
-          
-          let bibliography = undefined
+          const contentType = response.headers.get("content-type") || ""
+          const isPlainText = contentType.includes("text/plain")
           
           if (isPlainText) {
             // Respuesta de texto plano (legacy)
             generatedText = await response.text()
           } else {
-            // Respuesta JSON con bibliografía separada
+            // Respuesta JSON con bibliografia separada
             const data = await response.json()
             generatedText = data.message || "No se pudo generar respuesta"
-            bibliography = data.bibliography
-            
-            // Guardar bibliografía en el estado global si existe
-            if (data.bibliography && data.bibliography.length > 0) {
-              console.log('📚 Bibliografía recibida:', data.bibliography)
+            bibliography = Array.isArray(data.bibliography) ? data.bibliography : undefined
+
+            if (bibliography && bibliography.length > 0) {
+              console.log('Bibliografia recibida:', bibliography)
             }
           }
           
           // Actualizar el mensaje del asistente
           const updatedMessage = {
             ...tempAssistantChatMessage,
-            content: generatedText,
-            bibliography: bibliography
+            message: {
+              ...tempAssistantChatMessage.message,
+              content: generatedText
+            },
+            bibliography
           }
-          
-          setChatMessages(prev => [...prev, updatedMessage])
+
+          setChatMessages(prev =>
+            prev.map(chatMessage =>
+              chatMessage.message.id === tempAssistantChatMessage.message.id ? updatedMessage : chatMessage
+            )
+          )
         } else {
           const errorData = await response.json()
           generatedText = errorData.message || "Error en el chat"
@@ -439,7 +445,8 @@ export const useChatHandler = () => {
         setChatMessages,
         setChatFileItems,
         setChatImages,
-        selectedAssistant
+        selectedAssistant,
+        bibliography
       )
 
       setIsGenerating(false)

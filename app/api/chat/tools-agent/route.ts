@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
     console.log(`🔧 Herramientas: serperSearch, httpFetch`)
     console.log(`${'='.repeat(80)}`)
 
-    // Siempre ejecutar el Tools Agent - el modelo decide si usar la herramienta
-    console.log(`🤖 Ejecutando Tools Agent - el modelo decidirá si buscar`)
+    // Ejecutar el Tools Agent con verificación multi-búsqueda
+    console.log(`🤖 Ejecutando Tools Agent con verificación multi-búsqueda`)
     
     // Inicializar Tools Agent
     const toolsAgent = new WebSearchToolsAgent({
@@ -121,9 +121,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: agentResponse.text,
       bibliography: agentResponse.sources.map(source => ({
+        id: source.id,
         title: source.title,
         url: source.url,
-        type: detectSourceType(source.url, source.title)
+        type: detectSourceType(source.url, source.title),
+        description: source.summary
       }))
     })
 

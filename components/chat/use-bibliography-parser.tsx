@@ -164,40 +164,11 @@ export function useBibliographyParser(content: string): BibliographyParseResult 
       }
     }
 
-  // Si no encontramos un heading específico, buscar líneas con URLs o enlaces markdown
+  // Si no encontramos un heading claro, no extraer bibliografía para evitar falsos positivos
   if (headingIndex === -1) {
-    // Solo buscar bibliografía al final si hay URLs reales (más estricto)
-    const urlLines = []
-    let hasRealUrls = false
-    
-    for (let i = lines.length - 1; i >= 0; i--) {
-      const line = lines[i].trim()
-      
-      if (!line) {
-        continue
-      }
-      
-      // Solo considerar líneas con URLs reales o enlaces markdown
-      if (MARKDOWN_LINK_REGEX.test(line) || URL_REGEX.test(line)) {
-        urlLines.unshift(i)
-        hasRealUrls = true
-      } else if (urlLines.length > 0 && line.length > 10 && !line.includes('http') && !line.includes('www')) {
-        // Solo agregar si ya tenemos URLs y parece ser una fuente
-        urlLines.unshift(i)
-      } else if (urlLines.length > 0) {
-        // Si ya encontramos URLs y esta línea no es una URL, parar
-        break
-      }
-    }
-    
-    // Solo usar detección automática si hay URLs reales y al menos 2 líneas
-    if (hasRealUrls && urlLines.length >= 2) {
-      headingIndex = urlLines[0]
-    } else {
-      return {
-        bibliographyItems: [],
-        contentWithoutBibliography: sanitizeContentSpacing(content)
-      }
+    return {
+      bibliographyItems: [],
+      contentWithoutBibliography: sanitizeContentSpacing(content)
     }
   }
 

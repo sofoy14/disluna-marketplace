@@ -1,0 +1,1218 @@
+f039b5424af46c081669381ff8c32568
+"use strict";
+
+/**
+ * Constantes Compartidas para Utilidades
+ *
+ * Este archivo define las constantes utilizadas por las utilidades compartidas.
+ */
+/* istanbul ignore next */
+function cov_2d5y75v7rk() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\utils\\constants.ts";
+  var hash = "b36f7d00844c5235f7da19f73c51295573fb16a5";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\utils\\constants.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 7,
+          column: 0
+        },
+        end: {
+          line: 7,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 8,
+          column: 0
+        },
+        end: {
+          line: 8,
+          column: 1477
+        }
+      },
+      "2": {
+        start: {
+          line: 10,
+          column: 0
+        },
+        end: {
+          line: 50,
+          column: 2
+        }
+      },
+      "3": {
+        start: {
+          line: 52,
+          column: 0
+        },
+        end: {
+          line: 186,
+          column: 2
+        }
+      },
+      "4": {
+        start: {
+          line: 188,
+          column: 0
+        },
+        end: {
+          line: 228,
+          column: 2
+        }
+      },
+      "5": {
+        start: {
+          line: 230,
+          column: 0
+        },
+        end: {
+          line: 238,
+          column: 2
+        }
+      },
+      "6": {
+        start: {
+          line: 240,
+          column: 0
+        },
+        end: {
+          line: 248,
+          column: 2
+        }
+      },
+      "7": {
+        start: {
+          line: 250,
+          column: 0
+        },
+        end: {
+          line: 258,
+          column: 2
+        }
+      },
+      "8": {
+        start: {
+          line: 260,
+          column: 0
+        },
+        end: {
+          line: 268,
+          column: 2
+        }
+      },
+      "9": {
+        start: {
+          line: 270,
+          column: 0
+        },
+        end: {
+          line: 278,
+          column: 2
+        }
+      },
+      "10": {
+        start: {
+          line: 280,
+          column: 0
+        },
+        end: {
+          line: 288,
+          column: 2
+        }
+      },
+      "11": {
+        start: {
+          line: 290,
+          column: 0
+        },
+        end: {
+          line: 298,
+          column: 2
+        }
+      },
+      "12": {
+        start: {
+          line: 300,
+          column: 0
+        },
+        end: {
+          line: 308,
+          column: 2
+        }
+      },
+      "13": {
+        start: {
+          line: 310,
+          column: 0
+        },
+        end: {
+          line: 318,
+          column: 2
+        }
+      },
+      "14": {
+        start: {
+          line: 320,
+          column: 0
+        },
+        end: {
+          line: 328,
+          column: 2
+        }
+      },
+      "15": {
+        start: {
+          line: 330,
+          column: 0
+        },
+        end: {
+          line: 338,
+          column: 2
+        }
+      },
+      "16": {
+        start: {
+          line: 340,
+          column: 0
+        },
+        end: {
+          line: 348,
+          column: 2
+        }
+      },
+      "17": {
+        start: {
+          line: 350,
+          column: 0
+        },
+        end: {
+          line: 358,
+          column: 2
+        }
+      },
+      "18": {
+        start: {
+          line: 360,
+          column: 0
+        },
+        end: {
+          line: 368,
+          column: 2
+        }
+      },
+      "19": {
+        start: {
+          line: 370,
+          column: 0
+        },
+        end: {
+          line: 378,
+          column: 2
+        }
+      },
+      "20": {
+        start: {
+          line: 380,
+          column: 0
+        },
+        end: {
+          line: 388,
+          column: 2
+        }
+      },
+      "21": {
+        start: {
+          line: 390,
+          column: 0
+        },
+        end: {
+          line: 398,
+          column: 2
+        }
+      },
+      "22": {
+        start: {
+          line: 400,
+          column: 0
+        },
+        end: {
+          line: 408,
+          column: 2
+        }
+      },
+      "23": {
+        start: {
+          line: 410,
+          column: 0
+        },
+        end: {
+          line: 418,
+          column: 2
+        }
+      },
+      "24": {
+        start: {
+          line: 420,
+          column: 0
+        },
+        end: {
+          line: 428,
+          column: 2
+        }
+      },
+      "25": {
+        start: {
+          line: 430,
+          column: 0
+        },
+        end: {
+          line: 438,
+          column: 2
+        }
+      },
+      "26": {
+        start: {
+          line: 440,
+          column: 0
+        },
+        end: {
+          line: 448,
+          column: 2
+        }
+      },
+      "27": {
+        start: {
+          line: 450,
+          column: 0
+        },
+        end: {
+          line: 458,
+          column: 2
+        }
+      },
+      "28": {
+        start: {
+          line: 460,
+          column: 0
+        },
+        end: {
+          line: 468,
+          column: 2
+        }
+      },
+      "29": {
+        start: {
+          line: 470,
+          column: 0
+        },
+        end: {
+          line: 478,
+          column: 2
+        }
+      },
+      "30": {
+        start: {
+          line: 480,
+          column: 0
+        },
+        end: {
+          line: 488,
+          column: 2
+        }
+      },
+      "31": {
+        start: {
+          line: 490,
+          column: 0
+        },
+        end: {
+          line: 498,
+          column: 2
+        }
+      },
+      "32": {
+        start: {
+          line: 500,
+          column: 0
+        },
+        end: {
+          line: 508,
+          column: 2
+        }
+      },
+      "33": {
+        start: {
+          line: 510,
+          column: 0
+        },
+        end: {
+          line: 518,
+          column: 2
+        }
+      },
+      "34": {
+        start: {
+          line: 520,
+          column: 0
+        },
+        end: {
+          line: 528,
+          column: 2
+        }
+      },
+      "35": {
+        start: {
+          line: 530,
+          column: 0
+        },
+        end: {
+          line: 538,
+          column: 2
+        }
+      },
+      "36": {
+        start: {
+          line: 540,
+          column: 0
+        },
+        end: {
+          line: 548,
+          column: 2
+        }
+      },
+      "37": {
+        start: {
+          line: 550,
+          column: 0
+        },
+        end: {
+          line: 558,
+          column: 2
+        }
+      },
+      "38": {
+        start: {
+          line: 560,
+          column: 0
+        },
+        end: {
+          line: 568,
+          column: 2
+        }
+      },
+      "39": {
+        start: {
+          line: 570,
+          column: 0
+        },
+        end: {
+          line: 578,
+          column: 2
+        }
+      },
+      "40": {
+        start: {
+          line: 580,
+          column: 0
+        },
+        end: {
+          line: 588,
+          column: 2
+        }
+      },
+      "41": {
+        start: {
+          line: 590,
+          column: 0
+        },
+        end: {
+          line: 598,
+          column: 2
+        }
+      },
+      "42": {
+        start: {
+          line: 600,
+          column: 0
+        },
+        end: {
+          line: 608,
+          column: 2
+        }
+      },
+      "43": {
+        start: {
+          line: 610,
+          column: 0
+        },
+        end: {
+          line: 618,
+          column: 2
+        }
+      },
+      "44": {
+        start: {
+          line: 620,
+          column: 0
+        },
+        end: {
+          line: 628,
+          column: 2
+        }
+      }
+    },
+    fnMap: {},
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0,
+      "16": 0,
+      "17": 0,
+      "18": 0,
+      "19": 0,
+      "20": 0,
+      "21": 0,
+      "22": 0,
+      "23": 0,
+      "24": 0,
+      "25": 0,
+      "26": 0,
+      "27": 0,
+      "28": 0,
+      "29": 0,
+      "30": 0,
+      "31": 0,
+      "32": 0,
+      "33": 0,
+      "34": 0,
+      "35": 0,
+      "36": 0,
+      "37": 0,
+      "38": 0,
+      "39": 0,
+      "40": 0,
+      "41": 0,
+      "42": 0,
+      "43": 0,
+      "44": 0
+    },
+    f: {},
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\utils\\constants.ts",
+      mappings: "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",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\utils\\constants.ts"],
+      sourcesContent: ["/**\r\n * Constantes Compartidas para Utilidades\r\n * \r\n * Este archivo define las constantes utilizadas por las utilidades compartidas.\r\n */\r\n\r\n// Tipos de prompts disponibles\r\nexport const PROMPT_TYPES = [\r\n  'system',\r\n  'user',\r\n  'context',\r\n  'legal',\r\n  'search',\r\n  'verification',\r\n  'synthesis',\r\n  'error',\r\n  'success',\r\n  'warning',\r\n  'info',\r\n  'debug',\r\n  'trace',\r\n  'audit',\r\n  'compliance',\r\n  'security',\r\n  'performance',\r\n  'quality',\r\n  'validation',\r\n  'test',\r\n  'development',\r\n  'production',\r\n  'staging',\r\n  'local',\r\n  'remote',\r\n  'client',\r\n  'server',\r\n  'database',\r\n  'cache',\r\n  'session',\r\n  'admin',\r\n  'moderator',\r\n  'guest',\r\n  'authenticated',\r\n  'unauthorized',\r\n  'authorized',\r\n  'unauthorized',\r\n  'valid',\r\n  'invalid'\r\n] as const\r\n\r\n// Opciones por defecto para prompts\r\nexport const DEFAULT_PROMPT_OPTIONS = {\r\n  type: 'system' as const,\r\n  format: 'text' as const,\r\n  encoding: 'utf8' as const,\r\n  compression: 'none' as const,\r\n  encryption: 'none' as const,\r\n  signing: 'none' as const,\r\n  validation: 'none' as const,\r\n  caching: 'none' as const,\r\n  logging: 'console' as const,\r\n  monitoring: 'basic' as const,\r\n  alerting: 'none' as const,\r\n  rateLimiting: 'none' as const,\r\n  throttling: 'none' as const,\r\n  circuitBreaker: 'none' as const,\r\n  retry: 'none' as const,\r\n  timeout: 30000,\r\n  maxRetries: 3,\r\n  retryDelay: 1000,\r\n  circuitBreakerThreshold: 5,\r\n  circuitBreakerTimeout: 60000,\r\n  rateLimitThreshold: 100,\r\n  throttleThreshold: 50,\r\n  cacheTTL: 3600,\r\n  cacheMaxSize: 1000,\r\n  logLevel: 'info' as const,\r\n  monitorLevel: 'basic' as const,\r\n  alertLevel: 'medium' as const,\r\n  priority: 'normal' as const,\r\n  category: 'system' as const,\r\n  tags: [],\r\n  labels: {},\r\n  annotations: {},\r\n  metadata: {},\r\n  customFields: {},\r\n  extensions: {},\r\n  plugins: [],\r\n  middleware: [],\r\n  handlers: [],\r\n  processors: [],\r\n  transformers: [],\r\n  validators: [],\r\n  serializers: [],\r\n  deserializers: [],\r\n  encoders: [],\r\n  decoders: [],\r\n  compressors: [],\r\n  decompressors: [],\r\n  encryptors: [],\r\n  decryptors: [],\r\n  signers: [],\r\n  verifiers: [],\r\n  authenticators: [],\r\n  authorizers: [],\r\n  auditors: [],\r\n  loggers: [],\r\n  monitors: [],\r\n  alerters: [],\r\n  notifiers: [],\r\n  reporters: [],\r\n  exporters: [],\r\n  importers: [],\r\n  migrators: [],\r\n  updaters: [],\r\n  cleaners: [],\r\n  optimizers: [],\r\n  analyzers: [],\r\n  profilers: [],\r\n  debuggers: [],\r\n  testers: [],\r\n  formatters: [],\r\n  parsers: [],\r\n  builders: [],\r\n  generators: [],\r\n  creators: [],\r\n  destroyers: [],\r\n  initializers: [],\r\n  finalizers: [],\r\n  constructors: [],\r\n  destructors: [],\r\n  factories: [],\r\n  providers: [],\r\n  consumers: [],\r\n  producers: [],\r\n  publishers: [],\r\n  subscribers: [],\r\n  observers: [],\r\n  listeners: [],\r\n  callbacks: [],\r\n  hooks: [],\r\n  events: [],\r\n  signals: [],\r\n  messages: [],\r\n  commands: [],\r\n  queries: [],\r\n  responses: [],\r\n  requests: [],\r\n  replies: [],\r\n  acknowledgments: [],\r\n  confirmations: [],\r\n  rejections: [],\r\n  errors: [],\r\n  exceptions: [],\r\n  warnings: [],\r\n  notices: [],\r\n  info: [],\r\n  debug: [],\r\n  trace: [],\r\n  audit: [],\r\n  compliance: [],\r\n  security: [],\r\n  performance: [],\r\n  quality: [],\r\n  validation: [],\r\n  test: [],\r\n  development: [],\r\n  production: [],\r\n  staging: [],\r\n  local: [],\r\n  remote: [],\r\n  client: [],\r\n  server: [],\r\n  database: [],\r\n  cache: [],\r\n  session: [],\r\n  admin: [],\r\n  moderator: [],\r\n  guest: [],\r\n  authenticated: [],\r\n  unauthorized: [],\r\n  authorized: [],\r\n  unauthorized: [],\r\n  valid: [],\r\n  invalid: []\r\n}\r\n\r\n// Patrones comunes de prompts\r\nexport const COMMON_PROMPT_PATTERNS = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...',\r\n  error: 'Error detectado: {error}',\r\n  success: 'Operaci\xF3n exitosa: {result}',\r\n  warning: 'Advertencia: {warning}',\r\n  info: 'Informaci\xF3n: {info}',\r\n  debug: 'Debug: {debug}',\r\n  trace: 'Trace: {trace}',\r\n  audit: 'Auditor\xEDa: {audit}',\r\n  compliance: 'Cumplimiento: {compliance}',\r\n  security: 'Seguridad: {security}',\r\n  performance: 'Rendimiento: {performance}',\r\n  quality: 'Calidad: {quality}',\r\n  validation: 'Validaci\xF3n: {validation}',\r\n  test: 'Prueba: {test}',\r\n  development: 'Desarrollo: {development}',\r\n  production: 'Producci\xF3n: {production}',\r\n  staging: 'Staging: {staging}',\r\n  local: 'Local: {local}',\r\n  remote: 'Remoto: {remote}',\r\n  client: 'Cliente: {client}',\r\n  server: 'Servidor: {server}',\r\n  database: 'Base de datos: {database}',\r\n  cache: 'Cache: {cache}',\r\n  session: 'Sesi\xF3n: {session}',\r\n  admin: 'Administrador: {admin}',\r\n  moderator: 'Moderador: {moderator}',\r\n  guest: 'Invitado: {guest}',\r\n  authenticated: 'Autenticado: {authenticated}',\r\n  unauthorized: 'No autorizado: {unauthorized}',\r\n  authorized: 'Autorizado: {authorized}',\r\n  unauthorized: 'No autorizado: {unauthorized}',\r\n  valid: 'V\xE1lido: {valid}',\r\n  invalid: 'Inv\xE1lido: {invalid}'\r\n}\r\n\r\n// Plantillas espec\xEDficas para prompts legales\r\nexport const LEGAL_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado en derecho colombiano...',\r\n  user: 'Consulta legal del usuario: {query}',\r\n  context: 'Contexto legal actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts del sistema\r\nexport const SYSTEM_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de usuario\r\nexport const USER_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de contexto\r\nexport const CONTEXT_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de b\xFAsqueda\r\nexport const SEARCH_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de verificaci\xF3n\r\nexport const VERIFICATION_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de s\xEDntesis\r\nexport const SYNTHESIS_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de error\r\nexport const ERROR_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de \xE9xito\r\nexport const SUCCESS_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de advertencia\r\nexport const WARNING_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de informaci\xF3n\r\nexport const INFO_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de debug\r\nexport const DEBUG_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de trace\r\nexport const TRACE_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de auditor\xEDa\r\nexport const AUDIT_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de cumplimiento\r\nexport const COMPLIANCE_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de seguridad\r\nexport const SECURITY_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de rendimiento\r\nexport const PERFORMANCE_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de calidad\r\nexport const QUALITY_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de validaci\xF3n\r\nexport const VALIDATION_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de prueba\r\nexport const TEST_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de desarrollo\r\nexport const DEVELOPMENT_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de producci\xF3n\r\nexport const PRODUCTION_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de staging\r\nexport const STAGING_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts locales\r\nexport const LOCAL_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts remotos\r\nexport const REMOTE_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de cliente\r\nexport const CLIENT_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de servidor\r\nexport const SERVER_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de base de datos\r\nexport const DATABASE_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de cache\r\nexport const CACHE_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de sesi\xF3n\r\nexport const SESSION_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de usuario\r\nexport const USER_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de administrador\r\nexport const ADMIN_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de moderador\r\nexport const MODERATOR_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts de invitado\r\nexport const GUEST_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts autenticados\r\nexport const AUTHENTICATED_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts no autenticados\r\nexport const UNAUTHENTICATED_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts autorizados\r\nexport const AUTHORIZED_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts no autorizados\r\nexport const UNAUTHORIZED_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts v\xE1lidos\r\nexport const VALID_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n// Plantillas para prompts inv\xE1lidos\r\nexport const INVALID_PROMPT_TEMPLATES = {\r\n  system: 'Eres un asistente legal especializado...',\r\n  user: 'Consulta del usuario: {query}',\r\n  context: 'Contexto actual: {context}',\r\n  legal: 'An\xE1lisis legal requerido para: {query}',\r\n  search: 'B\xFAsqueda de informaci\xF3n legal: {query}',\r\n  verification: 'Verificaci\xF3n de fuentes legales...',\r\n  synthesis: 'S\xEDntesis de informaci\xF3n legal...'\r\n}\r\n\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "b36f7d00844c5235f7da19f73c51295573fb16a5"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2d5y75v7rk = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2d5y75v7rk();
+cov_2d5y75v7rk().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[1]++;
+exports.INVALID_PROMPT_TEMPLATES = exports.VALID_PROMPT_TEMPLATES = exports.UNAUTHORIZED_PROMPT_TEMPLATES = exports.AUTHORIZED_PROMPT_TEMPLATES = exports.UNAUTHENTICATED_PROMPT_TEMPLATES = exports.AUTHENTICATED_PROMPT_TEMPLATES = exports.GUEST_PROMPT_TEMPLATES = exports.MODERATOR_PROMPT_TEMPLATES = exports.ADMIN_PROMPT_TEMPLATES = exports.SESSION_PROMPT_TEMPLATES = exports.CACHE_PROMPT_TEMPLATES = exports.DATABASE_PROMPT_TEMPLATES = exports.SERVER_PROMPT_TEMPLATES = exports.CLIENT_PROMPT_TEMPLATES = exports.REMOTE_PROMPT_TEMPLATES = exports.LOCAL_PROMPT_TEMPLATES = exports.STAGING_PROMPT_TEMPLATES = exports.PRODUCTION_PROMPT_TEMPLATES = exports.DEVELOPMENT_PROMPT_TEMPLATES = exports.TEST_PROMPT_TEMPLATES = exports.VALIDATION_PROMPT_TEMPLATES = exports.QUALITY_PROMPT_TEMPLATES = exports.PERFORMANCE_PROMPT_TEMPLATES = exports.SECURITY_PROMPT_TEMPLATES = exports.COMPLIANCE_PROMPT_TEMPLATES = exports.AUDIT_PROMPT_TEMPLATES = exports.TRACE_PROMPT_TEMPLATES = exports.DEBUG_PROMPT_TEMPLATES = exports.INFO_PROMPT_TEMPLATES = exports.WARNING_PROMPT_TEMPLATES = exports.SUCCESS_PROMPT_TEMPLATES = exports.ERROR_PROMPT_TEMPLATES = exports.SYNTHESIS_PROMPT_TEMPLATES = exports.VERIFICATION_PROMPT_TEMPLATES = exports.SEARCH_PROMPT_TEMPLATES = exports.CONTEXT_PROMPT_TEMPLATES = exports.USER_PROMPT_TEMPLATES = exports.SYSTEM_PROMPT_TEMPLATES = exports.LEGAL_PROMPT_TEMPLATES = exports.COMMON_PROMPT_PATTERNS = exports.DEFAULT_PROMPT_OPTIONS = exports.PROMPT_TYPES = void 0;
+// Tipos de prompts disponibles
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[2]++;
+exports.PROMPT_TYPES = ['system', 'user', 'context', 'legal', 'search', 'verification', 'synthesis', 'error', 'success', 'warning', 'info', 'debug', 'trace', 'audit', 'compliance', 'security', 'performance', 'quality', 'validation', 'test', 'development', 'production', 'staging', 'local', 'remote', 'client', 'server', 'database', 'cache', 'session', 'admin', 'moderator', 'guest', 'authenticated', 'unauthorized', 'authorized', 'unauthorized', 'valid', 'invalid'];
+// Opciones por defecto para prompts
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[3]++;
+exports.DEFAULT_PROMPT_OPTIONS = {
+  type: 'system',
+  format: 'text',
+  encoding: 'utf8',
+  compression: 'none',
+  encryption: 'none',
+  signing: 'none',
+  validation: 'none',
+  caching: 'none',
+  logging: 'console',
+  monitoring: 'basic',
+  alerting: 'none',
+  rateLimiting: 'none',
+  throttling: 'none',
+  circuitBreaker: 'none',
+  retry: 'none',
+  timeout: 30000,
+  maxRetries: 3,
+  retryDelay: 1000,
+  circuitBreakerThreshold: 5,
+  circuitBreakerTimeout: 60000,
+  rateLimitThreshold: 100,
+  throttleThreshold: 50,
+  cacheTTL: 3600,
+  cacheMaxSize: 1000,
+  logLevel: 'info',
+  monitorLevel: 'basic',
+  alertLevel: 'medium',
+  priority: 'normal',
+  category: 'system',
+  tags: [],
+  labels: {},
+  annotations: {},
+  metadata: {},
+  customFields: {},
+  extensions: {},
+  plugins: [],
+  middleware: [],
+  handlers: [],
+  processors: [],
+  transformers: [],
+  validators: [],
+  serializers: [],
+  deserializers: [],
+  encoders: [],
+  decoders: [],
+  compressors: [],
+  decompressors: [],
+  encryptors: [],
+  decryptors: [],
+  signers: [],
+  verifiers: [],
+  authenticators: [],
+  authorizers: [],
+  auditors: [],
+  loggers: [],
+  monitors: [],
+  alerters: [],
+  notifiers: [],
+  reporters: [],
+  exporters: [],
+  importers: [],
+  migrators: [],
+  updaters: [],
+  cleaners: [],
+  optimizers: [],
+  analyzers: [],
+  profilers: [],
+  debuggers: [],
+  testers: [],
+  formatters: [],
+  parsers: [],
+  builders: [],
+  generators: [],
+  creators: [],
+  destroyers: [],
+  initializers: [],
+  finalizers: [],
+  constructors: [],
+  destructors: [],
+  factories: [],
+  providers: [],
+  consumers: [],
+  producers: [],
+  publishers: [],
+  subscribers: [],
+  observers: [],
+  listeners: [],
+  callbacks: [],
+  hooks: [],
+  events: [],
+  signals: [],
+  messages: [],
+  commands: [],
+  queries: [],
+  responses: [],
+  requests: [],
+  replies: [],
+  acknowledgments: [],
+  confirmations: [],
+  rejections: [],
+  errors: [],
+  exceptions: [],
+  warnings: [],
+  notices: [],
+  info: [],
+  debug: [],
+  trace: [],
+  audit: [],
+  compliance: [],
+  security: [],
+  performance: [],
+  quality: [],
+  validation: [],
+  test: [],
+  development: [],
+  production: [],
+  staging: [],
+  local: [],
+  remote: [],
+  client: [],
+  server: [],
+  database: [],
+  cache: [],
+  session: [],
+  admin: [],
+  moderator: [],
+  guest: [],
+  authenticated: [],
+  unauthorized: [],
+  authorized: [],
+  unauthorized: [],
+  valid: [],
+  invalid: []
+};
+// Patrones comunes de prompts
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[4]++;
+exports.COMMON_PROMPT_PATTERNS = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...',
+  error: 'Error detectado: {error}',
+  success: 'Operación exitosa: {result}',
+  warning: 'Advertencia: {warning}',
+  info: 'Información: {info}',
+  debug: 'Debug: {debug}',
+  trace: 'Trace: {trace}',
+  audit: 'Auditoría: {audit}',
+  compliance: 'Cumplimiento: {compliance}',
+  security: 'Seguridad: {security}',
+  performance: 'Rendimiento: {performance}',
+  quality: 'Calidad: {quality}',
+  validation: 'Validación: {validation}',
+  test: 'Prueba: {test}',
+  development: 'Desarrollo: {development}',
+  production: 'Producción: {production}',
+  staging: 'Staging: {staging}',
+  local: 'Local: {local}',
+  remote: 'Remoto: {remote}',
+  client: 'Cliente: {client}',
+  server: 'Servidor: {server}',
+  database: 'Base de datos: {database}',
+  cache: 'Cache: {cache}',
+  session: 'Sesión: {session}',
+  admin: 'Administrador: {admin}',
+  moderator: 'Moderador: {moderator}',
+  guest: 'Invitado: {guest}',
+  authenticated: 'Autenticado: {authenticated}',
+  unauthorized: 'No autorizado: {unauthorized}',
+  authorized: 'Autorizado: {authorized}',
+  unauthorized: 'No autorizado: {unauthorized}',
+  valid: 'Válido: {valid}',
+  invalid: 'Inválido: {invalid}'
+};
+// Plantillas específicas para prompts legales
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[5]++;
+exports.LEGAL_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado en derecho colombiano...',
+  user: 'Consulta legal del usuario: {query}',
+  context: 'Contexto legal actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts del sistema
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[6]++;
+exports.SYSTEM_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de usuario
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[7]++;
+exports.USER_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de contexto
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[8]++;
+exports.CONTEXT_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de búsqueda
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[9]++;
+exports.SEARCH_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de verificación
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[10]++;
+exports.VERIFICATION_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de síntesis
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[11]++;
+exports.SYNTHESIS_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de error
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[12]++;
+exports.ERROR_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de éxito
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[13]++;
+exports.SUCCESS_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de advertencia
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[14]++;
+exports.WARNING_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de información
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[15]++;
+exports.INFO_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de debug
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[16]++;
+exports.DEBUG_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de trace
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[17]++;
+exports.TRACE_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de auditoría
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[18]++;
+exports.AUDIT_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de cumplimiento
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[19]++;
+exports.COMPLIANCE_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de seguridad
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[20]++;
+exports.SECURITY_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de rendimiento
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[21]++;
+exports.PERFORMANCE_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de calidad
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[22]++;
+exports.QUALITY_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de validación
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[23]++;
+exports.VALIDATION_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de prueba
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[24]++;
+exports.TEST_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de desarrollo
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[25]++;
+exports.DEVELOPMENT_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de producción
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[26]++;
+exports.PRODUCTION_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de staging
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[27]++;
+exports.STAGING_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts locales
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[28]++;
+exports.LOCAL_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts remotos
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[29]++;
+exports.REMOTE_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de cliente
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[30]++;
+exports.CLIENT_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de servidor
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[31]++;
+exports.SERVER_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de base de datos
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[32]++;
+exports.DATABASE_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de cache
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[33]++;
+exports.CACHE_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de sesión
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[34]++;
+exports.SESSION_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de usuario
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[35]++;
+exports.USER_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de administrador
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[36]++;
+exports.ADMIN_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de moderador
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[37]++;
+exports.MODERATOR_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts de invitado
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[38]++;
+exports.GUEST_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts autenticados
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[39]++;
+exports.AUTHENTICATED_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts no autenticados
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[40]++;
+exports.UNAUTHENTICATED_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts autorizados
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[41]++;
+exports.AUTHORIZED_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts no autorizados
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[42]++;
+exports.UNAUTHORIZED_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts válidos
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[43]++;
+exports.VALID_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+// Plantillas para prompts inválidos
+/* istanbul ignore next */
+cov_2d5y75v7rk().s[44]++;
+exports.INVALID_PROMPT_TEMPLATES = {
+  system: 'Eres un asistente legal especializado...',
+  user: 'Consulta del usuario: {query}',
+  context: 'Contexto actual: {context}',
+  legal: 'Análisis legal requerido para: {query}',
+  search: 'Búsqueda de información legal: {query}',
+  verification: 'Verificación de fuentes legales...',
+  synthesis: 'Síntesis de información legal...'
+};
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfMmQ1eTc1djdyayIsInBhdGgiLCJoYXNoIiwiZ2xvYmFsIiwiRnVuY3Rpb24iLCJnY3YiLCJjb3ZlcmFnZURhdGEiLCJzdGF0ZW1lbnRNYXAiLCJzdGFydCIsImxpbmUiLCJjb2x1bW4iLCJlbmQiLCJmbk1hcCIsImJyYW5jaE1hcCIsInMiLCJmIiwiYiIsImlucHV0U291cmNlTWFwIiwiZmlsZSIsIm1hcHBpbmdzIiwibmFtZXMiLCJzb3VyY2VzIiwic291cmNlc0NvbnRlbnQiLCJ2ZXJzaW9uIiwiX2NvdmVyYWdlU2NoZW1hIiwiY292ZXJhZ2UiLCJhY3R1YWxDb3ZlcmFnZSIsImV4cG9ydHMiLCJQUk9NUFRfVFlQRVMiLCJERUZBVUxUX1BST01QVF9PUFRJT05TIiwidHlwZSIsImZvcm1hdCIsImVuY29kaW5nIiwiY29tcHJlc3Npb24iLCJlbmNyeXB0aW9uIiwic2lnbmluZyIsInZhbGlkYXRpb24iLCJjYWNoaW5nIiwibG9nZ2luZyIsIm1vbml0b3JpbmciLCJhbGVydGluZyIsInJhdGVMaW1pdGluZyIsInRocm90dGxpbmciLCJjaXJjdWl0QnJlYWtlciIsInJldHJ5IiwidGltZW91dCIsIm1heFJldHJpZXMiLCJyZXRyeURlbGF5IiwiY2lyY3VpdEJyZWFrZXJUaHJlc2hvbGQiLCJjaXJjdWl0QnJlYWtlclRpbWVvdXQiLCJyYXRlTGltaXRUaHJlc2hvbGQiLCJ0aHJvdHRsZVRocmVzaG9sZCIsImNhY2hlVFRMIiwiY2FjaGVNYXhTaXplIiwibG9nTGV2ZWwiLCJtb25pdG9yTGV2ZWwiLCJhbGVydExldmVsIiwicHJpb3JpdHkiLCJjYXRlZ29yeSIsInRhZ3MiLCJsYWJlbHMiLCJhbm5vdGF0aW9ucyIsIm1ldGFkYXRhIiwiY3VzdG9tRmllbGRzIiwiZXh0ZW5zaW9ucyIsInBsdWdpbnMiLCJtaWRkbGV3YXJlIiwiaGFuZGxlcnMiLCJwcm9jZXNzb3JzIiwidHJhbnNmb3JtZXJzIiwidmFsaWRhdG9ycyIsInNlcmlhbGl6ZXJzIiwiZGVzZXJpYWxpemVycyIsImVuY29kZXJzIiwiZGVjb2RlcnMiLCJjb21wcmVzc29ycyIsImRlY29tcHJlc3NvcnMiLCJlbmNyeXB0b3JzIiwiZGVjcnlwdG9ycyIsInNpZ25lcnMiLCJ2ZXJpZmllcnMiLCJhdXRoZW50aWNhdG9ycyIsImF1dGhvcml6ZXJzIiwiYXVkaXRvcnMiLCJsb2dnZXJzIiwibW9uaXRvcnMiLCJhbGVydGVycyIsIm5vdGlmaWVycyIsInJlcG9ydGVycyIsImV4cG9ydGVycyIsImltcG9ydGVycyIsIm1pZ3JhdG9ycyIsInVwZGF0ZXJzIiwiY2xlYW5lcnMiLCJvcHRpbWl6ZXJzIiwiYW5hbHl6ZXJzIiwicHJvZmlsZXJzIiwiZGVidWdnZXJzIiwidGVzdGVycyIsImZvcm1hdHRlcnMiLCJwYXJzZXJzIiwiYnVpbGRlcnMiLCJnZW5lcmF0b3JzIiwiY3JlYXRvcnMiLCJkZXN0cm95ZXJzIiwiaW5pdGlhbGl6ZXJzIiwiZmluYWxpemVycyIsImNvbnN0cnVjdG9ycyIsImRlc3RydWN0b3JzIiwiZmFjdG9yaWVzIiwicHJvdmlkZXJzIiwiY29uc3VtZXJzIiwicHJvZHVjZXJzIiwicHVibGlzaGVycyIsInN1YnNjcmliZXJzIiwib2JzZXJ2ZXJzIiwibGlzdGVuZXJzIiwiY2FsbGJhY2tzIiwiaG9va3MiLCJldmVudHMiLCJzaWduYWxzIiwibWVzc2FnZXMiLCJjb21tYW5kcyIsInF1ZXJpZXMiLCJyZXNwb25zZXMiLCJyZXF1ZXN0cyIsInJlcGxpZXMiLCJhY2tub3dsZWRnbWVudHMiLCJjb25maXJtYXRpb25zIiwicmVqZWN0aW9ucyIsImVycm9ycyIsImV4Y2VwdGlvbnMiLCJ3YXJuaW5ncyIsIm5vdGljZXMiLCJpbmZvIiwiZGVidWciLCJ0cmFjZSIsImF1ZGl0IiwiY29tcGxpYW5jZSIsInNlY3VyaXR5IiwicGVyZm9ybWFuY2UiLCJxdWFsaXR5IiwidGVzdCIsImRldmVsb3BtZW50IiwicHJvZHVjdGlvbiIsInN0YWdpbmciLCJsb2NhbCIsInJlbW90ZSIsImNsaWVudCIsInNlcnZlciIsImRhdGFiYXNlIiwiY2FjaGUiLCJzZXNzaW9uIiwiYWRtaW4iLCJtb2RlcmF0b3IiLCJndWVzdCIsImF1dGhlbnRpY2F0ZWQiLCJ1bmF1dGhvcml6ZWQiLCJhdXRob3JpemVkIiwidmFsaWQiLCJpbnZhbGlkIiwiQ09NTU9OX1BST01QVF9QQVRURVJOUyIsInN5c3RlbSIsInVzZXIiLCJjb250ZXh0IiwibGVnYWwiLCJzZWFyY2giLCJ2ZXJpZmljYXRpb24iLCJzeW50aGVzaXMiLCJlcnJvciIsInN1Y2Nlc3MiLCJ3YXJuaW5nIiwiTEVHQUxfUFJPTVBUX1RFTVBMQVRFUyIsIlNZU1RFTV9QUk9NUFRfVEVNUExBVEVTIiwiVVNFUl9QUk9NUFRfVEVNUExBVEVTIiwiQ09OVEVYVF9QUk9NUFRfVEVNUExBVEVTIiwiU0VBUkNIX1BST01QVF9URU1QTEFURVMiLCJWRVJJRklDQVRJT05fUFJPTVBUX1RFTVBMQVRFUyIsIlNZTlRIRVNJU19QUk9NUFRfVEVNUExBVEVTIiwiRVJST1JfUFJPTVBUX1RFTVBMQVRFUyIsIlNVQ0NFU1NfUFJPTVBUX1RFTVBMQVRFUyIsIldBUk5JTkdfUFJPTVBUX1RFTVBMQVRFUyIsIklORk9fUFJPTVBUX1RFTVBMQVRFUyIsIkRFQlVHX1BST01QVF9URU1QTEFURVMiLCJUUkFDRV9QUk9NUFRfVEVNUExBVEVTIiwiQVVESVRfUFJPTVBUX1RFTVBMQVRFUyIsIkNPTVBMSUFOQ0VfUFJPTVBUX1RFTVBMQVRFUyIsIlNFQ1VSSVRZX1BST01QVF9URU1QTEFURVMiLCJQRVJGT1JNQU5DRV9QUk9NUFRfVEVNUExBVEVTIiwiUVVBTElUWV9QUk9NUFRfVEVNUExBVEVTIiwiVkFMSURBVElPTl9QUk9NUFRfVEVNUExBVEVTIiwiVEVTVF9QUk9NUFRfVEVNUExBVEVTIiwiREVWRUxPUE1FTlRfUFJPTVBUX1RFTVBMQVRFUyIsIlBST0RVQ1RJT05fUFJPTVBUX1RFTVBMQVRFUyIsIlNUQUdJTkdfUFJPTVBUX1RFTVBMQVRFUyIsIkxPQ0FMX1BST01QVF9URU1QTEFURVMiLCJSRU1PVEVfUFJPTVBUX1RFTVBMQVRFUyIsIkNMSUVOVF9QUk9NUFRfVEVNUExBVEVTIiwiU0VSVkVSX1BST01QVF9URU1QTEFURVMiLCJEQVRBQkFTRV9QUk9NUFRfVEVNUExBVEVTIiwiQ0FDSEVfUFJPTVBUX1RFTVBMQVRFUyIsIlNFU1NJT05fUFJPTVBUX1RFTVBMQVRFUyIsIkFETUlOX1BST01QVF9URU1QTEFURVMiLCJNT0RFUkFUT1JfUFJPTVBUX1RFTVBMQVRFUyIsIkdVRVNUX1BST01QVF9URU1QTEFURVMiLCJBVVRIRU5USUNBVEVEX1BST01QVF9URU1QTEFURVMiLCJVTkFVVEhFTlRJQ0FURURfUFJPTVBUX1RFTVBMQVRFUyIsIkFVVEhPUklaRURfUFJPTVBUX1RFTVBMQVRFUyIsIlVOQVVUSE9SSVpFRF9QUk9NUFRfVEVNUExBVEVTIiwiVkFMSURfUFJPTVBUX1RFTVBMQVRFUyIsIklOVkFMSURfUFJPTVBUX1RFTVBMQVRFUyJdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xccGVkcm9cXERvY3VtZW50c1xcR2l0SHViXFxBc2lzdGVudGUtTGVnYWwtSW50ZWxpZ2VudGVcXGxpYlxcdXRpbHNcXGNvbnN0YW50cy50cyJdLCJzb3VyY2VzQ29udGVudCI6WyIvKipcclxuICogQ29uc3RhbnRlcyBDb21wYXJ0aWRhcyBwYXJhIFV0aWxpZGFkZXNcclxuICogXHJcbiAqIEVzdGUgYXJjaGl2byBkZWZpbmUgbGFzIGNvbnN0YW50ZXMgdXRpbGl6YWRhcyBwb3IgbGFzIHV0aWxpZGFkZXMgY29tcGFydGlkYXMuXHJcbiAqL1xyXG5cclxuLy8gVGlwb3MgZGUgcHJvbXB0cyBkaXNwb25pYmxlc1xyXG5leHBvcnQgY29uc3QgUFJPTVBUX1RZUEVTID0gW1xyXG4gICdzeXN0ZW0nLFxyXG4gICd1c2VyJyxcclxuICAnY29udGV4dCcsXHJcbiAgJ2xlZ2FsJyxcclxuICAnc2VhcmNoJyxcclxuICAndmVyaWZpY2F0aW9uJyxcclxuICAnc3ludGhlc2lzJyxcclxuICAnZXJyb3InLFxyXG4gICdzdWNjZXNzJyxcclxuICAnd2FybmluZycsXHJcbiAgJ2luZm8nLFxyXG4gICdkZWJ1ZycsXHJcbiAgJ3RyYWNlJyxcclxuICAnYXVkaXQnLFxyXG4gICdjb21wbGlhbmNlJyxcclxuICAnc2VjdXJpdHknLFxyXG4gICdwZXJmb3JtYW5jZScsXHJcbiAgJ3F1YWxpdHknLFxyXG4gICd2YWxpZGF0aW9uJyxcclxuICAndGVzdCcsXHJcbiAgJ2RldmVsb3BtZW50JyxcclxuICAncHJvZHVjdGlvbicsXHJcbiAgJ3N0YWdpbmcnLFxyXG4gICdsb2NhbCcsXHJcbiAgJ3JlbW90ZScsXHJcbiAgJ2NsaWVudCcsXHJcbiAgJ3NlcnZlcicsXHJcbiAgJ2RhdGFiYXNlJyxcclxuICAnY2FjaGUnLFxyXG4gICdzZXNzaW9uJyxcclxuICAnYWRtaW4nLFxyXG4gICdtb2RlcmF0b3InLFxyXG4gICdndWVzdCcsXHJcbiAgJ2F1dGhlbnRpY2F0ZWQnLFxyXG4gICd1bmF1dGhvcml6ZWQnLFxyXG4gICdhdXRob3JpemVkJyxcclxuICAndW5hdXRob3JpemVkJyxcclxuICAndmFsaWQnLFxyXG4gICdpbnZhbGlkJ1xyXG5dIGFzIGNvbnN0XHJcblxyXG4vLyBPcGNpb25lcyBwb3IgZGVmZWN0byBwYXJhIHByb21wdHNcclxuZXhwb3J0IGNvbnN0IERFRkFVTFRfUFJPTVBUX09QVElPTlMgPSB7XHJcbiAgdHlwZTogJ3N5c3RlbScgYXMgY29uc3QsXHJcbiAgZm9ybWF0OiAndGV4dCcgYXMgY29uc3QsXHJcbiAgZW5jb2Rpbmc6ICd1dGY4JyBhcyBjb25zdCxcclxuICBjb21wcmVzc2lvbjogJ25vbmUnIGFzIGNvbnN0LFxyXG4gIGVuY3J5cHRpb246ICdub25lJyBhcyBjb25zdCxcclxuICBzaWduaW5nOiAnbm9uZScgYXMgY29uc3QsXHJcbiAgdmFsaWRhdGlvbjogJ25vbmUnIGFzIGNvbnN0LFxyXG4gIGNhY2hpbmc6ICdub25lJyBhcyBjb25zdCxcclxuICBsb2dnaW5nOiAnY29uc29sZScgYXMgY29uc3QsXHJcbiAgbW9uaXRvcmluZzogJ2Jhc2ljJyBhcyBjb25zdCxcclxuICBhbGVydGluZzogJ25vbmUnIGFzIGNvbnN0LFxyXG4gIHJhdGVMaW1pdGluZzogJ25vbmUnIGFzIGNvbnN0LFxyXG4gIHRocm90dGxpbmc6ICdub25lJyBhcyBjb25zdCxcclxuICBjaXJjdWl0QnJlYWtlcjogJ25vbmUnIGFzIGNvbnN0LFxyXG4gIHJldHJ5OiAnbm9uZScgYXMgY29uc3QsXHJcbiAgdGltZW91dDogMzAwMDAsXHJcbiAgbWF4UmV0cmllczogMyxcclxuICByZXRyeURlbGF5OiAxMDAwLFxyXG4gIGNpcmN1aXRCcmVha2VyVGhyZXNob2xkOiA1LFxyXG4gIGNpcmN1aXRCcmVha2VyVGltZW91dDogNjAwMDAsXHJcbiAgcmF0ZUxpbWl0VGhyZXNob2xkOiAxMDAsXHJcbiAgdGhyb3R0bGVUaHJlc2hvbGQ6IDUwLFxyXG4gIGNhY2hlVFRMOiAzNjAwLFxyXG4gIGNhY2hlTWF4U2l6ZTogMTAwMCxcclxuICBsb2dMZXZlbDogJ2luZm8nIGFzIGNvbnN0LFxyXG4gIG1vbml0b3JMZXZlbDogJ2Jhc2ljJyBhcyBjb25zdCxcclxuICBhbGVydExldmVsOiAnbWVkaXVtJyBhcyBjb25zdCxcclxuICBwcmlvcml0eTogJ25vcm1hbCcgYXMgY29uc3QsXHJcbiAgY2F0ZWdvcnk6ICdzeXN0ZW0nIGFzIGNvbnN0LFxyXG4gIHRhZ3M6IFtdLFxyXG4gIGxhYmVsczoge30sXHJcbiAgYW5ub3RhdGlvbnM6IHt9LFxyXG4gIG1ldGFkYXRhOiB7fSxcclxuICBjdXN0b21GaWVsZHM6IHt9LFxyXG4gIGV4dGVuc2lvbnM6IHt9LFxyXG4gIHBsdWdpbnM6IFtdLFxyXG4gIG1pZGRsZXdhcmU6IFtdLFxyXG4gIGhhbmRsZXJzOiBbXSxcclxuICBwcm9jZXNzb3JzOiBbXSxcclxuICB0cmFuc2Zvcm1lcnM6IFtdLFxyXG4gIHZhbGlkYXRvcnM6IFtdLFxyXG4gIHNlcmlhbGl6ZXJzOiBbXSxcclxuICBkZXNlcmlhbGl6ZXJzOiBbXSxcclxuICBlbmNvZGVyczogW10sXHJcbiAgZGVjb2RlcnM6IFtdLFxyXG4gIGNvbXByZXNzb3JzOiBbXSxcclxuICBkZWNvbXByZXNzb3JzOiBbXSxcclxuICBlbmNyeXB0b3JzOiBbXSxcclxuICBkZWNyeXB0b3JzOiBbXSxcclxuICBzaWduZXJzOiBbXSxcclxuICB2ZXJpZmllcnM6IFtdLFxyXG4gIGF1dGhlbnRpY2F0b3JzOiBbXSxcclxuICBhdXRob3JpemVyczogW10sXHJcbiAgYXVkaXRvcnM6IFtdLFxyXG4gIGxvZ2dlcnM6IFtdLFxyXG4gIG1vbml0b3JzOiBbXSxcclxuICBhbGVydGVyczogW10sXHJcbiAgbm90aWZpZXJzOiBbXSxcclxuICByZXBvcnRlcnM6IFtdLFxyXG4gIGV4cG9ydGVyczogW10sXHJcbiAgaW1wb3J0ZXJzOiBbXSxcclxuICBtaWdyYXRvcnM6IFtdLFxyXG4gIHVwZGF0ZXJzOiBbXSxcclxuICBjbGVhbmVyczogW10sXHJcbiAgb3B0aW1pemVyczogW10sXHJcbiAgYW5hbHl6ZXJzOiBbXSxcclxuICBwcm9maWxlcnM6IFtdLFxyXG4gIGRlYnVnZ2VyczogW10sXHJcbiAgdGVzdGVyczogW10sXHJcbiAgZm9ybWF0dGVyczogW10sXHJcbiAgcGFyc2VyczogW10sXHJcbiAgYnVpbGRlcnM6IFtdLFxyXG4gIGdlbmVyYXRvcnM6IFtdLFxyXG4gIGNyZWF0b3JzOiBbXSxcclxuICBkZXN0cm95ZXJzOiBbXSxcclxuICBpbml0aWFsaXplcnM6IFtdLFxyXG4gIGZpbmFsaXplcnM6IFtdLFxyXG4gIGNvbnN0cnVjdG9yczogW10sXHJcbiAgZGVzdHJ1Y3RvcnM6IFtdLFxyXG4gIGZhY3RvcmllczogW10sXHJcbiAgcHJvdmlkZXJzOiBbXSxcclxuICBjb25zdW1lcnM6IFtdLFxyXG4gIHByb2R1Y2VyczogW10sXHJcbiAgcHVibGlzaGVyczogW10sXHJcbiAgc3Vic2NyaWJlcnM6IFtdLFxyXG4gIG9ic2VydmVyczogW10sXHJcbiAgbGlzdGVuZXJzOiBbXSxcclxuICBjYWxsYmFja3M6IFtdLFxyXG4gIGhvb2tzOiBbXSxcclxuICBldmVudHM6IFtdLFxyXG4gIHNpZ25hbHM6IFtdLFxyXG4gIG1lc3NhZ2VzOiBbXSxcclxuICBjb21tYW5kczogW10sXHJcbiAgcXVlcmllczogW10sXHJcbiAgcmVzcG9uc2VzOiBbXSxcclxuICByZXF1ZXN0czogW10sXHJcbiAgcmVwbGllczogW10sXHJcbiAgYWNrbm93bGVkZ21lbnRzOiBbXSxcclxuICBjb25maXJtYXRpb25zOiBbXSxcclxuICByZWplY3Rpb25zOiBbXSxcclxuICBlcnJvcnM6IFtdLFxyXG4gIGV4Y2VwdGlvbnM6IFtdLFxyXG4gIHdhcm5pbmdzOiBbXSxcclxuICBub3RpY2VzOiBbXSxcclxuICBpbmZvOiBbXSxcclxuICBkZWJ1ZzogW10sXHJcbiAgdHJhY2U6IFtdLFxyXG4gIGF1ZGl0OiBbXSxcclxuICBjb21wbGlhbmNlOiBbXSxcclxuICBzZWN1cml0eTogW10sXHJcbiAgcGVyZm9ybWFuY2U6IFtdLFxyXG4gIHF1YWxpdHk6IFtdLFxyXG4gIHZhbGlkYXRpb246IFtdLFxyXG4gIHRlc3Q6IFtdLFxyXG4gIGRldmVsb3BtZW50OiBbXSxcclxuICBwcm9kdWN0aW9uOiBbXSxcclxuICBzdGFnaW5nOiBbXSxcclxuICBsb2NhbDogW10sXHJcbiAgcmVtb3RlOiBbXSxcclxuICBjbGllbnQ6IFtdLFxyXG4gIHNlcnZlcjogW10sXHJcbiAgZGF0YWJhc2U6IFtdLFxyXG4gIGNhY2hlOiBbXSxcclxuICBzZXNzaW9uOiBbXSxcclxuICBhZG1pbjogW10sXHJcbiAgbW9kZXJhdG9yOiBbXSxcclxuICBndWVzdDogW10sXHJcbiAgYXV0aGVudGljYXRlZDogW10sXHJcbiAgdW5hdXRob3JpemVkOiBbXSxcclxuICBhdXRob3JpemVkOiBbXSxcclxuICB1bmF1dGhvcml6ZWQ6IFtdLFxyXG4gIHZhbGlkOiBbXSxcclxuICBpbnZhbGlkOiBbXVxyXG59XHJcblxyXG4vLyBQYXRyb25lcyBjb211bmVzIGRlIHByb21wdHNcclxuZXhwb3J0IGNvbnN0IENPTU1PTl9QUk9NUFRfUEFUVEVSTlMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLicsXHJcbiAgZXJyb3I6ICdFcnJvciBkZXRlY3RhZG86IHtlcnJvcn0nLFxyXG4gIHN1Y2Nlc3M6ICdPcGVyYWNpw7NuIGV4aXRvc2E6IHtyZXN1bHR9JyxcclxuICB3YXJuaW5nOiAnQWR2ZXJ0ZW5jaWE6IHt3YXJuaW5nfScsXHJcbiAgaW5mbzogJ0luZm9ybWFjacOzbjoge2luZm99JyxcclxuICBkZWJ1ZzogJ0RlYnVnOiB7ZGVidWd9JyxcclxuICB0cmFjZTogJ1RyYWNlOiB7dHJhY2V9JyxcclxuICBhdWRpdDogJ0F1ZGl0b3LDrWE6IHthdWRpdH0nLFxyXG4gIGNvbXBsaWFuY2U6ICdDdW1wbGltaWVudG86IHtjb21wbGlhbmNlfScsXHJcbiAgc2VjdXJpdHk6ICdTZWd1cmlkYWQ6IHtzZWN1cml0eX0nLFxyXG4gIHBlcmZvcm1hbmNlOiAnUmVuZGltaWVudG86IHtwZXJmb3JtYW5jZX0nLFxyXG4gIHF1YWxpdHk6ICdDYWxpZGFkOiB7cXVhbGl0eX0nLFxyXG4gIHZhbGlkYXRpb246ICdWYWxpZGFjacOzbjoge3ZhbGlkYXRpb259JyxcclxuICB0ZXN0OiAnUHJ1ZWJhOiB7dGVzdH0nLFxyXG4gIGRldmVsb3BtZW50OiAnRGVzYXJyb2xsbzoge2RldmVsb3BtZW50fScsXHJcbiAgcHJvZHVjdGlvbjogJ1Byb2R1Y2Npw7NuOiB7cHJvZHVjdGlvbn0nLFxyXG4gIHN0YWdpbmc6ICdTdGFnaW5nOiB7c3RhZ2luZ30nLFxyXG4gIGxvY2FsOiAnTG9jYWw6IHtsb2NhbH0nLFxyXG4gIHJlbW90ZTogJ1JlbW90bzoge3JlbW90ZX0nLFxyXG4gIGNsaWVudDogJ0NsaWVudGU6IHtjbGllbnR9JyxcclxuICBzZXJ2ZXI6ICdTZXJ2aWRvcjoge3NlcnZlcn0nLFxyXG4gIGRhdGFiYXNlOiAnQmFzZSBkZSBkYXRvczoge2RhdGFiYXNlfScsXHJcbiAgY2FjaGU6ICdDYWNoZToge2NhY2hlfScsXHJcbiAgc2Vzc2lvbjogJ1Nlc2nDs246IHtzZXNzaW9ufScsXHJcbiAgYWRtaW46ICdBZG1pbmlzdHJhZG9yOiB7YWRtaW59JyxcclxuICBtb2RlcmF0b3I6ICdNb2RlcmFkb3I6IHttb2RlcmF0b3J9JyxcclxuICBndWVzdDogJ0ludml0YWRvOiB7Z3Vlc3R9JyxcclxuICBhdXRoZW50aWNhdGVkOiAnQXV0ZW50aWNhZG86IHthdXRoZW50aWNhdGVkfScsXHJcbiAgdW5hdXRob3JpemVkOiAnTm8gYXV0b3JpemFkbzoge3VuYXV0aG9yaXplZH0nLFxyXG4gIGF1dGhvcml6ZWQ6ICdBdXRvcml6YWRvOiB7YXV0aG9yaXplZH0nLFxyXG4gIHVuYXV0aG9yaXplZDogJ05vIGF1dG9yaXphZG86IHt1bmF1dGhvcml6ZWR9JyxcclxuICB2YWxpZDogJ1bDoWxpZG86IHt2YWxpZH0nLFxyXG4gIGludmFsaWQ6ICdJbnbDoWxpZG86IHtpbnZhbGlkfSdcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBlc3BlY8OtZmljYXMgcGFyYSBwcm9tcHRzIGxlZ2FsZXNcclxuZXhwb3J0IGNvbnN0IExFR0FMX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkbyBlbiBkZXJlY2hvIGNvbG9tYmlhbm8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBsZWdhbCBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGxlZ2FsIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlbCBzaXN0ZW1hXHJcbmV4cG9ydCBjb25zdCBTWVNURU1fUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSB1c3VhcmlvXHJcbmV4cG9ydCBjb25zdCBVU0VSX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgY29udGV4dG9cclxuZXhwb3J0IGNvbnN0IENPTlRFWFRfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSBiw7pzcXVlZGFcclxuZXhwb3J0IGNvbnN0IFNFQVJDSF9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlIHZlcmlmaWNhY2nDs25cclxuZXhwb3J0IGNvbnN0IFZFUklGSUNBVElPTl9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlIHPDrW50ZXNpc1xyXG5leHBvcnQgY29uc3QgU1lOVEhFU0lTX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgZXJyb3JcclxuZXhwb3J0IGNvbnN0IEVSUk9SX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgw6l4aXRvXHJcbmV4cG9ydCBjb25zdCBTVUNDRVNTX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgYWR2ZXJ0ZW5jaWFcclxuZXhwb3J0IGNvbnN0IFdBUk5JTkdfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSBpbmZvcm1hY2nDs25cclxuZXhwb3J0IGNvbnN0IElORk9fUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSBkZWJ1Z1xyXG5leHBvcnQgY29uc3QgREVCVUdfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSB0cmFjZVxyXG5leHBvcnQgY29uc3QgVFJBQ0VfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSBhdWRpdG9yw61hXHJcbmV4cG9ydCBjb25zdCBBVURJVF9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlIGN1bXBsaW1pZW50b1xyXG5leHBvcnQgY29uc3QgQ09NUExJQU5DRV9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlIHNlZ3VyaWRhZFxyXG5leHBvcnQgY29uc3QgU0VDVVJJVFlfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSByZW5kaW1pZW50b1xyXG5leHBvcnQgY29uc3QgUEVSRk9STUFOQ0VfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSBjYWxpZGFkXHJcbmV4cG9ydCBjb25zdCBRVUFMSVRZX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgdmFsaWRhY2nDs25cclxuZXhwb3J0IGNvbnN0IFZBTElEQVRJT05fUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSBwcnVlYmFcclxuZXhwb3J0IGNvbnN0IFRFU1RfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSBkZXNhcnJvbGxvXHJcbmV4cG9ydCBjb25zdCBERVZFTE9QTUVOVF9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlIHByb2R1Y2Npw7NuXHJcbmV4cG9ydCBjb25zdCBQUk9EVUNUSU9OX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgc3RhZ2luZ1xyXG5leHBvcnQgY29uc3QgU1RBR0lOR19QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGxvY2FsZXNcclxuZXhwb3J0IGNvbnN0IExPQ0FMX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgcmVtb3Rvc1xyXG5leHBvcnQgY29uc3QgUkVNT1RFX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgY2xpZW50ZVxyXG5leHBvcnQgY29uc3QgQ0xJRU5UX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgc2Vydmlkb3JcclxuZXhwb3J0IGNvbnN0IFNFUlZFUl9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlIGJhc2UgZGUgZGF0b3NcclxuZXhwb3J0IGNvbnN0IERBVEFCQVNFX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgY2FjaGVcclxuZXhwb3J0IGNvbnN0IENBQ0hFX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgc2VzacOzblxyXG5leHBvcnQgY29uc3QgU0VTU0lPTl9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlIHVzdWFyaW9cclxuZXhwb3J0IGNvbnN0IFVTRVJfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBkZSBhZG1pbmlzdHJhZG9yXHJcbmV4cG9ydCBjb25zdCBBRE1JTl9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIGRlIG1vZGVyYWRvclxyXG5leHBvcnQgY29uc3QgTU9ERVJBVE9SX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgZGUgaW52aXRhZG9cclxuZXhwb3J0IGNvbnN0IEdVRVNUX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgYXV0ZW50aWNhZG9zXHJcbmV4cG9ydCBjb25zdCBBVVRIRU5USUNBVEVEX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuLy8gUGxhbnRpbGxhcyBwYXJhIHByb21wdHMgbm8gYXV0ZW50aWNhZG9zXHJcbmV4cG9ydCBjb25zdCBVTkFVVEhFTlRJQ0FURURfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBhdXRvcml6YWRvc1xyXG5leHBvcnQgY29uc3QgQVVUSE9SSVpFRF9QUk9NUFRfVEVNUExBVEVTID0ge1xyXG4gIHN5c3RlbTogJ0VyZXMgdW4gYXNpc3RlbnRlIGxlZ2FsIGVzcGVjaWFsaXphZG8uLi4nLFxyXG4gIHVzZXI6ICdDb25zdWx0YSBkZWwgdXN1YXJpbzoge3F1ZXJ5fScsXHJcbiAgY29udGV4dDogJ0NvbnRleHRvIGFjdHVhbDoge2NvbnRleHR9JyxcclxuICBsZWdhbDogJ0Fuw6FsaXNpcyBsZWdhbCByZXF1ZXJpZG8gcGFyYToge3F1ZXJ5fScsXHJcbiAgc2VhcmNoOiAnQsO6c3F1ZWRhIGRlIGluZm9ybWFjacOzbiBsZWdhbDoge3F1ZXJ5fScsXHJcbiAgdmVyaWZpY2F0aW9uOiAnVmVyaWZpY2FjacOzbiBkZSBmdWVudGVzIGxlZ2FsZXMuLi4nLFxyXG4gIHN5bnRoZXNpczogJ1PDrW50ZXNpcyBkZSBpbmZvcm1hY2nDs24gbGVnYWwuLi4nXHJcbn1cclxuXHJcbi8vIFBsYW50aWxsYXMgcGFyYSBwcm9tcHRzIG5vIGF1dG9yaXphZG9zXHJcbmV4cG9ydCBjb25zdCBVTkFVVEhPUklaRURfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyB2w6FsaWRvc1xyXG5leHBvcnQgY29uc3QgVkFMSURfUFJPTVBUX1RFTVBMQVRFUyA9IHtcclxuICBzeXN0ZW06ICdFcmVzIHVuIGFzaXN0ZW50ZSBsZWdhbCBlc3BlY2lhbGl6YWRvLi4uJyxcclxuICB1c2VyOiAnQ29uc3VsdGEgZGVsIHVzdWFyaW86IHtxdWVyeX0nLFxyXG4gIGNvbnRleHQ6ICdDb250ZXh0byBhY3R1YWw6IHtjb250ZXh0fScsXHJcbiAgbGVnYWw6ICdBbsOhbGlzaXMgbGVnYWwgcmVxdWVyaWRvIHBhcmE6IHtxdWVyeX0nLFxyXG4gIHNlYXJjaDogJ0LDunNxdWVkYSBkZSBpbmZvcm1hY2nDs24gbGVnYWw6IHtxdWVyeX0nLFxyXG4gIHZlcmlmaWNhdGlvbjogJ1ZlcmlmaWNhY2nDs24gZGUgZnVlbnRlcyBsZWdhbGVzLi4uJyxcclxuICBzeW50aGVzaXM6ICdTw61udGVzaXMgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsLi4uJ1xyXG59XHJcblxyXG4vLyBQbGFudGlsbGFzIHBhcmEgcHJvbXB0cyBpbnbDoWxpZG9zXHJcbmV4cG9ydCBjb25zdCBJTlZBTElEX1BST01QVF9URU1QTEFURVMgPSB7XHJcbiAgc3lzdGVtOiAnRXJlcyB1biBhc2lzdGVudGUgbGVnYWwgZXNwZWNpYWxpemFkby4uLicsXHJcbiAgdXNlcjogJ0NvbnN1bHRhIGRlbCB1c3VhcmlvOiB7cXVlcnl9JyxcclxuICBjb250ZXh0OiAnQ29udGV4dG8gYWN0dWFsOiB7Y29udGV4dH0nLFxyXG4gIGxlZ2FsOiAnQW7DoWxpc2lzIGxlZ2FsIHJlcXVlcmlkbyBwYXJhOiB7cXVlcnl9JyxcclxuICBzZWFyY2g6ICdCw7pzcXVlZGEgZGUgaW5mb3JtYWNpw7NuIGxlZ2FsOiB7cXVlcnl9JyxcclxuICB2ZXJpZmljYXRpb246ICdWZXJpZmljYWNpw7NuIGRlIGZ1ZW50ZXMgbGVnYWxlcy4uLicsXHJcbiAgc3ludGhlc2lzOiAnU8OtbnRlc2lzIGRlIGluZm9ybWFjacOzbiBsZWdhbC4uLidcclxufVxyXG5cclxuIl0sIm1hcHBpbmdzIjoiOztBQUFBOzs7OztBQUFBO0FBQUEsU0FBQUEsZUFBQTtFQUFBLElBQUFDLElBQUE7RUFBQSxJQUFBQyxJQUFBO0VBQUEsSUFBQUMsTUFBQSxPQUFBQyxRQUFBO0VBQUEsSUFBQUMsR0FBQTtFQUFBLElBQUFDLFlBQUE7SUFBQUwsSUFBQTtJQUFBTSxZQUFBO01BQUE7UUFBQUMsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtVQUFBRixJQUFBO1VBQUFDLE1BQUE7UUFBQTtNQUFBO01BQUE7UUFBQUYsS0FBQTtVQUFBQyxJQUFBO1VBQUFDLE1BQUE7UUFBQTtRQUFBQyxHQUFBO1VBQUFGLElBQUE7VUFBQUMsTUFBQTtRQUFBO01BQUE7TUFBQTtRQUFBRixLQUFBO1VBQUFDLElBQUE7VUFBQUMsTUFBQTtRQUFBO1FBQUFDLEdBQUE7VUFBQUYsSUFBQTtVQUFBQyxNQUFBO1FBQUE7TUFBQTtNQUFBO1FBQUFGLEtBQUE7VUFBQUMsSUFBQTtVQUFBQyxNQUFBO1FBQUE7UUFBQUMsR0FBQTtV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ZEMsU0FBUyxFQUFFLEVBQUU7RUFDYkMsU0FBUyxFQUFFLEVBQUU7RUFDYkMsU0FBUyxFQUFFLEVBQUU7RUFDYkMsT0FBTyxFQUFFLEVBQUU7RUFDWEMsVUFBVSxFQUFFLEVBQUU7RUFDZEMsT0FBTyxFQUFFLEVBQUU7RUFDWEMsUUFBUSxFQUFFLEVBQUU7RUFDWkMsVUFBVSxFQUFFLEVBQUU7RUFDZEMsUUFBUSxFQUFFLEVBQUU7RUFDWkMsVUFBVSxFQUFFLEVBQUU7RUFDZEMsWUFBWSxFQUFFLEVBQUU7RUFDaEJDLFVBQVUsRUFBRSxFQUFFO0VBQ2RDLFlBQVksRUFBRSxFQUFFO0VBQ2hCQyxXQUFXLEVBQUUsRUFBRTtFQUNmQyxTQUFTLEVBQUUsRUFBRTtFQUNiQyxTQUFTLEVBQUUsRUFBRTtFQUNiQyxTQUFTLEVBQUUsRUFBRTtFQUNiQyxTQUFTLEVBQUUsRUFBRTtFQUNiQyxVQUFVLEVBQUUsRUFBRTtFQUNkQyxXQUFXLEVBQUUsRUFBRTtFQUNmQyxTQUFTLEVBQUUsRUFBRTtFQUNiQyxTQUFTLEVBQUUsRUFBRTtFQUNiQyxTQUFTLEVBQUUsRUFBRTtFQUNiQyxLQUFLLEVBQUUsRUFBRTtFQUNUQyxNQUFNLEVBQUUsRUFBRTtFQUNWQyxPQUFPLEVBQUUsRUFBRTtFQUNYQyxRQUFRLEVBQUUsRUFBRTtFQUNaQyxRQUFRLEVBQUUsRUFBRTtFQUNaQyxPQUFPLEVBQUUsRUFBRTtFQUNYQyxTQUFTLEVBQUUsRUFBRTtFQUNiQyxRQUFRLEVBQUUsRUFBRTtFQUNaQyxPQUFPLEVBQUUsRUFBRTtFQUNYQyxlQUFlLEVBQUUsRUFBRTtFQUNuQkMsYUFBYSxFQUFFLEVBQUU7RUFDakJDLFVBQVUsRUFBRSxFQUFFO0VBQ2RDLE1BQU0sRUFBRSxFQUFFO0VBQ1ZDLFVBQVUsRUFBRSxFQUFFO0VBQ2RDLFFBQVEsRUFBRSxFQUFFO0VBQ1pDLE9BQU8sRUFBRSxFQUFFO0VBQ1hDLElBQUksRUFBRSxFQUFFO0VBQ1JDLEtBQUssRUFBRSxFQUFFO0VBQ1RDLEtBQUssRUFBRSxFQUFFO0VBQ1RDLEtBQUssRUFBRSxF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

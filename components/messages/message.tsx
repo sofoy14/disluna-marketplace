@@ -1,7 +1,6 @@
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import { ChatbotUIContext } from "@/context/context"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
-import { cn } from "@/lib/utils"
 import { BibliographyItem } from "@/types/chat-message"
 import { LLM, LLMID, MessageImage, ModelProvider } from "@/types"
 import {
@@ -14,7 +13,7 @@ import {
   IconPencil
 } from "@tabler/icons-react"
 import Image from "next/image"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useContext, useEffect, useMemo, useRef, useState } from "react"
 import { ModelIcon } from "../models/model-icon"
 import { Button } from "../ui/button"
 import { FileIcon } from "../ui/file-icon"
@@ -25,11 +24,12 @@ import { MessageActions } from "./message-actions"
 import { MessageMarkdown } from "./message-markdown"
 import { DocumentViewer } from "../chat/document-viewer"
 import { MessageBubble } from "../chat/modern/MessageBubble"
-import { BibliographySection } from "../chat/bibliography-section"
-import { useBibliographyParser } from "../chat/use-bibliography-parser"
 import { SuggestedQuestions } from "../chat/suggested-questions"
 import { useSuggestedQuestions } from "@/lib/hooks/use-suggested-questions"
 import { toast } from "sonner"
+import { AnswerView } from "./answer-view"
+import { CitationsPanel } from "./citations-panel"
+import { parseModelAnswer } from "@/lib/parsers/model-answer"
 
 const ICON_SIZE = 32
 
@@ -86,38 +86,16 @@ export const Message: FC<MessageProps> = ({
 
   const [showImagePreview, setShowImagePreview] = useState(false)
   const [selectedImage, setSelectedImage] = useState<MessageImage | null>(null)
-  
-  // Convertir bibliografía al formato esperado por BibliographySection
-  const convertBibliographyItems = (items: BibliographyItem[]) => {
-    return items.map((item, index) => ({
-      id: `bib-${index}`,
-      title: item.title,
-      type: mapTypeToBibliographyType(item.type),
-      source: item.type,
-      url: item.url,
-      description: `${item.type} - ${item.title}`
-    }))
-  }
 
-  // Mapear tipos de fuente a tipos de bibliografía
-  const mapTypeToBibliographyType = (type: string | undefined): 'sentencia' | 'ley' | 'decreto' | 'articulo' | 'jurisprudencia' | 'doctrina' => {
-    if (!type) return 'ley' // Valor por defecto si type es undefined
-    
-    const typeLower = type.toLowerCase()
-    if (typeLower.includes('jurisprudencia') || typeLower.includes('sentencia')) return 'jurisprudencia'
-    if (typeLower.includes('ley')) return 'ley'
-    if (typeLower.includes('decreto')) return 'decreto'
-    if (typeLower.includes('artículo') || typeLower.includes('codigo')) return 'articulo'
-    if (typeLower.includes('doctrina') || typeLower.includes('académica')) return 'doctrina'
-    return 'ley' // Por defecto
-  }
+  const assistantAnswer = useMemo(
+    () =>
+      message.role === "assistant"
+        ? parseModelAnswer(message.content, { citationsFromBackend: bibliography })
+        : { text: message.content },
+    [message.content, message.role, bibliography]
+  )
 
-  // Usar bibliografía del prop si está disponible, sino parsear del contenido
-  const bibliographyItems = bibliography || []
-  const { bibliographyItems: parsedBibliography, contentWithoutBibliography } = useBibliographyParser(message.content)
-  const finalBibliographyItems = bibliographyItems.length > 0 ? convertBibliographyItems(bibliographyItems) : parsedBibliography
-  const displayContent = bibliographyItems.length > 0 ? message.content : contentWithoutBibliography
-
+  const assistantCitations = assistantAnswer.citations ?? []
   const [viewSources, setViewSources] = useState(false)
   const [showFileItemPreview, setShowFileItemPreview] = useState(false)
 
@@ -155,12 +133,14 @@ export const Message: FC<MessageProps> = ({
   }, [message.role, isLast, isGenerating, firstTokenReceived, message.content, chatMessages, generateSuggestedQuestions, setSuggestedQuestions, setShowSuggestedQuestions])
 
   const handleCopy = () => {
+    const textToCopy = message.role === "assistant" ? assistantAnswer.text : message.content
+
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(message.content)
+      navigator.clipboard.writeText(textToCopy)
       toast.success("Copiado al portapapeles")
     } else {
       const textArea = document.createElement("textarea")
-      textArea.value = message.content
+      textArea.value = textToCopy
       document.body.appendChild(textArea)
       textArea.focus()
       textArea.select()
@@ -339,8 +319,12 @@ export const Message: FC<MessageProps> = ({
     if (isLegalDocument) {
       return <DocumentViewer content={message.content} messageId={message.id} />
     }
-    
-    return <MessageMarkdown content={displayContent} />
+
+    if (message.role === "assistant") {
+      return <AnswerView text={assistantAnswer.text} />
+    }
+
+    return <MessageMarkdown content={message.content} />
   }
 
   // Si es mensaje del sistema, usar el diseño simple
@@ -374,9 +358,8 @@ export const Message: FC<MessageProps> = ({
           {/* Contenido del mensaje */}
           {renderMessageContent()}
 
-          {/* Bibliografía */}
-          {finalBibliographyItems.length > 0 && (
-            <BibliographySection items={finalBibliographyItems} />
+          {message.role === "assistant" && assistantCitations.length > 0 && (
+            <CitationsPanel items={assistantCitations} />
           )}
 
           {/* File items */}

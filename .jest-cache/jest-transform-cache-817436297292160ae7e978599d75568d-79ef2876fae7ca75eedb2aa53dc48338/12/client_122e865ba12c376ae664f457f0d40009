@@ -1,0 +1,159 @@
+edb4c24bf14501d805018b55e211bfbb
+"use strict";
+
+/* istanbul ignore next */
+function cov_2ft7c8wcv7() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\client.ts";
+  var hash = "ca3fac65ce24428ec080112ad43bc4152b391d2d";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\client.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 30
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 14
+        },
+        end: {
+          line: 4,
+          column: 38
+        }
+      },
+      "3": {
+        start: {
+          line: 5,
+          column: 21
+        },
+        end: {
+          line: 5,
+          column: 138
+        }
+      },
+      "4": {
+        start: {
+          line: 5,
+          column: 27
+        },
+        end: {
+          line: 5,
+          column: 138
+        }
+      },
+      "5": {
+        start: {
+          line: 6,
+          column: 0
+        },
+        end: {
+          line: 6,
+          column: 36
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 5,
+            column: 21
+          },
+          end: {
+            line: 5,
+            column: 22
+          }
+        },
+        loc: {
+          start: {
+            line: 5,
+            column: 27
+          },
+          end: {
+            line: 5,
+            column: 138
+          }
+        },
+        line: 5
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\client.ts",
+      mappings: ";;;AAAA,uCAAmD;AAE5C,MAAM,YAAY,GAAG,GAAG,EAAE,CAC/B,IAAA,yBAAmB,EACjB,OAAO,CAAC,GAAG,CAAC,wBAAyB,EACrC,OAAO,CAAC,GAAG,CAAC,6BAA8B,CAC3C,CAAA;AAJU,QAAA,YAAY,gBAItB",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\supabase\\client.ts"],
+      sourcesContent: ["import { createBrowserClient } from \"@supabase/ssr\"\r\n\r\nexport const createClient = () =>\r\n  createBrowserClient(\r\n    process.env.NEXT_PUBLIC_SUPABASE_URL!,\r\n    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!\r\n  )\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "ca3fac65ce24428ec080112ad43bc4152b391d2d"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_2ft7c8wcv7 = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_2ft7c8wcv7();
+cov_2ft7c8wcv7().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_2ft7c8wcv7().s[1]++;
+exports.createClient = void 0;
+const ssr_1 =
+/* istanbul ignore next */
+(cov_2ft7c8wcv7().s[2]++, require("@supabase/ssr"));
+/* istanbul ignore next */
+cov_2ft7c8wcv7().s[3]++;
+const createClient = () => {
+  /* istanbul ignore next */
+  cov_2ft7c8wcv7().f[0]++;
+  cov_2ft7c8wcv7().s[4]++;
+  return (0, ssr_1.createBrowserClient)(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+};
+/* istanbul ignore next */
+cov_2ft7c8wcv7().s[5]++;
+exports.createClient = createClient;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJzc3JfMSIsImNvdl8yZnQ3Yzh3Y3Y3IiwicyIsInJlcXVpcmUiLCJjcmVhdGVDbGllbnQiLCJmIiwiY3JlYXRlQnJvd3NlckNsaWVudCIsInByb2Nlc3MiLCJlbnYiLCJORVhUX1BVQkxJQ19TVVBBQkFTRV9VUkwiLCJORVhUX1BVQkxJQ19TVVBBQkFTRV9BTk9OX0tFWSIsImV4cG9ydHMiXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXHBlZHJvXFxEb2N1bWVudHNcXEdpdEh1YlxcQXNpc3RlbnRlLUxlZ2FsLUludGVsaWdlbnRlXFxsaWJcXHN1cGFiYXNlXFxjbGllbnQudHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgY3JlYXRlQnJvd3NlckNsaWVudCB9IGZyb20gXCJAc3VwYWJhc2Uvc3NyXCJcclxuXHJcbmV4cG9ydCBjb25zdCBjcmVhdGVDbGllbnQgPSAoKSA9PlxyXG4gIGNyZWF0ZUJyb3dzZXJDbGllbnQoXHJcbiAgICBwcm9jZXNzLmVudi5ORVhUX1BVQkxJQ19TVVBBQkFTRV9VUkwhLFxyXG4gICAgcHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfU1VQQUJBU0VfQU5PTl9LRVkhXHJcbiAgKVxyXG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7O0FBQUEsTUFBQUEsS0FBQTtBQUFBO0FBQUEsQ0FBQUMsY0FBQSxHQUFBQyxDQUFBLE9BQUFDLE9BQUE7QUFBbUQ7QUFBQUYsY0FBQSxHQUFBQyxDQUFBO0FBRTVDLE1BQU1FLFlBQVksR0FBR0EsQ0FBQSxLQUMxQjtFQUFBO0VBQUFILGNBQUEsR0FBQUksQ0FBQTtFQUFBSixjQUFBLEdBQUFDLENBQUE7RUFBQSxXQUFBRixLQUFBLENBQUFNLG1CQUFtQixFQUNqQkMsT0FBTyxDQUFDQyxHQUFHLENBQUNDLHdCQUF5QixFQUNyQ0YsT0FBTyxDQUFDQyxHQUFHLENBQUNFLDZCQUE4QixDQUMzQztBQUQyQyxDQUMzQztBQUFBO0FBQUFULGNBQUEsR0FBQUMsQ0FBQTtBQUpVUyxPQUFBLENBQUFQLFlBQVksR0FBQUEsWUFBQSIsImlnbm9yZUxpc3QiOltdfQ==

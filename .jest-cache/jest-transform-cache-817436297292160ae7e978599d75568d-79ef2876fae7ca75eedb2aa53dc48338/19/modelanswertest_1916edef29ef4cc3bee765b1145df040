@@ -1,0 +1,60 @@
+34562565dff54c7261a15c0edaf13cb4
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const model_answer_1 = require("@/lib/parsers/model-answer");
+const sampleContent = `
+Planteamiento del problema jurídico
+
+El Ministerio Público consulta sobre la aplicación de la Ley 1437 de 2011.
+
+## Bibliografía
+- [Ley 1437 de 2011](https://www.suin.gov.co/lei-1437-2011)
+- Sentencia T-123 de 2018 — Corte Constitucional (https://www.corteconstitucional.gov.co/T-123-18)
+`;
+describe("parseModelAnswer", () => {
+    it("separates bibliography section and normalizes citations", () => {
+        const result = (0, model_answer_1.parseModelAnswer)(sampleContent);
+        expect(result.text).toContain("Planteamiento del problema jurídico");
+        expect(result.text).not.toContain("Bibliografía");
+        expect(result.citations).toBeDefined();
+        expect(result.citations?.length).toBe(2);
+        expect(result.citations?.[0].title).toBe("Ley 1437 de 2011");
+        expect(result.citations?.[0].url).toBe("https://www.suin.gov.co/lei-1437-2011");
+    });
+    it("detects inline bibliography sentences", () => {
+        const content = `
+Análisis preliminar
+
+Fuentes consultadas: [Decreto 1082 de 2015](https://www.funcionpublica.gov.co/decreto-1082) ; Resolución 123 del 2020 https://www.minjusticia.gov.co/res-123-2020
+`;
+        const result = (0, model_answer_1.parseModelAnswer)(content);
+        expect(result.text).not.toContain("Fuentes consultadas");
+        expect(result.citations?.length).toBe(2);
+        expect(result.citations?.[0].title).toContain("Decreto 1082 de 2015");
+        expect(result.citations?.[1].url).toBe("https://www.minjusticia.gov.co/res-123-2020");
+    });
+    it("uses backend bibliography when available", () => {
+        const backendResult = (0, model_answer_1.parseModelAnswer)("Respuesta sin sección visible", {
+            citationsFromBackend: [
+                {
+                    id: "foo",
+                    title: "Ley 80 de 1993",
+                    url: "https://www.suin.gov.co/ley-80-1993",
+                    type: "ley",
+                    description: "Contratación estatal"
+                }
+            ]
+        });
+        expect(backendResult.text).toBe("Respuesta sin sección visible");
+        expect(backendResult.citations?.length).toBe(1);
+        expect(backendResult.citations?.[0].title).toBe("Ley 80 de 1993");
+        expect(backendResult.citations?.[0].type).toBe("ley");
+    });
+    it("returns clean text when no citations are present", () => {
+        const content = "Respuesta directa sin referencias externas.";
+        const result = (0, model_answer_1.parseModelAnswer)(content);
+        expect(result.text).toBe(content);
+        expect(result.citations).toBeUndefined();
+    });
+});
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJmaWxlIjoiQzpcXFVzZXJzXFxwZWRyb1xcRG9jdW1lbnRzXFxHaXRIdWJcXEFzaXN0ZW50ZS1MZWdhbC1JbnRlbGlnZW50ZVxcX190ZXN0c19fXFxsaWJcXHBhcnNlcnNcXG1vZGVsLWFuc3dlci50ZXN0LnRzIiwibWFwcGluZ3MiOiI7O0FBQUEsNkRBQTZEO0FBRTdELE1BQU0sYUFBYSxHQUFHOzs7Ozs7OztDQVFyQixDQUFBO0FBRUQsUUFBUSxDQUFDLGtCQUFrQixFQUFFLEdBQUcsRUFBRTtJQUNoQyxFQUFFLENBQUMseURBQXlELEVBQUUsR0FBRyxFQUFFO1FBQ2pFLE1BQU0sTUFBTSxHQUFHLElBQUEsK0JBQWdCLEVBQUMsYUFBYSxDQUFDLENBQUE7UUFFOUMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxJQUFJLENBQUMsQ0FBQyxTQUFTLENBQUMscUNBQXFDLENBQUMsQ0FBQTtRQUNwRSxNQUFNLENBQUMsTUFBTSxDQUFDLElBQUksQ0FBQyxDQUFDLEdBQUcsQ0FBQyxTQUFTLENBQUMsY0FBYyxDQUFDLENBQUE7UUFDakQsTUFBTSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUMsQ0FBQyxXQUFXLEVBQUUsQ0FBQTtRQUN0QyxNQUFNLENBQUMsTUFBTSxDQUFDLFNBQVMsRUFBRSxNQUFNLENBQUMsQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFDLENBQUE7UUFDeEMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxTQUFTLEVBQUUsQ0FBQyxDQUFDLENBQUMsQ0FBQyxLQUFLLENBQUMsQ0FBQyxJQUFJLENBQUMsa0JBQWtCLENBQUMsQ0FBQTtRQUM1RCxNQUFNLENBQUMsTUFBTSxDQUFDLFNBQVMsRUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDLEdBQUcsQ0FBQyxDQUFDLElBQUksQ0FBQyx1Q0FBdUMsQ0FBQyxDQUFBO0lBQ2pGLENBQUMsQ0FBQyxDQUFBO0lBRUYsRUFBRSxDQUFDLHVDQUF1QyxFQUFFLEdBQUcsRUFBRTtRQUMvQyxNQUFNLE9BQU8sR0FBRzs7OztDQUluQixDQUFBO1FBQ0csTUFBTSxNQUFNLEdBQUcsSUFBQSwrQkFBZ0IsRUFBQyxPQUFPLENBQUMsQ0FBQTtRQUV4QyxNQUFNLENBQUMsTUFBTSxDQUFDLElBQUksQ0FBQyxDQUFDLEdBQUcsQ0FBQyxTQUFTLENBQUMscUJBQXFCLENBQUMsQ0FBQTtRQUN4RCxNQUFNLENBQUMsTUFBTSxDQUFDLFNBQVMsRUFBRSxNQUFNLENBQUMsQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFDLENBQUE7UUFDeEMsTUFBTSxDQUFDLE1BQU0sQ0FBQyxTQUFTLEVBQUUsQ0FBQyxDQUFDLENBQUMsQ0FBQyxLQUFLLENBQUMsQ0FBQyxTQUFTLENBQUMsc0JBQXNCLENBQUMsQ0FBQTtRQUNyRSxNQUFNLENBQUMsTUFBTSxDQUFDLFNBQVMsRUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDLEdBQUcsQ0FBQyxDQUFDLElBQUksQ0FBQyw2Q0FBNkMsQ0FBQyxDQUFBO0lBQ3ZGLENBQUMsQ0FBQyxDQUFBO0lBRUYsRUFBRSxDQUFDLDBDQUEwQyxFQUFFLEdBQUcsRUFBRTtRQUNsRCxNQUFNLGFBQWEsR0FBRyxJQUFBLCtCQUFnQixFQUFDLCtCQUErQixFQUFFO1lBQ3RFLG9CQUFvQixFQUFFO2dCQUNwQjtvQkFDRSxFQUFFLEVBQUUsS0FBSztvQkFDVCxLQUFLLEVBQUUsZ0JBQWdCO29CQUN2QixHQUFHLEVBQUUscUNBQXFDO29CQUMxQyxJQUFJLEVBQUUsS0FBSztvQkFDWCxXQUFXLEVBQUUsc0JBQXNCO2lCQUNwQzthQUNGO1NBQ0YsQ0FBQyxDQUFBO1FBRUYsTUFBTSxDQUFDLGFBQWEsQ0FBQyxJQUFJLENBQUMsQ0FBQyxJQUFJLENBQUMsK0JBQStCLENBQUMsQ0FBQTtRQUNoRSxNQUFNLENBQUMsYUFBYSxDQUFDLFNBQVMsRUFBRSxNQUFNLENBQUMsQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFDLENBQUE7UUFDL0MsTUFBTSxDQUFDLGFBQWEsQ0FBQyxTQUFTLEVBQUUsQ0FBQyxDQUFDLENBQUMsQ0FBQyxLQUFLLENBQUMsQ0FBQyxJQUFJLENBQUMsZ0JBQWdCLENBQUMsQ0FBQTtRQUNqRSxNQUFNLENBQUMsYUFBYSxDQUFDLFNBQVMsRUFBRSxDQUFDLENBQUMsQ0FBQyxDQUFDLElBQUksQ0FBQyxDQUFDLElBQUksQ0FBQyxLQUFLLENBQUMsQ0FBQTtJQUN2RCxDQUFDLENBQUMsQ0FBQTtJQUVGLEVBQUUsQ0FBQyxrREFBa0QsRUFBRSxHQUFHLEVBQUU7UUFDMUQsTUFBTSxPQUFPLEdBQUcsNkNBQTZDLENBQUE7UUFDN0QsTUFBTSxNQUFNLEdBQUcsSUFBQSwrQkFBZ0IsRUFBQyxPQUFPLENBQUMsQ0FBQTtRQUV4QyxNQUFNLENBQUMsTUFBTSxDQUFDLElBQUksQ0FBQyxDQUFDLElBQUksQ0FBQyxPQUFPLENBQUMsQ0FBQTtRQUNqQyxNQUFNLENBQUMsTUFBTSxDQUFDLFNBQVMsQ0FBQyxDQUFDLGFBQWEsRUFBRSxDQUFBO0lBQzFDLENBQUMsQ0FBQyxDQUFBO0FBQ0osQ0FBQyxDQUFDLENBQUEiLCJuYW1lcyI6W10sInNvdXJjZXMiOlsiQzpcXFVzZXJzXFxwZWRyb1xcRG9jdW1lbnRzXFxHaXRIdWJcXEFzaXN0ZW50ZS1MZWdhbC1JbnRlbGlnZW50ZVxcX190ZXN0c19fXFxsaWJcXHBhcnNlcnNcXG1vZGVsLWFuc3dlci50ZXN0LnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHBhcnNlTW9kZWxBbnN3ZXIgfSBmcm9tIFwiQC9saWIvcGFyc2Vycy9tb2RlbC1hbnN3ZXJcIlxuXG5jb25zdCBzYW1wbGVDb250ZW50ID0gYFxuUGxhbnRlYW1pZW50byBkZWwgcHJvYmxlbWEganVyw61kaWNvXG5cbkVsIE1pbmlzdGVyaW8gUMO6YmxpY28gY29uc3VsdGEgc29icmUgbGEgYXBsaWNhY2nDs24gZGUgbGEgTGV5IDE0MzcgZGUgMjAxMS5cblxuIyMgQmlibGlvZ3JhZsOtYVxuLSBbTGV5IDE0MzcgZGUgMjAxMV0oaHR0cHM6Ly93d3cuc3Vpbi5nb3YuY28vbGVpLTE0MzctMjAxMSlcbi0gU2VudGVuY2lhIFQtMTIzIGRlIDIwMTgg4oCUIENvcnRlIENvbnN0aXR1Y2lvbmFsIChodHRwczovL3d3dy5jb3J0ZWNvbnN0aXR1Y2lvbmFsLmdvdi5jby9ULTEyMy0xOClcbmBcblxuZGVzY3JpYmUoXCJwYXJzZU1vZGVsQW5zd2VyXCIsICgpID0+IHtcbiAgaXQoXCJzZXBhcmF0ZXMgYmlibGlvZ3JhcGh5IHNlY3Rpb24gYW5kIG5vcm1hbGl6ZXMgY2l0YXRpb25zXCIsICgpID0+IHtcbiAgICBjb25zdCByZXN1bHQgPSBwYXJzZU1vZGVsQW5zd2VyKHNhbXBsZUNvbnRlbnQpXG5cbiAgICBleHBlY3QocmVzdWx0LnRleHQpLnRvQ29udGFpbihcIlBsYW50ZWFtaWVudG8gZGVsIHByb2JsZW1hIGp1csOtZGljb1wiKVxuICAgIGV4cGVjdChyZXN1bHQudGV4dCkubm90LnRvQ29udGFpbihcIkJpYmxpb2dyYWbDrWFcIilcbiAgICBleHBlY3QocmVzdWx0LmNpdGF0aW9ucykudG9CZURlZmluZWQoKVxuICAgIGV4cGVjdChyZXN1bHQuY2l0YXRpb25zPy5sZW5ndGgpLnRvQmUoMilcbiAgICBleHBlY3QocmVzdWx0LmNpdGF0aW9ucz8uWzBdLnRpdGxlKS50b0JlKFwiTGV5IDE0MzcgZGUgMjAxMVwiKVxuICAgIGV4cGVjdChyZXN1bHQuY2l0YXRpb25zPy5bMF0udXJsKS50b0JlKFwiaHR0cHM6Ly93d3cuc3Vpbi5nb3YuY28vbGVpLTE0MzctMjAxMVwiKVxuICB9KVxuXG4gIGl0KFwiZGV0ZWN0cyBpbmxpbmUgYmlibGlvZ3JhcGh5IHNlbnRlbmNlc1wiLCAoKSA9PiB7XG4gICAgY29uc3QgY29udGVudCA9IGBcbkFuw6FsaXNpcyBwcmVsaW1pbmFyXG5cbkZ1ZW50ZXMgY29uc3VsdGFkYXM6IFtEZWNyZXRvIDEwODIgZGUgMjAxNV0oaHR0cHM6Ly93d3cuZnVuY2lvbnB1YmxpY2EuZ292LmNvL2RlY3JldG8tMTA4MikgOyBSZXNvbHVjacOzbiAxMjMgZGVsIDIwMjAgaHR0cHM6Ly93d3cubWluanVzdGljaWEuZ292LmNvL3Jlcy0xMjMtMjAyMFxuYFxuICAgIGNvbnN0IHJlc3VsdCA9IHBhcnNlTW9kZWxBbnN3ZXIoY29udGVudClcblxuICAgIGV4cGVjdChyZXN1bHQudGV4dCkubm90LnRvQ29udGFpbihcIkZ1ZW50ZXMgY29uc3VsdGFkYXNcIilcbiAgICBleHBlY3QocmVzdWx0LmNpdGF0aW9ucz8ubGVuZ3RoKS50b0JlKDIpXG4gICAgZXhwZWN0KHJlc3VsdC5jaXRhdGlvbnM/LlswXS50aXRsZSkudG9Db250YWluKFwiRGVjcmV0byAxMDgyIGRlIDIwMTVcIilcbiAgICBleHBlY3QocmVzdWx0LmNpdGF0aW9ucz8uWzFdLnVybCkudG9CZShcImh0dHBzOi8vd3d3Lm1pbmp1c3RpY2lhLmdvdi5jby9yZXMtMTIzLTIwMjBcIilcbiAgfSlcblxuICBpdChcInVzZXMgYmFja2VuZCBiaWJsaW9ncmFwaHkgd2hlbiBhdmFpbGFibGVcIiwgKCkgPT4ge1xuICAgIGNvbnN0IGJhY2tlbmRSZXN1bHQgPSBwYXJzZU1vZGVsQW5zd2VyKFwiUmVzcHVlc3RhIHNpbiBzZWNjacOzbiB2aXNpYmxlXCIsIHtcbiAgICAgIGNpdGF0aW9uc0Zyb21CYWNrZW5kOiBbXG4gICAgICAgIHtcbiAgICAgICAgICBpZDogXCJmb29cIixcbiAgICAgICAgICB0aXRsZTogXCJMZXkgODAgZGUgMTk5M1wiLFxuICAgICAgICAgIHVybDogXCJodHRwczovL3d3dy5zdWluLmdvdi5jby9sZXktODAtMTk5M1wiLFxuICAgICAgICAgIHR5cGU6IFwibGV5XCIsXG4gICAgICAgICAgZGVzY3JpcHRpb246IFwiQ29udHJhdGFjacOzbiBlc3RhdGFsXCJcbiAgICAgICAgfVxuICAgICAgXVxuICAgIH0pXG5cbiAgICBleHBlY3QoYmFja2VuZFJlc3VsdC50ZXh0KS50b0JlKFwiUmVzcHVlc3RhIHNpbiBzZWNjacOzbiB2aXNpYmxlXCIpXG4gICAgZXhwZWN0KGJhY2tlbmRSZXN1bHQuY2l0YXRpb25zPy5sZW5ndGgpLnRvQmUoMSlcbiAgICBleHBlY3QoYmFja2VuZFJlc3VsdC5jaXRhdGlvbnM/LlswXS50aXRsZSkudG9CZShcIkxleSA4MCBkZSAxOTkzXCIpXG4gICAgZXhwZWN0KGJhY2tlbmRSZXN1bHQuY2l0YXRpb25zPy5bMF0udHlwZSkudG9CZShcImxleVwiKVxuICB9KVxuXG4gIGl0KFwicmV0dXJucyBjbGVhbiB0ZXh0IHdoZW4gbm8gY2l0YXRpb25zIGFyZSBwcmVzZW50XCIsICgpID0+IHtcbiAgICBjb25zdCBjb250ZW50ID0gXCJSZXNwdWVzdGEgZGlyZWN0YSBzaW4gcmVmZXJlbmNpYXMgZXh0ZXJuYXMuXCJcbiAgICBjb25zdCByZXN1bHQgPSBwYXJzZU1vZGVsQW5zd2VyKGNvbnRlbnQpXG5cbiAgICBleHBlY3QocmVzdWx0LnRleHQpLnRvQmUoY29udGVudClcbiAgICBleHBlY3QocmVzdWx0LmNpdGF0aW9ucykudG9CZVVuZGVmaW5lZCgpXG4gIH0pXG59KVxuXG4iXSwidmVyc2lvbiI6M30=

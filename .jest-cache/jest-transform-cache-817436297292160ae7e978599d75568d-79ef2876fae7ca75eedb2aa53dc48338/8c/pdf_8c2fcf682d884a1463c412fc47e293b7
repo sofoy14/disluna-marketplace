@@ -1,0 +1,389 @@
+e2ba4fc2552c151c78e277ec5d823ad2
+"use strict";
+
+/* istanbul ignore next */
+function cov_aso2rvg2t() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\retrieval\\processing\\pdf.ts";
+  var hash = "63114878f69778a0376bec2bba5fd3f99c4272bd";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\retrieval\\processing\\pdf.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 28
+        }
+      },
+      "2": {
+        start: {
+          line: 4,
+          column: 24
+        },
+        end: {
+          line: 4,
+          column: 48
+        }
+      },
+      "3": {
+        start: {
+          line: 5,
+          column: 14
+        },
+        end: {
+          line: 5,
+          column: 58
+        }
+      },
+      "4": {
+        start: {
+          line: 6,
+          column: 24
+        },
+        end: {
+          line: 6,
+          column: 58
+        }
+      },
+      "5": {
+        start: {
+          line: 7,
+          column: 11
+        },
+        end: {
+          line: 7,
+          column: 23
+        }
+      },
+      "6": {
+        start: {
+          line: 8,
+          column: 19
+        },
+        end: {
+          line: 26,
+          column: 1
+        }
+      },
+      "7": {
+        start: {
+          line: 9,
+          column: 19
+        },
+        end: {
+          line: 9,
+          column: 43
+        }
+      },
+      "8": {
+        start: {
+          line: 10,
+          column: 17
+        },
+        end: {
+          line: 10,
+          column: 36
+        }
+      },
+      "9": {
+        start: {
+          line: 11,
+          column: 23
+        },
+        end: {
+          line: 11,
+          column: 65
+        }
+      },
+      "10": {
+        start: {
+          line: 11,
+          column: 39
+        },
+        end: {
+          line: 11,
+          column: 54
+        }
+      },
+      "11": {
+        start: {
+          line: 12,
+          column: 21
+        },
+        end: {
+          line: 15,
+          column: 6
+        }
+      },
+      "12": {
+        start: {
+          line: 16,
+          column: 22
+        },
+        end: {
+          line: 16,
+          column: 68
+        }
+      },
+      "13": {
+        start: {
+          line: 17,
+          column: 17
+        },
+        end: {
+          line: 17,
+          column: 19
+        }
+      },
+      "14": {
+        start: {
+          line: 18,
+          column: 4
+        },
+        end: {
+          line: 24,
+          column: 5
+        }
+      },
+      "15": {
+        start: {
+          line: 18,
+          column: 17
+        },
+        end: {
+          line: 18,
+          column: 18
+        }
+      },
+      "16": {
+        start: {
+          line: 19,
+          column: 20
+        },
+        end: {
+          line: 19,
+          column: 32
+        }
+      },
+      "17": {
+        start: {
+          line: 20,
+          column: 8
+        },
+        end: {
+          line: 23,
+          column: 11
+        }
+      },
+      "18": {
+        start: {
+          line: 25,
+          column: 4
+        },
+        end: {
+          line: 25,
+          column: 18
+        }
+      },
+      "19": {
+        start: {
+          line: 27,
+          column: 0
+        },
+        end: {
+          line: 27,
+          column: 32
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "(anonymous_0)",
+        decl: {
+          start: {
+            line: 8,
+            column: 19
+          },
+          end: {
+            line: 8,
+            column: 20
+          }
+        },
+        loc: {
+          start: {
+            line: 8,
+            column: 34
+          },
+          end: {
+            line: 26,
+            column: 1
+          }
+        },
+        line: 8
+      },
+      "1": {
+        name: "(anonymous_1)",
+        decl: {
+          start: {
+            line: 11,
+            column: 32
+          },
+          end: {
+            line: 11,
+            column: 33
+          }
+        },
+        loc: {
+          start: {
+            line: 11,
+            column: 39
+          },
+          end: {
+            line: 11,
+            column: 54
+          }
+        },
+        line: 11
+      }
+    },
+    branchMap: {},
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0,
+      "11": 0,
+      "12": 0,
+      "13": 0,
+      "14": 0,
+      "15": 0,
+      "16": 0,
+      "17": 0,
+      "18": 0,
+      "19": 0
+    },
+    f: {
+      "0": 0,
+      "1": 0
+    },
+    b: {},
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\retrieval\\processing\\pdf.ts",
+      mappings: ";;;AACA,iDAAsC;AACtC,2DAA6D;AAC7D,2DAAwE;AACxE,wBAA6C;AAEtC,MAAM,UAAU,GAAG,KAAK,EAAE,GAAS,EAA4B,EAAE;IACtE,MAAM,MAAM,GAAG,IAAI,eAAS,CAAC,GAAG,CAAC,CAAA;IACjC,MAAM,IAAI,GAAG,MAAM,MAAM,CAAC,IAAI,EAAE,CAAA;IAChC,IAAI,YAAY,GAAG,IAAI,CAAC,GAAG,CAAC,GAAG,CAAC,EAAE,CAAC,GAAG,CAAC,WAAW,CAAC,CAAC,IAAI,CAAC,GAAG,CAAC,CAAA;IAE7D,MAAM,QAAQ,GAAG,IAAI,8CAA8B,CAAC;QAClD,SAAS,EAAE,aAAU;QACrB,YAAY,EAAE,gBAAa;KAC5B,CAAC,CAAA;IACF,MAAM,SAAS,GAAG,MAAM,QAAQ,CAAC,eAAe,CAAC,CAAC,YAAY,CAAC,CAAC,CAAA;IAEhE,IAAI,MAAM,GAAoB,EAAE,CAAA;IAEhC,KAAK,IAAI,CAAC,GAAG,CAAC,EAAE,CAAC,GAAG,SAAS,CAAC,MAAM,EAAE,CAAC,EAAE,EAAE,CAAC;QAC1C,MAAM,GAAG,GAAG,SAAS,CAAC,CAAC,CAAC,CAAA;QAExB,MAAM,CAAC,IAAI,CAAC;YACV,OAAO,EAAE,GAAG,CAAC,WAAW;YACxB,MAAM,EAAE,IAAA,sBAAM,EAAC,GAAG,CAAC,WAAW,CAAC,CAAC,MAAM;SACvC,CAAC,CAAA;IACJ,CAAC;IAED,OAAO,MAAM,CAAA;AACf,CAAC,CAAA;AAvBY,QAAA,UAAU,cAuBtB",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\lib\\retrieval\\processing\\pdf.ts"],
+      sourcesContent: ["import { FileItemChunk } from \"@/types\"\r\nimport { encode } from \"gpt-tokenizer\"\r\nimport { PDFLoader } from \"langchain/document_loaders/fs/pdf\"\r\nimport { RecursiveCharacterTextSplitter } from \"langchain/text_splitter\"\r\nimport { CHUNK_OVERLAP, CHUNK_SIZE } from \".\"\r\n\r\nexport const processPdf = async (pdf: Blob): Promise<FileItemChunk[]> => {\r\n  const loader = new PDFLoader(pdf)\r\n  const docs = await loader.load()\r\n  let completeText = docs.map(doc => doc.pageContent).join(\" \")\r\n\r\n  const splitter = new RecursiveCharacterTextSplitter({\r\n    chunkSize: CHUNK_SIZE,\r\n    chunkOverlap: CHUNK_OVERLAP\r\n  })\r\n  const splitDocs = await splitter.createDocuments([completeText])\r\n\r\n  let chunks: FileItemChunk[] = []\r\n\r\n  for (let i = 0; i < splitDocs.length; i++) {\r\n    const doc = splitDocs[i]\r\n\r\n    chunks.push({\r\n      content: doc.pageContent,\r\n      tokens: encode(doc.pageContent).length\r\n    })\r\n  }\r\n\r\n  return chunks\r\n}\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "63114878f69778a0376bec2bba5fd3f99c4272bd"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_aso2rvg2t = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_aso2rvg2t();
+cov_aso2rvg2t().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_aso2rvg2t().s[1]++;
+exports.processPdf = void 0;
+const gpt_tokenizer_1 =
+/* istanbul ignore next */
+(cov_aso2rvg2t().s[2]++, require("gpt-tokenizer"));
+const pdf_1 =
+/* istanbul ignore next */
+(cov_aso2rvg2t().s[3]++, require("langchain/document_loaders/fs/pdf"));
+const text_splitter_1 =
+/* istanbul ignore next */
+(cov_aso2rvg2t().s[4]++, require("langchain/text_splitter"));
+const _1 =
+/* istanbul ignore next */
+(cov_aso2rvg2t().s[5]++, require("."));
+/* istanbul ignore next */
+cov_aso2rvg2t().s[6]++;
+const processPdf = async pdf => {
+  /* istanbul ignore next */
+  cov_aso2rvg2t().f[0]++;
+  const loader =
+  /* istanbul ignore next */
+  (cov_aso2rvg2t().s[7]++, new pdf_1.PDFLoader(pdf));
+  const docs =
+  /* istanbul ignore next */
+  (cov_aso2rvg2t().s[8]++, await loader.load());
+  let completeText =
+  /* istanbul ignore next */
+  (cov_aso2rvg2t().s[9]++, docs.map(doc => {
+    /* istanbul ignore next */
+    cov_aso2rvg2t().f[1]++;
+    cov_aso2rvg2t().s[10]++;
+    return doc.pageContent;
+  }).join(" "));
+  const splitter =
+  /* istanbul ignore next */
+  (cov_aso2rvg2t().s[11]++, new text_splitter_1.RecursiveCharacterTextSplitter({
+    chunkSize: _1.CHUNK_SIZE,
+    chunkOverlap: _1.CHUNK_OVERLAP
+  }));
+  const splitDocs =
+  /* istanbul ignore next */
+  (cov_aso2rvg2t().s[12]++, await splitter.createDocuments([completeText]));
+  let chunks =
+  /* istanbul ignore next */
+  (cov_aso2rvg2t().s[13]++, []);
+  /* istanbul ignore next */
+  cov_aso2rvg2t().s[14]++;
+  for (let i =
+  /* istanbul ignore next */
+  (cov_aso2rvg2t().s[15]++, 0); i < splitDocs.length; i++) {
+    const doc =
+    /* istanbul ignore next */
+    (cov_aso2rvg2t().s[16]++, splitDocs[i]);
+    /* istanbul ignore next */
+    cov_aso2rvg2t().s[17]++;
+    chunks.push({
+      content: doc.pageContent,
+      tokens: (0, gpt_tokenizer_1.encode)(doc.pageContent).length
+    });
+  }
+  /* istanbul ignore next */
+  cov_aso2rvg2t().s[18]++;
+  return chunks;
+};
+/* istanbul ignore next */
+cov_aso2rvg2t().s[19]++;
+exports.processPdf = processPdf;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfYXNvMnJ2ZzJ0IiwiYWN0dWFsQ292ZXJhZ2UiLCJzIiwiZ3B0X3Rva2VuaXplcl8xIiwicmVxdWlyZSIsInBkZl8xIiwidGV4dF9zcGxpdHRlcl8xIiwiXzEiLCJwcm9jZXNzUGRmIiwicGRmIiwiZiIsImxvYWRlciIsIlBERkxvYWRlciIsImRvY3MiLCJsb2FkIiwiY29tcGxldGVUZXh0IiwibWFwIiwiZG9jIiwicGFnZUNvbnRlbnQiLCJqb2luIiwic3BsaXR0ZXIiLCJSZWN1cnNpdmVDaGFyYWN0ZXJUZXh0U3BsaXR0ZXIiLCJjaHVua1NpemUiLCJDSFVOS19TSVpFIiwiY2h1bmtPdmVybGFwIiwiQ0hVTktfT1ZFUkxBUCIsInNwbGl0RG9jcyIsImNyZWF0ZURvY3VtZW50cyIsImNodW5rcyIsImkiLCJsZW5ndGgiLCJwdXNoIiwiY29udGVudCIsInRva2VucyIsImVuY29kZSIsImV4cG9ydHMiXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXHBlZHJvXFxEb2N1bWVudHNcXEdpdEh1YlxcQXNpc3RlbnRlLUxlZ2FsLUludGVsaWdlbnRlXFxsaWJcXHJldHJpZXZhbFxccHJvY2Vzc2luZ1xccGRmLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IEZpbGVJdGVtQ2h1bmsgfSBmcm9tIFwiQC90eXBlc1wiXHJcbmltcG9ydCB7IGVuY29kZSB9IGZyb20gXCJncHQtdG9rZW5pemVyXCJcclxuaW1wb3J0IHsgUERGTG9hZGVyIH0gZnJvbSBcImxhbmdjaGFpbi9kb2N1bWVudF9sb2FkZXJzL2ZzL3BkZlwiXHJcbmltcG9ydCB7IFJlY3Vyc2l2ZUNoYXJhY3RlclRleHRTcGxpdHRlciB9IGZyb20gXCJsYW5nY2hhaW4vdGV4dF9zcGxpdHRlclwiXHJcbmltcG9ydCB7IENIVU5LX09WRVJMQVAsIENIVU5LX1NJWkUgfSBmcm9tIFwiLlwiXHJcblxyXG5leHBvcnQgY29uc3QgcHJvY2Vzc1BkZiA9IGFzeW5jIChwZGY6IEJsb2IpOiBQcm9taXNlPEZpbGVJdGVtQ2h1bmtbXT4gPT4ge1xyXG4gIGNvbnN0IGxvYWRlciA9IG5ldyBQREZMb2FkZXIocGRmKVxyXG4gIGNvbnN0IGRvY3MgPSBhd2FpdCBsb2FkZXIubG9hZCgpXHJcbiAgbGV0IGNvbXBsZXRlVGV4dCA9IGRvY3MubWFwKGRvYyA9PiBkb2MucGFnZUNvbnRlbnQpLmpvaW4oXCIgXCIpXHJcblxyXG4gIGNvbnN0IHNwbGl0dGVyID0gbmV3IFJlY3Vyc2l2ZUNoYXJhY3RlclRleHRTcGxpdHRlcih7XHJcbiAgICBjaHVua1NpemU6IENIVU5LX1NJWkUsXHJcbiAgICBjaHVua092ZXJsYXA6IENIVU5LX09WRVJMQVBcclxuICB9KVxyXG4gIGNvbnN0IHNwbGl0RG9jcyA9IGF3YWl0IHNwbGl0dGVyLmNyZWF0ZURvY3VtZW50cyhbY29tcGxldGVUZXh0XSlcclxuXHJcbiAgbGV0IGNodW5rczogRmlsZUl0ZW1DaHVua1tdID0gW11cclxuXHJcbiAgZm9yIChsZXQgaSA9IDA7IGkgPCBzcGxpdERvY3MubGVuZ3RoOyBpKyspIHtcclxuICAgIGNvbnN0IGRvYyA9IHNwbGl0RG9jc1tpXVxyXG5cclxuICAgIGNodW5rcy5wdXNoKHtcclxuICAgICAgY29udGVudDogZG9jLnBhZ2VDb250ZW50LFxyXG4gICAgICB0b2tlbnM6IGVuY29kZShkb2MucGFnZUNvbnRlbnQpLmxlbmd0aFxyXG4gICAgfSlcclxuICB9XHJcblxyXG4gIHJldHVybiBjaHVua3NcclxufVxyXG4iXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7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

@@ -1,0 +1,368 @@
+cb586965c5574fd20ffb22e2510e0dfe
+"use strict";
+
+/* istanbul ignore next */
+function cov_dfkndy68u() {
+  var path = "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\api\\send-email\\route.ts";
+  var hash = "b1ad8b4e6c125bfe3b90b0ade369dc657c487bf5";
+  var global = new Function("return this")();
+  var gcv = "__coverage__";
+  var coverageData = {
+    path: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\api\\send-email\\route.ts",
+    statementMap: {
+      "0": {
+        start: {
+          line: 2,
+          column: 0
+        },
+        end: {
+          line: 2,
+          column: 62
+        }
+      },
+      "1": {
+        start: {
+          line: 3,
+          column: 0
+        },
+        end: {
+          line: 3,
+          column: 20
+        }
+      },
+      "2": {
+        start: {
+          line: 5,
+          column: 17
+        },
+        end: {
+          line: 5,
+          column: 39
+        }
+      },
+      "3": {
+        start: {
+          line: 7,
+          column: 4
+        },
+        end: {
+          line: 51,
+          column: 5
+        }
+      },
+      "4": {
+        start: {
+          line: 8,
+          column: 44
+        },
+        end: {
+          line: 8,
+          column: 60
+        }
+      },
+      "5": {
+        start: {
+          line: 10,
+          column: 8
+        },
+        end: {
+          line: 12,
+          column: 9
+        }
+      },
+      "6": {
+        start: {
+          line: 11,
+          column: 12
+        },
+        end: {
+          line: 11,
+          column: 101
+        }
+      },
+      "7": {
+        start: {
+          line: 36,
+          column: 8
+        },
+        end: {
+          line: 41,
+          column: 11
+        }
+      },
+      "8": {
+        start: {
+          line: 42,
+          column: 8
+        },
+        end: {
+          line: 46,
+          column: 11
+        }
+      },
+      "9": {
+        start: {
+          line: 49,
+          column: 8
+        },
+        end: {
+          line: 49,
+          column: 53
+        }
+      },
+      "10": {
+        start: {
+          line: 50,
+          column: 8
+        },
+        end: {
+          line: 50,
+          column: 94
+        }
+      }
+    },
+    fnMap: {
+      "0": {
+        name: "POST",
+        decl: {
+          start: {
+            line: 6,
+            column: 15
+          },
+          end: {
+            line: 6,
+            column: 19
+          }
+        },
+        loc: {
+          start: {
+            line: 6,
+            column: 25
+          },
+          end: {
+            line: 52,
+            column: 1
+          }
+        },
+        line: 6
+      }
+    },
+    branchMap: {
+      "0": {
+        loc: {
+          start: {
+            line: 10,
+            column: 8
+          },
+          end: {
+            line: 12,
+            column: 9
+          }
+        },
+        type: "if",
+        locations: [{
+          start: {
+            line: 10,
+            column: 8
+          },
+          end: {
+            line: 12,
+            column: 9
+          }
+        }, {
+          start: {
+            line: undefined,
+            column: undefined
+          },
+          end: {
+            line: undefined,
+            column: undefined
+          }
+        }],
+        line: 10
+      },
+      "1": {
+        loc: {
+          start: {
+            line: 10,
+            column: 12
+          },
+          end: {
+            line: 10,
+            column: 36
+          }
+        },
+        type: "binary-expr",
+        locations: [{
+          start: {
+            line: 10,
+            column: 12
+          },
+          end: {
+            line: 10,
+            column: 15
+          }
+        }, {
+          start: {
+            line: 10,
+            column: 19
+          },
+          end: {
+            line: 10,
+            column: 27
+          }
+        }, {
+          start: {
+            line: 10,
+            column: 31
+          },
+          end: {
+            line: 10,
+            column: 36
+          }
+        }],
+        line: 10
+      }
+    },
+    s: {
+      "0": 0,
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 0
+    },
+    f: {
+      "0": 0
+    },
+    b: {
+      "0": [0, 0],
+      "1": [0, 0, 0]
+    },
+    inputSourceMap: {
+      file: "C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\api\\send-email\\route.ts",
+      mappings: ";;AAGA,oBAyDC;AA5DD,8BAA8B;AAC9B,wCAAwD;AAEjD,KAAK,UAAU,IAAI,CAAC,GAAgB;IACzC,IAAI,CAAC;QACH,MAAM,EAAE,EAAE,EAAE,OAAO,EAAE,IAAI,EAAE,IAAI,EAAE,GAAG,MAAM,GAAG,CAAC,IAAI,EAAE,CAAC;QAErD,4BAA4B;QAC5B,IAAI,CAAC,EAAE,IAAI,CAAC,OAAO,IAAI,CAAC,IAAI,EAAE,CAAC;YAC7B,OAAO,qBAAY,CAAC,IAAI,CACtB,EAAE,KAAK,EAAE,yBAAyB,EAAE,EACpC,EAAE,MAAM,EAAE,GAAG,EAAE,CAChB,CAAC;QACJ,CAAC;QAED,wDAAwD;QACxD,sBAAsB;QACtB,oCAAoC;QACpC,gCAAgC;QAChC,yCAAyC;QACzC,sCAAsC;QAEtC,gDAAgD;QAChD;;;;;;;;;;;;;;UAcE;QAEF,0EAA0E;QAC1E,OAAO,CAAC,GAAG,CAAC,wBAAwB,EAAE;YACpC,EAAE;YACF,OAAO;YACP,IAAI,EAAE,IAAI,CAAC,SAAS,CAAC,CAAC,EAAE,GAAG,CAAC,GAAG,KAAK;YACpC,IAAI,EAAE,IAAI,EAAE,SAAS,CAAC,CAAC,EAAE,GAAG,CAAC,GAAG,KAAK;SACtC,CAAC,CAAC;QAEH,OAAO,qBAAY,CAAC,IAAI,CAAC;YACvB,OAAO,EAAE,IAAI;YACb,OAAO,EAAE,yBAAyB;YAClC,iCAAiC;SAClC,CAAC,CAAC;IAEL,CAAC;IAAC,OAAO,KAAK,EAAE,CAAC;QACf,OAAO,CAAC,KAAK,CAAC,sBAAsB,EAAE,KAAK,CAAC,CAAC;QAC7C,OAAO,qBAAY,CAAC,IAAI,CACtB,EAAE,KAAK,EAAE,sBAAsB,EAAE,EACjC,EAAE,MAAM,EAAE,GAAG,EAAE,CAChB,CAAC;IACJ,CAAC;AACH,CAAC",
+      names: [],
+      sources: ["C:\\Users\\pedro\\Documents\\GitHub\\Asistente-Legal-Inteligente\\app\\api\\send-email\\route.ts"],
+      sourcesContent: ["// app/api/send-email/route.ts\r\nimport { NextRequest, NextResponse } from 'next/server';\r\n\r\nexport async function POST(req: NextRequest) {\r\n  try {\r\n    const { to, subject, html, text } = await req.json();\r\n\r\n    // Validar campos requeridos\r\n    if (!to || !subject || !html) {\r\n      return NextResponse.json(\r\n        { error: 'Missing required fields' }, \r\n        { status: 400 }\r\n      );\r\n    }\r\n\r\n    // TODO: Implementar con tu proveedor de email preferido\r\n    // Opciones populares:\r\n    // - SendGrid: https://sendgrid.com/\r\n    // - Resend: https://resend.com/\r\n    // - AWS SES: https://aws.amazon.com/ses/\r\n    // - Mailgun: https://www.mailgun.com/\r\n\r\n    // Ejemplo con Resend (recomendado para Next.js)\r\n    /*\r\n    const resend = new Resend(process.env.RESEND_API_KEY);\r\n    \r\n    const { data, error } = await resend.emails.send({\r\n      from: 'Asistente Legal <noreply@tu-dominio.com>',\r\n      to: [to],\r\n      subject,\r\n      html,\r\n      text\r\n    });\r\n\r\n    if (error) {\r\n      throw new Error(error.message);\r\n    }\r\n    */\r\n\r\n    // Por ahora, solo logueamos el email (reemplazar con implementaci\xF3n real)\r\n    console.log('Email que se enviar\xEDa:', {\r\n      to,\r\n      subject,\r\n      html: html.substring(0, 100) + '...',\r\n      text: text?.substring(0, 100) + '...'\r\n    });\r\n\r\n    return NextResponse.json({ \r\n      success: true, \r\n      message: 'Email sent successfully',\r\n      // id: data?.id // Si usas Resend\r\n    });\r\n\r\n  } catch (error) {\r\n    console.error('Error sending email:', error);\r\n    return NextResponse.json(\r\n      { error: 'Failed to send email' }, \r\n      { status: 500 }\r\n    );\r\n  }\r\n}\r\n\r\n\r\n\r\n\r\n"],
+      version: 3
+    },
+    _coverageSchema: "1a1c01bbd47fc00a2c39e90264f33305004495a9",
+    hash: "b1ad8b4e6c125bfe3b90b0ade369dc657c487bf5"
+  };
+  var coverage = global[gcv] || (global[gcv] = {});
+  if (!coverage[path] || coverage[path].hash !== hash) {
+    coverage[path] = coverageData;
+  }
+  var actualCoverage = coverage[path];
+  {
+    // @ts-ignore
+    cov_dfkndy68u = function () {
+      return actualCoverage;
+    };
+  }
+  return actualCoverage;
+}
+cov_dfkndy68u();
+cov_dfkndy68u().s[0]++;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/* istanbul ignore next */
+cov_dfkndy68u().s[1]++;
+exports.POST = POST;
+// app/api/send-email/route.ts
+const server_1 =
+/* istanbul ignore next */
+(cov_dfkndy68u().s[2]++, require("next/server"));
+async function POST(req) {
+  /* istanbul ignore next */
+  cov_dfkndy68u().f[0]++;
+  cov_dfkndy68u().s[3]++;
+  try {
+    const {
+      to,
+      subject,
+      html,
+      text
+    } =
+    /* istanbul ignore next */
+    (cov_dfkndy68u().s[4]++, await req.json());
+    // Validar campos requeridos
+    /* istanbul ignore next */
+    cov_dfkndy68u().s[5]++;
+    if (
+    /* istanbul ignore next */
+    (cov_dfkndy68u().b[1][0]++, !to) ||
+    /* istanbul ignore next */
+    (cov_dfkndy68u().b[1][1]++, !subject) ||
+    /* istanbul ignore next */
+    (cov_dfkndy68u().b[1][2]++, !html)) {
+      /* istanbul ignore next */
+      cov_dfkndy68u().b[0][0]++;
+      cov_dfkndy68u().s[6]++;
+      return server_1.NextResponse.json({
+        error: 'Missing required fields'
+      }, {
+        status: 400
+      });
+    } else
+    /* istanbul ignore next */
+    {
+      cov_dfkndy68u().b[0][1]++;
+    }
+    // TODO: Implementar con tu proveedor de email preferido
+    // Opciones populares:
+    // - SendGrid: https://sendgrid.com/
+    // - Resend: https://resend.com/
+    // - AWS SES: https://aws.amazon.com/ses/
+    // - Mailgun: https://www.mailgun.com/
+    // Ejemplo con Resend (recomendado para Next.js)
+    /*
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    const { data, error } = await resend.emails.send({
+      from: 'Asistente Legal <noreply@tu-dominio.com>',
+      to: [to],
+      subject,
+      html,
+      text
+    });
+         if (error) {
+      throw new Error(error.message);
+    }
+    */
+    // Por ahora, solo logueamos el email (reemplazar con implementación real)
+    cov_dfkndy68u().s[7]++;
+    console.log('Email que se enviaría:', {
+      to,
+      subject,
+      html: html.substring(0, 100) + '...',
+      text: text?.substring(0, 100) + '...'
+    });
+    /* istanbul ignore next */
+    cov_dfkndy68u().s[8]++;
+    return server_1.NextResponse.json({
+      success: true,
+      message: 'Email sent successfully'
+      // id: data?.id // Si usas Resend
+    });
+  } catch (error) {
+    /* istanbul ignore next */
+    cov_dfkndy68u().s[9]++;
+    console.error('Error sending email:', error);
+    /* istanbul ignore next */
+    cov_dfkndy68u().s[10]++;
+    return server_1.NextResponse.json({
+      error: 'Failed to send email'
+    }, {
+      status: 500
+    });
+  }
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJuYW1lcyI6WyJjb3ZfZGZrbmR5Njh1IiwiYWN0dWFsQ292ZXJhZ2UiLCJzIiwiZXhwb3J0cyIsIlBPU1QiLCJzZXJ2ZXJfMSIsInJlcXVpcmUiLCJyZXEiLCJmIiwidG8iLCJzdWJqZWN0IiwiaHRtbCIsInRleHQiLCJqc29uIiwiYiIsIk5leHRSZXNwb25zZSIsImVycm9yIiwic3RhdHVzIiwiY29uc29sZSIsImxvZyIsInN1YnN0cmluZyIsInN1Y2Nlc3MiLCJtZXNzYWdlIl0sInNvdXJjZXMiOlsiQzpcXFVzZXJzXFxwZWRyb1xcRG9jdW1lbnRzXFxHaXRIdWJcXEFzaXN0ZW50ZS1MZWdhbC1JbnRlbGlnZW50ZVxcYXBwXFxhcGlcXHNlbmQtZW1haWxcXHJvdXRlLnRzIl0sInNvdXJjZXNDb250ZW50IjpbIi8vIGFwcC9hcGkvc2VuZC1lbWFpbC9yb3V0ZS50c1xyXG5pbXBvcnQgeyBOZXh0UmVxdWVzdCwgTmV4dFJlc3BvbnNlIH0gZnJvbSAnbmV4dC9zZXJ2ZXInO1xyXG5cclxuZXhwb3J0IGFzeW5jIGZ1bmN0aW9uIFBPU1QocmVxOiBOZXh0UmVxdWVzdCkge1xyXG4gIHRyeSB7XHJcbiAgICBjb25zdCB7IHRvLCBzdWJqZWN0LCBodG1sLCB0ZXh0IH0gPSBhd2FpdCByZXEuanNvbigpO1xyXG5cclxuICAgIC8vIFZhbGlkYXIgY2FtcG9zIHJlcXVlcmlkb3NcclxuICAgIGlmICghdG8gfHwgIXN1YmplY3QgfHwgIWh0bWwpIHtcclxuICAgICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKFxyXG4gICAgICAgIHsgZXJyb3I6ICdNaXNzaW5nIHJlcXVpcmVkIGZpZWxkcycgfSwgXHJcbiAgICAgICAgeyBzdGF0dXM6IDQwMCB9XHJcbiAgICAgICk7XHJcbiAgICB9XHJcblxyXG4gICAgLy8gVE9ETzogSW1wbGVtZW50YXIgY29uIHR1IHByb3ZlZWRvciBkZSBlbWFpbCBwcmVmZXJpZG9cclxuICAgIC8vIE9wY2lvbmVzIHBvcHVsYXJlczpcclxuICAgIC8vIC0gU2VuZEdyaWQ6IGh0dHBzOi8vc2VuZGdyaWQuY29tL1xyXG4gICAgLy8gLSBSZXNlbmQ6IGh0dHBzOi8vcmVzZW5kLmNvbS9cclxuICAgIC8vIC0gQVdTIFNFUzogaHR0cHM6Ly9hd3MuYW1hem9uLmNvbS9zZXMvXHJcbiAgICAvLyAtIE1haWxndW46IGh0dHBzOi8vd3d3Lm1haWxndW4uY29tL1xyXG5cclxuICAgIC8vIEVqZW1wbG8gY29uIFJlc2VuZCAocmVjb21lbmRhZG8gcGFyYSBOZXh0LmpzKVxyXG4gICAgLypcclxuICAgIGNvbnN0IHJlc2VuZCA9IG5ldyBSZXNlbmQocHJvY2Vzcy5lbnYuUkVTRU5EX0FQSV9LRVkpO1xyXG4gICAgXHJcbiAgICBjb25zdCB7IGRhdGEsIGVycm9yIH0gPSBhd2FpdCByZXNlbmQuZW1haWxzLnNlbmQoe1xyXG4gICAgICBmcm9tOiAnQXNpc3RlbnRlIExlZ2FsIDxub3JlcGx5QHR1LWRvbWluaW8uY29tPicsXHJcbiAgICAgIHRvOiBbdG9dLFxyXG4gICAgICBzdWJqZWN0LFxyXG4gICAgICBodG1sLFxyXG4gICAgICB0ZXh0XHJcbiAgICB9KTtcclxuXHJcbiAgICBpZiAoZXJyb3IpIHtcclxuICAgICAgdGhyb3cgbmV3IEVycm9yKGVycm9yLm1lc3NhZ2UpO1xyXG4gICAgfVxyXG4gICAgKi9cclxuXHJcbiAgICAvLyBQb3IgYWhvcmEsIHNvbG8gbG9ndWVhbW9zIGVsIGVtYWlsIChyZWVtcGxhemFyIGNvbiBpbXBsZW1lbnRhY2nDs24gcmVhbClcclxuICAgIGNvbnNvbGUubG9nKCdFbWFpbCBxdWUgc2UgZW52aWFyw61hOicsIHtcclxuICAgICAgdG8sXHJcbiAgICAgIHN1YmplY3QsXHJcbiAgICAgIGh0bWw6IGh0bWwuc3Vic3RyaW5nKDAsIDEwMCkgKyAnLi4uJyxcclxuICAgICAgdGV4dDogdGV4dD8uc3Vic3RyaW5nKDAsIDEwMCkgKyAnLi4uJ1xyXG4gICAgfSk7XHJcblxyXG4gICAgcmV0dXJuIE5leHRSZXNwb25zZS5qc29uKHsgXHJcbiAgICAgIHN1Y2Nlc3M6IHRydWUsIFxyXG4gICAgICBtZXNzYWdlOiAnRW1haWwgc2VudCBzdWNjZXNzZnVsbHknLFxyXG4gICAgICAvLyBpZDogZGF0YT8uaWQgLy8gU2kgdXNhcyBSZXNlbmRcclxuICAgIH0pO1xyXG5cclxuICB9IGNhdGNoIChlcnJvcikge1xyXG4gICAgY29uc29sZS5lcnJvcignRXJyb3Igc2VuZGluZyBlbWFpbDonLCBlcnJvcik7XHJcbiAgICByZXR1cm4gTmV4dFJlc3BvbnNlLmpzb24oXHJcbiAgICAgIHsgZXJyb3I6ICdGYWlsZWQgdG8gc2VuZCBlbWFpbCcgfSwgXHJcbiAgICAgIHsgc3RhdHVzOiA1MDAgfVxyXG4gICAgKTtcclxuICB9XHJcbn1cclxuXHJcblxyXG5cclxuXHJcbiJdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztJQWtCSTtJQUFBQSxhQUFBLFlBQUFBLENBQUE7TUFBQSxPQUFBQyxjQUFBO0lBQUE7RUFBQTtFQUFBLE9BQUFBLGNBQUE7QUFBQTtBQUFBRCxhQUFBO0FBQUFBLGFBQUEsR0FBQUUsQ0FBQTs7Ozs7O0FBZkpDLE9BQUEsQ0FBQUMsSUFBQSxHQUFBQSxJQUFBO0FBSEE7QUFDQSxNQUFBQyxRQUFBO0FBQUE7QUFBQSxDQUFBTCxhQUFBLEdBQUFFLENBQUEsT0FBQUksT0FBQTtBQUVPLGVBQWVGLElBQUlBLENBQUNHLEdBQWdCO0VBQUE7RUFBQVAsYUFBQSxHQUFBUSxDQUFBO0VBQUFSLGFBQUEsR0FBQUUsQ0FBQTtFQUN6QyxJQUFJO0lBQ0YsTUFBTTtNQUFFTyxFQUFFO01BQUVDLE9BQU87TUFBRUMsSUFBSTtNQUFFQztJQUFJLENBQUU7SUFBQTtJQUFBLENBQUFaLGFBQUEsR0FBQUUsQ0FBQSxPQUFHLE1BQU1LLEdBQUcsQ0FBQ00sSUFBSSxFQUFFO0lBRXBEO0lBQUE7SUFBQWIsYUFBQSxHQUFBRSxDQUFBO0lBQ0E7SUFBSTtJQUFBLENBQUFGLGFBQUEsR0FBQWMsQ0FBQSxXQUFDTCxFQUFFO0lBQUE7SUFBQSxDQUFBVCxhQUFBLEdBQUFjLENBQUEsVUFBSSxDQUFDSixPQUFPO0lBQUE7SUFBQSxDQUFBVixhQUFBLEdBQUFjLENBQUEsVUFBSSxDQUFDSCxJQUFJLEdBQUU7TUFBQTtNQUFBWCxhQUFBLEdBQUFjLENBQUE7TUFBQWQsYUFBQSxHQUFBRSxDQUFBO01BQzVCLE9BQU9HLFFBQUEsQ0FBQVUsWUFBWSxDQUFDRixJQUFJLENBQ3RCO1FBQUVHLEtBQUssRUFBRTtNQUF5QixDQUFFLEVBQ3BDO1FBQUVDLE1BQU0sRUFBRTtNQUFHLENBQUUsQ0FDaEI7SUFDSCxDQUFDO0lBQUE7SUFBQTtNQUFBakIsYUFBQSxHQUFBYyxDQUFBO0lBQUE7SUFFRDtJQUNBO0lBQ0E7SUFDQTtJQUNBO0lBQ0E7SUFFQTtJQUNBOzs7Ozs7Ozs7Ozs7OztJQWdCQTtJQUFBZCxhQUFBLEdBQUFFLENBQUE7SUFDQWdCLE9BQU8sQ0FBQ0MsR0FBRyxDQUFDLHdCQUF3QixFQUFFO01BQ3BDVixFQUFFO01BQ0ZDLE9BQU87TUFDUEMsSUFBSSxFQUFFQSxJQUFJLENBQUNTLFNBQVMsQ0FBQyxDQUFDLEVBQUUsR0FBRyxDQUFDLEdBQUcsS0FBSztNQUNwQ1IsSUFBSSxFQUFFQSxJQUFJLEVBQUVRLFNBQVMsQ0FBQyxDQUFDLEVBQUUsR0FBRyxDQUFDLEdBQUc7S0FDakMsQ0FBQztJQUFDO0lBQUFwQixhQUFBLEdBQUFFLENBQUE7SUFFSCxPQUFPRyxRQUFBLENBQUFVLFlBQVksQ0FBQ0YsSUFBSSxDQUFDO01BQ3ZCUSxPQUFPLEVBQUUsSUFBSTtNQUNiQyxPQUFPLEVBQUU7TUFDVDtLQUNELENBQUM7RUFFSixDQUFDLENBQUMsT0FBT04sS0FBSyxFQUFFO0lBQUE7SUFBQWhCLGFBQUEsR0FBQUUsQ0FBQTtJQUNkZ0IsT0FBTyxDQUFDRixLQUFLLENBQUMsc0JBQXNCLEVBQUVBLEtBQUssQ0FBQztJQUFDO0lBQUFoQixhQUFBLEdBQUFFLENBQUE7SUFDN0MsT0FBT0csUUFBQSxDQUFBVSxZQUFZLENBQUNGLElBQUksQ0FDdEI7TUFBRUcsS0FBSyxFQUFFO0lBQXNCLENBQUUsRUFDakM7TUFBRUMsTUFBTSxFQUFFO0lBQUcsQ0FBRSxDQUNoQjtFQUNIO0FBQ0YiLCJpZ25vcmVMaXN0IjpbXX0=

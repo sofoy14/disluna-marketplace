@@ -47,3 +47,5 @@ El Tools Agent usará automáticamente:
 - **OpenRouter** para el modelo de IA (GPT-4o-mini por defecto)
 - **Serper** para búsquedas web rápidas y económicas
 - **httpFetch** para verificación de enlaces (sin API key adicional)
+
+

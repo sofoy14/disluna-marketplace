@@ -214,3 +214,5 @@ Resultados encontrados: 10
 ```
 
 El sistema ahora implementa el patrón n8n correcto donde el modelo decide autónomamente cuándo buscar, eliminando las alucinaciones y proporcionando información real de internet.
+
+
