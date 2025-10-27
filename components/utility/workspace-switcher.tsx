@@ -65,7 +65,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
         selectedWorkspace.include_workspace_instructions,
       instructions: selectedWorkspace.instructions,
       is_home: false,
-      name: "New Workspace"
+      name: "Nuevo Espacio de Trabajo"
     })
 
     setWorkspaces([...workspaces, createdWorkspace])

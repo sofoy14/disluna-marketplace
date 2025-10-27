@@ -48,8 +48,22 @@ export interface AgentOptions {
   searchTimeoutMs: number
 }
 
+type ReasoningStatus =
+  | "analyzing"
+  | "planning"
+  | "researching"
+  | "validating"
+  | "generating"
+  | "clarifying"
+  | "complete"
+
+interface ReasoningDescriptor {
+  status: ReasoningStatus
+  description: string
+}
+
 /**
- * AI Agent con capacidades agenticas de búsqueda y memoria
+ * AI Agent con capacidades agenticas de b├║squeda y memoria
  */
 export class LegalAIAgent {
   private memoryManager: ChatMemoryManager
@@ -60,6 +74,129 @@ export class LegalAIAgent {
     this.memoryManager = ChatMemoryManager.getInstance()
   }
 
+  private attachReasoningSteps(steps: ReasoningDescriptor[], content: string): string {
+    if (!steps.length) {
+      return content
+    }
+
+    const reasoningBlock = steps
+      .map(step => this.formatReasoningStep(step.status, step.description))
+      .join("\n\n")
+
+    return `${reasoningBlock}\n\n${content}`.trim()
+  }
+
+  private formatReasoningStep(status: ReasoningStatus, description: string): string {
+    const sanitizedDescription = this.truncateForReasoning(description)
+    return `[REASONING:${status}:${sanitizedDescription}]`
+  }
+
+  private truncateForReasoning(text: string, maxLength = 180): string {
+    const normalized = text.replace(/\s+/g, " ").trim()
+    if (normalized.length <= maxLength) {
+      return normalized
+    }
+    return `${normalized.slice(0, maxLength - 3)}...`
+  }
+
+  private buildSearchReasoning(params: {
+    userQuery: string
+    strategy?: string
+    totalSearches?: number
+    totalResults?: number
+    finalQuality?: number
+    decisionReasoning?: string
+    sourcesCount?: number
+    rounds?: number
+  }): ReasoningDescriptor[] {
+    const {
+      userQuery,
+      strategy,
+      totalSearches,
+      totalResults,
+      finalQuality,
+      decisionReasoning,
+      sourcesCount,
+      rounds
+    } = params
+
+    const safeStrategy = strategy && strategy.trim() ? strategy : "investigacion"
+    const safeSearches = typeof totalSearches === "number" && totalSearches > 0 ? totalSearches : 1
+    const safeResults = typeof totalResults === "number" && totalResults >= 0 ? totalResults : 0
+    const safeSources =
+      typeof sourcesCount === "number" && sourcesCount > 0 ? sourcesCount : Math.min(safeResults, 5)
+
+    return [
+      {
+        status: "analyzing",
+        description: `Analizando la consulta del usuario: ${this.truncateForReasoning(userQuery, 120)}`
+      },
+      {
+        status: "planning",
+        description: decisionReasoning
+          ? `Planificando estrategia ${safeStrategy} (${this.truncateForReasoning(decisionReasoning, 140)})`
+          : `Definiendo estrategia ${safeStrategy}${rounds ? ` con hasta ${rounds} rondas` : ""}`
+      },
+      {
+        status: "researching",
+        description: `Ejecutando ${safeSearches} busquedas especializadas y analizando fuentes prioritarias`
+      },
+      {
+        status: "validating",
+        description: typeof finalQuality === "number"
+          ? `Evaluando ${safeResults} resultados con calidad promedio ${finalQuality}/10`
+          : `Depurando ${safeResults} resultados para garantizar relevancia y autoridad`
+      },
+      {
+        status: "generating",
+        description: "Sintetizando hallazgos y aplicando criterios legales colombianos"
+      },
+      {
+        status: "complete",
+        description: `Investigacion completada con ${safeSources} fuentes destacadas`
+      }
+    ]
+  }
+
+  private buildDirectAnswerReasoning(userQuery: string): ReasoningDescriptor[] {
+    return [
+      {
+        status: "analyzing",
+        description: `Analizando la consulta del usuario: ${this.truncateForReasoning(userQuery, 120)}`
+      },
+      {
+        status: "generating",
+        description: "Aplicando conocimiento juridico propio para elaborar la respuesta"
+      },
+      {
+        status: "complete",
+        description: "Respuesta legal lista para el usuario"
+      }
+    ]
+  }
+
+  private buildClarificationReasoning(
+    userQuery: string,
+    kind: "clarify" | "follow_up"
+  ): ReasoningDescriptor[] {
+    return [
+      {
+        status: "analyzing",
+        description: `Analizando la consulta: ${this.truncateForReasoning(userQuery, 120)}`
+      },
+      {
+        status: "clarifying",
+        description:
+          kind === "clarify"
+            ? "Solicitando informacion adicional para aclarar la consulta"
+            : "Formulando pregunta de seguimiento para profundizar en el caso"
+      },
+      {
+        status: "complete",
+        description: "Esperando respuesta del usuario para continuar"
+      }
+    ]
+  }
   /**
    * Procesa una consulta del usuario con capacidades agenticas
    */
@@ -67,31 +204,31 @@ export class LegalAIAgent {
     userQuery: string,
     messageId: string
   ): Promise<AgentResponse> {
-    console.log(`\n🤖 AI AGENT PROCESANDO CONSULTA`)
-    console.log(`📝 Query: "${userQuery}"`)
-    console.log(`💬 Chat ID: ${this.options.chatId}`)
-    console.log(`👤 User ID: ${this.options.userId}`)
-    console.log(`🧠 Memoria: ${this.options.enableMemory ? 'ACTIVADA' : 'DESACTIVADA'}`)
-    console.log(`🔍 Búsqueda agentica: ${this.options.enableAgenticSearch ? 'ACTIVADA' : 'DESACTIVADA'}`)
+    console.log(`\n­ƒñû AI AGENT PROCESANDO CONSULTA`)
+    console.log(`­ƒôØ Query: "${userQuery}"`)
+    console.log(`­ƒÆ¼ Chat ID: ${this.options.chatId}`)
+    console.log(`­ƒæñ User ID: ${this.options.userId}`)
+    console.log(`­ƒºá Memoria: ${this.options.enableMemory ? 'ACTIVADA' : 'DESACTIVADA'}`)
+    console.log(`­ƒöì B├║squeda agentica: ${this.options.enableAgenticSearch ? 'ACTIVADA' : 'DESACTIVADA'}`)
     console.log(`${'='.repeat(80)}`)
 
     try {
-      // 1. Cargar contexto de memoria si está habilitado
+      // 1. Cargar contexto de memoria si est├í habilitado
       let chatContext: ChatContext | null = null
       if (this.options.enableMemory) {
         chatContext = await this.memoryManager.getChatContext(
           this.options.chatId,
           this.options.userId
         )
-        console.log(`🧠 Contexto cargado: ${chatContext.conversationHistory.length} mensajes`)
+        console.log(`­ƒºá Contexto cargado: ${chatContext.conversationHistory.length} mensajes`)
       }
 
-      // 2. Tomar decisión agentica sobre qué hacer
+      // 2. Tomar decisi├│n agentica sobre qu├® hacer
       const decision = await this.makeAgenticDecision(userQuery, chatContext)
-      console.log(`🤖 Decisión agentica: ${decision.action} (confianza: ${decision.confidence.toFixed(2)})`)
-      console.log(`💭 Razonamiento: ${decision.reasoning}`)
+      console.log(`­ƒñû Decisi├│n agentica: ${decision.action} (confianza: ${decision.confidence.toFixed(2)})`)
+      console.log(`­ƒÆ¡ Razonamiento: ${decision.reasoning}`)
 
-      // 3. Ejecutar acción basada en la decisión
+      // 3. Ejecutar acci├│n basada en la decisi├│n
       let response: AgentResponse
 
       switch (decision.action) {
@@ -111,7 +248,7 @@ export class LegalAIAgent {
           response = await this.executeRespondAction(userQuery, chatContext)
       }
 
-      // 4. Guardar en memoria si está habilitado
+      // 4. Guardar en memoria si est├í habilitado
       if (this.options.enableMemory) {
         await this.memoryManager.saveMessage(
           this.options.chatId,
@@ -123,15 +260,15 @@ export class LegalAIAgent {
         )
       }
 
-      console.log(`✅ Respuesta generada: ${response.content.length} caracteres`)
+      console.log(`Ô£à Respuesta generada: ${response.content.length} caracteres`)
       return response
 
     } catch (error) {
-      console.error(`❌ Error en AI Agent:`, error)
+      console.error(`ÔØî Error en AI Agent:`, error)
       
       // Respuesta de error con fallback
       const errorResponse: AgentResponse = {
-        content: `Disculpa, hubo un error técnico al procesar tu consulta. Por favor, intenta nuevamente.`,
+        content: `Disculpa, hubo un error t├®cnico al procesar tu consulta. Por favor, intenta nuevamente.`,
         action: 'error',
         metadata: {
           searchExecuted: false
@@ -158,7 +295,7 @@ export class LegalAIAgent {
   }
 
   /**
-   * Toma una decisión agentica sobre qué acción realizar
+   * Toma una decisi├│n agentica sobre qu├® acci├│n realizar
    */
   private async makeAgenticDecision(
     userQuery: string,
@@ -166,48 +303,48 @@ export class LegalAIAgent {
   ): Promise<AgentDecision> {
     try {
       const contextInfo = chatContext ? `
-HISTORIAL DE CONVERSACIÓN:
+HISTORIAL DE CONVERSACI├ôN:
 ${chatContext.currentContext}
 
-BÚSQUEDAS ANTERIORES:
+B├ÜSQUEDAS ANTERIORES:
 ${chatContext.searchHistory.slice(-3).map(s => `- "${s.query}" (${s.results} resultados, calidad: ${s.quality}/10)`).join('\n')}
 
 PREFERENCIAS DEL USUARIO:
 - Estrategia: ${chatContext.userPreferences.preferredSearchStrategy}
-- Máximo de rondas: ${chatContext.userPreferences.maxSearchRounds}
-- Decisión del modelo: ${chatContext.userPreferences.enableModelDecision ? 'Activada' : 'Desactivada'}
+- M├íximo de rondas: ${chatContext.userPreferences.maxSearchRounds}
+- Decisi├│n del modelo: ${chatContext.userPreferences.enableModelDecision ? 'Activada' : 'Desactivada'}
 ` : 'Sin historial previo'
 
-      const decisionPrompt = `Eres un agente de IA legal experto que debe decidir qué acción tomar para responder una consulta del usuario.
+      const decisionPrompt = `Eres un agente de IA legal experto que debe decidir qu├® acci├│n tomar para responder una consulta del usuario.
 
 CONSULTA ACTUAL: "${userQuery}"
 
 ${contextInfo}
 
 CAPACIDADES DISPONIBLES:
-1. **search**: Realizar búsqueda web dinámica con múltiples rondas
+1. **search**: Realizar b├║squeda web din├ímica con m├║ltiples rondas
 2. **respond**: Responder directamente con conocimiento existente
 3. **clarify**: Pedir aclaraciones al usuario
 4. **follow_up**: Hacer preguntas de seguimiento
 
-CRITERIOS DE DECISIÓN:
-- Si la consulta requiere información actualizada o específica → **search**
-- Si la consulta es general y tienes conocimiento suficiente → **respond**
-- Si la consulta es ambigua o incompleta → **clarify**
-- Si necesitas más información para completar la respuesta → **follow_up**
+CRITERIOS DE DECISI├ôN:
+- Si la consulta requiere informaci├│n actualizada o espec├¡fica ÔåÆ **search**
+- Si la consulta es general y tienes conocimiento suficiente ÔåÆ **respond**
+- Si la consulta es ambigua o incompleta ÔåÆ **clarify**
+- Si necesitas m├ís informaci├│n para completar la respuesta ÔåÆ **follow_up**
 
-ESTRATEGIAS DE BÚSQUEDA:
-- **dynamic**: Sistema de búsqueda dinámica (hasta 10 rondas, modelo decide)
+ESTRATEGIAS DE B├ÜSQUEDA:
+- **dynamic**: Sistema de b├║squeda din├ímica (hasta 10 rondas, modelo decide)
 - **traditional**: Sistema tradicional (hasta 5 rondas, criterios fijos)
-- **hybrid**: Combinación de ambos sistemas
+- **hybrid**: Combinaci├│n de ambos sistemas
 
 Responde en formato JSON:
 {
   "action": "search|respond|clarify|follow_up",
   "confidence": 0.0-1.0,
-  "reasoning": "explicación detallada de la decisión",
+  "reasoning": "explicaci├│n detallada de la decisi├│n",
   "searchStrategy": "dynamic|traditional|hybrid",
-  "searchQueries": ["consulta específica 1", "consulta específica 2"],
+  "searchQueries": ["consulta espec├¡fica 1", "consulta espec├¡fica 2"],
   "maxRounds": 5-10
 }`
 
@@ -215,7 +352,7 @@ Responde en formato JSON:
         model: this.options.model,
         messages: [
           { role: "system", content: decisionPrompt },
-          { role: "user", content: `Analiza la consulta y decide qué acción tomar: "${userQuery}"` }
+          { role: "user", content: `Analiza la consulta y decide qu├® acci├│n tomar: "${userQuery}"` }
         ],
         temperature: 0.1,
         max_tokens: 800,
@@ -225,23 +362,23 @@ Responde en formato JSON:
       const content = response.choices?.[0]?.message?.content || '{}'
       const decision = this.parseAgentDecision(content)
 
-      // Validar decisión
+      // Validar decisi├│n
       if (!decision.action || !['search', 'respond', 'clarify', 'follow_up'].includes(decision.action)) {
-        decision.action = 'search' // Fallback a búsqueda
+        decision.action = 'search' // Fallback a b├║squeda
         decision.confidence = 0.5
-        decision.reasoning = 'Decisión inválida, usando fallback a búsqueda'
+        decision.reasoning = 'Decisi├│n inv├ílida, usando fallback a b├║squeda'
       }
 
       return decision
 
     } catch (error) {
-      console.error('Error en decisión agentica:', error)
+      console.error('Error en decisi├│n agentica:', error)
       
-      // Fallback a búsqueda dinámica
+      // Fallback a b├║squeda din├ímica
       return {
         action: 'search',
         confidence: 0.5,
-        reasoning: 'Error en decisión agentica, usando fallback a búsqueda',
+        reasoning: 'Error en decisi├│n agentica, usando fallback a b├║squeda',
         searchStrategy: 'dynamic',
         searchQueries: [userQuery],
         maxRounds: this.options.maxSearchRounds
@@ -250,21 +387,21 @@ Responde en formato JSON:
   }
 
   /**
-   * Ejecuta acción de búsqueda
+   * Ejecuta acci├│n de b├║squeda
    */
   private async executeSearchAction(
     userQuery: string,
     decision: AgentDecision,
     chatContext: ChatContext | null
   ): Promise<AgentResponse> {
-    console.log(`🔍 Ejecutando búsqueda agentica con estrategia: ${decision.searchStrategy}`)
+    console.log(`­ƒöì Ejecutando b├║squeda agentica con estrategia: ${decision.searchStrategy}`)
 
     try {
       let searchResult: any
       let metadata: AgentResponse['metadata']
 
       if (decision.searchStrategy === 'dynamic' || decision.searchStrategy === 'hybrid') {
-        // Usar sistema de búsqueda dinámica
+        // Usar sistema de b├║squeda din├ímica
         searchResult = await runDynamicSearchWorkflow(userQuery, {
           client: this.options.client,
           model: this.options.model,
@@ -290,7 +427,7 @@ Responde en formato JSON:
           }))
         }
 
-        // Registrar búsqueda en memoria
+        // Registrar b├║squeda en memoria
         if (this.options.enableMemory && chatContext) {
           await this.memoryManager.recordSearch(
             this.options.chatId,
@@ -368,12 +505,12 @@ Responde en formato JSON:
       }
 
     } catch (error) {
-      console.error('Error en búsqueda agentica:', error)
+      console.error('Error en b├║squeda agentica:', error)
       
-      // Fallback a respuesta sin búsqueda
+      // Fallback a respuesta sin b├║squeda
       const response = await this.generateResponseWithContext(
         userQuery,
-        'Error en búsqueda, respondiendo con conocimiento general',
+        'Error en b├║squeda, respondiendo con conocimiento general',
         chatContext
       )
 
@@ -392,17 +529,17 @@ Responde en formato JSON:
   }
 
   /**
-   * Ejecuta acción de respuesta directa
+   * Ejecuta acci├│n de respuesta directa
    */
   private async executeRespondAction(
     userQuery: string,
     chatContext: ChatContext | null
   ): Promise<AgentResponse> {
-    console.log(`💬 Respondiendo directamente sin búsqueda`)
+    console.log(`­ƒÆ¼ Respondiendo directamente sin b├║squeda`)
 
     const response = await this.generateResponseWithContext(
       userQuery,
-      'Responde usando tu conocimiento legal colombiano sin realizar búsquedas web',
+      'Responde usando tu conocimiento legal colombiano sin realizar b├║squedas web',
       chatContext
     )
 
@@ -420,15 +557,15 @@ Responde en formato JSON:
   }
 
   /**
-   * Ejecuta acción de aclaración
+   * Ejecuta acci├│n de aclaraci├│n
    */
   private async executeClarifyAction(
     userQuery: string,
     chatContext: ChatContext | null
   ): Promise<AgentResponse> {
-    console.log(`❓ Solicitando aclaración`)
+    console.log(`ÔØô Solicitando aclaraci├│n`)
 
-    const clarificationPrompt = `La consulta "${userQuery}" es ambigua o incompleta. Genera una pregunta de aclaración específica para obtener más información del usuario.`
+    const clarificationPrompt = `La consulta "${userQuery}" es ambigua o incompleta. Genera una pregunta de aclaraci├│n espec├¡fica para obtener m├ís informaci├│n del usuario.`
 
     const response = await this.options.client.chat.completions.create({
       model: this.options.model,
@@ -441,7 +578,7 @@ Responde en formato JSON:
       stream: false
     })
 
-    const content = response.choices?.[0]?.message?.content || "¿Podrías ser más específico en tu consulta?"
+    const content = response.choices?.[0]?.message?.content || "┬┐Podr├¡as ser m├ís espec├¡fico en tu consulta?"
 
     return {
       content,
@@ -457,15 +594,15 @@ Responde en formato JSON:
   }
 
   /**
-   * Ejecuta acción de seguimiento
+   * Ejecuta acci├│n de seguimiento
    */
   private async executeFollowUpAction(
     userQuery: string,
     chatContext: ChatContext | null
   ): Promise<AgentResponse> {
-    console.log(`🔄 Generando pregunta de seguimiento`)
+    console.log(`­ƒöä Generando pregunta de seguimiento`)
 
-    const followUpPrompt = `Basándote en la consulta "${userQuery}" y el contexto de conversación, genera una pregunta de seguimiento útil para obtener más información específica.`
+    const followUpPrompt = `Bas├índote en la consulta "${userQuery}" y el contexto de conversaci├│n, genera una pregunta de seguimiento ├║til para obtener m├ís informaci├│n espec├¡fica.`
 
     const response = await this.options.client.chat.completions.create({
       model: this.options.model,
@@ -478,7 +615,7 @@ Responde en formato JSON:
       stream: false
     })
 
-    const content = response.choices?.[0]?.message?.content || "¿Hay algún aspecto específico que te gustaría que profundice?"
+    const content = response.choices?.[0]?.message?.content || "┬┐Hay alg├║n aspecto espec├¡fico que te gustar├¡a que profundice?"
 
     return {
       content,
@@ -501,20 +638,20 @@ Responde en formato JSON:
     searchContext: string,
     chatContext: ChatContext | null
   ): Promise<string> {
-    const systemPrompt = `Eres un asistente legal experto en derecho colombiano. Utiliza EXCLUSIVAMENTE la información proporcionada para responder la consulta del usuario.
+    const systemPrompt = `Eres un asistente legal experto en derecho colombiano. Utiliza EXCLUSIVAMENTE la informaci├│n proporcionada para responder la consulta del usuario.
 
 ${searchContext}
 
-${chatContext ? `CONTEXTO DE CONVERSACIÓN:
+${chatContext ? `CONTEXTO DE CONVERSACI├ôN:
 ${chatContext.currentContext}` : ''}
 
 INSTRUCCIONES:
 1. Responde de manera completa y precisa
-2. Usa terminología jurídica apropiada
-3. Incluye referencias a artículos y leyes cuando sea relevante
-4. Proporciona información práctica y aplicable
-5. Si hay información insuficiente, indícalo claramente
-6. Responde en español colombiano`
+2. Usa terminolog├¡a jur├¡dica apropiada
+3. Incluye referencias a art├¡culos y leyes cuando sea relevante
+4. Proporciona informaci├│n pr├íctica y aplicable
+5. Si hay informaci├│n insuficiente, ind├¡calo claramente
+6. Responde en espa├▒ol colombiano`
 
     const response = await this.options.client.chat.completions.create({
       model: this.options.model,
@@ -531,7 +668,7 @@ INSTRUCCIONES:
   }
 
   /**
-   * Parsea la decisión del agente desde JSON
+   * Parsea la decisi├│n del agente desde JSON
    */
   private parseAgentDecision(content: string): AgentDecision {
     try {
@@ -547,11 +684,11 @@ INSTRUCCIONES:
         maxRounds: parsed.maxRounds || this.options.maxSearchRounds
       }
     } catch (error) {
-      console.error('Error parseando decisión del agente:', error)
+      console.error('Error parseando decisi├│n del agente:', error)
       return {
         action: 'search',
         confidence: 0.5,
-        reasoning: 'Error parseando decisión, usando fallback',
+        reasoning: 'Error parseando decisi├│n, usando fallback',
         searchStrategy: 'dynamic',
         searchQueries: [],
         maxRounds: this.options.maxSearchRounds
@@ -572,7 +709,7 @@ INSTRUCCIONES:
   }
 
   /**
-   * Obtiene estadísticas del agente
+   * Obtiene estad├¡sticas del agente
    */
   async getAgentStats(): Promise<{
     memoryEnabled: boolean

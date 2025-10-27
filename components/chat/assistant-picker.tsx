@@ -77,7 +77,7 @@ export const AssistantPicker: FC<AssistantPickerProps> = ({}) => {
         <div className="bg-background flex flex-col space-y-1 rounded-xl border-2 p-2 text-sm">
           {filteredAssistants.length === 0 ? (
             <div className="text-md flex h-14 cursor-pointer items-center justify-center italic hover:opacity-50">
-              No matching assistants.
+              No se encontraron agentes.
             </div>
           ) : (
             <>
@@ -114,7 +114,7 @@ export const AssistantPicker: FC<AssistantPickerProps> = ({}) => {
                     <div className="font-bold">{item.name}</div>
 
                     <div className="truncate text-sm opacity-80">
-                      {item.description || "No description."}
+                      {item.description || "Sin descripción."}
                     </div>
                   </div>
                 </div>

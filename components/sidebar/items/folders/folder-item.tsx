@@ -174,58 +174,59 @@ export const Folder: FC<FolderProps> = ({
       onDragOver={handleDragOver}
       onDrop={handleDrop}
       onKeyDown={handleKeyDown}
-      onMouseEnter={() => setIsHovering(true)}
-      onMouseLeave={() => setIsHovering(false)}
     >
       <div
         tabIndex={0}
         className={cn(
-          "hover:bg-accent focus:bg-accent flex w-full cursor-pointer items-center justify-between rounded p-2 hover:opacity-50 focus:outline-none"
+          "flex w-full items-center justify-between rounded p-2 focus:bg-accent focus:outline-none"
         )}
-        onClick={handleClick}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
-        <div className="flex w-full items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {isExpanded ? (
-              <IconChevronDown stroke={3} />
-            ) : (
-              <IconChevronRight stroke={3} />
+        <div
+          className="flex items-center space-x-2 hover:bg-accent cursor-pointer flex-1 rounded p-1"
+          onClick={handleClick}
+        >
+          {isExpanded ? (
+            <IconChevronDown stroke={3} />
+          ) : (
+            <IconChevronRight stroke={3} />
+          )}
+
+          <div>{folder.name}</div>
+        </div>
+
+        {isHovering && (
+          <div className="flex items-center space-x-1">
+            {(contentType === "files" || contentType === "collections") && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-primary"
+                onClick={e => {
+                  e.stopPropagation()
+                  handleAttachFolder(e)
+                }}
+                disabled={isAttaching}
+                aria-label="Agregar carpeta al chat"
+              >
+                {isAttaching ? (
+                  <IconLoader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <div className="h-4 w-4" />
+                )}
+              </Button>
             )}
 
-            <div>{folder.name}</div>
-          </div>
-
-          {isHovering && (
-            <div
-              onClick={e => {
-                e.stopPropagation()
-                e.preventDefault()
-              }}
-              className="ml-2 flex space-x-2"
-            >
-              {(contentType === "files" || contentType === "collections") && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground hover:text-primary"
-                  onClick={handleAttachFolder}
-                  disabled={isAttaching}
-                  aria-label="Agregar carpeta al chat"
-                >
-                  {isAttaching ? (
-                    <IconLoader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <div className="h-4 w-4" />
-                  )}
-                </Button>
-              )}
-
+            <div onClick={e => e.stopPropagation()}>
               <UpdateFolder folder={folder} />
+            </div>
 
+            <div onClick={e => e.stopPropagation()}>
               <DeleteFolder folder={folder} contentType={contentType} />
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {isExpanded && (

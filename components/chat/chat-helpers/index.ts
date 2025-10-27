@@ -217,16 +217,24 @@ export const handleHostedChat = async (
     formattedMessages = draftMessages
   }
 
-  // Siempre usar tools-agent para modelos hosted - el modelo decide si buscar
-  const apiEndpoint = provider === "custom" ? "/api/chat/custom" : "/api/chat/tools-agent"
+  // Verificar si está en modo de redacción legal
+  const chatMode = typeof window !== 'undefined' ? localStorage.getItem('chatMode') : null
+  
+  // Determinar endpoint según modo
+  let apiEndpoint = provider === "custom" ? "/api/chat/custom" : "/api/chat/tools-agent"
+  
+  if (chatMode === 'legal-writing') {
+    apiEndpoint = "/api/chat/legal-writing"
+    console.log(`🤖 Modo: Redacción Legal - usando endpoint: ${apiEndpoint}`)
+  } else {
+    console.log(`🤖 Usando endpoint: ${apiEndpoint} - el modelo decidirá si buscar`)
+  }
 
   const requestBody = {
     chatSettings: payload.chatSettings,
     messages: formattedMessages,
     customModelId: provider === "custom" ? modelData.hostedId : ""
   }
-
-  console.log(`🤖 Usando endpoint: ${apiEndpoint} - el modelo decidirá si buscar`)
 
   const response = await fetchChatResponse(
     apiEndpoint,

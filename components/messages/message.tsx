@@ -30,6 +30,10 @@ import { toast } from "sonner"
 import { AnswerView } from "./answer-view"
 import { CitationsPanel } from "./citations-panel"
 import { parseModelAnswer } from "@/lib/parsers/model-answer"
+import { processStreamContent } from "@/lib/stream-processor"
+import { DocumentSheet } from "../chat/document-sheet"
+import { ReasoningSteps } from "../chat/reasoning-steps"
+import { PromptRequest } from "../chat/prompt-request"
 
 const ICON_SIZE = 32
 
@@ -87,6 +91,18 @@ export const Message: FC<MessageProps> = ({
   const [showImagePreview, setShowImagePreview] = useState(false)
   const [selectedImage, setSelectedImage] = useState<MessageImage | null>(null)
 
+  // Estado para documento editable
+  const [showDocumentEditor, setShowDocumentEditor] = useState(false)
+  const [documentContent, setDocumentContent] = useState("")
+  
+  // Procesar contenido para detectar documentos y razonamiento
+  const processedContent = useMemo(() => {
+    if (message.role === "assistant") {
+      return processStreamContent(message.content)
+    }
+    return null
+  }, [message.content, message.role])
+
   const assistantAnswer = useMemo(
     () =>
       message.role === "assistant"
@@ -98,6 +114,13 @@ export const Message: FC<MessageProps> = ({
   const assistantCitations = assistantAnswer.citations ?? []
   const [viewSources, setViewSources] = useState(false)
   const [showFileItemPreview, setShowFileItemPreview] = useState(false)
+
+  // Sincronizar contenido del documento cuando se detecta
+  useEffect(() => {
+    if (processedContent && processedContent.isDocument && processedContent.documentContent) {
+      setDocumentContent(processedContent.documentContent)
+    }
+  }, [processedContent])
 
   // Generar preguntas sugeridas cuando el mensaje del asistente esté completo
   useEffect(() => {
@@ -355,8 +378,34 @@ export const Message: FC<MessageProps> = ({
         onRegenerate={message.role === "assistant" && isLast ? handleRegenerate : undefined}
       >
         <div className="space-y-3">
+          {/* Pasos de razonamiento */}
+          {processedContent && processedContent.reasoningSteps.length > 0 && (
+          <ReasoningSteps 
+            steps={processedContent.reasoningSteps.map(rs => ({
+              step: rs.step,
+              description: rs.description,
+              status: rs.status
+            }))}
+          />
+        )}
+        {processedContent?.promptBlock && (
+          <PromptRequest payload={processedContent.promptBlock} />
+        )}
+
           {/* Contenido del mensaje */}
           {renderMessageContent()}
+
+          {/* Botón para abrir editor de documento */}
+          {processedContent && processedContent.isDocument && (
+            <Button
+              variant="outline"
+              onClick={() => setShowDocumentEditor(true)}
+              className="w-full"
+            >
+              <IconFileText className="h-4 w-4 mr-2" />
+              Ver/Editar Documento Generado
+            </Button>
+          )}
 
           {message.role === "assistant" && assistantCitations.length > 0 && (
             <CitationsPanel items={assistantCitations} />
@@ -496,6 +545,19 @@ export const Message: FC<MessageProps> = ({
           />
         )}
       </>
+
+      {/* Sheet para editar documentos */}
+      {processedContent && processedContent.isDocument && (
+        <DocumentSheet
+          open={showDocumentEditor}
+          onOpenChange={setShowDocumentEditor}
+          content={documentContent}
+          onSave={(newContent) => {
+            setDocumentContent(newContent)
+            toast.success("Documento guardado")
+          }}
+        />
+      )}
     </div>
   )
 }

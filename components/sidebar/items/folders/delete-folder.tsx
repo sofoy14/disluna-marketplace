@@ -102,37 +102,42 @@ export const DeleteFolder: FC<DeleteFolderProps> = ({
   return (
     <Dialog open={showFolderDialog} onOpenChange={setShowFolderDialog}>
       <DialogTrigger asChild>
-        <IconTrash className="hover:opacity-50" size={18} />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7 text-muted-foreground hover:text-primary"
+          aria-label="Eliminar carpeta"
+        >
+          <IconTrash className="hover:opacity-50" size={18} />
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="min-w-[550px]">
         <DialogHeader>
-          <DialogTitle>Delete {folder.name}</DialogTitle>
+          <DialogTitle>Eliminar {folder.name}</DialogTitle>
 
           <DialogDescription>
-            Are you sure you want to delete this folder?
+            ¿Estás seguro de que deseas eliminar esta carpeta?
           </DialogDescription>
         </DialogHeader>
 
         <DialogFooter>
           <Button variant="ghost" onClick={() => setShowFolderDialog(false)}>
-            Cancel
+            Cancelar
           </Button>
 
           <Button
-            ref={buttonRef}
             variant="destructive"
             onClick={handleDeleteFolderAndItems}
           >
-            Delete Folder & Included Items
+            Eliminar Carpeta y Contenido
           </Button>
 
           <Button
-            ref={buttonRef}
             variant="destructive"
             onClick={handleDeleteFolderOnly}
           >
-            Delete Folder Only
+            Eliminar Solo Carpeta
           </Button>
         </DialogFooter>
       </DialogContent>

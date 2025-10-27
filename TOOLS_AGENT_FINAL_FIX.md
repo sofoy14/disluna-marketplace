@@ -91,3 +91,6 @@ Ahora el sistema debería:
 El sistema ahora debería funcionar perfectamente tanto en los logs como en la interfaz de usuario.
 
 
+
+
+

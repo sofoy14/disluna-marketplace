@@ -123,3 +123,6 @@ const endpoint = isLegalQuery ? "/api/chat/tools-agent" : "/api/chat/simple-dire
 El sistema está listo para usar y seguirá el patrón de n8n con tool calling automático.
 
 
+
+
+

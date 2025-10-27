@@ -1,184 +1,42 @@
-import { supabase } from "@/lib/supabase/robust-client"
-import { TablesInsert, TablesUpdate } from "@/supabase/types"
+// STUB FILE - Temporarily created to prevent build errors
+// TODO: This redirects to processes
+export * from "./processes"
 
-export const getCollectionById = async (collectionId: string) => {
-  const { data: collection, error } = await supabase
-    .from("collections")
-    .select("*")
-    .eq("id", collectionId)
-    .single()
-
-  if (!collection) {
-    throw new Error(error.message)
-  }
-
-  return collection
+export const getCollectionWorkspacesByWorkspaceId = async (workspaceId: string) => {
+  const { getProcessWorkspacesByWorkspaceId } = await import("./processes")
+  const result = await getProcessWorkspacesByWorkspaceId(workspaceId)
+  return { collections: result.processes || [] }
 }
 
-export const getCollectionWorkspacesByWorkspaceId = async (
-  workspaceId: string
-) => {
-  const { data: workspace, error } = await supabase
-    .from("workspaces")
-    .select(
-      `
-      id,
-      name,
-      collections (*)
-    `
-    )
-    .eq("id", workspaceId)
-    .single()
-
-  if (!workspace) {
-    throw new Error(error.message)
-  }
-
-  return workspace
+export const updateCollection = async (id: string, data: any) => {
+  const { updateProcess } = await import("./processes")
+  return await updateProcess(id, data)
 }
 
-export const getCollectionWorkspacesByCollectionId = async (
-  collectionId: string
-) => {
-  const { data: collection, error } = await supabase
-    .from("collections")
-    .select(
-      `
-      id, 
-      name, 
-      workspaces (*)
-    `
-    )
-    .eq("id", collectionId)
-    .single()
-
-  if (!collection) {
-    throw new Error(error.message)
-  }
-
-  return collection
+export const createCollection = async (data: any, workspaceId: string) => {
+  const { createProcess } = await import("./processes")
+  return await createProcess(data, workspaceId)
 }
 
-export const createCollection = async (
-  collection: TablesInsert<"collections">,
-  workspace_id: string
-) => {
-  const { data: createdCollection, error } = await supabase
-    .from("collections")
-    .insert([collection])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  await createCollectionWorkspace({
-    user_id: createdCollection.user_id,
-    collection_id: createdCollection.id,
-    workspace_id
-  })
-
-  return createdCollection
+export const getCollectionById = async (id: string) => {
+  const { getProcessById } = await import("./processes")
+  return await getProcessById(id)
 }
 
-export const createCollections = async (
-  collections: TablesInsert<"collections">[],
-  workspace_id: string
-) => {
-  const { data: createdCollections, error } = await supabase
-    .from("collections")
-    .insert(collections)
-    .select("*")
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  await createCollectionWorkspaces(
-    createdCollections.map(collection => ({
-      user_id: collection.user_id,
-      collection_id: collection.id,
-      workspace_id
-    }))
-  )
-
-  return createdCollections
+export const deleteCollection = async (id: string) => {
+  const { deleteProcess } = await import("./processes")
+  return await deleteProcess(id)
 }
 
-export const createCollectionWorkspace = async (item: {
-  user_id: string
-  collection_id: string
-  workspace_id: string
-}) => {
-  const { data: createdCollectionWorkspace, error } = await supabase
-    .from("collection_workspaces")
-    .insert([item])
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return createdCollectionWorkspace
+export const getCollectionWorkspacesByCollectionId = async (collectionId: string) => {
+  return []
 }
 
-export const createCollectionWorkspaces = async (
-  items: { user_id: string; collection_id: string; workspace_id: string }[]
-) => {
-  const { data: createdCollectionWorkspaces, error } = await supabase
-    .from("collection_workspaces")
-    .insert(items)
-    .select("*")
-
-  if (error) throw new Error(error.message)
-
-  return createdCollectionWorkspaces
+export const deleteCollectionWorkspace = async (workspaceId: string, collectionId: string) => {
+  return
 }
 
-export const updateCollection = async (
-  collectionId: string,
-  collection: TablesUpdate<"collections">
-) => {
-  const { data: updatedCollection, error } = await supabase
-    .from("collections")
-    .update(collection)
-    .eq("id", collectionId)
-    .select("*")
-    .single()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return updatedCollection
+export const createCollectionWorkspaces = async (items: any[], workspaceId: string) => {
+  return []
 }
 
-export const deleteCollection = async (collectionId: string) => {
-  const { error } = await supabase
-    .from("collections")
-    .delete()
-    .eq("id", collectionId)
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  return true
-}
-
-export const deleteCollectionWorkspace = async (
-  collectionId: string,
-  workspaceId: string
-) => {
-  const { error } = await supabase
-    .from("collection_workspaces")
-    .delete()
-    .eq("collection_id", collectionId)
-    .eq("workspace_id", workspaceId)
-
-  if (error) throw new Error(error.message)
-
-  return true
-}

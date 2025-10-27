@@ -4,6 +4,7 @@ import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { updateChat } from "@/db/chats"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
+// NOTE: assistant functions are stubs - assistants feature removed
 import { deleteMessagesIncludingAndAfter } from "@/db/messages"
 import { buildFinalMessages } from "@/lib/build-prompt"
 import { Tables } from "@/supabase/types"
@@ -81,8 +82,14 @@ export const useChatHandler = () => {
     }
   }, [isPromptPickerOpen, isFilePickerOpen, isToolPickerOpen])
 
-  const handleNewChat = async () => {
+  const handleNewChat = async (options?: { preserveChatMode?: boolean }) => {
     if (!selectedWorkspace) return
+    const preserveChatMode = options?.preserveChatMode ?? false
+
+    if (typeof window !== "undefined" && !preserveChatMode) {
+      localStorage.removeItem("chatMode")
+      window.dispatchEvent(new Event("chat-mode-changed"))
+    }
 
     setUserInput("")
     setChatMessages([])
@@ -186,6 +193,7 @@ export const useChatHandler = () => {
       // })
     }
 
+    // Navegar a la ruta del chat (siempre navegar para refrescar)
     return router.push(`/${selectedWorkspace.id}/chat`)
   }
 

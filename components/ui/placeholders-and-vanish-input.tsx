@@ -255,7 +255,7 @@ export function PlaceholdersAndVanishInput({
       
       {/* Elemento izquierdo (ej: botón de archivo) */}
       {leftElement && (
-        <div className="absolute left-3 top-1/2 z-[100] -translate-y-1/2 pointer-events-auto">
+        <div className="absolute left-3 top-1/2 z-10 -translate-y-1/2 pointer-events-auto">
           {leftElement}
         </div>
       )}
@@ -282,7 +282,7 @@ export function PlaceholdersAndVanishInput({
 
       {/* Elemento derecho (ej: botón de enviar/stop) */}
       {rightElement && (
-        <div className="absolute right-3 top-1/2 z-[100] -translate-y-1/2 pointer-events-auto">
+        <div className="absolute right-3 top-1/2 z-10 -translate-y-1/2 pointer-events-auto">
           <div className="relative">
             {rightElement}
           </div>

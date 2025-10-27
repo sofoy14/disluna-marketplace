@@ -189,3 +189,6 @@ Las respuestas ahora deberían ser:
 El sistema ahora implementa una estrategia de búsqueda múltiple inteligente que asegura información precisa y completa para consultas legales colombianas.
 
 
+
+
+

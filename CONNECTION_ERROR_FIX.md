@@ -167,3 +167,6 @@ Ahora el sistema debería:
 El sistema ahora es robusto contra errores de conexión y siempre proporciona una respuesta útil al usuario.
 
 
+
+
+

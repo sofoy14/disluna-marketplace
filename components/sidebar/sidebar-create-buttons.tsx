@@ -9,6 +9,8 @@ import { CreateAssistant } from "./items/assistants/create-assistant"
 import { CreateCollection } from "./items/collections/create-collection"
 import { CreateFile } from "./items/files/create-file"
 import { CreateTool } from "./items/tools/create-tool"
+import { CreateProcessModal } from "../modals/CreateProcessModal"
+import { CreateFileModal } from "../modals/CreateFileModal"
 
 interface SidebarCreateButtonsProps {
   contentType: ContentType
@@ -48,12 +50,17 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
       presets: "Preajuste",
       prompts: "Instrucción",
       files: "Archivo",
-      collections: "Colección",
+      collections: "Proceso",
       assistants: "Agente",
       tools: "Herramienta",
       models: "Modelo"
     }
     return labels[contentType] || contentType
+  }
+
+  const getCreateButtonPrefix = (contentType: ContentType): string => {
+    const feminineWords = ['chats', 'tools']
+    return feminineWords.includes(contentType) ? 'Nueva' : 'Nuevo'
   }
 
   const getCreateFunction = () => {
@@ -88,19 +95,42 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
     }
   }
 
+  const handleProcessCreated = (process: any) => {
+    console.log('Process created:', process);
+    // Aquí irías la lógica para agregar el proceso a la lista
+  }
+
+  const handleFileCreated = (file: any) => {
+    console.log('File created:', file);
+    // Aquí irías la lógica para agregar el archivo a la lista
+  }
+
   return (
     <div className="flex w-full space-x-2">
-      <Button className="flex h-[36px] grow" onClick={getCreateFunction()}>
-        <IconPlus className="mr-1" size={20} />
-        Nuevo {getCreateButtonLabel(contentType)}
-      </Button>
-
-      {hasData && (
-        <Button className="size-[36px] p-1" onClick={handleCreateFolder}>
-          <IconFolderPlus size={20} />
+      {/* Botón principal con modal mejorado */}
+      {contentType === "collections" ? (
+        <CreateProcessModal onProcessCreated={handleProcessCreated}>
+          <Button className="flex h-[36px] grow">
+            <IconPlus className="mr-1" size={20} />
+            {getCreateButtonPrefix(contentType)} {getCreateButtonLabel(contentType)}
+          </Button>
+        </CreateProcessModal>
+      ) : contentType === "files" ? (
+        <CreateFileModal onFileCreated={handleFileCreated}>
+          <Button className="flex h-[36px] grow">
+            <IconPlus className="mr-1" size={20} />
+            {getCreateButtonPrefix(contentType)} {getCreateButtonLabel(contentType)}
+          </Button>
+        </CreateFileModal>
+      ) : (
+        <Button className="flex h-[36px] grow" onClick={getCreateFunction()}>
+          <IconPlus className="mr-1" size={20} />
+          {getCreateButtonPrefix(contentType)} {getCreateButtonLabel(contentType)}
         </Button>
       )}
 
+
+      {/* Modales existentes para otros tipos de contenido */}
       {isCreatingFile && (
         <CreateFile isOpen={isCreatingFile} onOpenChange={setIsCreatingFile} />
       )}

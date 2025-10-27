@@ -99,3 +99,6 @@ Ahora el sistema debería:
 El problema del tool calling está completamente solucionado con un enfoque más directo y confiable.
 
 
+
+
+

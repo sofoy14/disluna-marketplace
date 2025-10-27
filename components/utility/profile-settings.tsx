@@ -13,7 +13,8 @@ import {
   IconCircleXFilled,
   IconLoader2,
   IconLogout,
-  IconUser
+  IconUser,
+  IconCreditCard
 } from "@tabler/icons-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -245,6 +246,19 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ trigger }) => {
             </div>
 
             <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                onClick={() => {
+                  setIsOpen(false)
+                  router.push('/billing')
+                }}
+              >
+                <IconCreditCard className="mr-1" size={16} />
+                Facturación
+              </Button>
+
               <Button
                 variant="outline"
                 size="sm"

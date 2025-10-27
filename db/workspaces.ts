@@ -10,13 +10,19 @@ export const getHomeWorkspaceByUserId = async (userId: string) => {
     .single()
 
   if (!homeWorkspace) {
-    throw new Error(error.message)
+    throw new Error(error?.message || 'Home workspace not found')
   }
 
   return homeWorkspace.id
 }
 
 export const getWorkspaceById = async (workspaceId: string) => {
+  // Validate that workspaceId is a valid UUID
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  if (!uuidRegex.test(workspaceId)) {
+    throw new Error(`Invalid workspace ID format: ${workspaceId}`)
+  }
+
   const { data: workspace, error } = await supabase
     .from("workspaces")
     .select("*")
@@ -24,7 +30,7 @@ export const getWorkspaceById = async (workspaceId: string) => {
     .single()
 
   if (!workspace) {
-    throw new Error(error.message)
+    throw new Error(error?.message || 'Workspace not found')
   }
 
   return workspace

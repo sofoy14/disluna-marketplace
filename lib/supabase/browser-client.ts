@@ -1,3 +1,12 @@
-import { supabase } from "@/lib/supabase/robust-client"
+import { createBrowserClient } from "@supabase/ssr"
+import { Database } from "@/supabase/types"
 
-export { supabase }
+export const createClient = () => {
+  return createBrowserClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+
+// Exportar también una instancia por defecto para compatibilidad
+export const supabase = createClient()

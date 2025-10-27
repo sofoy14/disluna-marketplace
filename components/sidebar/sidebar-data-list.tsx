@@ -28,6 +28,20 @@ interface SidebarDataListProps {
   folders: Tables<"folders">[]
 }
 
+const getEmptyStateMessage = (contentType: ContentType): string => {
+  const messages: Record<ContentType, string> = {
+    chats: "No hay conversaciones.",
+    presets: "No hay preajustes.",
+    prompts: "No hay instrucciones.",
+    files: "No hay archivos.",
+    collections: "No hay procesos.",
+    assistants: "No hay agentes.",
+    tools: "No hay herramientas.",
+    models: "No hay modelos."
+  }
+  return messages[contentType] || `No hay ${contentType}.`
+}
+
 export const SidebarDataList: FC<SidebarDataListProps> = ({
   contentType,
   data,
@@ -226,8 +240,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
       >
         {data.length === 0 && (
           <div className="flex grow flex-col items-center justify-center">
-            <div className=" text-centertext-muted-foreground p-8 text-lg italic">
-              No {contentType}.
+            <div className="text-center text-muted-foreground p-8 text-lg italic">
+              {getEmptyStateMessage(contentType)}
             </div>
           </div>
         )}
@@ -238,28 +252,6 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
               isOverflowing ? "w-[calc(100%-8px)]" : "w-full"
             } space-y-2 pt-2 ${isOverflowing ? "mr-2" : ""}`}
           >
-            {folders.map(folder => (
-              <Folder
-                key={folder.id}
-                folder={folder}
-                onUpdateFolder={updateFolder}
-                contentType={contentType}
-              >
-                {dataWithFolders
-                  .filter(item => item.folder_id === folder.id)
-                  .map(item => (
-                    <div
-                      key={item.id}
-                      draggable
-                      onDragStart={e => handleDragStart(e, item.id)}
-                    >
-                      {getDataListComponent(contentType, item)}
-                    </div>
-                  ))}
-              </Folder>
-            ))}
-
-            {folders.length > 0 && <Separator />}
 
             {contentType === "chats" ? (
               <>

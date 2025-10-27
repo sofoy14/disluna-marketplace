@@ -1,69 +1,29 @@
-import { supabase } from "@/lib/supabase/robust-client"
-import { TablesInsert } from "@/supabase/types"
+// STUB FILE - Temporarily created to prevent build errors
+// TODO: This redirects to process-files
+export * from "./process-files"
 
-export const getCollectionFilesByCollectionId = async (
-  collectionId: string
-) => {
-  const { data: collectionFiles, error } = await supabase
-    .from("collections")
-    .select(
-      `
-        id, 
-        name, 
-        files ( id, name, type )
-      `
-    )
-    .eq("id", collectionId)
-    .single()
+export const getCollectionFilesByCollectionId = async (collectionId: string) => {
+  const { getProcessFilesByProcessId } = await import("./process-files")
+  const result = await getProcessFilesByProcessId(collectionId)
+  return { files: result.files || [] }
+}
 
-  if (!collectionFiles) {
-    throw new Error(error.message)
+export const createCollectionFile = async (data: any) => {
+  const { createProcessFile } = await import("./process-files")
+  return await createProcessFile(data)
+}
+
+export const createCollectionFiles = async (dataArray: any[]) => {
+  const { createProcessFile } = await import("./process-files")
+  const results = []
+  for (const data of dataArray) {
+    results.push(await createProcessFile(data))
   }
-
-  return collectionFiles
+  return results
 }
 
-export const createCollectionFile = async (
-  collectionFile: TablesInsert<"collection_files">
-) => {
-  const { data: createdCollectionFile, error } = await supabase
-    .from("collection_files")
-    .insert(collectionFile)
-    .select("*")
-
-  if (!createdCollectionFile) {
-    throw new Error(error.message)
-  }
-
-  return createdCollectionFile
+export const deleteCollectionFile = async (collectionId: string, fileId: string) => {
+  const { deleteProcessFile } = await import("./process-files")
+  return await deleteProcessFile(collectionId, fileId)
 }
 
-export const createCollectionFiles = async (
-  collectionFiles: TablesInsert<"collection_files">[]
-) => {
-  const { data: createdCollectionFiles, error } = await supabase
-    .from("collection_files")
-    .insert(collectionFiles)
-    .select("*")
-
-  if (!createdCollectionFiles) {
-    throw new Error(error.message)
-  }
-
-  return createdCollectionFiles
-}
-
-export const deleteCollectionFile = async (
-  collectionId: string,
-  fileId: string
-) => {
-  const { error } = await supabase
-    .from("collection_files")
-    .delete()
-    .eq("collection_id", collectionId)
-    .eq("file_id", fileId)
-
-  if (error) throw new Error(error.message)
-
-  return true
-}

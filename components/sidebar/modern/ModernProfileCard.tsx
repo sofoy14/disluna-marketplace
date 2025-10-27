@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { ChatbotUIContext } from "@/context/context"
 import { useContext } from "react"
 import { ProfileSettings } from "@/components/utility/profile-settings"
+import { UserPanelModal } from "@/components/modals/UserPanelModal"
 
 export function ModernProfileCard() {
   const { profile } = useContext(ChatbotUIContext)
@@ -51,7 +52,9 @@ export function ModernProfileCard() {
   return (
     <div className="border-t border-border/40 bg-gradient-to-t from-muted/30 to-transparent">
       <div className="p-4">
-        <ProfileSettings trigger={profileTrigger} />
+        <UserPanelModal>
+          {profileTrigger}
+        </UserPanelModal>
       </div>
     </div>
   )

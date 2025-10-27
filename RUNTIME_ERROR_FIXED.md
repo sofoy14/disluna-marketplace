@@ -96,3 +96,6 @@ Ahora el sistema:
 El error de runtime está completamente solucionado y el sistema debería funcionar sin problemas.
 
 
+
+
+

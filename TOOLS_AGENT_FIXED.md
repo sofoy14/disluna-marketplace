@@ -104,3 +104,6 @@ OPENROUTER_API_KEY=tu_clave_openrouter_aqui
 El sistema ahora debería funcionar exactamente como el ejemplo de n8n que funciona perfectamente.
 
 
+
+
+
