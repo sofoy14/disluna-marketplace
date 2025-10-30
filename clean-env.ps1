@@ -1,28 +1,30 @@
-# Script para limpiar y actualizar el archivo .env
+# Script para generar .env.local SIN secretos
 # Ejecutar: powershell -ExecutionPolicy Bypass -File clean-env.ps1
 
-# Crear backup
-Copy-Item .env .env.backup
+# Crear backup si existe un .env.local previo
+if (Test-Path .env.local) {
+    Copy-Item .env.local .env.local.backup -Force
+}
 
-# Crear nuevo archivo .env limpio
-@"
-NEXT_PUBLIC_SUPABASE_URL=https://givjfonqaiqhsjjjzedc.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdpdmpmb25xYWlxaHNqamp6ZWRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIxODc1NzIsImV4cCI6MjA2Nzc2MzU3Mn0.I5CoIzZF_Rd00ZoQ43urSUTEnXxqmJEMzP7sLptNZw4
-OPENROUTER_API_KEY=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
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdpdmpmb25xYWlxaHNqamp6ZWRjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MjE4NzU3MiwiZXhwIjoyMDY3NzYzNTcyfQ.41C4P-gF2LxdpR0qGuAu61WV0NO1fl3edztxq0DLmXg
-OPENAI_API_KEY=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
-FIRECRAWL_API_KEY=fc-eb5dbfa5b2384e8eb5fac8218b4c66fa
+# Contenido base sin valores sensibles
+$envContent = @"
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+OPENROUTER_API_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+OPENAI_API_KEY=
+FIRECRAWL_API_KEY=
 
-GOOGLE_CSE_API_KEY=AIzaSyD5y97kpgw32Q5C6ujGKB6JafkD4Cv49TA
-GOOGLE_CSE_CX=6464df08faf4548b9
-SERPER_API_KEY=6f164b0a02c99a7615684616756dbf7fc9341284
+GOOGLE_CSE_API_KEY=
+GOOGLE_CSE_CX=
+SERPER_API_KEY=
 
 # Wompi Sandbox Configuration
 WOMPI_ENVIRONMENT=sandbox
-NEXT_PUBLIC_WOMPI_PUBLIC_KEY=pub_test_IrTS1vL2P0XY2hxuOkglZB8lox8Tc1Qk
-WOMPI_PRIVATE_KEY=prv_test_h549yTd7q5GxCKVpW9e9bx3DtQMa4jYg
-WOMPI_INTEGRITY_SECRET=test_integrity_P9GjPVxQVnGcLxCmwTR1K3tjK7oj3trVN
-WOMPI_WEBHOOK_SECRET=test_events_Cja2XBbsgrIloBiHNkmsjkdbRTbQkNdE
+NEXT_PUBLIC_WOMPI_PUBLIC_KEY=
+WOMPI_PRIVATE_KEY=
+WOMPI_INTEGRITY_SECRET=
+WOMPI_WEBHOOK_SECRET=
 
 # URLs
 NEXT_PUBLIC_WOMPI_BASE_URL=https://sandbox.wompi.co
@@ -30,12 +32,18 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 # Billing Configuration
 NEXT_PUBLIC_BILLING_ENABLED=true
-WOMPI_CRON_SECRET=cron_secret_2024_abc123xyz789
-"@ | Out-File -FilePath .env -Encoding UTF8
+WOMPI_CRON_SECRET=
+"@
 
-Write-Host "Archivo .env actualizado correctamente"
-Write-Host "Backup creado en .env.backup"
+# Escribir .env.local sin secretos
+$envContent | Out-File -FilePath .env.local -Encoding UTF8
 
+# Crear .env.example (plantilla) si no existe
+if (-not (Test-Path .env.example)) {
+    $envContent | Out-File -FilePath .env.example -Encoding UTF8
+}
 
-
-
+Write-Host "Archivo .env.local generado sin secretos. Complete los valores manualmente."
+if (Test-Path .env.local.backup) {
+    Write-Host "Backup creado en .env.local.backup"
+}
