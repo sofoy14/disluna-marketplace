@@ -1,6 +1,7 @@
 ﻿"use client"
 
 import { useContext, useEffect, useState } from "react"
+import { useParams } from "next/navigation"
 import { ChatbotUIContext } from "@/context/context"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import { ChatUI } from "@/components/chat/chat-ui"
@@ -13,8 +14,9 @@ const CHAT_MODE_EVENT = "chat-mode-changed"
 type ChatMode = "default" | "legal-writing"
 
 export default function ChatPage() {
-  const { chatMessages } = useContext(ChatbotUIContext)
+  const { chatMessages, selectedChat } = useContext(ChatbotUIContext)
   const { handleNewChat, handleFocusChatInput } = useChatHandler()
+  const params = useParams()
 
   const [chatMode, setChatMode] = useState<ChatMode>("default")
 
@@ -39,11 +41,13 @@ export default function ChatPage() {
     }
   }, [])
 
-  const isEmpty = chatMessages.length === 0
+  // Si hay un chatid en la URL o hay mensajes/seleccionado un chat, mostrar ChatUI
+  const hasChatData = params.chatid || (chatMessages.length > 0 && selectedChat)
 
-  if (!isEmpty) {
+  if (hasChatData) {
     return <ChatUI />
   }
 
+  // Si no hay datos de chat, mostrar welcome screen inmediatamente
   return chatMode === "legal-writing" ? <LegalWritingScreen /> : <WelcomeScreen />
 }

@@ -105,6 +105,11 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
     // Aquí irías la lógica para agregar el archivo a la lista
   }
 
+  // Ocultar el botón de crear archivo en el sidebar ya que ahora se hace desde el icono del chat
+  if (contentType === "files") {
+    return null;
+  }
+
   return (
     <div className="flex w-full space-x-2">
       {/* Botón principal con modal mejorado */}
@@ -115,13 +120,6 @@ export const SidebarCreateButtons: FC<SidebarCreateButtonsProps> = ({
             {getCreateButtonPrefix(contentType)} {getCreateButtonLabel(contentType)}
           </Button>
         </CreateProcessModal>
-      ) : contentType === "files" ? (
-        <CreateFileModal onFileCreated={handleFileCreated}>
-          <Button className="flex h-[36px] grow">
-            <IconPlus className="mr-1" size={20} />
-            {getCreateButtonPrefix(contentType)} {getCreateButtonLabel(contentType)}
-          </Button>
-        </CreateFileModal>
       ) : (
         <Button className="flex h-[36px] grow" onClick={getCreateFunction()}>
           <IconPlus className="mr-1" size={20} />

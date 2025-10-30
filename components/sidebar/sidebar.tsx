@@ -14,9 +14,10 @@ interface SidebarProps {
   contentType: ContentType
   showSidebar: boolean
   onContentTypeChange?: (type: ContentType) => void
+  onClose?: () => void
 }
 
-export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar, onContentTypeChange }) => {
+export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar, onContentTypeChange, onClose }) => {
   const {
     folders,
     chats,
@@ -64,6 +65,7 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar, onContentT
               contentType={contentType}
               showSidebar={showSidebar}
               onContentTypeChange={onContentTypeChange}
+              onClose={onClose}
             />
           </motion.div>
         )}

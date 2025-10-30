@@ -23,7 +23,7 @@ export function ModernProfileCard() {
       <div className="relative">
         <Avatar className="h-11 w-11 border-2 border-primary/30 ring-2 ring-background">
           <AvatarImage src={profile.image_url || undefined} alt={profile.display_name || profile.username} />
-          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-purple-500/20 text-lg font-bold text-primary">
+          <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-lg font-bold text-primary">
             {(profile.display_name || profile.username || "U").charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>

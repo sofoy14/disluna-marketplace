@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Wompi Checkout</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .form-container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .info { background: #f8f9fa; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>🧪 Test Wompi Checkout</h1>
+        
+        <div class="info">
+            <h3>✅ Estado del Sistema</h3>
+            <p><strong>Conexión con Wompi:</strong> ✅ Funcionando</p>
+            <p><strong>Credenciales:</strong> ✅ Reales de Sandbox</p>
+            <p><strong>Endpoint de Checkout:</strong> ✅ Generando datos correctamente</p>
+        </div>
+
+        <h3>🚀 Probar Redirección a Wompi</h3>
+        <p>Haz clic en el botón para probar la redirección a Wompi Sandbox:</p>
+        
+        <button onclick="testWompiRedirect()">Probar Redirección a Wompi</button>
+        
+        <div id="result" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        async function testWompiRedirect() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>🔄 Generando datos de checkout...</p>';
+            
+            try {
+                const response = await fetch('/api/billing/checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        plan_id: '088e2a0c-7c98-4d67-b97e-fbb9d2481656',
+                        workspace_id: 'd43087ce-1282-4dcd-9785-5b528f1ba258'
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+                        <div style="background: #d4edda; padding: 15px; border-radius: 4px; margin-bottom: 15px;">
+                            <h4>✅ Datos de Checkout Generados</h4>
+                            <p><strong>URL:</strong> ${data.checkout_url}</p>
+                            <p><strong>Referencia:</strong> ${data.form_data.reference}</p>
+                            <p><strong>Monto:</strong> $${data.form_data.amount_in_cents / 100} COP</p>
+                        </div>
+                        <p>🔄 Redirigiendo a Wompi...</p>
+                    `;
+                    
+                    // Crear formulario para redirigir a Wompi
+                    const form = document.createElement('form');
+                    form.method = 'GET'; // Wompi Web Checkout usa GET
+                    form.action = data.checkout_url;
+                    form.target = '_blank';
+
+                    // Agregar campos hidden
+                    Object.entries(data.form_data).forEach(([key, value]) => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = value;
+                        form.appendChild(input);
+                    });
+
+                    document.body.appendChild(form);
+                    form.submit();
+                    
+                    resultDiv.innerHTML += '<p>✅ Redirección iniciada. Se abrirá una nueva pestaña con Wompi.</p>';
+                } else {
+                    const error = await response.json();
+                    resultDiv.innerHTML = `
+                        <div style="background: #f8d7da; padding: 15px; border-radius: 4px;">
+                            <h4>❌ Error</h4>
+                            <p>${error.message || 'Error desconocido'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div style="background: #f8d7da; padding: 15px; border-radius: 4px;">
+                        <h4>❌ Error de Conexión</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
+

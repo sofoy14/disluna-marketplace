@@ -326,10 +326,10 @@ export const useChatHandler = () => {
           chatImages
         )
 
-        // Siempre usar tools-agent - el modelo decide si buscar
-        const endpoint = "/api/chat/tools-agent"
+        // Unificar en research endpoint (Tongyi 30B + web tools, RAG condicional)
+        const endpoint = "/api/chat/research"
         
-        console.log(`🤖 Usando endpoint: ${endpoint} - el modelo decidirá si buscar`)
+        console.log(`🤖 Usando endpoint único de investigación: ${endpoint}`)
         
         const response = await fetch(endpoint, {
           method: "POST",
@@ -338,7 +338,14 @@ export const useChatHandler = () => {
           },
           body: JSON.stringify({
             chatSettings: payload.chatSettings,
-            messages: formattedMessages
+            messages: formattedMessages,
+            // RAG condicional: si hay archivos en el chat o mensaje
+            fileIds: [
+              ...new Set([
+                ...newMessageFiles.map(f => f.id).filter(Boolean),
+                ...chatFiles.map(f => f.id).filter(Boolean)
+              ])
+            ]
           })
         })
 

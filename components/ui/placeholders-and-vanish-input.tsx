@@ -240,8 +240,8 @@ export function PlaceholdersAndVanishInput({
   return (
     <div
       className={cn(
-        "relative mx-auto w-full overflow-hidden rounded-xl bg-white shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 dark:bg-zinc-800 border-2 border-input",
-        inputValue && "bg-gray-50/50 dark:bg-zinc-900/50",
+        "relative mx-auto w-full overflow-hidden rounded-xl bg-background text-foreground shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 border border-input",
+        inputValue && "bg-muted/40",
         className
       )}
     >

@@ -20,6 +20,7 @@ import { useChatHandler } from "./chat-hooks/use-chat-handler"
 import { useChatHistoryHandler } from "./chat-hooks/use-chat-history"
 import { usePromptAndCommand } from "./chat-hooks/use-prompt-and-command"
 import { useSelectFileHandler } from "./chat-hooks/use-select-file-handler"
+import { CreateFileModal } from "../modals/CreateFileModal"
 
 interface ChatInputProps {}
 
@@ -243,16 +244,14 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
           disabled={isGenerating}
           showSuggestions={showPlaceholderSuggestions}
           leftElement={
-            <IconCirclePlus
-              className="cursor-pointer p-1 hover:opacity-50"
-              size={32}
-              onClick={() => {
-                console.log('Botón de subida de archivos clickeado')
-                console.log('fileInputRef.current:', fileInputRef.current)
-                console.log('filesToAccept:', filesToAccept)
-                fileInputRef.current?.click()
-              }}
-            />
+            <CreateFileModal onFileCreated={(file) => {
+              console.log('Archivo creado:', file)
+            }}>
+              <IconCirclePlus
+                className="cursor-pointer p-1 hover:opacity-50"
+                size={32}
+              />
+            </CreateFileModal>
           }
           rightElement={
             isGenerating ? (

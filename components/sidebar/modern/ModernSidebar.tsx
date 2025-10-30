@@ -1,26 +1,26 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { Sparkles, MessageSquare, FileText, FolderOpen, Wrench } from 'lucide-react'
-import { FC, ElementType, useContext, useMemo, useState } from 'react'
+import { MessageSquare, FolderOpen, Mic, X } from 'lucide-react'
+import { FC, ElementType, useContext, useMemo, useEffect, useState } from 'react'
 import { ChatbotUIContext } from '@/context/context'
 import { ContentType } from '@/types'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { WorkspaceSwitcher } from '@/components/utility/workspace-switcher'
 import { ModernProfileCard } from './ModernProfileCard'
 import { cn } from '@/lib/utils'
-import { SidebarCreateButtons } from '../sidebar-create-buttons'
-import { SidebarSearch } from '../sidebar-search'
 import { SidebarDataList } from '../sidebar-data-list'
+import { Button } from '@/components/ui/button'
+import { WorkspaceSwitcher } from '@/components/utility/workspace-switcher'
 
 interface ModernSidebarProps {
   contentType: ContentType
   showSidebar: boolean
   onContentTypeChange?: (type: ContentType) => void
+  onClose?: () => void
 }
 
 const HEADER_GRADIENT_CLASSES =
-  'relative overflow-hidden border-b border-border/40 bg-gradient-to-r from-primary/10 via-purple-500/10 to-primary/10 px-4 py-1'
+  'relative overflow-hidden border-b border-border px-4 py-1'
 
 const sidebarVariants = {
   open: {
@@ -44,26 +44,53 @@ const sidebarVariants = {
 export const ModernSidebar: FC<ModernSidebarProps> = ({
   contentType,
   showSidebar,
-  onContentTypeChange
+  onContentTypeChange,
+  onClose
 }) => {
-  const { chats, files, collections, tools, folders } =
+  const { chats, collections, folders } =
     useContext(ChatbotUIContext)
-  const [searchTerm, setSearchTerm] = useState('')
+    
+  const [isMobile, setIsMobile] = useState(false)
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+  
+  // Manejar swipe left para cerrar en móviles
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!isMobile) return
+    setTouchStart(e.touches[0].clientX)
+  }
+  
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isMobile || !touchStart || !onClose) return
+    
+    const touchEnd = e.changedTouches[0].clientX
+    const diff = touchStart - touchEnd
+    
+    // Si el swipe es hacia la izquierda más de 50px, cerrar
+    if (diff > 50) {
+      onClose()
+    }
+    setTouchStart(null)
+  }
 
   const data = useMemo(() => {
     switch (contentType) {
       case 'chats':
         return chats
-      case 'files':
-        return files
       case 'collections':
         return collections
-      case 'tools':
-        return tools
       default:
         return []
     }
-  }, [chats, files, collections, tools, contentType])
+  }, [chats, collections, contentType])
 
   const contentTypeFolders = useMemo(
     () => folders.filter(folder => folder.type === contentType),
@@ -77,24 +104,18 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
     icon: ElementType
   }> = [
     { key: 'chats', label: 'Chats', count: chats.length, icon: MessageSquare },
-    { key: 'files', label: 'Archivos', count: files.length, icon: FileText },
     { key: 'collections', label: 'Procesos', count: collections.length, icon: FolderOpen },
-    { key: 'tools', label: 'Herramientas', count: tools.length, icon: Wrench }
+    { key: 'transcriptions', label: 'Transcripciones', count: 0, icon: Mic }
   ]
 
   const handleSelectContentType = (type: ContentType) => {
     if (type === contentType) return
     onContentTypeChange?.(type)
+    // Cerrar sidebar en móviles después de seleccionar
+    if (isMobile) {
+      onClose?.()
+    }
   }
-
-  const filteredData = useMemo(() => {
-    const normalizedSearch = searchTerm.trim().toLowerCase()
-    if (!normalizedSearch) return data
-
-    return data.filter(item =>
-      (item.name || '').toLowerCase().includes(normalizedSearch)
-    )
-  }, [data, searchTerm])
 
   return (
     <AnimatePresence>
@@ -105,32 +126,37 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
           animate="open"
           exit="closed"
           variants={sidebarVariants}
-          className="flex h-full flex-col border-r border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          className="flex h-full flex-col border-r border-border bg-background relative"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
           <div className={HEADER_GRADIENT_CLASSES}>
             <div className="relative z-10">
-              <div className="flex items-center justify-center">
-                <div>
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent text-center">ALI</h2>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex-1 flex items-center justify-center">
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-center">ALI</h2>
                 </div>
+                {/* Botón de cerrar solo en móviles - más prominente */}
+                {isMobile && onClose && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={onClose}
+                    className="md:hidden h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border border-border text-foreground hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all"
+                    aria-label="Cerrar menú"
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                )}
               </div>
-
-              <div>
-                <WorkspaceSwitcher />
+              {/* WorkspaceSwitcher - Botón Hogar */}
+              <div className="w-full">
+                <WorkspaceSwitcher showSettingsButton={false} />
               </div>
             </div>
           </div>
 
-          <div className="px-4 pt-4 pb-2 border-b border-border/40 space-y-3">
-            <SidebarCreateButtons contentType={contentType} hasData={data.length > 0} />
-            <SidebarSearch
-              contentType={contentType}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-            />
-          </div>
-
-          <div className="px-4 py-3 border-b border-border/40">
+          <div className="px-4 py-3 border-b border-border">
             <nav className="space-y-1">
               {navItems.map(item => {
                 const IconComponent = item.icon
@@ -147,7 +173,7 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
                         : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
                     )}
                   >
-                    <IconComponent className={cn('w-4 h-4', !isActive && 'text-muted-foreground')} />
+                    <IconComponent className={cn('w-4 h-4', isActive ? 'text-primary-foreground' : 'text-muted-foreground')} />
                     <span className="flex-1 text-left">{item.label}</span>
                     <span
                       className={cn(
@@ -169,7 +195,7 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
             <div className="py-4">
               <SidebarDataList
                 contentType={contentType}
-                data={filteredData as any}
+                data={data as any}
                 folders={contentTypeFolders}
               />
             </div>

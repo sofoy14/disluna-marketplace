@@ -66,6 +66,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   useEffect(() => {
     ;(async () => await fetchWorkspaceData(workspaceId))()
 
+    // Solo limpiar estado de chat cuando realmente cambia el workspace
     setUserInput("")
     setChatMessages([])
     setSelectedChat(null)
@@ -102,7 +103,26 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
         const processData =
           await getProcessWorkspacesByWorkspaceId(workspaceId)
         // processData returns { id, name, processes: [...] }
-        setCollections(processData?.processes || [])
+        console.log('Process data loaded:', {
+          workspaceId,
+          processesCount: processData?.processes?.length || 0,
+          processes: processData?.processes
+        })
+        
+        // Mapear procesos a formato collections para compatibilidad
+        const collectionsData = (processData?.processes || []).map(process => ({
+          id: process.id,
+          name: process.name,
+          description: process.description,
+          user_id: process.user_id,
+          workspace_id: process.workspace_id,
+          created_at: process.created_at,
+          updated_at: process.updated_at,
+          sharing: process.sharing || 'private'
+        }))
+        
+        console.log('Collections data mapped:', collectionsData.length)
+        setCollections(collectionsData)
       } catch (processError) {
         console.error('Error loading processes (stub tables may not exist yet):', processError)
         setCollections([])

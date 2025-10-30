@@ -29,6 +29,13 @@ export default function BillingPage() {
 
   useEffect(() => {
     fetchBillingData();
+    // Procesar retorno de Wompi (status e id de transacción)
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+    const transactionId = params.get('id') || params.get('transaction_id');
+    if (status === 'APPROVED' && transactionId) {
+      void finalizeSubscription(transactionId);
+    }
   }, []);
 
   const fetchBillingData = async () => {
@@ -74,6 +81,40 @@ export default function BillingPage() {
       setIsLoading(false);
     }
   };
+
+  const finalizeSubscription = async (transactionId: string) => {
+    try {
+      // Esperar a que workspaceId esté listo
+      if (!workspaceId) {
+        // Reintentar luego de cargar
+        setTimeout(() => finalizeSubscription(transactionId), 300);
+        return;
+      }
+      const planId = localStorage.getItem('pending_plan_id');
+      if (!planId) return;
+
+      const resp = await fetch('/api/billing/subscriptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId, transaction_id: transactionId })
+      });
+
+      const json = await resp.json();
+      if (!resp.ok || !json.success) {
+        console.error('Error creating subscription:', json);
+        return;
+      }
+
+      // Limpiar estado local y redirigir al chat
+      localStorage.removeItem('pending_plan_id');
+      await fetchBillingData();
+      if (workspaceId) {
+        router.push(`/${workspaceId}/chat`);
+      }
+    } catch (e) {
+      console.error('Finalize subscription error:', e);
+    }
+  }
 
   const formatPrice = (amountInCents: number, currency: string) => {
     const amount = amountInCents / 100;
@@ -220,15 +261,20 @@ export default function BillingPage() {
                           });
 
                           if (response.ok) {
-                            const checkoutData = await response.json();
-                            
+                            const checkoutResp = await response.json();
+                            const data = checkoutResp.data;
+                            if (!data) throw new Error('Respuesta de checkout inválida');
+
+                            // Persistir plan para completar suscripción en retorno
+                            localStorage.setItem('pending_plan_id', plan.id);
+
                             // Crear formulario para redirigir a Wompi
                             const form = document.createElement('form');
                             form.method = 'GET'; // Wompi Web Checkout usa GET
-                            form.action = checkoutData.checkout_url;
+                            form.action = data.checkout_url;
                             
                             // Agregar campos hidden
-                            Object.entries(checkoutData.form_data).forEach(([key, value]) => {
+                            Object.entries(data.checkout_data).forEach(([key, value]) => {
                               const input = document.createElement('input');
                               input.type = 'hidden';
                               input.name = key;

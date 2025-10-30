@@ -5,6 +5,10 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { WebSearchToolsAgent } from "@/lib/agents/web-search-tools-agent"
+import { getServerProfile } from "@/lib/server/server-chat-helpers"
+import { createClient } from "@supabase/supabase-js"
+import { Database } from "@/supabase/types"
+import OpenAI from "openai"
 
 export const maxDuration = 60 // 60 segundos para tool calling
 
@@ -61,6 +65,13 @@ export async function POST(request: NextRequest) {
   try {
     const { chatSettings, messages, chatId, userId } = (await request.json()) as RequestBody
 
+    // Perfil del usuario para claves y scoping
+    const profile = await getServerProfile()
+    const supabaseAdmin = createClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
     // Validar API key
     const apiKey = process.env.OPENROUTER_API_KEY
     if (!apiKey) {
@@ -94,7 +105,43 @@ export async function POST(request: NextRequest) {
     console.log(`🔧 Herramientas: serperSearch, httpFetch`)
     console.log(`${'='.repeat(80)}`)
 
-    // Ejecutar el Tools Agent con verificación multi-búsqueda
+    // 1) Recuperación semántica en documentos del usuario (RAG)
+    let ragContext = ""
+    try {
+      // Obtener archivos del usuario
+      const { data: files } = await supabaseAdmin
+        .from("files")
+        .select("id")
+        .eq("user_id", profile.user_id)
+
+      const userFileIds = (files || []).map(f => f.id)
+
+      if (userFileIds.length > 0 && profile.openai_api_key) {
+        const openai = new OpenAI({ apiKey: profile.openai_api_key })
+        const emb = await openai.embeddings.create({
+          model: "text-embedding-3-small",
+          input: userQuery
+        })
+        const queryEmbedding = emb.data[0]?.embedding as any
+
+        const { data: matches } = await supabaseAdmin.rpc("match_file_items_openai", {
+          query_embedding: queryEmbedding,
+          match_count: 5,
+          file_ids: userFileIds
+        })
+
+        if (matches && matches.length > 0) {
+          const snippets = matches
+            .map((m: any, i: number) => `(${i + 1}) ${m.content}`)
+            .join("\n\n")
+          ragContext = `\n\n[Contexto de documentos del usuario]\n${snippets}\n\n`;
+        }
+      }
+    } catch (e) {
+      console.warn("RAG falló o no disponible, continuando sin contexto:", e)
+    }
+
+    // 2) Ejecutar el Tools Agent con verificación multi-búsqueda
     console.log(`🤖 Ejecutando Tools Agent con verificación multi-búsqueda`)
     
     // Inicializar Tools Agent
@@ -106,7 +153,7 @@ export async function POST(request: NextRequest) {
     })
 
     // Procesar consulta con tool calling
-    const agentResponse = await toolsAgent.processQuery(userQuery)
+    const agentResponse = await toolsAgent.processQuery(`${userQuery}${ragContext}`)
 
     console.log(`✅ Tools Agent completado`)
     console.log(`📊 Respuesta: ${agentResponse.text.substring(0, 100)}...`)

@@ -28,6 +28,7 @@ import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { useRouter } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 import { LoadingScreen } from "./loading-screen"
+import { ThemePreferencesProvider } from "./theme-context"
 
 interface GlobalStateProps {
   children: React.ReactNode
@@ -323,8 +324,9 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
   }
 
   return (
-    <ChatbotUIContext.Provider
-      value={{
+    <ThemePreferencesProvider profile={profile}>
+      <ChatbotUIContext.Provider
+        value={{
         // PROFILE STORE
         profile,
         setProfile,
@@ -459,8 +461,9 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
         showSuggestedQuestions,
         setShowSuggestedQuestions
       }}
-    >
-      {isLoading ? <LoadingScreen message={loadingMessage} /> : children}
-    </ChatbotUIContext.Provider>
+      >
+        {isLoading ? <LoadingScreen message={loadingMessage} /> : children}
+      </ChatbotUIContext.Provider>
+    </ThemePreferencesProvider>
   )
 }

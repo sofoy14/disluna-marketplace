@@ -12,6 +12,7 @@ import useHotkey from "@/lib/hooks/use-hotkey"
 import { LLMID, MessageImage } from "@/types"
 import { useParams } from "next/navigation"
 import { FC, useContext, useEffect, useState } from "react"
+import { Badge } from "@/components/ui/badge"
 import { ChatHelp } from "./chat-help"
 import { useScroll } from "./chat-hooks/use-scroll"
 import { ChatInput } from "./chat-input"
@@ -186,43 +187,41 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
   }
 
   return (
-    <div className="relative flex h-full flex-col items-center">
-      <div className="absolute left-4 top-2.5 flex justify-center">
-        <ChatScrollButtons
-          isAtTop={isAtTop}
-          isAtBottom={isAtBottom}
-          isOverflowing={isOverflowing}
-          scrollToTop={scrollToTop}
-          scrollToBottom={scrollToBottom}
-        />
-      </div>
-
-      {/* Botones secundarios ocultos */}
-      {/* <div className="absolute right-4 top-1 flex h-[40px] items-center space-x-2">
-        <ChatSecondaryButtons />
-      </div> */}
-
-      <div className="bg-secondary flex max-h-[50px] min-h-[50px] w-full items-center justify-center border-b-2 font-bold">
-        <div className="max-w-[200px] truncate sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px]">
-          {selectedChat?.name || "Chat"}
+    <div className="flex h-full flex-col bg-gradient-to-br from-background via-background to-primary/20 overflow-hidden">
+      {/* Header */}
+      <div className="px-3 md:px-6 py-3 md:py-4 border-b border-border flex items-center justify-between">
+        <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1 pl-12 md:pl-0">
+          <span className="text-sm truncate">{selectedChat?.name || "Chat"}</span>
+        </div>
+        <div className="absolute left-4 top-2.5 flex justify-center z-10">
+          <ChatScrollButtons
+            isAtTop={isAtTop}
+            isAtBottom={isAtBottom}
+            isOverflowing={isOverflowing}
+            scrollToTop={scrollToTop}
+            scrollToBottom={scrollToBottom}
+          />
         </div>
       </div>
 
+      {/* Main Content */}
       <div
-        className="flex size-full flex-col overflow-auto border-b"
+        className="flex-1 overflow-auto"
         onScroll={handleScroll}
       >
         <div ref={messagesStartRef} />
-
         <ChatMessages />
-
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="relative w-full min-w-[300px] items-end px-2 pb-3 pt-0 sm:w-[600px] sm:pb-8 sm:pt-5 md:w-[700px] lg:w-[700px] xl:w-[800px]">
-        <ChatInput />
+      {/* Input Area */}
+      <div className="px-3 md:px-6 py-3 md:py-4 border-t border-border">
+        <div className="w-full max-w-3xl mx-auto">
+          <ChatInput />
+        </div>
       </div>
 
+      {/* Help Button */}
       <div className="absolute bottom-2 right-2 hidden md:block lg:bottom-4 lg:right-4">
         <ChatHelp />
       </div>

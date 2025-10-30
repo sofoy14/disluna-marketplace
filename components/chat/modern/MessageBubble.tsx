@@ -2,11 +2,12 @@
 
 import { motion } from 'framer-motion'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { ShaderCanvas } from '@/components/shader-canvas'
 import { cn } from '@/lib/utils'
 import { Check, CheckCheck, Clock, AlertCircle, Copy, RefreshCw } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface MessageBubbleProps {
   variant: 'user' | 'ai' | 'system'
@@ -42,6 +43,25 @@ export function MessageBubble({
   const isUser = variant === 'user'
   const isAI = variant === 'ai'
   const isSystem = variant === 'system'
+
+  // Shader seleccionado por el usuario en panel de personalización
+  const [shaderId, setShaderId] = useState<number>(1)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+
+    const saved = localStorage.getItem('selectedShader')
+    if (saved) setShaderId(parseInt(saved, 10))
+
+    const handleShaderChanged = (e: CustomEvent<number>) => {
+      setShaderId(e.detail)
+    }
+
+    window.addEventListener('shaderChanged', handleShaderChanged as unknown as EventListener)
+    return () => {
+      window.removeEventListener('shaderChanged', handleShaderChanged as unknown as EventListener)
+    }
+  }, [])
 
   const StatusIcon = statusIcons[status]
 
@@ -82,17 +102,22 @@ export function MessageBubble({
         isUser && 'flex-row-reverse',
       )}
     >
-      {/* Avatar */}
-      <Avatar className="w-8 h-8 flex-shrink-0">
-        <AvatarImage src={avatar} alt={userName} />
-        <AvatarFallback className={cn(
-          'text-xs font-medium',
-          isUser && 'bg-primary text-primary-foreground',
-          isAI && 'bg-secondary text-secondary-foreground'
-        )}>
-          {userName.charAt(0).toUpperCase()}
-        </AvatarFallback>
-      </Avatar>
+      {/* Avatar: usuario con foto; asistente con ShaderCanvas */}
+      {isUser ? (
+        <Avatar className="w-8 h-8 flex-shrink-0">
+          <AvatarImage src={avatar} alt={userName} />
+          <AvatarFallback className={cn(
+            'text-xs font-medium',
+            'bg-primary text-primary-foreground'
+          )}>
+            {userName.charAt(0).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+      ) : (
+        <div className="w-8 h-8 flex-shrink-0 rounded-full overflow-hidden">
+          <ShaderCanvas size={32} shaderId={shaderId} />
+        </div>
+      )}
 
       {/* Message Container */}
       <div className={cn(

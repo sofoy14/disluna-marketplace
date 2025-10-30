@@ -14,11 +14,10 @@ export async function middleware(request: NextRequest) {
     const session = await supabase.auth.getSession()
     const user = session.data.session?.user
 
-    // Allow access to public routes
-    const publicRoutes = ['/login', '/auth/verify-email', '/onboarding', '/debug-auth', '/test-signup', '/billing']
-    const isPublicRoute = publicRoutes.some(route => 
-      request.nextUrl.pathname.startsWith(route)
-    )
+    // Allow access to public routes (with or without locale prefix)
+    const publicSegments = ['login', 'auth/verify-email', 'onboarding', 'debug-auth', 'test-signup', 'billing']
+    const pathname = request.nextUrl.pathname
+    const isPublicRoute = publicSegments.some(seg => pathname === `/${seg}` || pathname.includes(`/${seg}`))
 
     if (isPublicRoute) {
       return response

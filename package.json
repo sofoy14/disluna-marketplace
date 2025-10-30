@@ -31,7 +31,8 @@
     "test:memory": "jest --testPathPattern=memory",
     "test:anti-hallucination": "jest --testPathPattern=anti-hallucination",
     "test:verification": "jest --testPathPattern=verification",
-    "test:e2e": "jest --testPathPattern=end-to-end"
+    "test:e2e": "jest --testPathPattern=end-to-end",
+    "tunnel": "cloudflared tunnel --url http://localhost:3000"
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.2.1",

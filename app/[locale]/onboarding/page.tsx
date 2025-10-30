@@ -153,8 +153,20 @@ export default function OnboardingPage() {
     setSelectedPlan(planId);
   };
 
-  const handleContinueToPayment = () => {
-    if (selectedPlan) {
+  const handleContinueToPayment = async () => {
+    if (!selectedPlan) return;
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('profiles')
+          .update({ onboarding_step: 'payment_setup' })
+          .eq('user_id', user.id);
+      }
+      setCurrentStep('payment_setup');
+    } catch (e) {
+      // no-op fallback
       setCurrentStep('payment_setup');
     }
   };

@@ -30,6 +30,12 @@
 
 @layer base {
   :root {
+    /* Custom color variables (dynamically set via JavaScript) */
+    --custom-primary-hue: 270;
+    --custom-primary-saturation: 87%;
+    --custom-primary-lightness: 67%;
+    --custom-primary-color: #8b5cf6;
+
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
 
@@ -263,5 +269,18 @@
 @media (min-width: 1024px) {
   .custom-screen {
     padding: 0 3rem;
+  }
+}
+
+/* Chatbot Design Styles */
+@layer utilities {
+  /* Hide scrollbar for horizontal scroll areas */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
