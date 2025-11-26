@@ -13,15 +13,17 @@ export async function POST(request: Request) {
   try {
     const profile = await getServerProfile()
 
-    checkApiKey(profile.openai_api_key, "OpenAI")
+    // Usar OpenRouter para Tongyi
+    const apiKey = process.env.OPENROUTER_API_KEY || profile.openrouter_api_key
+    checkApiKey(apiKey, "OpenRouter")
 
     const openai = new OpenAI({
-      apiKey: profile.openai_api_key || "",
-      organization: profile.openai_organization_id
+      apiKey: apiKey || "",
+      baseURL: "https://openrouter.ai/api/v1"
     })
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4-1106-preview",
+      model: "alibaba/tongyi-deepresearch-30b-a3b",
       messages: [
         {
           role: "system",
@@ -32,9 +34,8 @@ export async function POST(request: Request) {
           content: input
         }
       ],
-      temperature: 0,
-      max_tokens:
-        CHAT_SETTING_LIMITS["gpt-4-turbo-preview"].MAX_TOKEN_OUTPUT_LENGTH
+      temperature: 0.2,
+      max_tokens: 3000
       //   response_format: { type: "json_object" }
       //   stream: true
     })

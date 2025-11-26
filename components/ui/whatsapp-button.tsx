@@ -1,6 +1,7 @@
 "use client"
 
 import WhatsAppSVG from "@/components/icons/whatsapp-svg"
+import { motion } from "framer-motion"
 
 interface WhatsAppButtonProps {
   phoneNumber: string
@@ -20,7 +21,10 @@ export default function WhatsAppButton({
   }
 
   return (
-    <button
+    <motion.button
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: 2.5, duration: 0.5, type: "spring" }}
       onClick={handleClick}
       className={`
         fixed bottom-6 right-6 z-50
@@ -47,6 +51,6 @@ export default function WhatsAppButton({
 
       {/* Pulse animation */}
       <div className="absolute inset-0 rounded-full bg-green-500 animate-ping opacity-20"></div>
-    </button>
+    </motion.button>
   )
 }

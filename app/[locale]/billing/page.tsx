@@ -5,8 +5,19 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CreditCard, CheckCircle, Clock, AlertCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { 
+  CreditCard, 
+  CheckCircle, 
+  Clock, 
+  AlertCircle,
+  Crown,
+  Loader2,
+  ArrowLeft,
+  Sparkles,
+  Star,
+  Zap
+} from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/browser-client';
 
 interface Plan {
@@ -15,65 +26,89 @@ interface Plan {
   description: string;
   amount_in_cents: number;
   currency: string;
-  interval: string;
+  billing_period: 'monthly' | 'yearly';
   features: string[];
+  query_limit: number;
+  sort_order: number;
+  first_month_price?: number;
+  has_first_month_promo?: boolean;
+}
+
+interface Subscription {
+  id: string;
+  status: string;
+  current_period_start: string;
+  current_period_end: string;
+  cancel_at_period_end: boolean;
+  plan_id: string;
+  plans?: {
+    name: string;
+    description: string;
+    amount_in_cents: number;
+    billing_period: string;
+  };
 }
 
 export default function BillingPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [currentSubscription, setCurrentSubscription] = useState<any>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const [alert, setAlert] = useState<string | null>(null);
+  
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
 
   useEffect(() => {
-    fetchBillingData();
-    // Procesar retorno de Wompi (status e id de transacción)
-    const params = new URLSearchParams(window.location.search);
-    const status = params.get('status');
-    const transactionId = params.get('id') || params.get('transaction_id');
-    if (status === 'APPROVED' && transactionId) {
-      void finalizeSubscription(transactionId);
+    // Leer alerta de URL
+    const alertParam = searchParams.get('alert');
+    if (alertParam) {
+      setAlert(alertParam);
     }
-  }, []);
+    
+    fetchBillingData();
+  }, [searchParams]);
 
   const fetchBillingData = async () => {
     try {
-      // Obtener usuario actual
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
         router.push('/login');
         return;
       }
 
-      // Obtener workspace del usuario
-      const { data: workspaces, error: workspaceError } = await supabase
+      // Obtener workspace
+      const { data: workspaces } = await supabase
         .from('workspaces')
         .select('*')
         .eq('user_id', user.id)
         .eq('is_home', true)
         .single();
 
-      if (workspaceError || !workspaces) {
-        console.error('Error fetching workspace:', workspaceError);
-        return;
+      if (workspaces) {
+        setWorkspaceId(workspaces.id);
       }
 
-      setWorkspaceId(workspaces.id);
-
-      // Fetch plans
+      // Obtener planes
       const plansResponse = await fetch('/api/billing/plans');
       if (plansResponse.ok) {
         const plansData = await plansResponse.json();
-        setPlans(plansData.data || []);
+        if (plansData.success) {
+          setPlans(plansData.data);
+        }
       }
 
-      // Fetch current subscription
-      const subscriptionResponse = await fetch(`/api/billing/subscriptions?workspace_id=${workspaces.id}`);
-      if (subscriptionResponse.ok) {
-        const subscriptionData = await subscriptionResponse.json();
-        setCurrentSubscription(subscriptionData.data);
+      // Obtener suscripción actual
+      if (workspaces?.id) {
+        const subscriptionResponse = await fetch(`/api/billing/subscriptions?workspace_id=${workspaces.id}`);
+        if (subscriptionResponse.ok) {
+          const subscriptionData = await subscriptionResponse.json();
+          if (subscriptionData.success && subscriptionData.data) {
+            setCurrentSubscription(subscriptionData.data);
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching billing data:', error);
@@ -82,54 +117,70 @@ export default function BillingPage() {
     }
   };
 
-  const finalizeSubscription = async (transactionId: string) => {
-    try {
-      // Esperar a que workspaceId esté listo
-      if (!workspaceId) {
-        // Reintentar luego de cargar
-        setTimeout(() => finalizeSubscription(transactionId), 300);
-        return;
-      }
-      const planId = localStorage.getItem('pending_plan_id');
-      if (!planId) return;
+  const formatPrice = (amountInCents: number) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amountInCents / 100);
+  };
 
-      const resp = await fetch('/api/billing/subscriptions', {
+  const handleSubscribe = async (planId: string) => {
+    if (!workspaceId) {
+      alert('Error: No se encontró el workspace');
+      return;
+    }
+
+    setProcessingPlanId(planId);
+
+    try {
+      const response = await fetch('/api/billing/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId, transaction_id: transactionId })
+        body: JSON.stringify({
+          plan_id: planId,
+          workspace_id: workspaceId
+        })
       });
 
-      const json = await resp.json();
-      if (!resp.ok || !json.success) {
-        console.error('Error creating subscription:', json);
-        return;
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Error al iniciar suscripción');
       }
 
-      // Limpiar estado local y redirigir al chat
-      localStorage.removeItem('pending_plan_id');
-      await fetchBillingData();
-      if (workspaceId) {
-        router.push(`/${workspaceId}/chat`);
-      }
-    } catch (e) {
-      console.error('Finalize subscription error:', e);
+      // Crear formulario y redirigir a Wompi
+      const form = document.createElement('form');
+      form.method = 'GET';
+      form.action = result.data.checkout_url;
+
+      Object.entries(result.data.checkout_data).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value as string;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+
+    } catch (error) {
+      console.error('Error initiating subscription:', error);
+      alert(error instanceof Error ? error.message : 'Error al procesar el pago');
+    } finally {
+      setProcessingPlanId(null);
     }
-  }
-
-  const formatPrice = (amountInCents: number, currency: string) => {
-    const amount = amountInCents / 100;
-    return new Intl.NumberFormat('es-CO', {
-      style: 'currency',
-      currency: currency === 'COP' ? 'COP' : 'USD'
-    }).format(amount);
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'active':
         return <Badge className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />Activa</Badge>;
+      case 'trialing':
+        return <Badge className="bg-blue-100 text-blue-800"><Clock className="w-3 h-3 mr-1" />Prueba</Badge>;
       case 'past_due':
-        return <Badge className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />Vencida</Badge>;
+        return <Badge className="bg-yellow-100 text-yellow-800"><AlertCircle className="w-3 h-3 mr-1" />Pago pendiente</Badge>;
       case 'canceled':
         return <Badge className="bg-red-100 text-red-800"><AlertCircle className="w-3 h-3 mr-1" />Cancelada</Badge>;
       default:
@@ -137,195 +188,272 @@ export default function BillingPage() {
     }
   };
 
+  const getAlertMessage = () => {
+    switch (alert) {
+      case 'subscription_required':
+        return { type: 'warning', message: 'Necesitas una suscripción activa para acceder al chatbot' };
+      case 'subscription_expired':
+        return { type: 'error', message: 'Tu suscripción ha expirado. Renueva para continuar usando el servicio' };
+      case 'payment_required':
+        return { type: 'warning', message: 'Tienes un pago pendiente. Por favor actualiza tu método de pago' };
+      default:
+        return null;
+    }
+  };
+
+  const alertInfo = getAlertMessage();
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-1/4 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-64 bg-gray-200 rounded-lg"></div>
-              ))}
-            </div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <p className="text-slate-600 font-medium">Cargando planes...</p>
         </div>
       </div>
     );
   }
 
+  // Separar planes por período
+  const monthlyPlan = plans.find(p => p.billing_period === 'monthly');
+  const yearlyPlan = plans.find(p => p.billing_period === 'yearly');
+
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Facturación</h1>
-          <p className="mt-2 text-gray-600">
-            Gestiona tu suscripción y métodos de pago
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <Sparkles className="w-4 h-4" />
+            Oferta de lanzamiento
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+            Elige tu Plan
+          </h1>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            Accede a tu asistente legal inteligente con IA avanzada
           </p>
         </div>
 
-        {/* Estado actual de la suscripción */}
-        {currentSubscription ? (
-          <Card className="mb-8">
+        {/* Alert */}
+        {alertInfo && (
+          <div className={`mb-8 p-4 rounded-xl ${
+            alertInfo.type === 'error' 
+              ? 'bg-red-50 border border-red-200 text-red-800' 
+              : 'bg-amber-50 border border-amber-200 text-amber-800'
+          }`}>
+            <div className="flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 flex-shrink-0" />
+              <span className="font-medium">{alertInfo.message}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Suscripción actual */}
+        {currentSubscription && currentSubscription.status === 'active' && (
+          <Card className="mb-10 border-2 border-green-300 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Suscripción Actual
+              <CardTitle className="flex items-center gap-2 text-green-800">
+                <Crown className="h-6 w-6" />
+                Tu Suscripción Actual
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold">{currentSubscription.plan?.name || 'Plan Básico'}</h3>
-                  <p className="text-gray-600">{currentSubscription.plan?.description || 'Plan gratuito'}</p>
-                  <p className="text-sm text-gray-500 mt-1">
-                    Próximo cobro: {currentSubscription.current_period_end ? 
-                      new Date(currentSubscription.current_period_end).toLocaleDateString('es-CO') : 
-                      'No programado'
-                    }
+                  <h3 className="text-xl font-semibold text-slate-900">{currentSubscription.plans?.name || 'Plan'}</h3>
+                  <p className="text-slate-600">{currentSubscription.plans?.description}</p>
+                  <p className="text-sm text-slate-500 mt-2">
+                    Válido hasta: {new Date(currentSubscription.current_period_end).toLocaleDateString('es-CO', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
                   </p>
                 </div>
                 <div className="text-right">
                   {getStatusBadge(currentSubscription.status)}
-                  <p className="text-lg font-semibold mt-2">
-                    {currentSubscription.plan?.amount_in_cents ? 
-                      formatPrice(currentSubscription.plan.amount_in_cents, currentSubscription.plan.currency) : 
-                      'Gratuito'
-                    }
-                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
-        ) : (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Sin Suscripción Activa
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600">
-                Actualmente estás usando el plan gratuito. Selecciona un plan para acceder a más funciones.
-              </p>
-            </CardContent>
-          </Card>
         )}
 
-        {/* Planes disponibles */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Planes Disponibles</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {plans.map((plan) => (
-              <Card key={plan.id} className={`relative ${currentSubscription?.plan_id === plan.id ? 'ring-2 ring-blue-500' : ''}`}>
-                {currentSubscription?.plan_id === plan.id && (
-                  <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-blue-500 text-white">Plan Actual</Badge>
+        {/* Planes */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          {/* Plan Mensual */}
+          {monthlyPlan && (
+            <Card className="relative border-2 border-indigo-300 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white overflow-hidden">
+              {/* Badge destacado */}
+              <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-1.5 text-sm shadow-lg">
+                  <Star className="w-4 h-4 mr-1 fill-current" />
+                  Más Popular
+                </Badge>
+              </div>
+
+              <CardHeader className="text-center pt-10 pb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">
+                  {monthlyPlan.name}
+                </CardTitle>
+                <CardDescription className="text-slate-600">
+                  {monthlyPlan.description}
+                </CardDescription>
+
+                {/* Precio */}
+                <div className="mt-6 space-y-2">
+                  {monthlyPlan.has_first_month_promo && (
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-lg text-slate-400 line-through">
+                        ${formatPrice(monthlyPlan.amount_in_cents)}
+                      </span>
+                      <Badge className="bg-green-100 text-green-700 font-semibold">
+                        Primer mes
+                      </Badge>
+                    </div>
+                  )}
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-5xl font-extrabold text-slate-900">
+                      ${formatPrice(monthlyPlan.first_month_price || monthlyPlan.amount_in_cents)}
+                    </span>
+                    <span className="text-lg text-slate-500">COP</span>
                   </div>
-                )}
-                <CardHeader>
-                  <CardTitle className="text-xl">{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
-                  <div className="text-3xl font-bold text-gray-900">
-                    {formatPrice(plan.amount_in_cents, plan.currency)}
-                    <span className="text-sm font-normal text-gray-500">/{plan.interval}</span>
+                  <p className="text-sm text-slate-500">
+                    Luego ${formatPrice(monthlyPlan.amount_in_cents)}/mes
+                  </p>
+                </div>
+              </CardHeader>
+
+              <CardContent className="pt-2">
+                <ul className="space-y-3 mb-8">
+                  {monthlyPlan.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  onClick={() => handleSubscribe(monthlyPlan.id)}
+                  disabled={currentSubscription?.plan_id === monthlyPlan.id || processingPlanId !== null}
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-200"
+                  size="lg"
+                >
+                  {processingPlanId === monthlyPlan.id ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Procesando...
+                    </>
+                  ) : currentSubscription?.plan_id === monthlyPlan.id ? (
+                    'Plan Actual'
+                  ) : (
+                    <>
+                      <Zap className="w-4 h-4 mr-2" />
+                      Comenzar por $4.000
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Plan Anual */}
+          {yearlyPlan && (
+            <Card className="relative border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-white overflow-hidden">
+              {/* Badge de ahorro */}
+              <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-1.5 text-sm shadow-lg">
+                  💰 Ahorra 10%
+                </Badge>
+              </div>
+
+              <CardHeader className="text-center pt-10 pb-4">
+                <CardTitle className="text-2xl font-bold text-slate-900">
+                  {yearlyPlan.name}
+                </CardTitle>
+                <CardDescription className="text-slate-600">
+                  {yearlyPlan.description}
+                </CardDescription>
+
+                {/* Precio */}
+                <div className="mt-6 space-y-2">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-lg text-slate-400 line-through">
+                      ${formatPrice(5800000 * 12)}
+                    </span>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2 mb-6">
-                    {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    className="w-full" 
-                    variant={currentSubscription?.plan_id === plan.id ? "outline" : "default"}
-                    disabled={currentSubscription?.plan_id === plan.id}
-                    onClick={async () => {
-                      if (currentSubscription?.plan_id !== plan.id && workspaceId) {
-                        try {
-                          // Iniciar proceso de checkout con Wompi
-                          const response = await fetch('/api/billing/checkout', {
-                            method: 'POST',
-                            headers: {
-                              'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                              plan_id: plan.id,
-                              workspace_id: workspaceId
-                            })
-                          });
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-5xl font-extrabold text-slate-900">
+                      ${formatPrice(yearlyPlan.amount_in_cents)}
+                    </span>
+                    <span className="text-lg text-slate-500">COP</span>
+                  </div>
+                  <p className="text-sm text-green-600 font-medium">
+                    Equivale a ${formatPrice(Math.round(yearlyPlan.amount_in_cents / 12))}/mes
+                  </p>
+                </div>
+              </CardHeader>
 
-                          if (response.ok) {
-                            const checkoutResp = await response.json();
-                            const data = checkoutResp.data;
-                            if (!data) throw new Error('Respuesta de checkout inválida');
+              <CardContent className="pt-2">
+                <ul className="space-y-3 mb-8">
+                  {yearlyPlan.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-                            // Persistir plan para completar suscripción en retorno
-                            localStorage.setItem('pending_plan_id', plan.id);
+                <Button
+                  onClick={() => handleSubscribe(yearlyPlan.id)}
+                  disabled={currentSubscription?.plan_id === yearlyPlan.id || processingPlanId !== null}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+                  size="lg"
+                >
+                  {processingPlanId === yearlyPlan.id ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Procesando...
+                    </>
+                  ) : currentSubscription?.plan_id === yearlyPlan.id ? (
+                    'Plan Actual'
+                  ) : (
+                    'Suscribirse Anualmente'
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
-                            // Crear formulario para redirigir a Wompi
-                            const form = document.createElement('form');
-                            form.method = 'GET'; // Wompi Web Checkout usa GET
-                            form.action = data.checkout_url;
-                            
-                            // Agregar campos hidden
-                            Object.entries(data.checkout_data).forEach(([key, value]) => {
-                              const input = document.createElement('input');
-                              input.type = 'hidden';
-                              input.name = key;
-                              input.value = value as string;
-                              form.appendChild(input);
-                            });
-                            
-                            document.body.appendChild(form);
-                            form.submit();
-                          } else {
-                            const error = await response.json();
-                            alert(`Error al iniciar el checkout: ${error.message || 'Error desconocido'}`);
-                          }
-                        } catch (error) {
-                          console.error('Error en checkout:', error);
-                          alert('Error al procesar el pago. Inténtalo de nuevo.');
-                        }
-                      }
-                    }}
-                  >
-                    {currentSubscription?.plan_id === plan.id ? 'Plan Actual' : 'Suscribirse'}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+        {/* Info de seguridad */}
+        <div className="mt-12 text-center">
+          <div className="inline-flex flex-wrap justify-center gap-6 text-sm text-slate-500">
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4" />
+              Pago seguro con Wompi
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-green-500" />
+              Cancela cuando quieras
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-green-500" />
+              Sin compromisos
+            </div>
           </div>
         </div>
 
-        {/* Información sobre métodos de pago */}
-        <Card className="bg-blue-50 border-blue-200">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-blue-800">
-              <CreditCard className="h-5 w-5" />
-              Métodos de Pago Aceptados
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-blue-700">
-              Aceptamos tarjetas de crédito y débito, PSE, Nequi y otros métodos de pago seguros a través de Wompi.
-              Todos los pagos son procesados de forma segura y encriptada.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Botón para volver al chat */}
-        <div className="mt-8 text-center">
+        {/* Botón volver */}
+        <div className="mt-10 text-center">
           <Button 
+            variant="ghost" 
             onClick={() => router.back()}
-            variant="outline"
+            className="text-slate-600 hover:text-slate-900"
           >
-            Volver al Chat
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Volver
           </Button>
         </div>
       </div>

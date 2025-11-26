@@ -9,10 +9,6 @@ export interface TransactionData {
   expiration_time?: string;
 }
 
-export interface IntegritySignatureData extends TransactionData {
-  integrity_secret: string;
-}
-
 /**
  * Genera una firma de integridad SHA256 para validar transacciones con Wompi
  */
@@ -50,22 +46,33 @@ export function generateInvoiceReference(): string {
  * Genera una referencia única para retry de invoices
  */
 export function generateRetryReference(invoiceId: string, attempt: number): string {
-  return `RETRY-${invoiceId}-${attempt}`;
+  const shortId = invoiceId.substring(0, 8);
+  const timestamp = Date.now().toString(36);
+  return `RETRY-${shortId}-${attempt}-${timestamp}`;
 }
 
 /**
  * Valida la firma de un webhook de Wompi
  */
 export function validateWebhookSignature(payload: string, signature: string): boolean {
-  const expectedSignature = crypto
-    .createHmac('sha256', wompiConfig.webhookSecret)
-    .update(payload)
-    .digest('hex');
-  
-  return crypto.timingSafeEqual(
-    Buffer.from(signature, 'hex'),
-    Buffer.from(expectedSignature, 'hex')
-  );
+  if (!signature || !wompiConfig.webhookSecret) {
+    return false;
+  }
+
+  try {
+    const expectedSignature = crypto
+      .createHmac('sha256', wompiConfig.webhookSecret)
+      .update(payload)
+      .digest('hex');
+    
+    return crypto.timingSafeEqual(
+      Buffer.from(signature, 'hex'),
+      Buffer.from(expectedSignature, 'hex')
+    );
+  } catch (error) {
+    console.error('Error validating webhook signature:', error);
+    return false;
+  }
 }
 
 /**
@@ -114,7 +121,7 @@ export function generateCheckoutData(params: {
   userName: string;
   redirectUrl?: string;
   expirationTime?: string;
-}) {
+}): Record<string, string> {
   const reference = generateTransactionReference('SUB');
   const signature = generateIntegritySignature({
     reference,
@@ -123,19 +130,24 @@ export function generateCheckoutData(params: {
     expiration_time: params.expirationTime
   });
 
-  return {
+  const data: Record<string, string> = {
     'public-key': wompiConfig.publicKey,
-    currency: 'COP',
-    'amount-in-cents': params.amountInCents,
-    reference,
+    'currency': 'COP',
+    'amount-in-cents': params.amountInCents.toString(),
+    'reference': reference,
     'signature:integrity': signature,
     'redirect-url': params.redirectUrl || `${process.env.NEXT_PUBLIC_APP_URL}/billing/success`,
-    'expiration-time': params.expirationTime,
     'customer-data:email': params.userEmail,
     'customer-data:full-name': params.userName,
     'customer-data:legal-id-type': 'CC',
     'collect-customer-legal-id': 'true'
   };
+
+  if (params.expirationTime) {
+    data['expiration-time'] = params.expirationTime;
+  }
+
+  return data;
 }
 
 /**
@@ -152,4 +164,24 @@ export function isTransactionSuccessful(status: string): boolean {
   return status === 'APPROVED';
 }
 
+/**
+ * Obtiene el nombre legible de un método de pago
+ */
+export function getPaymentMethodName(type: string): string {
+  const names: Record<string, string> = {
+    'CARD': 'Tarjeta de Crédito/Débito',
+    'NEQUI': 'Nequi',
+    'PSE': 'PSE (Débito Bancario)',
+    'BANCOLOMBIA_TRANSFER': 'Transferencia Bancolombia'
+  };
+  return names[type] || type;
+}
 
+/**
+ * Calcula la fecha de expiración del checkout (15 minutos por defecto)
+ */
+export function getCheckoutExpirationTime(minutes: number = 15): string {
+  const expirationDate = new Date();
+  expirationDate.setMinutes(expirationDate.getMinutes() + minutes);
+  return expirationDate.toISOString();
+}

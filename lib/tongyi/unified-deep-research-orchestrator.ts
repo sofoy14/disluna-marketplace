@@ -82,8 +82,8 @@ export class UnifiedDeepResearchOrchestrator {
   constructor(config: UnifiedResearchConfig) {
     this.config = {
       ...config,
-      maxRounds: config.maxRounds || 10,
-      maxSearchesPerRound: config.maxSearchesPerRound || 8,
+      maxRounds: config.maxRounds || 3, // Default to 3
+      maxSearchesPerRound: config.maxSearchesPerRound || 5, // Default to 5
       enableContinuousVerification: config.enableContinuousVerification ?? true,
       enableIterativeRefinement: config.enableIterativeRefinement ?? true,
       legalDomain: config.legalDomain || 'colombia',
@@ -221,7 +221,7 @@ export class UnifiedDeepResearchOrchestrator {
     console.log("🔍 ITERRESEARCH MODE: Investigación Multi-Ronda Colombia")
     
     const allSources: any[] = []
-    const maxRounds = 3 // Simplificado: solo 3 rondas
+    const maxRounds = Math.min(this.config.maxRounds || 3, 3) // Hard cap at 3 rounds
     
     for (let round = 1; round <= maxRounds; round++) {
       console.log(`\n📍 RONDA ${round}/${maxRounds}`)

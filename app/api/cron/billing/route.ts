@@ -1,19 +1,17 @@
 // app/api/cron/billing/route.ts
+// Cron job para procesar cobros recurrentes de suscripciones
+// Ejecutar diariamente a las 00:00 UTC
+
 import { NextRequest, NextResponse } from 'next/server';
 import { wompiClient } from '@/lib/wompi/client';
 import { wompiConfig } from '@/lib/wompi/config';
 import { 
   getSubscriptionsDueToday, 
-  extendSubscriptionPeriod 
+  updateSubscription 
 } from '@/db/subscriptions';
-import { 
-  createInvoice, 
-  markInvoiceAsPaid, 
-  markInvoiceAsFailed 
-} from '@/db/invoices';
-import { 
-  createTransaction 
-} from '@/db/transactions';
+import { createInvoice } from '@/db/invoices';
+import { createTransaction } from '@/db/transactions';
+import { getPlanById } from '@/db/plans';
 import { 
   generateTransactionReference, 
   isPaymentSourceAvailable 
@@ -23,65 +21,79 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    // Validate cron secret
+    // Validar cron secret
     const authHeader = req.headers.get('Authorization');
     if (!authHeader || authHeader !== `Bearer ${process.env.WOMPI_CRON_SECRET}`) {
-      return NextResponse.json(
-        { error: 'Unauthorized' }, 
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if billing is enabled
+    // Verificar que billing está habilitado
     if (!wompiConfig.isEnabled) {
-      return NextResponse.json(
-        { error: 'Billing is not enabled' }, 
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Billing is not enabled' }, { status: 403 });
     }
 
-    console.log('Starting billing cron job...');
+    console.log('🔄 Starting billing cron job...');
 
-    // Get subscriptions due today
+    // Obtener suscripciones que vencen hoy
     const subscriptions = await getSubscriptionsDueToday();
-    console.log(`Found ${subscriptions.length} subscriptions due today`);
+    console.log(`📋 Found ${subscriptions.length} subscriptions due today`);
 
     let processedCount = 0;
     let errorCount = 0;
+    let skippedCount = 0;
 
     for (const subscription of subscriptions) {
       try {
-        // Skip if subscription is set to cancel at period end
+        // Saltar si está marcada para cancelar
         if (subscription.cancel_at_period_end) {
-          console.log(`Skipping subscription ${subscription.id} - set to cancel`);
+          console.log(`⏭️ Skipping ${subscription.id} - set to cancel`);
+          await updateSubscription(subscription.id, { status: 'canceled' });
+          skippedCount++;
           continue;
         }
 
-        // Validate payment source is available
-        if (!subscription.payment_sources || !isPaymentSourceAvailable(subscription.payment_sources.status)) {
-          console.log(`Skipping subscription ${subscription.id} - payment source not available`);
-          // Mark subscription as requiring action
-          await extendSubscriptionPeriod(subscription.id);
+        // Verificar payment source disponible
+        if (!subscription.payment_sources || 
+            !isPaymentSourceAvailable(subscription.payment_sources.status)) {
+          console.log(`⚠️ Skipping ${subscription.id} - no valid payment source`);
+          await updateSubscription(subscription.id, { status: 'past_due' });
+          skippedCount++;
           continue;
         }
 
-        // Create invoice
+        // Obtener plan para calcular nuevo período
+        const plan = await getPlanById(subscription.plan_id);
+        
+        // Calcular nuevo período
+        const newPeriodStart = new Date(subscription.current_period_end);
+        const newPeriodEnd = new Date(newPeriodStart);
+        
+        if (plan.billing_period === 'yearly') {
+          newPeriodEnd.setFullYear(newPeriodEnd.getFullYear() + 1);
+        } else {
+          newPeriodEnd.setMonth(newPeriodEnd.getMonth() + (plan.interval_count || 1));
+        }
+
+        // Generar referencia única
+        const reference = generateTransactionReference('REN');
+
+        // Crear invoice
         const invoice = await createInvoice({
           subscription_id: subscription.id,
           workspace_id: subscription.workspace_id,
-          amount_in_cents: subscription.plans.amount_in_cents,
+          amount_in_cents: plan.amount_in_cents,
           status: 'pending',
-          period_start: subscription.current_period_start,
-          period_end: subscription.current_period_end,
+          period_start: newPeriodStart.toISOString(),
+          period_end: newPeriodEnd.toISOString(),
+          wompi_reference: reference,
           attempt_count: 0
         });
 
-        console.log(`Created invoice ${invoice.id} for subscription ${subscription.id}`);
+        console.log(`📄 Created invoice ${invoice.id} for subscription ${subscription.id}`);
 
-        // Create transaction in Wompi
-        const reference = generateTransactionReference(invoice.id);
+        // Crear transacción en Wompi
         const transactionData = {
-          amount_in_cents: subscription.plans.amount_in_cents,
+          amount_in_cents: plan.amount_in_cents,
           currency: 'COP',
           customer_email: subscription.payment_sources.customer_email,
           payment_method: {
@@ -90,18 +102,14 @@ export async function GET(req: NextRequest) {
           },
           payment_source_id: subscription.payment_sources.wompi_id,
           reference,
-          redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing/success`
+          redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing/success`,
+          recurrent: subscription.payment_sources.type === 'CARD'
         };
 
-        // Add recurrent flag for cards
-        if (subscription.payment_sources.type === 'CARD') {
-          transactionData.recurrent = true;
-        }
-
         const wompiTransaction = await wompiClient.createTransaction(transactionData);
-        console.log(`Created Wompi transaction ${wompiTransaction.id} for invoice ${invoice.id}`);
+        console.log(`💳 Created Wompi transaction ${wompiTransaction.id}`);
 
-        // Save transaction to database
+        // Guardar transacción en DB
         await createTransaction({
           invoice_id: invoice.id,
           workspace_id: subscription.workspace_id,
@@ -109,192 +117,45 @@ export async function GET(req: NextRequest) {
           amount_in_cents: wompiTransaction.amount_in_cents,
           status: wompiTransaction.status,
           payment_method_type: subscription.payment_sources.type,
-          reference: wompiTransaction.reference,
-          status_message: wompiTransaction.status_message,
-          raw_payload: wompiTransaction
-        });
-
-        // Update invoice with transaction ID
-        await markInvoiceAsPaid(invoice.id, wompiTransaction.id);
-
-        // Extend subscription period
-        await extendSubscriptionPeriod(subscription.id);
-
-        console.log(`Extended subscription ${subscription.id} period`);
-        processedCount++;
-
-      } catch (error) {
-        console.error(`Error processing subscription ${subscription.id}:`, error);
-        errorCount++;
-        
-        // Mark subscription as past due if there's an error
-        try {
-          await extendSubscriptionPeriod(subscription.id);
-        } catch (updateError) {
-          console.error(`Error updating subscription ${subscription.id} status:`, updateError);
-        }
-      }
-    }
-
-    console.log(`Billing cron completed. Processed: ${processedCount}, Errors: ${errorCount}`);
-
-    return NextResponse.json({
-      success: true,
-      processed: processedCount,
-      errors: errorCount,
-      total_subscriptions: subscriptions.length
-    });
-
-  } catch (error) {
-    console.error('Billing cron error:', error);
-    return NextResponse.json(
-      { error: 'Billing cron failed' }, 
-      { status: 500 }
-    );
-  }
-  
-  /*
-  try {
-    // Validate cron secret
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader || authHeader !== `Bearer ${wompiConfig.cronSecret}`) {
-      return NextResponse.json(
-        { error: 'Unauthorized' }, 
-        { status: 401 }
-      );
-    }
-
-    // Check if billing is enabled
-    if (!wompiConfig.isEnabled) {
-      return NextResponse.json(
-        { error: 'Billing is not enabled' }, 
-        { status: 403 }
-      );
-    }
-
-    console.log('Starting billing cron job...');
-
-    // Get subscriptions due today
-    const subscriptions = await getSubscriptionsDueToday();
-    console.log(`Found ${subscriptions.length} subscriptions due today`);
-
-    let processedCount = 0;
-    let errorCount = 0;
-
-    for (const subscription of subscriptions) {
-      try {
-        // Skip if subscription is set to cancel at period end
-        if (subscription.cancel_at_period_end) {
-          console.log(`Skipping subscription ${subscription.id} - set to cancel`);
-          continue;
-        }
-
-        // Validate payment source is available
-        if (!subscription.payment_sources || !isPaymentSourceAvailable(subscription.payment_sources.status)) {
-          console.log(`Skipping subscription ${subscription.id} - payment source not available`);
-          // Mark subscription as requiring action
-          await updateSubscription(subscription.id, { status: 'past_due' });
-          continue;
-        }
-
-        // Create invoice
-        const invoice = await createInvoice({
-          subscription_id: subscription.id,
-          workspace_id: subscription.workspace_id,
-          period_start: subscription.current_period_start,
-          period_end: subscription.current_period_end,
-          amount_in_cents: subscription.plans.amount_in_cents,
-          status: 'pending'
-        });
-
-        console.log(`Created invoice ${invoice.id} for subscription ${subscription.id}`);
-
-        // Create transaction in Wompi
-        const reference = generateTransactionReference(invoice.id);
-        const transactionData = {
-          amount_in_cents: subscription.plans.amount_in_cents,
-          currency: 'COP',
-          customer_email: subscription.payment_sources.customer_email,
-          payment_method: {
-            type: subscription.payment_sources.type,
-            installments: 1
-          },
-          payment_source_id: subscription.payment_sources.wompi_id,
           reference,
-          redirect_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing/success`
-        };
-
-        // Add recurrent flag for cards
-        if (subscription.payment_sources.type === 'CARD') {
-          transactionData.recurrent = true;
-        }
-
-        const wompiTransaction = await wompiClient.createTransaction(transactionData);
-        console.log(`Created Wompi transaction ${wompiTransaction.id} for invoice ${invoice.id}`);
-
-        // Save transaction to database
-        await createTransaction({
-          invoice_id: invoice.id,
-          workspace_id: subscription.workspace_id,
-          wompi_id: wompiTransaction.id,
-          amount_in_cents: wompiTransaction.amount_in_cents,
-          status: wompiTransaction.status,
-          payment_method_type: subscription.payment_sources.type,
-          reference: wompiTransaction.reference,
           status_message: wompiTransaction.status_message,
           raw_payload: wompiTransaction
         });
 
-        // Update invoice with transaction ID
-        await updateInvoice(invoice.id, {
-          wompi_transaction_id: wompiTransaction.id
-        });
-
-        // Extend subscription period
-        const newPeriodStart = new Date(subscription.current_period_end);
-        const newPeriodEnd = new Date(newPeriodStart);
-        newPeriodEnd.setMonth(newPeriodEnd.getMonth() + 1);
-
+        // Extender período de suscripción (el webhook confirmará el pago)
         await updateSubscription(subscription.id, {
           current_period_start: newPeriodStart.toISOString(),
           current_period_end: newPeriodEnd.toISOString()
         });
 
-        console.log(`Extended subscription ${subscription.id} period`);
+        console.log(`✅ Processed subscription ${subscription.id}`);
         processedCount++;
 
       } catch (error) {
-        console.error(`Error processing subscription ${subscription.id}:`, error);
+        console.error(`❌ Error processing subscription ${subscription.id}:`, error);
         errorCount++;
         
-        // Mark subscription as past due if there's an error
+        // Marcar como past_due si falla
         try {
           await updateSubscription(subscription.id, { status: 'past_due' });
         } catch (updateError) {
-          console.error(`Error updating subscription ${subscription.id} status:`, updateError);
+          console.error(`❌ Error updating status:`, updateError);
         }
       }
     }
 
-    console.log(`Billing cron completed. Processed: ${processedCount}, Errors: ${errorCount}`);
+    console.log(`✅ Billing cron completed. Processed: ${processedCount}, Errors: ${errorCount}, Skipped: ${skippedCount}`);
 
     return NextResponse.json({
       success: true,
       processed: processedCount,
       errors: errorCount,
-      total_subscriptions: subscriptions.length
+      skipped: skippedCount,
+      total: subscriptions.length
     });
 
   } catch (error) {
-    console.error('Billing cron error:', error);
-    return NextResponse.json(
-      { error: 'Billing cron failed' }, 
-      { status: 500 }
-    );
+    console.error('❌ Billing cron error:', error);
+    return NextResponse.json({ error: 'Billing cron failed' }, { status: 500 });
   }
-  */
 }
-
-
-
-

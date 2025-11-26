@@ -48,6 +48,7 @@ export async function POST(request: Request) {
     console.log(`💬 Chat ID: ${finalChatId}`)
     console.log(`👤 User ID: ${finalUserId}`)
     console.log(`🤖 Modelo: ${modelName}`)
+    console.log(`🔧 Modo Investigación: UnifiedDeepResearchOrchestrator (IterResearch - Max 3 rondas)`)
     console.log(`${'='.repeat(80)}`)
 
     // Crear AI Agent con capacidades agenticas
@@ -58,8 +59,9 @@ export async function POST(request: Request) {
       userId: finalUserId,
       enableMemory: true,
       enableAgenticSearch: true,
-      maxSearchRounds: 10,
-      searchTimeoutMs: 45000
+      maxSearchRounds: 3, // Enforced at route level
+      searchTimeoutMs: 45000,
+      apiKey: apiKey // Pass API key for Orchestrator
     })
 
     // Procesar consulta con el AI Agent

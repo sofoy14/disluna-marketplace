@@ -11,164 +11,240 @@ import {
   Loader2, 
   AlertCircle,
   ArrowRight,
-  Home
+  Home,
+  RefreshCw
 } from 'lucide-react';
-import { wompiClient } from '@/lib/wompi/client';
-import { formatCurrency } from '@/lib/wompi/utils';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
+interface TransactionData {
+  status: 'success' | 'failed' | 'pending' | 'unknown';
+  statusMessage: string;
+  transaction?: {
+    id: string;
+    status: string;
+    amount_in_cents: number;
+    amount_formatted: string;
+    payment_method_type: string;
+    created_at: string;
+    finalized_at?: string;
+    reference: string;
+  };
+  subscription?: {
+    id: string;
+    status: string;
+    plan_name: string;
+    period_end: string;
+  };
+}
 
 export default function BillingSuccessPage() {
-  const [transactionStatus, setTransactionStatus] = useState<'loading' | 'success' | 'error' | 'unknown'>('loading');
-  const [transactionData, setTransactionData] = useState<any>(null);
+  const [data, setData] = useState<TransactionData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
     checkTransactionStatus();
   }, []);
 
+  // Auto-retry para transacciones pendientes
+  useEffect(() => {
+    if (data?.status === 'pending' && retryCount < 10) {
+      const timer = setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+        checkTransactionStatus();
+      }, 3000); // Reintentar cada 3 segundos
+      return () => clearTimeout(timer);
+    }
+  }, [data?.status, retryCount]);
+
   const checkTransactionStatus = async () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
-      const transactionId = urlParams.get('id');
+      const transactionId = urlParams.get('id') || urlParams.get('transaction_id');
+      const reference = urlParams.get('reference');
 
-      if (!transactionId) {
-        setError('No se encontró ID de transacción');
-        setTransactionStatus('error');
+      if (!transactionId && !reference) {
+        setError('No se encontró información de la transacción');
+        setIsLoading(false);
         return;
       }
 
-      // Get transaction details from Wompi
-      const transaction = await wompiClient.getTransaction(transactionId);
-      setTransactionData(transaction);
+      // Llamar a nuestra API para verificar (no directamente a Wompi)
+      const params = new URLSearchParams();
+      if (transactionId) params.set('transaction_id', transactionId);
+      if (reference) params.set('reference', reference);
 
-      // Determine status
-      if (transaction.status === 'APPROVED') {
-        setTransactionStatus('success');
-      } else if (['DECLINED', 'VOIDED', 'ERROR'].includes(transaction.status)) {
-        setTransactionStatus('error');
-      } else {
-        setTransactionStatus('unknown');
+      const response = await fetch(`/api/billing/verify-transaction?${params.toString()}`);
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Error verificando transacción');
+      }
+
+      setData(result.data);
+
+      // Si fue exitoso, redirigir al chat después de 3 segundos
+      if (result.data.status === 'success' && result.data.subscription) {
+        setTimeout(() => {
+          router.push('/');
+        }, 5000);
       }
 
     } catch (err) {
       console.error('Error checking transaction status:', err);
       setError(err instanceof Error ? err.message : 'Error verificando transacción');
-      setTransactionStatus('error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const getStatusIcon = () => {
-    switch (transactionStatus) {
+    if (isLoading) return <Loader2 className="w-16 h-16 animate-spin text-blue-500" />;
+    
+    switch (data?.status) {
       case 'success':
         return <CheckCircle className="w-16 h-16 text-green-500" />;
-      case 'error':
+      case 'failed':
         return <XCircle className="w-16 h-16 text-red-500" />;
-      case 'loading':
-        return <Loader2 className="w-16 h-16 animate-spin text-blue-500" />;
+      case 'pending':
+        return <Loader2 className="w-16 h-16 animate-spin text-yellow-500" />;
       default:
-        return <AlertCircle className="w-16 h-16 text-yellow-500" />;
+        return <AlertCircle className="w-16 h-16 text-gray-500" />;
     }
   };
 
   const getStatusTitle = () => {
-    switch (transactionStatus) {
+    if (isLoading) return 'Verificando Pago...';
+    
+    switch (data?.status) {
       case 'success':
         return '¡Pago Exitoso!';
-      case 'error':
+      case 'failed':
         return 'Pago No Procesado';
-      case 'loading':
-        return 'Verificando Pago...';
+      case 'pending':
+        return 'Procesando Pago...';
       default:
         return 'Estado Desconocido';
     }
   };
 
   const getStatusDescription = () => {
-    switch (transactionStatus) {
+    if (isLoading) return 'Estamos verificando el estado de tu transacción...';
+    
+    if (data?.statusMessage) return data.statusMessage;
+
+    switch (data?.status) {
       case 'success':
         return 'Tu suscripción ha sido activada exitosamente. Ya puedes disfrutar de todos los beneficios de tu plan.';
-      case 'error':
+      case 'failed':
         return 'No pudimos procesar tu pago. Por favor, verifica tu método de pago e intenta nuevamente.';
-      case 'loading':
-        return 'Estamos verificando el estado de tu transacción...';
+      case 'pending':
+        return 'Tu pago está siendo procesado. Esto puede tomar unos momentos...';
       default:
         return 'El estado de tu transacción no pudo ser determinado. Por favor, contacta soporte.';
     }
   };
 
   const getStatusBadge = () => {
-    if (!transactionData) return null;
+    if (!data?.transaction) return null;
 
-    switch (transactionStatus) {
+    switch (data.status) {
       case 'success':
         return <Badge className="bg-green-100 text-green-800">Aprobado</Badge>;
-      case 'error':
+      case 'failed':
         return <Badge className="bg-red-100 text-red-800">Rechazado</Badge>;
+      case 'pending':
+        return <Badge className="bg-yellow-100 text-yellow-800">Procesando</Badge>;
       default:
-        return <Badge variant="secondary">{transactionData.status}</Badge>;
+        return <Badge variant="secondary">{data.transaction.status}</Badge>;
+    }
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('es-CO', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return 'N/A';
     }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4">
       <div className="max-w-2xl mx-auto">
-        <Card>
-          <CardHeader className="text-center">
+        <Card className="shadow-lg">
+          <CardHeader className="text-center pb-2">
             <div className="flex justify-center mb-4">
               {getStatusIcon()}
             </div>
             <CardTitle className="text-2xl font-bold">
               {getStatusTitle()}
             </CardTitle>
-            <CardDescription className="text-lg">
+            <CardDescription className="text-lg mt-2">
               {getStatusDescription()}
             </CardDescription>
           </CardHeader>
           
           <CardContent className="space-y-6">
-            {transactionData && (
+            {/* Detalles de la transacción */}
+            {data?.transaction && (
               <div className="bg-gray-50 p-4 rounded-lg space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">ID de Transacción:</span>
-                  <span className="font-mono text-sm">{transactionData.id}</span>
+                  <span className="font-medium text-gray-600">ID de Transacción:</span>
+                  <span className="font-mono text-sm">{data.transaction.id}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Estado:</span>
+                  <span className="font-medium text-gray-600">Estado:</span>
                   {getStatusBadge()}
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Monto:</span>
-                  <span className="font-semibold">
-                    {formatCurrency(transactionData.amount_in_cents)}
+                  <span className="font-medium text-gray-600">Monto:</span>
+                  <span className="font-semibold text-lg">
+                    {data.transaction.amount_formatted}
                   </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-gray-600">Método:</span>
+                  <span>{data.transaction.payment_method_type}</span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Fecha:</span>
-                  <span>
-                    {new Date(transactionData.created_at).toLocaleDateString('es-CO', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+                  <span className="font-medium text-gray-600">Fecha:</span>
+                  <span className="text-sm">
+                    {formatDate(data.transaction.created_at)}
                   </span>
                 </div>
-                
-                {transactionData.status_message && (
-                  <div className="pt-3 border-t">
-                    <span className="font-medium">Mensaje:</span>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {transactionData.status_message}
-                    </p>
-                  </div>
-                )}
               </div>
             )}
 
+            {/* Detalles de la suscripción */}
+            {data?.subscription && data.status === 'success' && (
+              <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+                <h4 className="font-semibold text-green-800 mb-2">
+                  ✅ Suscripción Activada
+                </h4>
+                <div className="space-y-2 text-sm text-green-700">
+                  <p><strong>Plan:</strong> {data.subscription.plan_name}</p>
+                  <p><strong>Válida hasta:</strong> {formatDate(data.subscription.period_end)}</p>
+                </div>
+                <p className="mt-3 text-green-600 text-sm">
+                  Serás redirigido al chat en unos segundos...
+                </p>
+              </div>
+            )}
+
+            {/* Error */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 text-red-800">
@@ -179,18 +255,27 @@ export default function BillingSuccessPage() {
               </div>
             )}
 
-            <div className="flex gap-3 justify-center">
-              {transactionStatus === 'success' && (
+            {/* Indicador de reintento para pendientes */}
+            {data?.status === 'pending' && (
+              <div className="flex items-center justify-center gap-2 text-yellow-600">
+                <RefreshCw className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Verificando estado... ({retryCount}/10)</span>
+              </div>
+            )}
+
+            {/* Botones de acción */}
+            <div className="flex gap-3 justify-center pt-4">
+              {data?.status === 'success' && (
                 <Button asChild className="bg-green-600 hover:bg-green-700">
-                  <Link href="/billing">
+                  <Link href="/">
                     <ArrowRight className="w-4 h-4 mr-2" />
-                    Ir a Mi Suscripción
+                    Ir al Chat
                   </Link>
                 </Button>
               )}
               
-              {transactionStatus === 'error' && (
-                <Button asChild variant="outline">
+              {data?.status === 'failed' && (
+                <Button asChild>
                   <Link href="/billing">
                     Intentar Nuevamente
                   </Link>
@@ -198,19 +283,20 @@ export default function BillingSuccessPage() {
               )}
               
               <Button asChild variant="outline">
-                <Link href="/">
+                <Link href="/billing">
                   <Home className="w-4 h-4 mr-2" />
-                  Ir al Inicio
+                  Ver Mi Suscripción
                 </Link>
               </Button>
             </div>
 
-            <div className="text-center text-sm text-gray-500">
+            {/* Soporte */}
+            <div className="text-center text-sm text-gray-500 pt-4 border-t">
               <p>
-                Si tienes alguna pregunta sobre tu transacción, 
-                <Link href="/support" className="text-blue-600 hover:underline ml-1">
+                Si tienes alguna pregunta sobre tu transacción,{' '}
+                <a href="mailto:soporte@asistente-legal.com" className="text-blue-600 hover:underline">
                   contacta nuestro equipo de soporte
-                </Link>
+                </a>
               </p>
             </div>
           </CardContent>

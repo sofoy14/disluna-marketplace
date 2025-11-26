@@ -1,23 +1,32 @@
 // db/invoices.ts
+// Acceso a datos de facturas
+
 import { supabase } from "@/lib/supabase/robust-client"
-import { TablesInsert, TablesUpdate } from "@/supabase/types"
+
+export type InvoiceStatus = 'draft' | 'pending' | 'paid' | 'failed' | 'void';
 
 export interface Invoice {
   id: string;
-  subscription_id: string;
-  workspace_id: string;
+  subscription_id?: string;
+  workspace_id?: string;
+  plan_id?: string;
   amount_in_cents: number;
-  status: 'pending' | 'paid' | 'failed' | 'canceled';
+  currency: string;
+  status: InvoiceStatus;
   period_start: string;
   period_end: string;
-  attempt_count: number;
-  paid_at?: string;
+  reference?: string; // Reference para Wompi
   wompi_transaction_id?: string;
+  attempt_count: number;
+  next_retry_at?: string;
+  paid_at?: string;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
+  // Relaciones
   subscriptions?: {
     user_id: string;
     plan_id: string;
+    workspace_id: string;
     payment_source_id?: string;
     payment_sources?: {
       wompi_id: string;
@@ -25,12 +34,34 @@ export interface Invoice {
       status: string;
       customer_email: string;
     };
-    plans?: {
-      name: string;
-      amount_in_cents: number;
-    };
+  };
+  plans?: {
+    name: string;
+    amount_in_cents: number;
+    billing_period: string;
   };
 }
+
+const INVOICE_SELECT = `
+  *,
+  subscriptions:subscription_id (
+    user_id,
+    plan_id,
+    workspace_id,
+    payment_source_id,
+    payment_sources:payment_source_id (
+      wompi_id,
+      type,
+      status,
+      customer_email
+    )
+  ),
+  plans:plan_id (
+    name,
+    amount_in_cents,
+    billing_period
+  )
+`;
 
 export const getInvoicesByWorkspaceId = async (
   workspaceId: string,
@@ -39,24 +70,7 @@ export const getInvoicesByWorkspaceId = async (
 ): Promise<Invoice[]> => {
   const { data: invoices, error } = await supabase
     .from("invoices")
-    .select(`
-      *,
-      subscriptions:subscription_id (
-        user_id,
-        plan_id,
-        payment_source_id,
-        payment_sources:payment_source_id (
-          wompi_id,
-          type,
-          status,
-          customer_email
-        ),
-        plans:plan_id (
-          name,
-          amount_in_cents
-        )
-      )
-    `)
+    .select(INVOICE_SELECT)
     .eq("workspace_id", workspaceId)
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
@@ -68,32 +82,29 @@ export const getInvoicesByWorkspaceId = async (
   return invoices || [];
 };
 
-export const getInvoiceById = async (invoiceId: string): Promise<Invoice> => {
+export const getInvoiceById = async (invoiceId: string): Promise<Invoice | null> => {
   const { data: invoice, error } = await supabase
     .from("invoices")
-    .select(`
-      *,
-      subscriptions:subscription_id (
-        user_id,
-        plan_id,
-        payment_source_id,
-        payment_sources:payment_source_id (
-          wompi_id,
-          type,
-          status,
-          customer_email
-        ),
-        plans:plan_id (
-          name,
-          amount_in_cents
-        )
-      )
-    `)
+    .select(INVOICE_SELECT)
     .eq("id", invoiceId)
     .single();
 
-  if (error || !invoice) {
+  if (error && error.code !== 'PGRST116') {
     throw new Error(`Invoice not found: ${error?.message || 'Unknown error'}`);
+  }
+
+  return invoice;
+};
+
+export const getInvoiceByReference = async (reference: string): Promise<Invoice | null> => {
+  const { data: invoice, error } = await supabase
+    .from("invoices")
+    .select(INVOICE_SELECT)
+    .eq("reference", reference)
+    .single();
+
+  if (error && error.code !== 'PGRST116') {
+    throw new Error(`Error fetching invoice by reference: ${error.message}`);
   }
 
   return invoice;
@@ -102,24 +113,7 @@ export const getInvoiceById = async (invoiceId: string): Promise<Invoice> => {
 export const getFailedInvoicesForRetry = async (): Promise<Invoice[]> => {
   const { data: invoices, error } = await supabase
     .from("invoices")
-    .select(`
-      *,
-      subscriptions:subscription_id (
-        user_id,
-        plan_id,
-        payment_source_id,
-        payment_sources:payment_source_id (
-          wompi_id,
-          type,
-          status,
-          customer_email
-        ),
-        plans:plan_id (
-          name,
-          amount_in_cents
-        )
-      )
-    `)
+    .select(INVOICE_SELECT)
     .eq("status", "failed")
     .lt("attempt_count", 3)
     .order("created_at", { ascending: true });
@@ -134,26 +128,9 @@ export const getFailedInvoicesForRetry = async (): Promise<Invoice[]> => {
 export const getSuspendedInvoices = async (): Promise<Invoice[]> => {
   const { data: invoices, error } = await supabase
     .from("invoices")
-    .select(`
-      *,
-      subscriptions:subscription_id (
-        user_id,
-        plan_id,
-        payment_source_id,
-        payment_sources:payment_source_id (
-          wompi_id,
-          type,
-          status,
-          customer_email
-        ),
-        plans:plan_id (
-          name,
-          amount_in_cents
-        )
-      )
-    `)
+    .select(INVOICE_SELECT)
     .eq("status", "failed")
-    .eq("attempt_count", 3)
+    .gte("attempt_count", 3)
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -163,28 +140,28 @@ export const getSuspendedInvoices = async (): Promise<Invoice[]> => {
   return invoices || [];
 };
 
-export const createInvoice = async (invoice: TablesInsert<"invoices">): Promise<Invoice> => {
+export const getPendingInvoiceBySubscription = async (subscriptionId: string): Promise<Invoice | null> => {
+  const { data: invoice, error } = await supabase
+    .from("invoices")
+    .select(INVOICE_SELECT)
+    .eq("subscription_id", subscriptionId)
+    .in("status", ["draft", "pending"])
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error && error.code !== 'PGRST116') {
+    throw new Error(`Error fetching pending invoice: ${error.message}`);
+  }
+
+  return invoice;
+};
+
+export const createInvoice = async (invoice: Partial<Invoice>): Promise<Invoice> => {
   const { data: createdInvoice, error } = await supabase
     .from("invoices")
     .insert([invoice])
-    .select(`
-      *,
-      subscriptions:subscription_id (
-        user_id,
-        plan_id,
-        payment_source_id,
-        payment_sources:payment_source_id (
-          wompi_id,
-          type,
-          status,
-          customer_email
-        ),
-        plans:plan_id (
-          name,
-          amount_in_cents
-        )
-      )
-    `)
+    .select(INVOICE_SELECT)
     .single();
 
   if (error) {
@@ -196,30 +173,13 @@ export const createInvoice = async (invoice: TablesInsert<"invoices">): Promise<
 
 export const updateInvoice = async (
   invoiceId: string,
-  invoice: TablesUpdate<"invoices">
+  updates: Partial<Invoice>
 ): Promise<Invoice> => {
   const { data: updatedInvoice, error } = await supabase
     .from("invoices")
-    .update(invoice)
+    .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", invoiceId)
-    .select(`
-      *,
-      subscriptions:subscription_id (
-        user_id,
-        plan_id,
-        payment_source_id,
-        payment_sources:payment_source_id (
-          wompi_id,
-          type,
-          status,
-          customer_email
-        ),
-        plans:plan_id (
-          name,
-          amount_in_cents
-        )
-      )
-    `)
+    .select(INVOICE_SELECT)
     .single();
 
   if (error) {
@@ -250,7 +210,10 @@ export const markInvoiceAsFailed = async (
   });
 };
 
+export const markInvoiceAsPending = async (invoiceId: string): Promise<Invoice> => {
+  return updateInvoice(invoiceId, { status: 'pending' });
+};
 
-
-
-
+export const voidInvoice = async (invoiceId: string): Promise<Invoice> => {
+  return updateInvoice(invoiceId, { status: 'void' });
+};

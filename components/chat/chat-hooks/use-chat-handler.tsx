@@ -230,7 +230,7 @@ export const useChatHandler = () => {
       const newAbortController = new AbortController()
       setAbortController(newAbortController)
 
-      // Usar GPT-4o por defecto para asegurar funcionalidad
+      // Usar Tongyi Deep Research 30B A3B por defecto para asegurar funcionalidad
       let modelData = [
         ...models.map(model => ({
           modelId: model.model_id as LLMID,

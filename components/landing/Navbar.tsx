@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
 import { Menu, X } from "lucide-react"
+import { motion } from "framer-motion"
 import Brand from "./Brand"
 import NavLink from "./NavLink"
 import ThemeToggle from "./ThemeToggle"
@@ -32,7 +33,12 @@ export default function Navbar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <motion.header 
+      className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, delay: 2.0, ease: "easeOut" }}
+    >
       <div className="custom-screen">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -102,6 +108,6 @@ export default function Navbar() {
           </div>
         )}
       </div>
-    </header>
+    </motion.header>
   )
 }

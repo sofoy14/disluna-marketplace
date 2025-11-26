@@ -198,6 +198,7 @@ export function PlaceholdersAndVanishInput({
     if (!e.defaultPrevented && e.key === "Enter" && !e.shiftKey && !disabled) {
       e.preventDefault()
       vanishAndSubmit()
+      onSubmit && onSubmit(e as any)
     }
   }
 

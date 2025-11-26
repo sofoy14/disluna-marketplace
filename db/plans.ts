@@ -1,7 +1,9 @@
 // db/plans.ts
-import { createClient } from '@/lib/supabase/server'
-import { cookies } from 'next/headers'
-import { TablesInsert, TablesUpdate } from "@/supabase/types"
+// Acceso a datos de planes de suscripción
+
+import { supabase } from "@/lib/supabase/robust-client"
+
+export type BillingPeriod = 'monthly' | 'yearly';
 
 export interface Plan {
   id: string;
@@ -9,22 +11,27 @@ export interface Plan {
   description: string;
   amount_in_cents: number;
   currency: string;
-  interval: string;
+  billing_period: BillingPeriod;
   features: string[];
+  query_limit: number;
+  sort_order: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;
 }
 
-export const getPlans = async (): Promise<Plan[]> => {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-  
-  const { data: plans, error } = await supabase
+export const getPlans = async (billingPeriod?: BillingPeriod): Promise<Plan[]> => {
+  let query = supabase
     .from("plans")
     .select("*")
     .eq("is_active", true)
-    .order("amount_in_cents", { ascending: true });
+    .order("sort_order", { ascending: true });
+
+  if (billingPeriod) {
+    query = query.eq("billing_period", billingPeriod);
+  }
+
+  const { data: plans, error } = await query;
 
   if (error) {
     console.error('Error fetching plans:', error);
@@ -35,9 +42,6 @@ export const getPlans = async (): Promise<Plan[]> => {
 };
 
 export const getPlanById = async (planId: string): Promise<Plan> => {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-  
   const { data: plan, error } = await supabase
     .from("plans")
     .select("*")
@@ -52,57 +56,35 @@ export const getPlanById = async (planId: string): Promise<Plan> => {
   return plan;
 };
 
-export const createPlan = async (plan: TablesInsert<"plans">): Promise<Plan> => {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+export const getPlansGroupedByPeriod = async (): Promise<{
+  monthly: Plan[];
+  yearly: Plan[];
+}> => {
+  const allPlans = await getPlans();
   
-  const { data: createdPlan, error } = await supabase
-    .from("plans")
-    .insert([plan])
-    .select("*")
-    .single();
-
-  if (error) {
-    throw new Error(`Error creating plan: ${error.message}`);
-  }
-
-  return createdPlan;
+  return {
+    monthly: allPlans.filter(p => p.billing_period === 'monthly'),
+    yearly: allPlans.filter(p => p.billing_period === 'yearly')
+  };
 };
 
-export const updatePlan = async (
-  planId: string,
-  plan: TablesUpdate<"plans">
-): Promise<Plan> => {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
+// Calcula la fecha de fin del período basado en el plan
+export const calculatePeriodEnd = (plan: Plan, startDate: Date = new Date()): Date => {
+  const endDate = new Date(startDate);
   
-  const { data: updatedPlan, error } = await supabase
-    .from("plans")
-    .update(plan)
-    .eq("id", planId)
-    .select("*")
-    .single();
-
-  if (error) {
-    throw new Error(`Error updating plan: ${error.message}`);
+  if (plan.billing_period === 'yearly') {
+    endDate.setFullYear(endDate.getFullYear() + 1);
+  } else {
+    endDate.setMonth(endDate.getMonth() + 1);
   }
-
-  return updatedPlan;
+  
+  return endDate;
 };
 
-export const deletePlan = async (planId: string): Promise<boolean> => {
-  const cookieStore = cookies()
-  const supabase = createClient(cookieStore)
-  
-  const { error } = await supabase
-    .from("plans")
-    .update({ is_active: false })
-    .eq("id", planId);
-
-  if (error) {
-    throw new Error(`Error deleting plan: ${error.message}`);
+// Calcula el precio mensual equivalente para mostrar comparaciones
+export const getMonthlyEquivalent = (plan: Plan): number => {
+  if (plan.billing_period === 'yearly') {
+    return Math.round(plan.amount_in_cents / 12);
   }
-
-  return true;
+  return plan.amount_in_cents;
 };
-

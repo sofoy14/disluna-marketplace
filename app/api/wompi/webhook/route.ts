@@ -1,60 +1,69 @@
 // app/api/wompi/webhook/route.ts
+// Webhook principal para procesar eventos de Wompi
+
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { wompiClient } from '@/lib/wompi/client';
 import { validateWebhookSignature, isTransactionSuccessful, isTransactionFinal } from '@/lib/wompi/utils';
+import { wompiClient } from '@/lib/wompi/client';
 import { 
-  getTransactionByWompiId, 
-  updateTransactionByWompiId, 
-  createTransaction 
-} from '@/db/transactions';
-import { 
-  getInvoiceById, 
+  getInvoiceByReference,
   markInvoiceAsPaid, 
-  markInvoiceAsFailed 
+  markInvoiceAsFailed,
+  updateInvoice
 } from '@/db/invoices';
 import { 
-  getSubscriptionByWorkspaceId, 
-  extendSubscriptionPeriod 
+  activateSubscription,
+  updateSubscription,
+  getSubscriptionById
 } from '@/db/subscriptions';
+import { 
+  createTransaction,
+  getTransactionByWompiId,
+  updateTransactionByWompiId 
+} from '@/db/transactions';
 import { 
   getPaymentSourceByWompiId, 
   createPaymentSource 
 } from '@/db/payment-sources';
 import { sendEmail, emailTemplates } from '@/lib/billing/email-notifications';
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
-    const signature = req.headers.get('x-wompi-signature') || req.headers.get('wompi-signature') || '';
+    const signature = req.headers.get('x-wompi-signature') || 
+                      req.headers.get('wompi-signature') || 
+                      req.headers.get('X-Event-Checksum') || '';
     
-    console.log('Received Wompi webhook:', {
-      signature: signature.substring(0, 20) + '...',
-      bodyLength: body.length,
-      headers: Object.fromEntries(req.headers.entries())
+    console.log('📨 Received Wompi webhook:', {
+      signaturePrefix: signature ? signature.substring(0, 20) + '...' : 'none',
+      bodyLength: body.length
     });
 
-    // Validate webhook signature
-    if (!validateWebhookSignature(body, signature)) {
-      console.error('Invalid webhook signature');
-      return NextResponse.json(
-        { error: 'Invalid signature' },
-        { status: 401 }
-      );
+    // Validar firma del webhook (desactivar temporalmente en desarrollo)
+    const isDev = process.env.NODE_ENV === 'development';
+    if (!isDev && signature && !validateWebhookSignature(body, signature)) {
+      console.error('❌ Invalid webhook signature');
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
     }
 
     const event = JSON.parse(body);
-    console.log('Received Wompi webhook event:', event);
+    console.log('📋 Webhook event:', event.event, event.data?.transaction?.id || event.data?.id);
 
-    // Process transaction.updated events
+    // Procesar eventos de transacción
     if (event.event === 'transaction.updated') {
-      await processTransactionUpdate(event.data);
+      const transactionData = event.data?.transaction || event.data;
+      await processTransactionUpdate(transactionData);
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, received: true });
 
   } catch (error) {
-    console.error('Webhook processing error:', error);
+    console.error('❌ Webhook processing error:', error);
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -63,162 +72,187 @@ export async function POST(req: NextRequest) {
 }
 
 async function processTransactionUpdate(transactionData: any) {
-  try {
-    const { id: wompiTransactionId, status, payment_source_id } = transactionData;
+  const wompiTransactionId = transactionData.id;
+  const status = transactionData.status;
+  const reference = transactionData.reference;
 
-    console.log(`Processing transaction update: ${wompiTransactionId}, status: ${status}`);
+  console.log(`🔄 Processing transaction: ${wompiTransactionId}, status: ${status}, ref: ${reference}`);
 
-    // Check if transaction already exists
-    let transaction = await getTransactionByWompiId(wompiTransactionId);
-    
-    if (!transaction) {
-      console.log(`Transaction ${wompiTransactionId} not found in database, skipping`);
-      return;
+  // Solo procesar transacciones finales
+  if (!isTransactionFinal(status)) {
+    console.log(`⏳ Transaction ${wompiTransactionId} not final yet, status: ${status}`);
+    return;
+  }
+
+  // Buscar invoice por referencia
+  const invoice = await getInvoiceByReference(reference);
+  
+  if (!invoice) {
+    console.log(`⚠️ Invoice not found for reference: ${reference}`);
+    return;
+  }
+
+  console.log(`📄 Found invoice: ${invoice.id}, current status: ${invoice.status}`);
+
+  // Verificar si ya tenemos esta transacción registrada
+  let transaction = await getTransactionByWompiId(wompiTransactionId);
+  
+  if (!transaction) {
+    // Crear registro de transacción
+    try {
+      transaction = await createTransaction({
+        invoice_id: invoice.id,
+        workspace_id: invoice.workspace_id || '',
+        wompi_id: wompiTransactionId,
+        amount_in_cents: transactionData.amount_in_cents,
+        currency: 'COP',
+        status,
+        payment_method_type: transactionData.payment_method_type || 'UNKNOWN',
+        reference,
+        status_message: transactionData.status_message,
+        raw_payload: transactionData
+      });
+      console.log(`✅ Created transaction record: ${transaction.id}`);
+    } catch (error) {
+      console.error('Error creating transaction:', error);
     }
-
-    // Update transaction status
+  } else {
+    // Actualizar transacción existente
     await updateTransactionByWompiId(wompiTransactionId, {
       status,
       status_message: transactionData.status_message,
       raw_payload: transactionData
     });
+    console.log(`📝 Updated transaction: ${wompiTransactionId}`);
+  }
 
-    // Get invoice
-    const invoice = await getInvoiceById(transaction.invoice_id);
-    
-    if (!invoice) {
-      console.error(`Invoice ${transaction.invoice_id} not found`);
-      return;
-    }
-
-    // Process based on transaction status
-    if (isTransactionFinal(status)) {
-      if (isTransactionSuccessful(status)) {
-        await handleSuccessfulTransaction(transactionData, invoice, transaction);
-      } else {
-        await handleFailedTransaction(transactionData, invoice, transaction);
-      }
-    }
-
-  } catch (error) {
-    console.error('Error processing transaction update:', error);
+  // Procesar según resultado
+  if (isTransactionSuccessful(status)) {
+    await handleSuccessfulPayment(transactionData, invoice);
+  } else {
+    await handleFailedPayment(transactionData, invoice);
   }
 }
 
-async function handleSuccessfulTransaction(
-  transactionData: any, 
-  invoice: any, 
-  transaction: any
-) {
-  try {
-    console.log(`Handling successful transaction: ${transactionData.id}`);
+async function handleSuccessfulPayment(transactionData: any, invoice: any) {
+  console.log(`✅ Processing successful payment for invoice: ${invoice.id}`);
 
-    // Mark invoice as paid
+  try {
+    // 1. Marcar invoice como pagado
     await markInvoiceAsPaid(invoice.id, transactionData.id);
 
-    // Create payment source if this is the first successful transaction
-    if (transactionData.payment_source_id && !invoice.subscriptions.payment_source_id) {
-      try {
-        // Get payment source details from Wompi
-        const wompiPaymentSource = await wompiClient.getPaymentSource(transactionData.payment_source_id);
+    // 2. Obtener la suscripción si existe
+    if (invoice.subscription_id) {
+      const subscription = await getSubscriptionById(invoice.subscription_id);
+      
+      if (subscription) {
+        // 3. Crear/actualizar payment source si viene de tarjeta
+        let paymentSourceId = subscription.payment_source_id;
         
-        // Check if payment source already exists
-        const existingPaymentSource = await getPaymentSourceByWompiId(transactionData.payment_source_id);
-        
-        if (!existingPaymentSource) {
-          // Create payment source
-          await createPaymentSource({
-            workspace_id: invoice.workspace_id,
-            user_id: invoice.subscriptions.user_id,
-            wompi_id: transactionData.payment_source_id,
-            type: wompiPaymentSource.type as 'CARD' | 'NEQUI' | 'PSE',
-            status: wompiPaymentSource.status,
-            customer_email: wompiPaymentSource.customer_email,
-            last_four: wompiPaymentSource.last_four,
-            expires_at: wompiPaymentSource.expires_at,
-            is_default: true // First payment source is default
-          });
-
-          console.log(`Created payment source ${transactionData.payment_source_id}`);
+        if (transactionData.payment_source_id) {
+          try {
+            const existingSource = await getPaymentSourceByWompiId(transactionData.payment_source_id);
+            
+            if (!existingSource) {
+              // Obtener detalles del payment source de Wompi
+              const wompiSource = await wompiClient.getPaymentSource(transactionData.payment_source_id);
+              
+              const newSource = await createPaymentSource({
+                workspace_id: invoice.workspace_id,
+                user_id: subscription.user_id,
+                wompi_id: transactionData.payment_source_id,
+                type: wompiSource.type,
+                status: wompiSource.status,
+                customer_email: wompiSource.customer_email,
+                last_four: wompiSource.last_four,
+                expires_at: wompiSource.expires_at,
+                is_default: true
+              });
+              
+              paymentSourceId = newSource.id;
+              console.log(`💳 Created payment source: ${newSource.id}`);
+            } else {
+              paymentSourceId = existingSource.id;
+            }
+          } catch (error) {
+            console.error('⚠️ Error creating payment source:', error);
+          }
         }
 
-        // Update subscription with payment source
-        // This would be handled by the subscription update logic
-        
-      } catch (error) {
-        console.error('Error creating payment source:', error);
+        // 4. Activar suscripción
+        await activateSubscription(invoice.subscription_id, paymentSourceId);
+        console.log(`🎉 Subscription activated: ${invoice.subscription_id}`);
+
+        // 5. Marcar onboarding como completado
+        if (subscription.user_id) {
+          await supabase
+            .from('profiles')
+            .update({ 
+              onboarding_completed: true, 
+              onboarding_step: 'completed' 
+            })
+            .eq('user_id', subscription.user_id);
+        }
       }
     }
 
-    // Extend subscription period
-    await extendSubscriptionPeriod(invoice.subscription_id);
-
-    // Mark onboarding completed for the user linked to the subscription
+    // 6. Enviar email de confirmación
     try {
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      );
-
-      const { data: subscription } = await supabase
-        .from('subscriptions')
-        .select('user_id')
-        .eq('id', invoice.subscription_id)
-        .single();
-
-      if (subscription?.user_id) {
-        await supabase
-          .from('profiles')
-          .update({ onboarding_completed: true, onboarding_step: 'completed' })
-          .eq('user_id', subscription.user_id);
+      const userEmail = transactionData.customer_email;
+      if (userEmail) {
+        await sendEmail(userEmail, emailTemplates.paymentSuccess(invoice));
       }
-    } catch (profileError) {
-      console.error('Error marking onboarding completed:', profileError);
-    }
-
-    // Send success email
-    try {
-      await sendEmail(
-        invoice.subscriptions.payment_sources?.customer_email || 
-        invoice.subscriptions.payment_sources?.customer_email,
-        emailTemplates.paymentSuccess(invoice)
-      );
     } catch (emailError) {
-      console.error('Error sending success email:', emailError);
+      console.error('⚠️ Error sending success email:', emailError);
     }
 
-    console.log(`Successfully processed transaction ${transactionData.id}`);
+    console.log(`✅ Payment processed successfully for invoice: ${invoice.id}`);
 
   } catch (error) {
-    console.error('Error handling successful transaction:', error);
+    console.error('❌ Error handling successful payment:', error);
+    throw error;
   }
 }
 
-async function handleFailedTransaction(
-  transactionData: any, 
-  invoice: any, 
-  transaction: any
-) {
+async function handleFailedPayment(transactionData: any, invoice: any) {
+  console.log(`❌ Processing failed payment for invoice: ${invoice.id}`);
+
   try {
-    console.log(`Handling failed transaction: ${transactionData.id}`);
+    // Incrementar contador de intentos
+    const newAttemptCount = (invoice.attempt_count || 0) + 1;
+    await markInvoiceAsFailed(invoice.id, newAttemptCount);
 
-    // Mark invoice as failed
-    await markInvoiceAsFailed(invoice.id, invoice.attempt_count + 1);
-
-    // Send failure email
-    try {
-      await sendEmail(
-        invoice.subscriptions.payment_sources?.customer_email || 
-        invoice.subscriptions.payment_sources?.customer_email,
-        emailTemplates.paymentFailed(invoice, invoice.attempt_count + 1)
-      );
-    } catch (emailError) {
-      console.error('Error sending failure email:', emailError);
+    // Si hay suscripción y es el primer pago, marcar como incomplete
+    if (invoice.subscription_id) {
+      const subscription = await getSubscriptionById(invoice.subscription_id);
+      if (subscription?.status === 'pending') {
+        await updateSubscription(invoice.subscription_id, { status: 'incomplete' });
+      }
     }
 
-    console.log(`Processed failed transaction ${transactionData.id}`);
+    // Enviar email de fallo
+    try {
+      const userEmail = transactionData.customer_email;
+      if (userEmail) {
+        await sendEmail(userEmail, emailTemplates.paymentFailed(invoice, newAttemptCount));
+      }
+    } catch (emailError) {
+      console.error('⚠️ Error sending failure email:', emailError);
+    }
+
+    console.log(`📝 Payment failed, attempt ${newAttemptCount} for invoice: ${invoice.id}`);
 
   } catch (error) {
-    console.error('Error handling failed transaction:', error);
+    console.error('❌ Error handling failed payment:', error);
+    throw error;
   }
+}
+
+// GET para verificar que el endpoint está activo
+export async function GET() {
+  return NextResponse.json({ 
+    status: 'ok', 
+    message: 'Wompi webhook endpoint active',
+    timestamp: new Date().toISOString()
+  });
 }

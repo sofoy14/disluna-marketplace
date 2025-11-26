@@ -33,6 +33,7 @@ import { parseModelAnswer } from "@/lib/parsers/model-answer"
 import { processStreamContent } from "@/lib/stream-processor"
 import { DocumentSheet } from "../chat/document-sheet"
 import { ReasoningSteps } from "../chat/reasoning-steps"
+import { ThinkingProcess } from "../chat/thinking-process"
 import { PromptRequest } from "../chat/prompt-request"
 
 const ICON_SIZE = 32
@@ -378,6 +379,14 @@ export const Message: FC<MessageProps> = ({
         onRegenerate={message.role === "assistant" && isLast ? handleRegenerate : undefined}
       >
         <div className="space-y-3">
+          {/* Thinking Process (Native) */}
+          {processedContent && processedContent.thinking && (
+            <ThinkingProcess
+              content={processedContent.thinking}
+              isStreaming={isGenerating && isLast && message.role === "assistant"}
+            />
+          )}
+
           {/* Pasos de razonamiento */}
           {processedContent && processedContent.reasoningSteps.length > 0 && (
           <ReasoningSteps 

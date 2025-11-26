@@ -91,8 +91,8 @@ export async function runDynamicSearchWorkflow(
   const {
     client,
     model,
-    maxSearchRounds = 10, // Aumentado para permitir más rondas
-    maxSearchesPerRound = 8, // Aumentado para más búsquedas por ronda
+    maxSearchRounds = 3, // Reduced from 10 for safety
+    maxSearchesPerRound = 5, // Reduced from 8 for safety
     searchTimeoutMs = 45000, // Aumentado a 45 segundos
     enableModelDecision = true
   } = options

@@ -2,32 +2,18 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { MessageSquare, FolderOpen, Mic, Send, Upload } from "lucide-react"
+import { Send, Upload } from "lucide-react"
 import { useContext, useState, useEffect } from "react"
 import { ChatbotUIContext } from "@/context/context"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import { useRouter } from "next/navigation"
 import { ShaderCanvas } from "@/components/shader-canvas"
-
-const suggestions = [
-  {
-    icon: MessageSquare,
-    title: "Consultas",
-    description: "Realiza consultas legales y obtén respuestas especializadas sobre jurisprudencia y normativa.",
-  },
-  {
-    icon: FolderOpen,
-    title: "Mis procesos",
-    description: "Gestiona y consulta tus procesos legales con contexto dedicado.",
-  },
-  {
-    icon: Mic,
-    title: "Transcripción de audio",
-    description: "Transcribe y analiza audios para documentos legales y transcripciones judiciales.",
-  },
-]
-
+import { ModelSelectorToggle } from "@/components/chat/model-selector-toggle"
+import { motion, AnimatePresence } from "framer-motion"
+import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input"
+import { IconCirclePlus, IconSend } from "@tabler/icons-react"
+import { CreateFileModal } from "@/components/modals/CreateFileModal"
+import { cn } from "@/lib/utils"
 
 export function WelcomeScreen() {
   const { profile, selectedWorkspace } = useContext(ChatbotUIContext)
@@ -35,6 +21,8 @@ export function WelcomeScreen() {
   const router = useRouter()
   const [inputValue, setInputValue] = useState("")
   const [selectedShader, setSelectedShader] = useState(1) // Default to shader ID 1
+  const [isSending, setIsSending] = useState(false)
+  const [sentMessage, setSentMessage] = useState("") // Store the message being sent
 
   // Load shader from localStorage on mount
   useEffect(() => {
@@ -57,118 +45,174 @@ export function WelcomeScreen() {
     }
   }, [])
 
-  const handleSend = async () => {
-    const message = inputValue.trim()
+  const handleSend = async (text?: string) => {
+    const message = text || inputValue.trim()
     if (!message) return
 
-    // Crear nuevo chat y, tras navegar, enviar el primer mensaje
-    await handleNewChat()
-    setTimeout(() => {
-      try {
-        handleSendMessage(message, [], false)
-      } catch (e) {
-        // Silenciar error visible en UI inicial
-        console.error('Error enviando primer mensaje desde WelcomeScreen:', e)
-      }
-    }, 50)
+    setIsSending(true)
+    setSentMessage(message) 
+
+    setTimeout(async () => {
+      await handleNewChat()
+      setTimeout(() => {
+        try {
+          handleSendMessage(message, [], false)
+        } catch (e) {
+          console.error('Error enviando primer mensaje desde WelcomeScreen:', e)
+        }
+      }, 50)
+    }, 1200)
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputValue(e.target.value)
   }
 
-  const handleCardClick = async (cardTitle: string) => {
-    if (cardTitle === "Consultas") {
-      // Abrir chat normal para consultas y, si hay texto, enviarlo
-      if (inputValue.trim()) {
-        await handleSend()
-      } else {
-        await handleNewChat()
-      }
-    } else if (cardTitle === "Mis procesos") {
-      // Ir a la pestaña de procesos
-      const url = `/${selectedWorkspace?.id}?tab=collections`
-      router.push(url)
-    } else if (cardTitle === "Transcripción de audio") {
-      // Ir a la página de transcripciones
-      const url = `/${selectedWorkspace?.id}/transcriptions`
-      router.push(url)
-    }
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement> | React.KeyboardEvent<HTMLTextAreaElement>) => {
+    e.preventDefault()
+    handleSend()
   }
 
   return (
     <div className="flex h-screen bg-background text-foreground overflow-hidden">
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col bg-gradient-to-br from-background via-background to-primary/20 overflow-hidden">
-        {/* Main Content - Flex para ocupar todo sin scroll en móviles */}
-        <div className="flex-1 flex items-center justify-center p-2 md:p-6 overflow-y-auto min-h-0">
-          <div className="w-full max-w-3xl h-full flex flex-col">
-            {/* Welcome Card - Flex para distribuir espacio */}
-            <div className="bg-card/50 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-8 border border-border flex flex-col h-full md:h-auto justify-between md:justify-start">
-              {/* Icon - Más pequeño en móviles */}
-              <div className="flex justify-center mb-2 md:mb-8 flex-shrink-0">
-                <ShaderCanvas size={80} shaderId={selectedShader} />
-              </div>
-
-              {/* Title - Compacto en móviles */}
-              <h1 className="text-center text-lg md:text-3xl mb-2 md:mb-8 text-foreground flex-shrink-0">¿Cómo puedo ayudarte hoy?</h1>
-
-                {/* Suggestion Cards - Grid compacto en móviles */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 mb-2 md:mb-8 flex-1 min-h-0">
-                  {suggestions.map((suggestion, index) => (
-                    <div
-                      key={index}
-                      onClick={() => handleCardClick(suggestion.title)}
-                      className="bg-muted/50 p-2 md:p-4 rounded-lg md:rounded-xl hover:bg-muted cursor-pointer transition-colors border border-border flex flex-col justify-center"
-                    >
-                      <div className="flex justify-center mb-1.5 md:mb-3">
-                        <div className="w-7 h-7 md:w-10 md:h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-                          <suggestion.icon className="w-3.5 h-3.5 md:w-5 md:h-5 text-primary" />
-                        </div>
-                      </div>
-                      <h3 className="text-center text-xs md:text-sm mb-1 md:mb-2 text-foreground font-medium">{suggestion.title}</h3>
-                      <p className="text-center text-[10px] md:text-xs text-muted-foreground leading-tight md:leading-relaxed line-clamp-2">
-                        {suggestion.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-
-              {/* Input - Compacto en móviles, siempre al final */}
-              <div className="relative flex-shrink-0 mt-auto">
-                <div className="flex items-center gap-1.5 md:gap-3 bg-input rounded-full px-2 md:px-4 py-1.5 md:py-3 border border-input">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="w-5 h-5 md:w-6 md:h-6 flex-shrink-0 hover:bg-muted/50 rounded-full p-0"
-                        aria-label="Subir documento"
-                      >
-                        <Upload className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground hover:text-foreground transition-colors" />
-                      </Button>
-                    <Input
-                      placeholder="Escribe tu consulta aquí..."
-                      className="flex-1 border-0 bg-transparent text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm md:text-base"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                    />
-                    <Button
-                      size="icon"
-                      className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-primary hover:bg-primary/90 flex-shrink-0"
-                      onClick={handleSend}
-                    >
-                      <Send className="w-3 h-3 md:w-4 md:h-4 text-primary-foreground" />
-                    </Button>
-                </div>
-              </div>
-            </div>
-          </div>
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-background via-background to-primary/20 overflow-hidden relative">
+        
+        {/* Header with Model Selector */}
+        <div className="absolute top-4 right-4 z-20">
+           <ModelSelectorToggle />
         </div>
 
-        {/* Footer - Oculto en móviles para ahorrar espacio */}
+        <div className="flex-1 flex items-center justify-center p-2 md:p-6 overflow-y-auto min-h-0 relative">
+          
+          <AnimatePresence>
+            {isSending && (
+              <>
+                {/* Orb Animation */}
+                <motion.div
+                  initial={{ 
+                    position: "fixed", 
+                    top: "50%", 
+                    left: "50%", 
+                    x: "-50%", 
+                    y: "-50%", 
+                    scale: 1,
+                    zIndex: 50 
+                  }}
+                  animate={[
+                    {
+                      scale: 1.2,
+                      transition: { duration: 0.4, ease: "easeOut" }
+                    },
+                    { 
+                      top: "120px",    
+                      left: "40px",    
+                      x: "0%",
+                      y: "0%",
+                      scale: 0.2,      
+                      opacity: 0,      
+                      transition: { duration: 0.8, ease: "easeInOut", delay: 0.4 }
+                    }
+                  ]}
+                  className="pointer-events-none"
+                >
+                  <div className="relative">
+                    <ShaderCanvas size={150} shaderId={selectedShader} />
+                    <div className="absolute inset-0 bg-primary/30 blur-3xl rounded-full -z-10 animate-pulse" />
+                  </div>
+                </motion.div>
+
+                {/* Temporary Chat UI Simulation for Transition */}
+                <motion.div
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1 }}
+                   transition={{ duration: 0.5, delay: 0.2 }}
+                   className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm flex flex-col pt-[80px] px-4 md:px-6 max-w-3xl mx-auto w-full"
+                >
+                  {/* User Message Bubble (Unified Style) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.1 }}
+                    className="self-end mb-6 flex flex-row-reverse gap-3 px-4 py-3"
+                  >
+                    <div className="bg-background text-foreground border border-border shadow-md shadow-primary/20 px-4 py-3 rounded-2xl rounded-tr-sm max-w-[70%] text-sm leading-relaxed whitespace-pre-wrap font-medium">
+                      {sentMessage}
+                    </div>
+                  </motion.div>
+
+                  {/* AI Thinking Indicator (Unified Style) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.6 }}
+                    className="self-start flex gap-3 px-4 py-3 items-start"
+                  >
+                    <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 opacity-0">
+                       <div className="w-full h-full bg-primary/20" />
+                    </div>
+                    
+                    <div className="bg-muted text-foreground border-border px-4 py-3 rounded-2xl rounded-tl-md shadow-sm">
+                      <div className="flex space-x-1 items-center h-6">
+                        <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                        <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                        <div className="w-2 h-2 bg-primary/50 rounded-full animate-bounce"></div>
+                        <span className="text-xs text-muted-foreground ml-2">Pensando...</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+
+          <motion.div 
+            className="w-full max-w-3xl h-full flex flex-col"
+            animate={{ opacity: isSending ? 0 : 1, scale: isSending ? 0.95 : 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Welcome Card Unified */}
+            <div className="bg-card/50 backdrop-blur-sm rounded-xl md:rounded-2xl p-8 md:p-12 border border-border flex flex-col justify-center items-center min-h-[400px]">
+              
+              <div className="flex justify-center mb-8 flex-shrink-0">
+                 {!isSending && <ShaderCanvas size={120} shaderId={selectedShader} />}
+                 {isSending && <div className="w-[120px] h-[120px]" />}
+              </div>
+
+              <h1 className="text-center text-2xl md:text-4xl mb-12 text-foreground font-light">
+                ¿En qué puedo ayudarte hoy?
+              </h1>
+
+              <div className="w-full max-w-2xl">
+                <PlaceholdersAndVanishInput
+                  placeholders={[
+                    "¿Cuáles son los requisitos para una demanda?",
+                    "Redacta una tutela por violación al debido proceso",
+                    "Busca jurisprudencia sobre contratos laborales",
+                    "Analiza este documento legal"
+                  ]}
+                  onChange={handleChange}
+                  onSubmit={handleSubmit}
+                  leftElement={
+                    <CreateFileModal onFileCreated={(file) => console.log(file)}>
+                      <IconCirclePlus className="cursor-pointer p-1 hover:opacity-50" size={32} />
+                    </CreateFileModal>
+                  }
+                  rightElement={
+                    <IconSend
+                      className={cn(
+                        "bg-primary text-secondary cursor-pointer rounded p-1 transition-opacity hover:opacity-80",
+                        !inputValue && "cursor-not-allowed opacity-50"
+                      )}
+                      onClick={() => handleSend()}
+                      size={30}
+                    />
+                  }
+                />
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
         <div className="hidden md:block px-6 py-3 md:py-4 text-center flex-shrink-0">
           <p className="text-xs text-muted-foreground">
             La IA puede cometer errores. Verifica información importante.

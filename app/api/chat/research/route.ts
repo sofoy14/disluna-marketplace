@@ -34,9 +34,23 @@ export async function POST(request: NextRequest) {
 
     const userQuery = extractLastUserMessage(messages)
 
-    // RAG condicional: solo si hay proceso o archivos
-    const ragEnabled = Boolean(processId) || (Array.isArray(fileIds) && fileIds.length > 0)
+    // RAG condicional: solo si hay proceso o archivos EXPLÍCITOS
+    // Priorizar búsqueda web para consultas legales generales
+    const hasExplicitFiles = Array.isArray(fileIds) && fileIds.length > 0
+    const hasProcess = Boolean(processId)
+    
+    // Detectar si la consulta requiere búsqueda web (preguntas legales generales)
+    const requiresWebSearch = userQuery.match(/\b(cómo|qué|cuándo|dónde|quién|por qué|son|es|tributan|regulación|normatividad|ley|decreto|sentencia|jurisprudencia|clasificación|naturaleza|definición)\b/i)
+    
+    // Solo usar RAG si hay archivos explícitos/proceso Y la consulta no claramente requiere búsqueda web
+    const ragEnabled = (hasExplicitFiles || hasProcess) && !requiresWebSearch
     let ragContext = ""
+    
+    console.log(`🔍 Research endpoint:`)
+    console.log(`   - Requiere búsqueda web: ${requiresWebSearch ? 'Sí' : 'No'}`)
+    console.log(`   - Tiene archivos explícitos: ${hasExplicitFiles ? 'Sí' : 'No'}`)
+    console.log(`   - Tiene proceso: ${hasProcess ? 'Sí' : 'No'}`)
+    console.log(`   - RAG habilitado: ${ragEnabled ? 'Sí' : 'No'} (prioridad a búsqueda web)`)
 
     if (ragEnabled && profile.openai_api_key) {
       const openai = new OpenAI({ apiKey: profile.openai_api_key })

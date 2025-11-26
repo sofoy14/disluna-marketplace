@@ -7,6 +7,11 @@ export type LLMID =
   | MistralLLMID
   | GroqLLMID
   | PerplexityLLMID
+  | OpenRouterLLMID
+
+export type OpenRouterLLMID =
+  | "alibaba/tongyi-deepresearch-30b-a3b" // Tongyi 30B (M1)
+  | "moonshotai/kimi-k2-thinking" // Kimi k2 Thinking (M1 Pro)
 
 // OpenAI Models (UPDATED 5/13/24)
 export type OpenAILLMID =

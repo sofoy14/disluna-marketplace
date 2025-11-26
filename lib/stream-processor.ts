@@ -30,6 +30,7 @@ export interface ProcessedContent {
   isDocument: boolean
   documentContent?: string
   promptBlock?: PromptBlock
+  thinking?: string
 }
 
 /**
@@ -41,6 +42,22 @@ export function processStreamContent(content: string): ProcessedContent {
   let isDocument = false
   let documentContent = ''
   let promptBlock: PromptBlock | undefined
+  let thinking = ''
+
+  // Extraer pensamiento nativo <think>...</think>
+  const thinkStart = content.indexOf('<think>')
+  if (thinkStart !== -1) {
+    const thinkEnd = content.indexOf('</think>')
+    if (thinkEnd !== -1) {
+      // Pensamiento completo
+      thinking = content.substring(thinkStart + 7, thinkEnd)
+      text = text.replace(/<think>[\s\S]*?<\/think>/, '')
+    } else {
+      // Pensamiento en progreso (streaming)
+      thinking = content.substring(thinkStart + 7)
+      text = text.substring(0, thinkStart)
+    }
+  }
 
   // Pasos de razonamiento
   const reasoningRegex = /\[REASONING:([^:]+):([^\]]+)\]/g

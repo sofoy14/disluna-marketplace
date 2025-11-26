@@ -143,7 +143,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
       setChatSettings({
         model: (searchParams.get("model") ||
           workspace?.default_model ||
-          "gpt-4-1106-preview") as LLMID,
+          "alibaba/tongyi-deepresearch-30b-a3b") as LLMID,
         prompt:
           workspace?.default_prompt ||
           "You are a friendly, helpful AI assistant.",

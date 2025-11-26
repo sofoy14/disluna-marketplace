@@ -1,8 +1,8 @@
 import OpenAI from "openai"
 import { ChatMemoryManager, ChatContext } from "@/lib/memory/chat-memory-manager"
-import { runDynamicSearchWorkflow } from "@/lib/tools/dynamic-search-orchestrator"
-import { runLegalSearchWorkflow } from "@/lib/tools/legal-search-orchestrator"
+import { UnifiedDeepResearchOrchestrator, UnifiedResearchConfig } from "@/lib/tongyi/unified-deep-research-orchestrator"
 import { planLegalSearchStrategy } from "@/lib/tools/legal-search-planner"
+import { runLegalSearchWorkflow } from "@/lib/tools/legal-search-orchestrator"
 
 export interface AgentDecision {
   action: 'search' | 'respond' | 'clarify' | 'follow_up'
@@ -46,6 +46,7 @@ export interface AgentOptions {
   enableAgenticSearch: boolean
   maxSearchRounds: number
   searchTimeoutMs: number
+  apiKey: string
 }
 
 type ReasoningStatus =
@@ -68,10 +69,21 @@ interface ReasoningDescriptor {
 export class LegalAIAgent {
   private memoryManager: ChatMemoryManager
   private options: AgentOptions
+  private unifiedOrchestrator: UnifiedDeepResearchOrchestrator
 
   constructor(options: AgentOptions) {
     this.options = options
     this.memoryManager = ChatMemoryManager.getInstance()
+    this.unifiedOrchestrator = new UnifiedDeepResearchOrchestrator({
+      apiKey: options.apiKey,
+      modelName: options.model,
+      legalDomain: 'colombia',
+      qualityThreshold: 0.85,
+      enableContinuousVerification: true,
+      enableIterativeRefinement: true,
+      maxRounds: 3, // Hard limit for stability
+      maxSearchesPerRound: 5
+    })
   }
 
   private attachReasoningSteps(steps: ReasoningDescriptor[], content: string): string {
@@ -394,123 +406,72 @@ Responde en formato JSON:
     decision: AgentDecision,
     chatContext: ChatContext | null
   ): Promise<AgentResponse> {
-    console.log(`­ƒöì Ejecutando b├║squeda agentica con estrategia: ${decision.searchStrategy}`)
+    console.log(`🔍 Ejecutando búsqueda agentica con estrategia: ${decision.searchStrategy}`)
 
     try {
       let searchResult: any
       let metadata: AgentResponse['metadata']
 
-      if (decision.searchStrategy === 'dynamic' || decision.searchStrategy === 'hybrid') {
-        // Usar sistema de b├║squeda din├ímica
-        searchResult = await runDynamicSearchWorkflow(userQuery, {
-          client: this.options.client,
-          model: this.options.model,
-          maxSearchRounds: decision.maxRounds || this.options.maxSearchRounds,
-          maxSearchesPerRound: 8,
-          searchTimeoutMs: this.options.searchTimeoutMs,
-          enableModelDecision: true
-        })
+      // FORCE iter_research mode for stability with Tongyi/Kimi
+      // This replaces the unstable dynamic loop
+      const effectiveMode = 'iter_research' 
+      console.log(`🔒 Forzando modo seguro: ${effectiveMode} (Max 3 rondas)`)
 
-        metadata = {
-          searchExecuted: true,
-          searchRounds: searchResult.metadata.totalRounds,
-          totalSearches: searchResult.metadata.totalSearches,
-          totalResults: searchResult.metadata.totalResults,
-          finalQuality: searchResult.metadata.finalQuality,
-          modelDecisions: searchResult.metadata.modelDecisions,
-          searchStrategy: searchResult.metadata.searchStrategy,
-          sources: searchResult.allResults.slice(0, 10).map((result: any) => ({
-            title: result.title,
-            url: result.url,
-            type: result.type,
-            quality: result.quality
-          }))
+      const orchestratorResult = await this.unifiedOrchestrator.orchestrate(
+        userQuery,
+        this.options.chatId,
+        this.options.userId,
+        {
+          mode: effectiveMode,
+          maxRounds: 3, // Strict limit
+          maxSearchesPerRound: 5
         }
+      )
 
-        // Registrar b├║squeda en memoria
-        if (this.options.enableMemory && chatContext) {
-          await this.memoryManager.recordSearch(
-            this.options.chatId,
-            this.options.userId,
-            userQuery,
-            searchResult.metadata.totalResults,
-            searchResult.metadata.finalQuality
-          )
-        }
+      metadata = {
+        searchExecuted: true,
+        searchRounds: orchestratorResult.metadata.totalRounds,
+        totalSearches: orchestratorResult.metadata.totalSearches,
+        totalResults: orchestratorResult.metadata.totalSources,
+        finalQuality: orchestratorResult.analysis.qualityScore * 10, // Scale to 0-10
+        modelDecisions: 0, // Orchestrator handles this internally
+        searchStrategy: effectiveMode,
+        sources: orchestratorResult.sources.map((source: any) => ({
+          title: source.title,
+          url: source.url,
+          type: source.type,
+          quality: source.quality
+        }))
+      }
 
-        // Generar respuesta usando el contexto enriquecido
-        const response = await this.generateResponseWithContext(
+      // Registrar búsqueda en memoria
+      if (this.options.enableMemory && chatContext) {
+        await this.memoryManager.recordSearch(
+          this.options.chatId,
+          this.options.userId,
           userQuery,
-          searchResult.finalContext,
-          chatContext
+          orchestratorResult.metadata.totalSources,
+          orchestratorResult.analysis.qualityScore * 10
         )
+      }
 
-        return {
-          content: response,
-          action: 'search',
-          metadata,
-          memory: {
-            messageId: `${this.options.chatId}-${Date.now()}`,
-            timestamp: new Date()
-          }
-        }
-
-      } else {
-        // Usar sistema tradicional
-        const searchPlan = await planLegalSearchStrategy({
-          client: this.options.client,
-          model: this.options.model,
-          userQuery,
-          maxQueries: 5
-        })
-
-        const workflow = await runLegalSearchWorkflow(userQuery, {
-          maxResults: 5,
-          maxAttempts: Math.max(searchPlan.queries.length || 0, 1),
-          searchTimeoutMs: this.options.searchTimeoutMs,
-          searchQueries: searchPlan.queries
-        })
-
-        metadata = {
-          searchExecuted: workflow.metadata.searchExecuted,
-          searchRounds: 1,
-          totalSearches: workflow.metadata.attempts,
-          totalResults: workflow.sources.length,
-          finalQuality: workflow.sources.length > 0 ? 7 : 3,
-          searchStrategy: 'TRADITIONAL',
-          sources: workflow.sources.map(source => ({
-            title: source.title,
-            url: source.url,
-            type: source.type,
-            quality: 7
-          }))
-        }
-
-        // Generar respuesta usando el contexto tradicional
-        const response = await this.generateResponseWithContext(
-          userQuery,
-          workflow.modelContext,
-          chatContext
-        )
-
-        return {
-          content: response,
-          action: 'search',
-          metadata,
-          memory: {
-            messageId: `${this.options.chatId}-${Date.now()}`,
-            timestamp: new Date()
-          }
+      return {
+        content: orchestratorResult.finalAnswer,
+        action: 'search',
+        metadata,
+        memory: {
+          messageId: `${this.options.chatId}-${Date.now()}`,
+          timestamp: new Date()
         }
       }
 
     } catch (error) {
-      console.error('Error en b├║squeda agentica:', error)
+      console.error('Error en búsqueda agentica:', error)
       
-      // Fallback a respuesta sin b├║squeda
+      // Fallback a respuesta sin búsqueda
       const response = await this.generateResponseWithContext(
         userQuery,
-        'Error en b├║squeda, respondiendo con conocimiento general',
+        'Error en búsqueda, respondiendo con conocimiento general',
         chatContext
       )
 

@@ -268,6 +268,17 @@ ${searchResult.webSearchContext}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Responde en español colombiano con terminología jurídica precisa.
+
+JERARQUÍA LEGAL COLOMBIANA (ESTRICTA):
+1. Bloque de Constitucionalidad (Constitución 1991 + Tratados DDHH).
+2. Leyes (Estatutarias > Orgánicas > Ordinarias).
+3. Decretos y Actos Administrativos.
+4. Jurisprudencia (Corte Constitucional > CSJ/Consejo de Estado).
+
+IMPORTANTE:
+- Prioriza siempre la jurisprudencia vigente y unificada.
+- Verifica la vigencia de las normas citadas.
+- Usa terminología jurídica colombiana exacta.`
 No menciones búsqueda web ya que no fue necesaria.`
   }
   
@@ -290,7 +301,18 @@ ${searchResult.webSearchContext}
 
 **OBLIGATORIO**: Menciona que se ejecutó una búsqueda web adaptativa en tu respuesta.
 
-Responde en español colombiano con terminología jurídica precisa.`
+Responde en español colombiano con terminología jurídica precisa.
+
+JERARQUÍA LEGAL COLOMBIANA (ESTRICTA):
+1. Bloque de Constitucionalidad (Constitución 1991 + Tratados DDHH).
+2. Leyes (Estatutarias > Orgánicas > Ordinarias).
+3. Decretos y Actos Administrativos.
+4. Jurisprudencia (Corte Constitucional > CSJ/Consejo de Estado).
+
+IMPORTANTE:
+- Prioriza siempre la jurisprudencia vigente y unificada.
+- Verifica la vigencia de las normas citadas.
+- Usa terminología jurídica colombiana exacta.``
   } else {
     return `Eres un asistente legal especializado en derecho colombiano.
 
@@ -302,7 +324,18 @@ ${searchResult.webSearchContext}
 
 **OBLIGATORIO**: Menciona que se ejecutó una búsqueda web inteligente en tu respuesta.
 
-Responde en español colombiano con terminología jurídica precisa.`
+Responde en español colombiano con terminología jurídica precisa.
+
+JERARQUÍA LEGAL COLOMBIANA (ESTRICTA):
+1. Bloque de Constitucionalidad (Constitución 1991 + Tratados DDHH).
+2. Leyes (Estatutarias > Orgánicas > Ordinarias).
+3. Decretos y Actos Administrativos.
+4. Jurisprudencia (Corte Constitucional > CSJ/Consejo de Estado).
+
+IMPORTANTE:
+- Prioriza siempre la jurisprudencia vigente y unificada.
+- Verifica la vigencia de las normas citadas.
+- Usa terminología jurídica colombiana exacta.``
   }
 }
 

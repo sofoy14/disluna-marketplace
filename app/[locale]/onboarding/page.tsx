@@ -6,37 +6,52 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
 import { 
   CheckCircle, 
   User, 
   Loader2, 
   ArrowRight,
   ArrowLeft,
-  Crown,
-  CreditCard
+  CreditCard,
+  Sparkles,
+  Star,
+  Zap
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 
-type OnboardingStep = 'profile_setup' | 'plan_selection' | 'payment_setup' | 'completed';
+type OnboardingStep = 'profile_setup' | 'plan_selection';
+
+interface Plan {
+  id: string;
+  name: string;
+  description: string;
+  amount_in_cents: number;
+  currency: string;
+  billing_period: 'monthly' | 'yearly';
+  features: string[];
+  first_month_price?: number;
+  has_first_month_promo?: boolean;
+}
 
 export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState<OnboardingStep>('profile_setup');
   const [isLoading, setIsLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   
   // Profile form data
   const [profileData, setProfileData] = useState({
     display_name: '',
-    bio: '',
     username: ''
   });
 
-  // Plan selection
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [plans, setPlans] = useState<any[]>([]);
+  // Plans
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -61,34 +76,61 @@ export default function OnboardingPage() {
         return;
       }
 
+      // Get workspace
+      const { data: workspace } = await supabase
+        .from('workspaces')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('is_home', true)
+        .single();
+
+      if (workspace) {
+        setWorkspaceId(workspace.id);
+      }
+
       // Get user profile to check onboarding step
       const { data: profile } = await supabase
         .from('profiles')
-        .select('onboarding_step, email_verified, onboarding_completed')
+        .select('onboarding_step, email_verified, onboarding_completed, display_name, username')
         .eq('user_id', user.id)
         .single();
 
-      if (profile?.onboarding_completed) {
-        // User already completed onboarding, redirect to chat
-        const { data: workspace } = await supabase
-          .from('workspaces')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('is_home', true)
-          .single();
+      // Check if user has active subscription - if so, go to chat
+      const { data: subscription } = await supabase
+        .from('subscriptions')
+        .select('id, status')
+        .eq('workspace_id', workspace?.id)
+        .eq('status', 'active')
+        .single();
 
-        if (workspace) {
-          router.push(`/${workspace.id}/chat`);
-        }
+      if (subscription) {
+        // User has active subscription, mark onboarding complete and go to chat
+        await supabase
+          .from('profiles')
+          .update({ onboarding_completed: true, onboarding_step: 'completed' })
+          .eq('user_id', user.id);
+        
+        router.push(`/${workspace?.id}/chat`);
         return;
       }
 
+      // Pre-fill profile data if exists
+      if (profile?.display_name) {
+        setProfileData(prev => ({
+          ...prev,
+          display_name: profile.display_name || '',
+          username: profile.username || ''
+        }));
+      }
+
       // Set current step based on profile data
-      if (profile?.onboarding_step) {
-        setCurrentStep(profile.onboarding_step as OnboardingStep);
+      if (profile?.onboarding_step === 'plan_selection' || profile?.display_name) {
+        setCurrentStep('plan_selection');
       }
     } catch (error) {
       console.error('Error checking onboarding status:', error);
+    } finally {
+      setPageLoading(false);
     }
   };
 
@@ -123,7 +165,6 @@ export default function OnboardingPage() {
         .from('profiles')
         .update({
           display_name: profileData.display_name,
-          bio: profileData.bio,
           username: profileData.username,
           onboarding_step: 'plan_selection'
         })
@@ -134,10 +175,6 @@ export default function OnboardingPage() {
       }
 
       setCurrentStep('plan_selection');
-      setMessage({
-        type: 'success',
-        text: 'Perfil actualizado exitosamente'
-      });
 
     } catch (error) {
       setMessage({
@@ -149,68 +186,73 @@ export default function OnboardingPage() {
     }
   };
 
-  const handlePlanSelection = (planId: string) => {
-    setSelectedPlan(planId);
-  };
-
-  const handleContinueToPayment = async () => {
-    if (!selectedPlan) return;
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
-          .from('profiles')
-          .update({ onboarding_step: 'payment_setup' })
-          .eq('user_id', user.id);
-      }
-      setCurrentStep('payment_setup');
-    } catch (e) {
-      // no-op fallback
-      setCurrentStep('payment_setup');
+  const handleSubscribe = async (planId: string) => {
+    if (!workspaceId) {
+      setMessage({ type: 'error', text: 'Error: No se encontró el workspace' });
+      return;
     }
-  };
 
-  const handleSkipPayment = async () => {
+    setProcessingPlanId(planId);
+
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        throw new Error('Usuario no autenticado');
-      }
-
-      // Mark onboarding as completed
-      await supabase
-        .from('profiles')
-        .update({
-          onboarding_completed: true,
-          onboarding_step: 'completed'
+      const response = await fetch('/api/billing/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          plan_id: planId,
+          workspace_id: workspaceId
         })
-        .eq('user_id', user.id);
+      });
 
-      // Redirect to chat
-      const { data: workspace } = await supabase
-        .from('workspaces')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('is_home', true)
-        .single();
+      const result = await response.json();
 
-      if (workspace) {
-        router.push(`/${workspace.id}/chat`);
+      if (!result.success) {
+        throw new Error(result.error || 'Error al iniciar suscripción');
       }
+
+      // Crear formulario y redirigir a Wompi
+      const form = document.createElement('form');
+      form.method = 'GET';
+      form.action = result.data.checkout_url;
+
+      Object.entries(result.data.checkout_data).forEach(([key, value]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = value as string;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+
     } catch (error) {
-      console.error('Error completing onboarding:', error);
+      console.error('Error initiating subscription:', error);
+      setMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : 'Error al procesar el pago'
+      });
+    } finally {
+      setProcessingPlanId(null);
     }
   };
+
+  const formatPrice = (amountInCents: number) => {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'decimal',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amountInCents / 100);
+  };
+
+  // Separar planes
+  const monthlyPlan = plans.find(p => p.billing_period === 'monthly');
+  const yearlyPlan = plans.find(p => p.billing_period === 'yearly');
 
   const renderStepIndicator = () => {
     const steps = [
       { key: 'profile_setup', label: 'Perfil', icon: User },
-      { key: 'plan_selection', label: 'Plan', icon: Crown },
-      { key: 'payment_setup', label: 'Pago', icon: CreditCard },
-      { key: 'completed', label: 'Completado', icon: CheckCircle }
+      { key: 'plan_selection', label: 'Plan', icon: CreditCard }
     ];
 
     return (
@@ -222,23 +264,27 @@ export default function OnboardingPage() {
           
           return (
             <div key={step.key} className="flex items-center">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
+              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors ${
                 isActive 
-                  ? 'border-blue-600 bg-blue-600 text-white' 
+                  ? 'border-indigo-600 bg-indigo-600 text-white' 
                   : isCompleted 
                     ? 'border-green-600 bg-green-600 text-white'
-                    : 'border-gray-300 bg-white text-gray-500'
+                    : 'border-slate-300 bg-white text-slate-400'
               }`}>
-                <Icon className="w-5 h-5" />
+                {isCompleted ? (
+                  <CheckCircle className="w-5 h-5" />
+                ) : (
+                  <Icon className="w-5 h-5" />
+                )}
               </div>
-              <span className={`ml-2 text-sm font-medium ${
-                isActive ? 'text-blue-600' : isCompleted ? 'text-green-600' : 'text-gray-500'
+              <span className={`ml-2 text-sm font-medium hidden sm:inline ${
+                isActive ? 'text-indigo-600' : isCompleted ? 'text-green-600' : 'text-slate-400'
               }`}>
                 {step.label}
               </span>
               {index < steps.length - 1 && (
-                <div className={`w-8 h-0.5 mx-4 ${
-                  isCompleted ? 'bg-green-600' : 'bg-gray-300'
+                <div className={`w-12 h-0.5 mx-4 ${
+                  isCompleted ? 'bg-green-600' : 'bg-slate-200'
                 }`} />
               )}
             </div>
@@ -248,189 +294,27 @@ export default function OnboardingPage() {
     );
   };
 
-  const renderProfileSetup = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Configura tu Perfil</CardTitle>
-        <CardDescription>
-          Completa tu información personal para comenzar
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleProfileSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="display_name">Nombre Completo</Label>
-            <Input
-              id="display_name"
-              value={profileData.display_name}
-              onChange={(e) => setProfileData({...profileData, display_name: e.target.value})}
-              placeholder="Tu nombre completo"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="username">Nombre de Usuario</Label>
-            <Input
-              id="username"
-              value={profileData.username}
-              onChange={(e) => setProfileData({...profileData, username: e.target.value})}
-              placeholder="tu_usuario"
-              required
-            />
-          </div>
-
-          <div>
-            <Label htmlFor="bio">Biografía (Opcional)</Label>
-            <Textarea
-              id="bio"
-              value={profileData.bio}
-              onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
-              placeholder="Cuéntanos sobre ti..."
-              rows={3}
-            />
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Guardando...
-              </>
-            ) : (
-              <>
-                Continuar
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </>
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  );
-
-  const renderPlanSelection = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Elige tu Plan</CardTitle>
-        <CardDescription>
-          Selecciona el plan que mejor se adapte a tus necesidades
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                selectedPlan === plan.id
-                  ? 'border-blue-600 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-              onClick={() => handlePlanSelection(plan.id)}
-            >
-              <h3 className="font-semibold text-lg">{plan.name}</h3>
-              <p className="text-gray-600 text-sm mb-2">{plan.description}</p>
-              <div className="text-2xl font-bold text-blue-600">
-                ${(plan.amount_in_cents / 100).toLocaleString()} COP
-              </div>
-              <ul className="mt-3 space-y-1">
-                {plan.features.map((feature: string, index: number) => (
-                  <li key={index} className="text-sm text-gray-600 flex items-center">
-                    <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-10 h-10 animate-spin text-indigo-600 mx-auto mb-4" />
+          <p className="text-slate-600 font-medium">Cargando...</p>
         </div>
-
-        <div className="flex justify-between mt-6">
-          <Button 
-            variant="outline" 
-            onClick={() => setCurrentStep('profile_setup')}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Anterior
-          </Button>
-          
-          <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              onClick={handleSkipPayment}
-            >
-              Saltar por ahora
-            </Button>
-            <Button 
-              onClick={handleContinueToPayment}
-              disabled={!selectedPlan}
-            >
-              Continuar
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
-  const renderPaymentSetup = () => (
-    <Card>
-      <CardHeader>
-        <CardTitle>Configuración de Pago</CardTitle>
-        <CardDescription>
-          Configura tu método de pago para activar tu suscripción
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="text-center space-y-4">
-          <p className="text-gray-600">
-            Serás redirigido a Wompi para configurar tu método de pago de forma segura.
-          </p>
-          
-          <Button 
-            className="w-full"
-            onClick={() => {
-              // Redirect to billing page with selected plan
-              router.push(`/billing?plan_id=${selectedPlan}`);
-            }}
-          >
-            <CreditCard className="mr-2 h-4 w-4" />
-            Configurar Método de Pago
-          </Button>
-
-          <Button 
-            variant="outline" 
-            onClick={handleSkipPayment}
-            className="w-full"
-          >
-            Saltar por ahora
-          </Button>
-        </div>
-
-        <div className="flex justify-start mt-6">
-          <Button 
-            variant="outline" 
-            onClick={() => setCurrentStep('plan_selection')}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Anterior
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
             Bienvenido a tu Asistente Legal
           </h1>
-          <p className="mt-2 text-gray-600">
-            Configuremos tu cuenta paso a paso
+          <p className="text-slate-600">
+            Configuremos tu cuenta en unos simples pasos
           </p>
         </div>
 
@@ -448,9 +332,232 @@ export default function OnboardingPage() {
           </Alert>
         )}
 
-        {currentStep === 'profile_setup' && renderProfileSetup()}
-        {currentStep === 'plan_selection' && renderPlanSelection()}
-        {currentStep === 'payment_setup' && renderPaymentSetup()}
+        {/* Step 1: Profile Setup */}
+        {currentStep === 'profile_setup' && (
+          <Card className="max-w-md mx-auto shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="w-5 h-5 text-indigo-600" />
+                Configura tu Perfil
+              </CardTitle>
+              <CardDescription>
+                Completa tu información para personalizar tu experiencia
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleProfileSubmit} className="space-y-5">
+                <div>
+                  <Label htmlFor="display_name">Nombre Completo</Label>
+                  <Input
+                    id="display_name"
+                    value={profileData.display_name}
+                    onChange={(e) => setProfileData({...profileData, display_name: e.target.value})}
+                    placeholder="Tu nombre completo"
+                    required
+                    className="mt-1"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="username">Nombre de Usuario</Label>
+                  <Input
+                    id="username"
+                    value={profileData.username}
+                    onChange={(e) => setProfileData({...profileData, username: e.target.value.toLowerCase().replace(/\s/g, '_')})}
+                    placeholder="tu_usuario"
+                    required
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-slate-500 mt-1">
+                    Este será tu identificador único
+                  </p>
+                </div>
+
+                <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={isLoading}>
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Guardando...
+                    </>
+                  ) : (
+                    <>
+                      Continuar
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Step 2: Plan Selection */}
+        {currentStep === 'plan_selection' && (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <Badge className="bg-indigo-100 text-indigo-700 mb-4">
+                <Sparkles className="w-3 h-3 mr-1" />
+                Oferta de lanzamiento
+              </Badge>
+              <h2 className="text-2xl font-bold text-slate-900">
+                Elige tu Plan
+              </h2>
+              <p className="text-slate-600 mt-2">
+                Accede a todas las funcionalidades del asistente legal
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+              {/* Plan Mensual */}
+              {monthlyPlan && (
+                <Card className="relative border-2 border-indigo-300 shadow-xl bg-white overflow-hidden">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1 shadow-lg">
+                      <Star className="w-3 h-3 mr-1 fill-current" />
+                      Popular
+                    </Badge>
+                  </div>
+
+                  <CardHeader className="text-center pt-8 pb-2">
+                    <CardTitle className="text-xl">{monthlyPlan.name}</CardTitle>
+                    <div className="mt-4">
+                      {monthlyPlan.has_first_month_promo && (
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                          <span className="text-slate-400 line-through text-sm">
+                            ${formatPrice(monthlyPlan.amount_in_cents)}
+                          </span>
+                          <Badge className="bg-green-100 text-green-700 text-xs">
+                            Primer mes
+                          </Badge>
+                        </div>
+                      )}
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-bold">
+                          ${formatPrice(monthlyPlan.first_month_price || monthlyPlan.amount_in_cents)}
+                        </span>
+                        <span className="text-slate-500">COP</span>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Luego ${formatPrice(monthlyPlan.amount_in_cents)}/mes
+                      </p>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <ul className="space-y-2 mb-6 text-sm">
+                      {monthlyPlan.features.slice(0, 4).map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-slate-600">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Button
+                      onClick={() => handleSubscribe(monthlyPlan.id)}
+                      disabled={processingPlanId !== null}
+                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                    >
+                      {processingPlanId === monthlyPlan.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Procesando...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="w-4 h-4 mr-2" />
+                          Comenzar por $4.000
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Plan Anual */}
+              {yearlyPlan && (
+                <Card className="relative border-2 border-slate-200 shadow-lg bg-white overflow-hidden">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-1 shadow-lg">
+                      💰 -10%
+                    </Badge>
+                  </div>
+
+                  <CardHeader className="text-center pt-8 pb-2">
+                    <CardTitle className="text-xl">{yearlyPlan.name}</CardTitle>
+                    <div className="mt-4">
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                        <span className="text-slate-400 line-through text-sm">
+                          ${formatPrice(5800000 * 12)}
+                        </span>
+                      </div>
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-bold">
+                          ${formatPrice(yearlyPlan.amount_in_cents)}
+                        </span>
+                        <span className="text-slate-500">COP</span>
+                      </div>
+                      <p className="text-xs text-green-600 mt-1">
+                        ${formatPrice(Math.round(yearlyPlan.amount_in_cents / 12))}/mes
+                      </p>
+                    </div>
+                  </CardHeader>
+
+                  <CardContent>
+                    <ul className="space-y-2 mb-6 text-sm">
+                      {yearlyPlan.features.slice(0, 4).map((feature, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-slate-600">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <Button
+                      onClick={() => handleSubscribe(yearlyPlan.id)}
+                      disabled={processingPlanId !== null}
+                      variant="outline"
+                      className="w-full border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white"
+                    >
+                      {processingPlanId === yearlyPlan.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Procesando...
+                        </>
+                      ) : (
+                        'Suscribirse Anualmente'
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Back button */}
+            <div className="text-center mt-6">
+              <Button 
+                variant="ghost" 
+                onClick={() => setCurrentStep('profile_setup')}
+                className="text-slate-600"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Volver al perfil
+              </Button>
+            </div>
+
+            {/* Trust badges */}
+            <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-500 mt-8">
+              <div className="flex items-center gap-1">
+                <CheckCircle className="w-3 h-3 text-green-500" />
+                Pago seguro con Wompi
+              </div>
+              <div className="flex items-center gap-1">
+                <CheckCircle className="w-3 h-3 text-green-500" />
+                Cancela cuando quieras
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
