@@ -326,19 +326,12 @@ export const useChatHandler = () => {
           chatImages
         )
 
-        // Seleccionar endpoint según el modelo
+        // Usar siempre LangChain Agent - soporta tool calling nativo
         const modelId = payload.chatSettings.model?.toLowerCase() || ''
-        const isTongyiModel = modelId.includes('tongyi') || 
-                              modelId.includes('deepresearch') || 
-                              modelId.includes('alibaba')
-        
-        // Tongyi usa búsqueda iterativa, otros modelos usan research con tool calling
-        const endpoint = isTongyiModel 
-          ? "/api/chat/tongyi-iterative" 
-          : "/api/chat/research"
+        const endpoint = "/api/chat/langchain-agent"
         
         console.log(`🤖 Modelo: ${modelId}`)
-        console.log(`🔄 Usando endpoint: ${endpoint} (${isTongyiModel ? 'búsqueda iterativa' : 'research tools'})`)
+        console.log(`🔗 Usando LangChain Agent: ${endpoint}`)
         
         const response = await fetch(endpoint, {
           method: "POST",

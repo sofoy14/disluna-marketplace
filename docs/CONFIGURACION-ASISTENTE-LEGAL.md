@@ -88,59 +88,59 @@ const response = await fetch('/api/chat/legal-agent', {
 
 Similar al anterior pero con implementación más simple.
 
-### 3. `/api/chat/tongyi-iterative` (Para Tongyi/DeepResearch)
+### 3. `/api/chat/langchain-agent` (PRINCIPAL - LangChain)
 
-**Endpoint especializado para modelos que NO soportan tool calling nativo.**
+**Endpoint principal con LangChain y tool calling nativo.**
 
-Este endpoint implementa **búsqueda iterativa** donde:
-1. El modelo genera queries de búsqueda
-2. El backend ejecuta las búsquedas con Serper
-3. El modelo evalúa si necesita más información
-4. Repite hasta tener información suficiente (máx 5 rondas)
-5. Sintetiza una respuesta final con todas las fuentes
+Este endpoint usa LangChain para implementar un agente que:
+1. Decide autónomamente cuándo usar herramientas
+2. Ejecuta búsquedas en fuentes legales oficiales
+3. Extrae contenido de URLs cuando es necesario
+4. Sintetiza respuestas con citación de fuentes
 
 ```typescript
-// El frontend detecta automáticamente si es Tongyi y usa este endpoint
-const response = await fetch('/api/chat/tongyi-iterative', {
+const response = await fetch('/api/chat/langchain-agent', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     chatSettings: {
-      model: 'alibaba/tongyi-deepresearch-30b-a3b',
+      model: 'alibaba/tongyi-deepresearch-30b-a3b', // o 'moonshotai/kimi-k2'
       temperature: 0.3
     },
     messages: [
       { role: 'user', content: '¿Qué dice el artículo 1 de la Constitución colombiana?' }
-    ]
+    ],
+    chatId: 'optional-chat-id'
   })
 })
 ```
 
 **Características:**
-- ✅ Búsqueda iterativa hasta 5 rondas
-- ✅ El modelo decide cuándo necesita más información
-- ✅ Prioriza fuentes oficiales (.gov.co)
-- ✅ Síntesis final con citación de fuentes
+- ✅ Tool calling nativo (el modelo decide cuándo usar herramientas)
+- ✅ Soporta Tongyi DeepResearch y Kimi K2
+- ✅ Búsqueda en fuentes oficiales (.gov.co)
+- ✅ Extracción de contenido con Jina AI
+- ✅ Cache de agentes por sesión
 - ✅ Streaming de respuesta
 
-**Flujo de Búsqueda Iterativa:**
+**Flujo de LangChain Agent:**
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                    BÚSQUEDA ITERATIVA PARA TONGYI                           │
+│                    LANGCHAIN AGENT - TOOL CALLING NATIVO                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│  RONDA 1:                                                                   │
-│  ┌─────────────────────────────────────────────────────────────────────┐   │
-│  │ 1. Usuario pregunta                                                 │   │
-│  │ 2. Modelo genera query de búsqueda                                  │   │
-│  │ 3. Backend busca con Serper API                                     │   │
-│  │ 4. Modelo evalúa: ¿Tengo suficiente información?                   │   │
-│  └─────────────────────────────────────────────────────────────────────┘   │
-│                              ▼ (si NO es suficiente)                        │
-│  RONDA 2-5: Repite con nueva query más específica                          │
-│                              ▼ (cuando ES suficiente)                       │
-│  SÍNTESIS: Modelo genera respuesta final con todas las fuentes            │
+│  1. Usuario envía consulta                                                  │
+│     ▼                                                                       │
+│  2. Agente analiza y DECIDE si necesita herramientas                       │
+│     ▼                                                                       │
+│  3. Si necesita → Llama herramientas (search, extract, etc.)               │
+│     ▼                                                                       │
+│  4. Recibe resultados y EVALÚA si necesita más                             │
+│     ▼                                                                       │
+│  5. Repite 3-4 hasta tener información suficiente (máx 6x)                 │
+│     ▼                                                                       │
+│  6. Genera respuesta final con fuentes                                     │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -148,29 +148,24 @@ const response = await fetch('/api/chat/tongyi-iterative', {
 **Logs de ejemplo:**
 
 ```
-═══════════════════════════════════════════════════════════════════════════
-🔄 TONGYI ITERATIVE RESEARCH - BÚSQUEDA ITERATIVA
-═══════════════════════════════════════════════════════════════════════════
-📝 Pregunta: "¿Requisitos para la prescripción adquisitiva?"
+═══════════════════════════════════════════════════════════════════════════════
+🤖 LANGCHAIN AGENT - ENDPOINT UNIFICADO
+═══════════════════════════════════════════════════════════════════════════════
+📝 Query: "¿Requisitos para la prescripción adquisitiva?"
+🤖 Modelo: alibaba/tongyi-deepresearch-30b-a3b
 
-📍 RONDA 1/5
-🧠 Generando query de búsqueda...
-🔍 Query: "prescripción adquisitiva requisitos código civil Colombia"
-✅ Resultados: 8 (3 oficiales)
-🧠 Evaluando resultados...
-🔄 Necesita más info: plazos específicos
+🏛️ [TOOL] search_legal_official: "prescripción adquisitiva código civil Colombia"
+✅ [TOOL] search_legal_official: 5 resultados oficiales
 
-📍 RONDA 2/5
-🔍 Query: "prescripción adquisitiva plazos años posesión Colombia"
-✅ Resultados: 6 (4 oficiales)
-✅ Información SUFICIENTE - finalizando búsqueda
+📄 [TOOL] extract_web_content: "https://www.suin-juriscol.gov.co/..."
+✅ [TOOL] extract_web_content: 3500 caracteres extraídos
 
-📊 INVESTIGACIÓN COMPLETADA
-   🔍 Rondas: 2
-   📚 Fuentes totales: 14
-   🏛️ Fuentes oficiales: 7
-
-🧠 Sintetizando respuesta final...
+═══════════════════════════════════════════════════════════════════════════════
+✅ RESPUESTA COMPLETADA
+   ⏱️ Tiempo: 12.5s
+   🔧 Tools: search_legal_official, extract_web_content
+   📚 Fuentes: 5
+═══════════════════════════════════════════════════════════════════════════════
 ```
 
 ### 4. `/api/chat/openrouter` (Legacy)
@@ -338,10 +333,11 @@ El sistema genera logs detallados en la consola del servidor:
 
 | Archivo | Descripción |
 |---------|-------------|
-| `lib/tools/legal/tongyi-legal-toolkit.ts` | Implementación de tools con Serper API |
-| `app/api/chat/legal-agent/route.ts` | Endpoint con tool calling (GPT-4, Claude) |
-| `app/api/chat/tongyi-iterative/route.ts` | Endpoint con búsqueda iterativa (Tongyi) |
-| `lib/tools/conditional-web-search.ts` | Detector de consultas legales |
+| `lib/langchain/` | Infraestructura de LangChain (modelos, tools, agentes) |
+| `lib/langchain/tools/search-tools.ts` | Herramientas de búsqueda (oficial, académica, general) |
+| `lib/langchain/agents/legal-agent.ts` | Agente legal con tool calling nativo |
+| `app/api/chat/langchain-agent/route.ts` | **Endpoint principal** (Tongyi, Kimi K2) |
+| `app/api/chat/legal-agent/route.ts` | Endpoint legacy (GPT-4, Claude) |
 | `components/chat/chat-helpers/index.ts` | Lógica que selecciona endpoint según modelo |
 
 ## Selección Automática de Endpoint
@@ -351,14 +347,18 @@ El frontend detecta automáticamente qué modelo estás usando y selecciona el e
 ```typescript
 // En components/chat/chat-helpers/index.ts
 const modelId = payload.chatSettings.model?.toLowerCase() || ''
-const isTongyiModel = modelId.includes('tongyi') || 
-                      modelId.includes('deepresearch') || 
-                      modelId.includes('alibaba')
 
-if (isTongyiModel) {
-  apiEndpoint = "/api/chat/tongyi-iterative"  // Búsqueda iterativa
+// Modelos de investigación profunda con tool calling nativo
+const isLangChainModel = modelId.includes('tongyi') || 
+                         modelId.includes('deepresearch') || 
+                         modelId.includes('alibaba') ||
+                         modelId.includes('kimi') ||
+                         modelId.includes('moonshot')
+
+if (isLangChainModel) {
+  apiEndpoint = "/api/chat/langchain-agent"  // LangChain con tool calling nativo
 } else {
-  apiEndpoint = "/api/chat/legal-agent"       // Tool calling nativo
+  apiEndpoint = "/api/chat/legal-agent"      // Tool calling estándar
 }
 ```
 

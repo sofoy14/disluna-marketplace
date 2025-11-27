@@ -223,19 +223,23 @@ export const handleHostedChat = async (
   // Determinar endpoint según modelo y modo
   let apiEndpoint = provider === "custom" ? "/api/chat/custom" : "/api/chat/legal-agent"
   
-  // Detectar si es modelo Tongyi - usar búsqueda iterativa
+  // Detectar modelos que usan LangChain Agent (tool calling nativo)
   const modelId = payload.chatSettings.model?.toLowerCase() || ''
-  const isTongyiModel = modelId.includes('tongyi') || 
-                        modelId.includes('deepresearch') || 
-                        modelId.includes('alibaba')
+  
+  // Modelos de investigación profunda con tool calling nativo
+  const isLangChainModel = modelId.includes('tongyi') || 
+                           modelId.includes('deepresearch') || 
+                           modelId.includes('alibaba') ||
+                           modelId.includes('kimi') ||
+                           modelId.includes('moonshot')
   
   if (chatMode === 'legal-writing') {
     apiEndpoint = "/api/chat/legal-writing"
     console.log(`🤖 Modo: Redacción Legal - usando endpoint: ${apiEndpoint}`)
-  } else if (isTongyiModel) {
-    // Tongyi no soporta tool calling, usar búsqueda iterativa
-    apiEndpoint = "/api/chat/tongyi-iterative"
-    console.log(`🔄 Modelo Tongyi detectado - usando búsqueda iterativa: ${apiEndpoint}`)
+  } else if (isLangChainModel) {
+    // Modelos con tool calling nativo -> usar LangChain Agent
+    apiEndpoint = "/api/chat/langchain-agent"
+    console.log(`🔗 Modelo LangChain detectado (${modelId}) - usando endpoint: ${apiEndpoint}`)
   } else {
     console.log(`🤖 Usando endpoint: ${apiEndpoint} - tool calling habilitado para búsqueda legal`)
   }

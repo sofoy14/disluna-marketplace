@@ -156,7 +156,7 @@ export class LegalAgent {
 
       // Extraer información de los pasos intermedios
       const toolsUsed = this.extractToolsUsed(result.intermediateSteps || [])
-      const sources = this.extractSources(result.output)
+      const sources = this.extractSourcesFromSteps(result.intermediateSteps || [], result.output)
 
       // Actualizar historial interno
       this.chatHistory.push(new HumanMessage(input.input))
@@ -255,28 +255,108 @@ export class LegalAgent {
   }
 
   /**
-   * Extrae URLs de fuentes del output
+   * Extrae fuentes de los pasos intermedios (resultados de tools) y del output
    */
-  private extractSources(output: string): Array<{ title: string; url: string }> {
+  private extractSourcesFromSteps(
+    steps: any[], 
+    output: string
+  ): Array<{ title: string; url: string }> {
     const sources: Array<{ title: string; url: string }> = []
-    const urlRegex = /https?:\/\/[^\s\)\]\>]+/g
-    const urls = output.match(urlRegex) || []
+    const seenUrls = new Set<string>()
 
-    for (const url of urls) {
-      // Evitar duplicados
-      if (!sources.some(s => s.url === url)) {
-        let title = ''
-        try {
-          const urlObj = new URL(url)
-          title = urlObj.hostname
-        } catch {
-          title = 'Fuente'
+    // PASO 1: Extraer fuentes de los resultados de las herramientas
+    for (const step of steps) {
+      try {
+        const observation = step.observation
+        if (typeof observation === 'string') {
+          // Intentar parsear como JSON (los resultados de search_legal_official son JSON)
+          try {
+            const parsed = JSON.parse(observation)
+            if (parsed.results && Array.isArray(parsed.results)) {
+              for (const result of parsed.results) {
+                if (result.url && !seenUrls.has(result.url)) {
+                  seenUrls.add(result.url)
+                  sources.push({
+                    title: result.title || this.extractTitleFromUrl(result.url),
+                    url: result.url
+                  })
+                }
+              }
+            }
+          } catch {
+            // No es JSON, buscar URLs directamente
+            const urlMatches = observation.match(/https?:\/\/[^\s\)\]\>"]+/g) || []
+            for (const url of urlMatches) {
+              const cleanUrl = url.replace(/[,.\]}]+$/, '') // Limpiar caracteres finales
+              if (!seenUrls.has(cleanUrl)) {
+                seenUrls.add(cleanUrl)
+                sources.push({
+                  title: this.extractTitleFromUrl(cleanUrl),
+                  url: cleanUrl
+                })
+              }
+            }
+          }
         }
-        sources.push({ title, url })
+      } catch (e) {
+        console.log('Error extrayendo fuentes de step:', e)
       }
     }
 
-    return sources
+    // PASO 2: Si no hay fuentes de las tools, buscar en el output
+    if (sources.length === 0) {
+      const urlRegex = /https?:\/\/[^\s\)\]\>"]+/g
+      const urls = output.match(urlRegex) || []
+
+      for (const url of urls) {
+        const cleanUrl = url.replace(/[,.\]}]+$/, '')
+        if (!seenUrls.has(cleanUrl)) {
+          seenUrls.add(cleanUrl)
+          sources.push({
+            title: this.extractTitleFromUrl(cleanUrl),
+            url: cleanUrl
+          })
+        }
+      }
+    }
+
+    // Limitar a máximo 10 fuentes
+    return sources.slice(0, 10)
+  }
+
+  /**
+   * Extrae un título legible de una URL
+   */
+  private extractTitleFromUrl(url: string): string {
+    try {
+      const urlObj = new URL(url)
+      const hostname = urlObj.hostname.replace('www.', '')
+      
+      // Mapeo de dominios conocidos a nombres legibles
+      const domainNames: Record<string, string> = {
+        'secretariasenado.gov.co': 'Secretaría del Senado',
+        'corteconstitucional.gov.co': 'Corte Constitucional',
+        'consejodeestado.gov.co': 'Consejo de Estado',
+        'suin-juriscol.gov.co': 'SUIN-Juriscol',
+        'funcionpublica.gov.co': 'Función Pública',
+        'dian.gov.co': 'DIAN',
+        'minjusticia.gov.co': 'MinJusticia',
+        'procuraduria.gov.co': 'Procuraduría',
+        'defensoria.gov.co': 'Defensoría del Pueblo',
+        'ramajudicial.gov.co': 'Rama Judicial',
+      }
+
+      // Buscar coincidencia parcial
+      for (const [domain, name] of Object.entries(domainNames)) {
+        if (hostname.includes(domain.split('.')[0])) {
+          return name
+        }
+      }
+
+      return hostname
+    } catch {
+      return 'Fuente legal'
+    }
   }
 }
 

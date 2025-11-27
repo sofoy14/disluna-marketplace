@@ -173,29 +173,52 @@ export const searchLegalOfficialTool = new DynamicStructuredTool({
 
 Usa esta herramienta PRIMERO para cualquier pregunta sobre leyes, decretos, sentencias, jurisprudencia o normatividad colombiana.`,
   schema: z.object({
-    query: z.string().describe("Consulta de búsqueda legal. Incluye términos específicos como nombres de leyes, artículos, o temas legales. Ejemplo: 'prescripción adquisitiva código civil' o 'tutela derechos fundamentales'"),
+    query: z.union([
+      z.string(),
+      z.array(z.string())
+    ]).describe("Consulta de búsqueda legal. Puede ser un string o un array de strings. Ejemplo: 'prescripción adquisitiva código civil'"),
     maxResults: z.number().optional().default(5).describe("Número máximo de resultados (default: 5)")
   }),
   func: async ({ query, maxResults }) => {
-    console.log(`🏛️ [TOOL] search_legal_official: "${query}"`)
+    // Normalizar query: si es array, usar el primer elemento o unirlos
+    const normalizedQuery = Array.isArray(query) ? query[0] : query
+    
+    console.log(`🏛️ [TOOL] search_legal_official: "${normalizedQuery}"`)
     
     try {
       // Filtro para sitios oficiales colombianos
       const siteFilter = 'site:gov.co OR site:corteconstitucional.gov.co OR site:consejodeestado.gov.co OR site:suin-juriscol.gov.co OR site:secretariasenado.gov.co'
       
-      const results = await executeSerperSearch(
-        `${query} Colombia`, 
-        maxResults || 5,
-        siteFilter
-      )
+      // Si es array, hacer múltiples búsquedas
+      let allResults: SearchResult[] = []
       
-      // Filtrar solo fuentes oficiales
-      const officialResults = results.filter(r => r.type === 'official')
+      if (Array.isArray(query)) {
+        // Buscar con las primeras 2 queries del array
+        for (const q of query.slice(0, 2)) {
+          const results = await executeSerperSearch(
+            `${q} Colombia`, 
+            Math.ceil((maxResults || 5) / 2),
+            siteFilter
+          )
+          allResults.push(...results)
+        }
+      } else {
+        allResults = await executeSerperSearch(
+          `${normalizedQuery} Colombia`, 
+          maxResults || 5,
+          siteFilter
+        )
+      }
+      
+      // Filtrar solo fuentes oficiales y eliminar duplicados
+      const officialResults = allResults
+        .filter(r => r.type === 'official')
+        .filter((r, i, arr) => arr.findIndex(x => x.url === r.url) === i)
       
       if (officialResults.length === 0) {
         return JSON.stringify({
           success: false,
-          message: `No se encontraron resultados oficiales para: "${query}". Intenta con otros términos o usa search_general_web.`,
+          message: `No se encontraron resultados oficiales para: "${normalizedQuery}". Intenta con otros términos o usa search_general_web.`,
           results: []
         })
       }
@@ -204,7 +227,7 @@ Usa esta herramienta PRIMERO para cualquier pregunta sobre leyes, decretos, sent
       
       return JSON.stringify({
         success: true,
-        query,
+        query: normalizedQuery,
         totalResults: officialResults.length,
         results: officialResults.map(r => ({
           title: r.title,
@@ -239,18 +262,24 @@ export const searchLegalAcademicTool = new DynamicStructuredTool({
 
 Usa esta herramienta para complementar la información oficial con análisis doctrinario.`,
   schema: z.object({
-    query: z.string().describe("Consulta de búsqueda académica. Incluye términos jurídicos y el tema a investigar."),
+    query: z.union([
+      z.string(),
+      z.array(z.string())
+    ]).describe("Consulta de búsqueda académica. Puede ser un string o un array de strings."),
     maxResults: z.number().optional().default(3).describe("Número máximo de resultados (default: 3)")
   }),
   func: async ({ query, maxResults }) => {
-    console.log(`📚 [TOOL] search_legal_academic: "${query}"`)
+    // Normalizar query
+    const normalizedQuery = Array.isArray(query) ? query[0] : query
+    
+    console.log(`📚 [TOOL] search_legal_academic: "${normalizedQuery}"`)
     
     try {
       // Filtro para sitios académicos
       const siteFilter = 'site:edu.co OR site:redalyc.org OR site:scielo.org.co'
       
       const results = await executeSerperSearch(
-        `${query} Colombia doctrina jurídica`, 
+        `${normalizedQuery} Colombia doctrina jurídica`, 
         maxResults || 3,
         siteFilter
       )
@@ -258,7 +287,7 @@ Usa esta herramienta para complementar la información oficial con análisis doc
       if (results.length === 0) {
         return JSON.stringify({
           success: false,
-          message: `No se encontraron resultados académicos para: "${query}".`,
+          message: `No se encontraron resultados académicos para: "${normalizedQuery}".`,
           results: []
         })
       }
@@ -267,7 +296,7 @@ Usa esta herramienta para complementar la información oficial con análisis doc
       
       return JSON.stringify({
         success: true,
-        query,
+        query: normalizedQuery,
         totalResults: results.length,
         results: results.map(r => ({
           title: r.title,
@@ -298,22 +327,28 @@ export const searchGeneralWebTool = new DynamicStructuredTool({
 Usa esta herramienta solo cuando las fuentes oficiales y académicas no proporcionen suficiente información.
 Útil para información práctica, casos de uso, o contexto adicional.`,
   schema: z.object({
-    query: z.string().describe("Consulta de búsqueda general"),
+    query: z.union([
+      z.string(),
+      z.array(z.string())
+    ]).describe("Consulta de búsqueda general. Puede ser un string o un array de strings."),
     maxResults: z.number().optional().default(5).describe("Número máximo de resultados (default: 5)")
   }),
   func: async ({ query, maxResults }) => {
-    console.log(`🌐 [TOOL] search_general_web: "${query}"`)
+    // Normalizar query
+    const normalizedQuery = Array.isArray(query) ? query[0] : query
+    
+    console.log(`🌐 [TOOL] search_general_web: "${normalizedQuery}"`)
     
     try {
       const results = await executeSerperSearch(
-        `${query} Colombia`, 
+        `${normalizedQuery} Colombia`, 
         maxResults || 5
       )
       
       if (results.length === 0) {
         return JSON.stringify({
           success: false,
-          message: `No se encontraron resultados para: "${query}".`,
+          message: `No se encontraron resultados para: "${normalizedQuery}".`,
           results: []
         })
       }
@@ -322,7 +357,7 @@ Usa esta herramienta solo cuando las fuentes oficiales y académicas no proporci
       
       return JSON.stringify({
         success: true,
-        query,
+        query: normalizedQuery,
         totalResults: results.length,
         results: results.map(r => ({
           title: r.title,
