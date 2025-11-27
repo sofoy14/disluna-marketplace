@@ -43,13 +43,14 @@ El sistema de tool calling funciona mejor con estos modelos de OpenRouter:
 | Claude 3.5 Sonnet | `anthropic/claude-3-5-sonnet` | ~$3/1M tokens | Excelente para legal |
 | Llama 3.1 70B | `meta-llama/llama-3.1-70b-instruct` | ~$0.9/1M tokens | Open source |
 
-### Modelos con Búsqueda Iterativa (sin tool calling nativo)
+### Modelos de Investigación Profunda (con tool calling nativo)
 
 | Modelo | ID en OpenRouter | Costo | Endpoint |
 |--------|-----------------|-------|----------|
-| Tongyi DeepResearch | `alibaba/tongyi-deepresearch-30b-a3b` | Económico | `/api/chat/tongyi-iterative` |
+| Tongyi DeepResearch | `alibaba/tongyi-deepresearch-30b-a3b` | ~$0.09/1M input | `/api/chat/langchain-agent` |
+| Kimi K2 Thinking | `moonshotai/kimi-k2` | ~$0.60/1M input | `/api/chat/langchain-agent` |
 
-Estos modelos usan un sistema de **búsqueda iterativa** donde el backend simula el tool calling.
+Estos modelos soportan **tool calling nativo** y son ideales para investigación legal profunda.
 
 ## Endpoints Disponibles
 
