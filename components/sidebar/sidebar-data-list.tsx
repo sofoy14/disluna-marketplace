@@ -10,17 +10,16 @@ import { updateTool } from "@/db/tools"
 import { cn } from "@/lib/utils"
 import { Tables } from "@/supabase/types"
 import { ContentType, DataItemType, DataListType } from "@/types"
-import { FC, useContext, useEffect, useRef, useState } from "react"
-import { Separator } from "../ui/separator"
+import { FC, useContext, useRef, useState } from "react"
 import { AssistantItem } from "./items/assistants/assistant-item"
-import { ChatItem } from "./items/chat/chat-item"
+import { ModernChatItem } from "./items/chat/modern-chat-item"
 import { CollectionItem } from "./items/collections/collection-item"
 import { FileItem } from "./items/files/file-item"
-import { Folder } from "./items/folders/folder-item"
 import { ModelItem } from "./items/models/model-item"
 import { PresetItem } from "./items/presets/preset-item"
 import { PromptItem } from "./items/prompts/prompt-item"
 import { ToolItem } from "./items/tools/tool-item"
+import { IconCalendar, IconCalendarEvent, IconCalendarWeek, IconHistory } from "@tabler/icons-react"
 
 interface SidebarDataListProps {
   contentType: ContentType
@@ -59,8 +58,6 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
   } = useContext(ChatbotUIContext)
 
   const divRef = useRef<HTMLDivElement>(null)
-
-  const [isOverflowing, setIsOverflowing] = useState(false)
   const [isDragOver, setIsDragOver] = useState(false)
 
   const getDataListComponent = (
@@ -69,7 +66,7 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
   ) => {
     switch (contentType) {
       case "chats":
-        return <ChatItem key={item.id} chat={item as Tables<"chats">} />
+        return <ModernChatItem key={item.id} chat={item as Tables<"chats">} />
 
       case "presets":
         return <PresetItem key={item.id} preset={item as Tables<"presets">} />
@@ -112,13 +109,11 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
     dateCategory: "Hoy" | "Ayer" | "Semana Anterior" | "Más Antiguo"
   ) => {
     const now = new Date()
-    const todayStart = new Date(now.setHours(0, 0, 0, 0))
-    const yesterdayStart = new Date(
-      new Date().setDate(todayStart.getDate() - 1)
-    )
-    const oneWeekAgoStart = new Date(
-      new Date().setDate(todayStart.getDate() - 7)
-    )
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const yesterdayStart = new Date(todayStart)
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1)
+    const oneWeekAgoStart = new Date(todayStart)
+    oneWeekAgoStart.setDate(oneWeekAgoStart.getDate() - 7)
 
     return data
       .filter((item: any) => {
@@ -220,14 +215,6 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
     setIsDragOver(false)
   }
 
-  useEffect(() => {
-    if (divRef.current) {
-      setIsOverflowing(
-        divRef.current.scrollHeight > divRef.current.clientHeight
-      )
-    }
-  }, [data])
-
   const dataWithFolders = data.filter(item => item.folder_id)
   const dataWithoutFolders = data.filter(item => item.folder_id === null)
 
@@ -235,48 +222,78 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
     <>
       <div
         ref={divRef}
-        className="mt-2 flex flex-col overflow-auto"
+        className="flex flex-col"
         onDrop={handleDrop}
       >
         {data.length === 0 && (
-          <div className="flex grow flex-col items-center justify-center">
-            <div className="text-center text-muted-foreground p-8 text-lg italic">
-              {getEmptyStateMessage(contentType)}
+          <div className="flex grow flex-col items-center justify-center py-12 px-4">
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary/5 blur-2xl rounded-full" />
+              <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
+                {contentType === "chats" ? (
+                  <IconHistory className="w-8 h-8 text-primary/50" />
+                ) : (
+                  <IconCalendar className="w-8 h-8 text-primary/50" />
+                )}
+              </div>
             </div>
+            <p className="mt-4 text-center text-sm text-muted-foreground/70 font-medium">
+              {getEmptyStateMessage(contentType)}
+            </p>
+            <p className="mt-1 text-center text-xs text-muted-foreground/50">
+              {contentType === "chats" 
+                ? "Inicia una nueva conversación para comenzar" 
+                : "Agrega elementos para verlos aquí"}
+            </p>
           </div>
         )}
 
-        {(dataWithFolders.length > 0 || dataWithoutFolders.length > 0) && (
-          <div
-            className={`h-full ${
-              isOverflowing ? "w-[calc(100%-8px)]" : "w-full"
-            } space-y-2 pt-2 ${isOverflowing ? "mr-2" : ""}`}
-          >
-
+        {data.length > 0 && (
+          <div className="w-full space-y-2">
             {contentType === "chats" ? (
               <>
-                {["Hoy", "Ayer", "Semana Anterior", "Más Antiguo"].map(
+                {(["Hoy", "Ayer", "Semana Anterior", "Más Antiguo"] as const).map(
                   dateCategory => {
+                    // Mostrar todos los chats, no solo los que no tienen folder
                     const sortedData = getSortedData(
-                      dataWithoutFolders,
-                      dateCategory as
-                        | "Hoy"
-                        | "Ayer"
-                        | "Semana Anterior"
-                        | "Más Antiguo"
+                      data,
+                      dateCategory
                     )
+
+                    const getCategoryIcon = (category: string) => {
+                      switch (category) {
+                        case "Hoy":
+                          return <IconCalendar className="w-3.5 h-3.5" />
+                        case "Ayer":
+                          return <IconCalendarEvent className="w-3.5 h-3.5" />
+                        case "Semana Anterior":
+                          return <IconCalendarWeek className="w-3.5 h-3.5" />
+                        default:
+                          return <IconHistory className="w-3.5 h-3.5" />
+                      }
+                    }
 
                     return (
                       sortedData.length > 0 && (
-                        <div key={dateCategory} className="pb-2">
-                          <div className="text-muted-foreground mb-1 text-sm font-bold">
-                            {dateCategory}
+                        <div key={dateCategory} className="pb-3">
+                          {/* Encabezado de categoría mejorado */}
+                          <div className="flex items-center gap-2 px-2 py-1.5 mb-2">
+                            <div className="flex items-center gap-1.5 text-muted-foreground/70">
+                              {getCategoryIcon(dateCategory)}
+                              <span className="text-xs font-semibold uppercase tracking-wider">
+                                {dateCategory}
+                              </span>
+                            </div>
+                            <div className="flex-1 h-px bg-gradient-to-r from-border/50 to-transparent" />
+                            <span className="text-[10px] text-muted-foreground/50 font-medium tabular-nums">
+                              {sortedData.length}
+                            </span>
                           </div>
 
                           <div
                             className={cn(
-                              "flex grow flex-col",
-                              isDragOver && "bg-accent"
+                              "flex grow flex-col gap-1",
+                              isDragOver && "bg-accent/50 rounded-xl"
                             )}
                             onDrop={handleDrop}
                             onDragEnter={handleDragEnter}
@@ -323,14 +340,6 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
           </div>
         )}
       </div>
-
-      <div
-        className={cn("flex grow", isDragOver && "bg-accent")}
-        onDrop={handleDrop}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-      />
     </>
   )
 }

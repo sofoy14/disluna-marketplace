@@ -8,7 +8,6 @@ import { WorkspaceSwitcher } from "../utility/workspace-switcher"
 import { WorkspaceSettings } from "../workspace/workspace-settings"
 import { SidebarContent } from "./sidebar-content"
 import { ModernSidebar } from "./modern/ModernSidebar"
-import { motion, AnimatePresence } from "framer-motion"
 
 interface SidebarProps {
   contentType: ContentType
@@ -52,24 +51,14 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar, onContentT
   // Si está activado el diseño moderno, usar ModernSidebar
   if (useModernDesign) {
     return (
-      <AnimatePresence>
-        {showSidebar && (
-          <motion.div
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: -20, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="w-full h-full"
-          >
-            <ModernSidebar
-              contentType={contentType}
-              showSidebar={showSidebar}
-              onContentTypeChange={onContentTypeChange}
-              onClose={onClose}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="relative w-full h-full">
+        <ModernSidebar
+          contentType={contentType}
+          showSidebar={showSidebar}
+          onContentTypeChange={onContentTypeChange}
+          onClose={onClose}
+        />
+      </div>
     )
   }
 

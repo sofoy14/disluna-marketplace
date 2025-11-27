@@ -5,7 +5,6 @@ import { MessageSquare, FolderOpen, Mic, X } from 'lucide-react'
 import { FC, ElementType, useContext, useMemo, useEffect, useState } from 'react'
 import { ChatbotUIContext } from '@/context/context'
 import { ContentType } from '@/types'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { ModernProfileCard } from './ModernProfileCard'
 import { cn } from '@/lib/utils'
 import { SidebarDataList } from '../sidebar-data-list'
@@ -159,8 +158,8 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
           exit="closed"
           variants={sidebarVariants}
           className={cn(
-            "flex h-[calc(100%-16px)] flex-col relative",
-            "m-2 rounded-2xl",
+            "absolute inset-2 flex flex-col",
+            "rounded-2xl",
             "bg-background/80 backdrop-blur-xl backdrop-saturate-150",
             "border border-white/10 dark:border-white/5",
             "shadow-[0_8px_40px_-12px_rgba(0,0,0,0.25)]",
@@ -279,18 +278,16 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
           <div className="mx-4 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
 
           {/* Lista de contenido */}
-          <ScrollArea className="flex-1 px-4">
-            <motion.div 
-              variants={itemVariants}
-              className="py-4"
-            >
-              <SidebarDataList
-                contentType={contentType}
-                data={data as any}
-                folders={contentTypeFolders}
-              />
-            </motion.div>
-          </ScrollArea>
+          <motion.div 
+            variants={itemVariants}
+            className="flex-1 min-h-0 overflow-y-auto px-4 py-3 scrollbar-thin scrollbar-thumb-border/50 scrollbar-track-transparent hover:scrollbar-thumb-border/80"
+          >
+            <SidebarDataList
+              contentType={contentType}
+              data={data as any}
+              folders={contentTypeFolders}
+            />
+          </motion.div>
 
           {/* Separador inferior */}
           <div className="mx-4 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />

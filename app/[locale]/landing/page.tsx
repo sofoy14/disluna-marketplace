@@ -563,53 +563,52 @@ function HeroSection() {
   // State for mobile card position (x, y offsets from center)
   const [mobilePosition, setMobilePosition] = useState({ x: 0, y: 120 });
 
+  // Mobile positions (smaller, more varied)
+  const mobilePositions = [
+    { x: -60, y: 150 },   // Bottom-left
+    { x: 0, y: 160 },     // Bottom-center  
+    { x: 60, y: 150 },    // Bottom-right
+    { x: -80, y: 50 },    // Left-center
+    { x: 80, y: 50 },     // Right-center
+    { x: -60, y: -60 },   // Top-left
+    { x: 0, y: -80 },     // Top-center
+    { x: 60, y: -60 },    // Top-right
+  ];
+
+  // Desktop positions around the orb
+  const desktopPositions = [
+    { x: -160, y: -140 },  // 10 o'clock
+    { x: 0, y: -180 },     // 12 o'clock
+    { x: 140, y: -140 },   // 2 o'clock
+    { x: -200, y: -40 },   // 9 o'clock upper
+    { x: -200, y: 40 },    // 9 o'clock lower
+    { x: 160, y: -40 },    // 3 o'clock upper
+    { x: 160, y: 40 },     // 3 o'clock lower
+    { x: -160, y: 140 },   // 8 o'clock
+    { x: 0, y: 180 },      // 6 o'clock
+    { x: 140, y: 140 },    // 4 o'clock
+  ];
+
+  // Track previous position index to avoid repeating
+  const [prevPositionIndex, setPrevPositionIndex] = useState(-1);
+
   // Helper to generate random position within bounds - AVOIDS CENTER (ALI text)
   const getRandomPosition = (forMobile: boolean = false) => {
-    // Define zones around the orb that AVOID the center where ALI text is
-    // Card is ~208px wide (w-52), ~180px tall, so we need proper offsets
-    const CARD_HALF_WIDTH = 104;
-    const CARD_HALF_HEIGHT = 90;
+    const positions = forMobile ? mobilePositions : desktopPositions;
+    
+    // Get a random index that's different from the previous one
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * positions.length);
+    } while (newIndex === prevPositionIndex && positions.length > 1);
+    
+    setPrevPositionIndex(newIndex);
+    const randomPos = positions[newIndex];
     
     if (forMobile) {
-      // Mobile: Cards appear in various positions around the orb
-      // Define positions that avoid center and stay within screen
-      const mobilePositions = [
-        { x: -80, y: 140 },   // Bottom-left
-        { x: 0, y: 160 },     // Bottom-center
-        { x: 80, y: 140 },    // Bottom-right
-        { x: -100, y: 0 },    // Left-center
-        { x: 100, y: 0 },     // Right-center
-        { x: -80, y: -140 },  // Top-left
-        { x: 0, y: -160 },    // Top-center
-        { x: 80, y: -140 },   // Top-right
-      ];
-      
-      const randomPos = mobilePositions[Math.floor(Math.random() * mobilePositions.length)];
       setMobilePosition(randomPos);
-      return randomPos;
     }
-
-    // Desktop: Position around the orb in specific zones that AVOID center
-    // Define 8 zones around the orb (like clock positions)
-    const desktopPositions = [
-      // Top positions (y negative)
-      { x: -160, y: -140 },  // 10 o'clock
-      { x: 0, y: -180 },     // 12 o'clock
-      { x: 140, y: -140 },   // 2 o'clock (reduced x to not overflow right)
-      
-      // Side positions (y near 0 but cards offset)
-      { x: -200, y: -40 },   // 9 o'clock upper
-      { x: -200, y: 40 },    // 9 o'clock lower
-      { x: 160, y: -40 },    // 3 o'clock upper (reduced x)
-      { x: 160, y: 40 },     // 3 o'clock lower (reduced x)
-      
-      // Bottom positions (y positive)
-      { x: -160, y: 140 },   // 8 o'clock
-      { x: 0, y: 180 },      // 6 o'clock
-      { x: 140, y: 140 },    // 4 o'clock (reduced x to not overflow right)
-    ];
     
-    const randomPos = desktopPositions[Math.floor(Math.random() * desktopPositions.length)];
     return randomPos;
   };
 
@@ -676,7 +675,7 @@ function HeroSection() {
       isActive = false;
       clearTimeout(startTimeout);
     };
-  }, []);
+  }, [isMobile]); // Re-run when mobile state changes
 
   return (
     <section className="relative min-h-[85vh] flex items-center py-4 overflow-hidden -mt-8">
@@ -690,27 +689,131 @@ function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
           <motion.div 
-            className="space-y-8 text-center lg:text-left order-2 lg:order-1"
+            className="space-y-8 text-center lg:text-left order-2 lg:order-1 lg:mt-8"
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
           >
-            <motion.div variants={fadeIn} custom={0}>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm text-xs font-medium text-blue-400">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+            <div className="relative h-[180px] sm:h-[220px] md:h-[280px]">
+              {/* Phase 1: ALI Horizontal Word */}
+              <motion.div
+                className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight absolute top-0 left-0 lg:left-0 w-full lg:w-auto flex justify-center lg:justify-start"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ 
+                  opacity: [0, 1, 1, 0],
+                  scale: [0.8, 1, 1, 1]
+                }}
+                transition={{ 
+                  duration: 2,
+                  times: [0, 0.2, 0.7, 1],
+                  ease: "easeInOut"
+                }}
+              >
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400">
+                  ALI
                 </span>
-                Nueva Generación Legal
-              </div>
-            </motion.div>
-            
-            <motion.h1 variants={fadeIn} custom={1} className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white">
-              Inteligencia <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-emerald-400 animate-gradient">
-                Artificial Legal
-              </span>
-            </motion.h1>
+              </motion.div>
+
+              {/* Phase 2 & 3: Letters split vertically then expand */}
+              <motion.h1 
+                className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white absolute top-0 left-0 w-full lg:w-auto"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 1.8, duration: 0.3 }}
+              >
+                <div className="flex flex-col items-center lg:items-start">
+                  {/* Line 1: A -> Asistente */}
+                  <div className="flex items-baseline">
+                    <motion.span 
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block"
+                      initial={{ 
+                        x: "0.65em",
+                        y: "1.1em"
+                      }}
+                      animate={{ 
+                        x: 0,
+                        y: 0
+                      }}
+                      transition={{ 
+                        delay: 1.8,
+                        duration: 0.6, 
+                        ease: [0.22, 1, 0.36, 1]
+                      }}
+                    >
+                      A
+                    </motion.span>
+                    <motion.span
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      transition={{ delay: 2.5, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                      className="inline-block overflow-hidden whitespace-nowrap"
+                    >
+                      sistente
+                    </motion.span>
+                  </div>
+                  
+                  {/* Line 2: L -> Legal */}
+                  <div className="flex items-baseline">
+                    <motion.span 
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block"
+                      initial={{ 
+                        x: "0.15em",
+                        y: 0
+                      }}
+                      animate={{ 
+                        x: 0,
+                        y: 0
+                      }}
+                      transition={{ 
+                        delay: 1.8,
+                        duration: 0.6, 
+                        ease: [0.22, 1, 0.36, 1]
+                      }}
+                    >
+                      L
+                    </motion.span>
+                    <motion.span
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      transition={{ delay: 2.7, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                      className="inline-block overflow-hidden whitespace-nowrap"
+                    >
+                      egal
+                    </motion.span>
+                  </div>
+                  
+                  {/* Line 3: I -> Inteligente */}
+                  <div className="flex items-baseline">
+                    <motion.span 
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block"
+                      initial={{ 
+                        x: "-0.35em",
+                        y: "-1.1em"
+                      }}
+                      animate={{ 
+                        x: 0,
+                        y: 0
+                      }}
+                      transition={{ 
+                        delay: 1.8,
+                        duration: 0.6, 
+                        ease: [0.22, 1, 0.36, 1]
+                      }}
+                    >
+                      I
+                    </motion.span>
+                    <motion.span
+                      initial={{ opacity: 0, width: 0 }}
+                      animate={{ opacity: 1, width: "auto" }}
+                      transition={{ delay: 2.9, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                      className="inline-block overflow-hidden whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400"
+                    >
+                      nteligente
+                    </motion.span>
+                  </div>
+                </div>
+              </motion.h1>
+            </div>
             
             <motion.p variants={fadeIn} custom={2} className="text-lg sm:text-xl text-gray-400 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
               Analiza, redacta y gestiona tus casos con una precisión sobrehumana. La plataforma definitiva para el abogado del futuro.
@@ -747,13 +850,13 @@ function HeroSection() {
 
           {/* 3D Orb & Agentic UI */}
           <motion.div 
-            className="flex justify-center items-center order-1 lg:order-2 relative min-h-[600px]"
+            className="flex justify-center items-center order-1 lg:order-2 relative min-h-[400px] sm:min-h-[550px] lg:min-h-[600px] lg:-mt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1 }}
           >
             {/* Central Orb Container */}
-            <div className="relative w-[300px] h-[300px] sm:w-[480px] sm:h-[480px] flex items-center justify-center z-20">
+            <div className={`relative flex items-center justify-center z-20 ${isMobile ? 'w-[280px] h-[280px]' : 'w-[480px] h-[480px]'}`}>
               {/* Orb "Working" Energy Ring */}
               <AnimatePresence>
                 {isOrbWorking && (
@@ -796,7 +899,7 @@ function HeroSection() {
                 )}
               </AnimatePresence>
               
-              <ShaderCanvas size={480} shaderId={2} />
+              <ShaderCanvas size={isMobile ? 280 : 480} shaderId={2} />
               
               {/* ALI Text Overlay */}
               <motion.div
@@ -809,7 +912,7 @@ function HeroSection() {
                   ease: "easeOut" 
                 }}
               >
-                <h1 className="text-6xl sm:text-8xl font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent drop-shadow-sm">
+                <h1 className={`font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent drop-shadow-sm ${isMobile ? 'text-5xl' : 'text-8xl'}`}>
                   ALI
                 </h1>
               </motion.div>
@@ -936,13 +1039,13 @@ function HeroSection() {
             <AnimatePresence mode="wait">
               {activeCardIndex >= 0 && !isVectorVisible && (
                 <motion.div 
-                  key={`${activeCardIndex}-${isMobile ? mobilePosition.x : currentPosition.x}`}
-                  className="absolute z-30 w-48 sm:w-52"
+                  key={`${activeCardIndex}-${isMobile ? `${mobilePosition.x}-${mobilePosition.y}` : currentPosition.x}`}
+                  className={`absolute z-30 ${isMobile ? 'w-40' : 'w-52'}`}
                   style={isMobile ? {
                     // Mobile: Position around orb using x,y coordinates
                     top: `calc(50% + ${mobilePosition.y}px)`,
                     left: `calc(50% + ${mobilePosition.x}px)`,
-                    transform: "translate(-50%, -50%)"
+                    transform: "translate(-50%, -50%) scale(0.85)"
                   } : {
                     // Desktop: Position based on calculated coordinates
                     top: `calc(50% + ${currentPosition.y}px)`,
