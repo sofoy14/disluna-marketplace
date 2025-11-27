@@ -20,23 +20,55 @@ interface ModernSidebarProps {
 }
 
 const HEADER_GRADIENT_CLASSES =
-  'relative overflow-hidden border-b border-border px-4 py-1'
+  'relative overflow-hidden px-5 py-3'
 
+// Animaciones mejoradas con efecto flotante
 const sidebarVariants = {
+  open: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    filter: 'blur(0px)',
+    transition: {
+      type: 'spring',
+      stiffness: 400,
+      damping: 35,
+      mass: 0.8,
+      staggerChildren: 0.07,
+      delayChildren: 0.1
+    }
+  },
+  closed: {
+    x: -30,
+    opacity: 0,
+    scale: 0.95,
+    filter: 'blur(4px)',
+    transition: {
+      type: 'spring',
+      stiffness: 400,
+      damping: 40,
+      staggerChildren: 0.03,
+      staggerDirection: -1
+    }
+  }
+}
+
+// Variantes para los elementos internos con animación escalonada
+const itemVariants = {
   open: {
     x: 0,
     opacity: 1,
     transition: {
       type: 'spring',
-      stiffness: 300,
+      stiffness: 400,
       damping: 30
     }
   },
   closed: {
-    x: -20,
+    x: -10,
     opacity: 0,
     transition: {
-      duration: 0.2
+      duration: 0.15
     }
   }
 }
@@ -118,7 +150,7 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
   }
 
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {showSidebar && (
         <motion.div
           key="modern-sidebar"
@@ -126,82 +158,147 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
           animate="open"
           exit="closed"
           variants={sidebarVariants}
-          className="flex h-full flex-col border-r border-border bg-background relative"
+          className={cn(
+            "flex h-[calc(100%-16px)] flex-col relative",
+            "m-2 rounded-2xl",
+            "bg-background/80 backdrop-blur-xl backdrop-saturate-150",
+            "border border-white/10 dark:border-white/5",
+            "shadow-[0_8px_40px_-12px_rgba(0,0,0,0.25)]",
+            "dark:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.5)]",
+            "overflow-hidden"
+          )}
+          style={{
+            transformOrigin: 'left center'
+          }}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          <div className={HEADER_GRADIENT_CLASSES}>
+          {/* Gradiente decorativo superior */}
+          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-primary/8 via-primary/3 to-transparent pointer-events-none" />
+          
+          {/* Header con logo */}
+          <motion.div 
+            variants={itemVariants}
+            className={HEADER_GRADIENT_CLASSES}
+          >
             <div className="relative z-10">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="flex-1 flex items-center justify-center">
-                  <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent text-center">ALI</h2>
-                </div>
-                {/* Botón de cerrar solo en móviles - más prominente */}
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <motion.div 
+                  className="flex-1 flex items-center justify-center"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ type: 'spring', stiffness: 400 }}
+                >
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent text-center tracking-tight">ALI</h2>
+                </motion.div>
+                {/* Botón de cerrar solo en móviles */}
                 {isMobile && onClose && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onClose}
-                    className="md:hidden h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm border border-border text-foreground hover:bg-destructive hover:text-destructive-foreground hover:border-destructive transition-all"
-                    aria-label="Cerrar menú"
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <X className="h-5 w-5" />
-                  </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={onClose}
+                      className="md:hidden h-9 w-9 rounded-xl bg-foreground/5 backdrop-blur-sm border border-white/10 text-foreground hover:bg-destructive/90 hover:text-destructive-foreground hover:border-destructive/50 transition-all duration-200"
+                      aria-label="Cerrar menú"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </motion.div>
                 )}
               </div>
-              {/* WorkspaceSwitcher - Botón Hogar */}
-              <div className="w-full">
+              {/* WorkspaceSwitcher */}
+              <motion.div 
+                className="w-full"
+                variants={itemVariants}
+              >
                 <WorkspaceSwitcher showSettingsButton={false} />
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="px-4 py-3 border-b border-border">
-            <nav className="space-y-1">
-              {navItems.map(item => {
+          {/* Separador con gradiente */}
+          <div className="mx-4 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+
+          {/* Navegación */}
+          <motion.div 
+            variants={itemVariants}
+            className="px-4 py-4"
+          >
+            <nav className="space-y-1.5">
+              {navItems.map((item, index) => {
                 const IconComponent = item.icon
                 const isActive = item.key === contentType
                 return (
-                  <button
+                  <motion.button
                     key={item.key}
                     type="button"
                     onClick={() => handleSelectContentType(item.key)}
+                    variants={itemVariants}
+                    whileHover={{ 
+                      scale: 1.02,
+                      x: 4,
+                      transition: { type: 'spring', stiffness: 400, damping: 20 }
+                    }}
+                    whileTap={{ scale: 0.98 }}
                     className={cn(
-                      'flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors',
+                      'flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200',
                       isActive
-                        ? 'bg-primary text-primary-foreground shadow-sm'
-                        : 'text-muted-foreground hover:bg-muted/60 hover:text-foreground'
+                        ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
+                        : 'text-muted-foreground hover:bg-foreground/5 hover:text-foreground'
                     )}
                   >
-                    <IconComponent className={cn('w-4 h-4', isActive ? 'text-primary-foreground' : 'text-muted-foreground')} />
+                    <motion.div
+                      animate={isActive ? { rotate: [0, -10, 10, 0] } : {}}
+                      transition={{ duration: 0.4 }}
+                    >
+                      <IconComponent className={cn('w-4 h-4', isActive ? 'text-primary-foreground' : 'text-muted-foreground')} />
+                    </motion.div>
                     <span className="flex-1 text-left">{item.label}</span>
-                    <span
+                    <motion.span
+                      animate={isActive ? { scale: [1, 1.1, 1] } : {}}
+                      transition={{ duration: 0.3 }}
                       className={cn(
-                        'min-w-[32px] rounded-full px-2 py-1 text-center text-xs font-semibold leading-none',
+                        'min-w-[28px] rounded-lg px-2 py-1 text-center text-xs font-semibold leading-none',
                         isActive
                           ? 'bg-primary-foreground/20 text-primary-foreground'
-                          : 'bg-muted text-muted-foreground'
+                          : 'bg-foreground/5 text-muted-foreground'
                       )}
                     >
                       {item.count}
-                    </span>
-                  </button>
+                    </motion.span>
+                  </motion.button>
                 )
               })}
             </nav>
-          </div>
+          </motion.div>
 
+          {/* Separador */}
+          <div className="mx-4 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+
+          {/* Lista de contenido */}
           <ScrollArea className="flex-1 px-4">
-            <div className="py-4">
+            <motion.div 
+              variants={itemVariants}
+              className="py-4"
+            >
               <SidebarDataList
                 contentType={contentType}
                 data={data as any}
                 folders={contentTypeFolders}
               />
-            </div>
+            </motion.div>
           </ScrollArea>
 
-          <ModernProfileCard />
+          {/* Separador inferior */}
+          <div className="mx-4 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+
+          {/* Profile Card */}
+          <motion.div variants={itemVariants}>
+            <ModernProfileCard />
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

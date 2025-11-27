@@ -326,10 +326,19 @@ export const useChatHandler = () => {
           chatImages
         )
 
-        // Unificar en research endpoint (Tongyi 30B + web tools, RAG condicional)
-        const endpoint = "/api/chat/research"
+        // Seleccionar endpoint según el modelo
+        const modelId = payload.chatSettings.model?.toLowerCase() || ''
+        const isTongyiModel = modelId.includes('tongyi') || 
+                              modelId.includes('deepresearch') || 
+                              modelId.includes('alibaba')
         
-        console.log(`🤖 Usando endpoint único de investigación: ${endpoint}`)
+        // Tongyi usa búsqueda iterativa, otros modelos usan research con tool calling
+        const endpoint = isTongyiModel 
+          ? "/api/chat/tongyi-iterative" 
+          : "/api/chat/research"
+        
+        console.log(`🤖 Modelo: ${modelId}`)
+        console.log(`🔄 Usando endpoint: ${endpoint} (${isTongyiModel ? 'búsqueda iterativa' : 'research tools'})`)
         
         const response = await fetch(endpoint, {
           method: "POST",

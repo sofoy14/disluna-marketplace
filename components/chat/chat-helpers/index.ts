@@ -220,14 +220,24 @@ export const handleHostedChat = async (
   // Verificar si está en modo de redacción legal
   const chatMode = typeof window !== 'undefined' ? localStorage.getItem('chatMode') : null
   
-  // Determinar endpoint según modo
-  let apiEndpoint = provider === "custom" ? "/api/chat/custom" : "/api/chat/tools-agent"
+  // Determinar endpoint según modelo y modo
+  let apiEndpoint = provider === "custom" ? "/api/chat/custom" : "/api/chat/legal-agent"
+  
+  // Detectar si es modelo Tongyi - usar búsqueda iterativa
+  const modelId = payload.chatSettings.model?.toLowerCase() || ''
+  const isTongyiModel = modelId.includes('tongyi') || 
+                        modelId.includes('deepresearch') || 
+                        modelId.includes('alibaba')
   
   if (chatMode === 'legal-writing') {
     apiEndpoint = "/api/chat/legal-writing"
     console.log(`🤖 Modo: Redacción Legal - usando endpoint: ${apiEndpoint}`)
+  } else if (isTongyiModel) {
+    // Tongyi no soporta tool calling, usar búsqueda iterativa
+    apiEndpoint = "/api/chat/tongyi-iterative"
+    console.log(`🔄 Modelo Tongyi detectado - usando búsqueda iterativa: ${apiEndpoint}`)
   } else {
-    console.log(`🤖 Usando endpoint: ${apiEndpoint} - el modelo decidirá si buscar`)
+    console.log(`🤖 Usando endpoint: ${apiEndpoint} - tool calling habilitado para búsqueda legal`)
   }
 
   const requestBody = {

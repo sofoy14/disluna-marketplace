@@ -4,6 +4,66 @@ import { AnimatePresence, motion } from "framer-motion"
 import { useCallback, useEffect, useRef, useState, ReactNode } from "react"
 import { cn } from "@/lib/utils"
 
+// Icono de enviar moderno con animación
+export function ModernSendIcon({ 
+  onClick, 
+  disabled,
+  size = 20
+}: { 
+  onClick: () => void
+  disabled?: boolean
+  size?: number
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      whileHover={disabled ? {} : { scale: 1.05 }}
+      whileTap={disabled ? {} : { scale: 0.95 }}
+      className={cn(
+        "relative flex items-center justify-center",
+        "w-10 h-10 rounded-xl",
+        "transition-all duration-300 ease-out",
+        disabled 
+          ? "bg-muted/50 cursor-not-allowed" 
+          : "bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/30 cursor-pointer"
+      )}
+    >
+      {/* Efecto de brillo en hover */}
+      {!disabled && (
+        <motion.div
+          className="absolute inset-0 rounded-xl bg-gradient-to-tr from-white/20 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity"
+        />
+      )}
+      
+      {/* Icono de flecha/enviar moderno */}
+      <motion.svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        className={cn(
+          "relative z-10 transition-colors",
+          disabled ? "text-muted-foreground/50" : "text-primary-foreground"
+        )}
+        initial={false}
+        animate={disabled ? {} : { x: 0 }}
+        whileHover={disabled ? {} : { x: 2 }}
+        transition={{ type: "spring", stiffness: 400, damping: 20 }}
+      >
+        <path
+          d="M6 12L3.269 3.126A59.768 59.768 0 0 1 21.485 12 59.77 59.77 0 0 1 3.27 20.876L5.999 12Zm0 0h7.5"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </motion.svg>
+    </motion.button>
+  )
+}
+
 export function PlaceholdersAndVanishInput({
   placeholders,
   onChange,
@@ -35,6 +95,7 @@ export function PlaceholdersAndVanishInput({
   rightElement?: ReactNode
   showSuggestions?: boolean
 }) {
+  const [isFocused, setIsFocused] = useState(false)
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0)
   const [animating, setAnimating] = useState(false)
 
@@ -239,13 +300,28 @@ export function PlaceholdersAndVanishInput({
   }
 
   return (
-    <div
+    <motion.div
+      initial={false}
+      animate={{
+        boxShadow: isFocused 
+          ? "0 0 0 2px hsl(var(--primary) / 0.2), 0 8px 32px -8px rgba(0,0,0,0.15)" 
+          : "0 2px 12px -4px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04)"
+      }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
-        "relative mx-auto w-full overflow-hidden rounded-xl bg-background text-foreground shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),_0px_1px_0px_0px_rgba(25,28,33,0.02),_0px_0px_0px_1px_rgba(25,28,33,0.08)] transition duration-200 border border-input",
-        inputValue && "bg-muted/40",
+        "relative mx-auto w-full overflow-hidden",
+        "rounded-2xl",
+        "bg-background/95 backdrop-blur-xl",
+        "border border-white/10 dark:border-white/5",
+        "transition-colors duration-200",
+        isFocused && "border-primary/30",
+        inputValue && "bg-background",
         className
       )}
     >
+      {/* Gradiente decorativo superior sutil */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      
       <canvas
         className={cn(
           "pointer-events-none absolute left-2 top-[20%] origin-top-left scale-50 transform pr-20 text-base invert filter dark:invert-0 sm:left-8",
@@ -254,76 +330,81 @@ export function PlaceholdersAndVanishInput({
         ref={canvasRef}
       />
       
-      {/* Elemento izquierdo (ej: botón de archivo) */}
-      {leftElement && (
-        <div className="absolute left-3 top-1/2 z-10 -translate-y-1/2 pointer-events-auto">
-          {leftElement}
-        </div>
-      )}
-      
-      <textarea
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        onCompositionStart={onCompositionStart}
-        onCompositionEnd={onCompositionEnd}
-        onPaste={onPaste}
-        ref={activeTextareaRef}
-        value={inputValue}
-        disabled={disabled}
-        rows={1}
-        className={cn(
-          "relative z-50 w-full resize-none border-none bg-transparent px-14 py-4 text-sm text-black focus:outline-none focus:ring-0 sm:text-base dark:text-white",
-          animating && "text-transparent dark:text-transparent"
+      {/* Contenedor interno con flex para mejor alineación */}
+      <div className="flex items-center gap-2 px-3 py-2">
+        {/* Elemento izquierdo (ej: botón de archivo) */}
+        {leftElement && (
+          <motion.div 
+            className="flex-shrink-0 z-10"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {leftElement}
+          </motion.div>
         )}
-        style={{
-          minHeight: "60px",
-          maxHeight: "400px"
-        }}
-      />
+        
+        {/* Área de texto */}
+        <div className="relative flex-1 min-w-0">
+          <textarea
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            onCompositionStart={onCompositionStart}
+            onCompositionEnd={onCompositionEnd}
+            onPaste={onPaste}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            ref={activeTextareaRef}
+            value={inputValue}
+            disabled={disabled}
+            rows={1}
+            className={cn(
+              "w-full resize-none border-none bg-transparent",
+              "px-2 py-3",
+              "text-sm sm:text-base",
+              "text-foreground placeholder:text-muted-foreground/60",
+              "focus:outline-none focus:ring-0",
+              animating && "text-transparent dark:text-transparent"
+            )}
+            style={{
+              minHeight: "48px",
+              maxHeight: "200px"
+            }}
+          />
 
-      {/* Elemento derecho (ej: botón de enviar/stop) */}
-      {rightElement && (
-        <div className="absolute right-3 top-1/2 z-10 -translate-y-1/2 pointer-events-auto">
-          <div className="relative">
-            {rightElement}
-          </div>
-        </div>
-      )}
-
-      {/* Placeholders animados */}
-      {showSuggestions && (
-        <div className="pointer-events-none absolute inset-0 flex items-center px-14 text-sm leading-none text-gray-400 sm:text-base">
-          {!inputValue && (
-            <AnimatePresence mode="wait">
-              {!animating && (
-                <motion.p
-                  initial={{
-                    y: 5,
-                    opacity: 0
-                  }}
-                  key={`current-placeholder-${currentPlaceholder}`}
-                  animate={{
-                    y: 0,
-                    opacity: 1
-                  }}
-                  exit={{
-                    y: -15,
-                    opacity: 0
-                  }}
-                  transition={{
-                    duration: 0.3,
-                    ease: "linear"
-                  }}
-                  className="w-[calc(100%-2rem)] truncate text-left"
-                >
-                  {placeholders[currentPlaceholder]}
-                </motion.p>
+          {/* Placeholders animados */}
+          {showSuggestions && (
+            <div className="pointer-events-none absolute inset-0 flex items-center px-2 text-sm sm:text-base leading-none text-muted-foreground/50">
+              {!inputValue && (
+                <AnimatePresence mode="wait">
+                  {!animating && (
+                    <motion.p
+                      initial={{ y: 5, opacity: 0 }}
+                      key={`current-placeholder-${currentPlaceholder}`}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: -15, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeOut" }}
+                      className="w-full truncate text-left"
+                    >
+                      {placeholders[currentPlaceholder]}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
               )}
-            </AnimatePresence>
+            </div>
           )}
         </div>
-      )}
-    </div>
+
+        {/* Elemento derecho (ej: botón de enviar/stop) */}
+        {rightElement && (
+          <div className="flex-shrink-0 z-10">
+            {rightElement}
+          </div>
+        )}
+      </div>
+      
+      {/* Línea decorativa inferior */}
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" />
+    </motion.div>
   )
 }
 

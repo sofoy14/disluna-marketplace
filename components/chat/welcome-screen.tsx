@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Send, Upload } from "lucide-react"
+import { Send, Upload, Plus, Paperclip } from "lucide-react"
 import { useContext, useState, useEffect } from "react"
 import { ChatbotUIContext } from "@/context/context"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 import { ShaderCanvas } from "@/components/shader-canvas"
 import { ModelSelectorToggle } from "@/components/chat/model-selector-toggle"
 import { motion, AnimatePresence } from "framer-motion"
-import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input"
+import { PlaceholdersAndVanishInput, ModernSendIcon } from "@/components/ui/placeholders-and-vanish-input"
 import { IconCirclePlus, IconSend } from "@tabler/icons-react"
 import { CreateFileModal } from "@/components/modals/CreateFileModal"
 import { cn } from "@/lib/utils"
@@ -194,17 +194,26 @@ export function WelcomeScreen() {
                   onSubmit={handleSubmit}
                   leftElement={
                     <CreateFileModal onFileCreated={(file) => console.log(file)}>
-                      <IconCirclePlus className="cursor-pointer p-1 hover:opacity-50" size={32} />
+                      <motion.div
+                        whileHover={{ scale: 1.05, rotate: 90 }}
+                        whileTap={{ scale: 0.95 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                        className={cn(
+                          "flex items-center justify-center",
+                          "w-10 h-10 rounded-xl",
+                          "bg-muted/50 hover:bg-muted",
+                          "cursor-pointer transition-colors duration-200",
+                          "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        <Plus className="w-5 h-5" />
+                      </motion.div>
                     </CreateFileModal>
                   }
                   rightElement={
-                    <IconSend
-                      className={cn(
-                        "bg-primary text-secondary cursor-pointer rounded p-1 transition-opacity hover:opacity-80",
-                        !inputValue && "cursor-not-allowed opacity-50"
-                      )}
+                    <ModernSendIcon
                       onClick={() => handleSend()}
-                      size={30}
+                      disabled={!inputValue}
                     />
                   }
                 />

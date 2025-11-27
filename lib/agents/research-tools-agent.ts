@@ -208,20 +208,48 @@ IMPORTANTE:
       const evaluationResponse = await this.client.chat.completions.create({
         model: this.config.model!,
         messages: [
-          { role: "system", content: "Eres un evaluador experto. Responde SOLO con JSON válido." },
+          { role: "system", content: "Eres un evaluador experto. Responde SOLO con JSON válido, sin texto adicional." },
           { role: "user", content: evaluationPrompt }
         ],
         temperature: 0.1,
-        max_tokens: 800,
-        response_format: { type: "json_object" }
+        max_tokens: 800
+        // Removido response_format porque Tongyi no lo soporta bien
       })
 
       const evaluationText = evaluationResponse.choices[0]?.message?.content || "{}"
-      const evaluation = JSON.parse(evaluationText)
+      
+      // Intentar extraer JSON de la respuesta (puede estar envuelto en texto)
+      let evaluation: any = {}
+      try {
+        // Primero intentar parsear directamente
+        evaluation = JSON.parse(evaluationText)
+      } catch {
+        // Si falla, intentar extraer JSON de bloques de código
+        const jsonMatch = evaluationText.match(/```json\s*([\s\S]*?)\s*```/)
+        if (jsonMatch) {
+          try {
+            evaluation = JSON.parse(jsonMatch[1])
+          } catch {
+            // Intentar extraer JSON directo del texto
+            const directJsonMatch = evaluationText.match(/\{[\s\S]*\}/)
+            if (directJsonMatch) {
+              try {
+                evaluation = JSON.parse(directJsonMatch[0])
+              } catch {
+                console.log(`⚠️ No se pudo parsear JSON de evaluación, usando heurísticas`)
+              }
+            }
+          }
+        }
+      }
 
-      const needsMore = !evaluation.completa || 
-                       uniqueSources.length < (this.config.minSourcesForCompletion || 3) ||
-                       (this.config.requireOfficialSources && officialSources.length === 0)
+      // Usar heurísticas si no se pudo parsear
+      const hasEnoughSources = uniqueSources.length >= (this.config.minSourcesForCompletion || 3)
+      const hasOfficialSources = officialSources.length >= 2
+      
+      const needsMore = evaluation.completa === false || 
+                       (!evaluation.completa && !hasEnoughSources) ||
+                       (this.config.requireOfficialSources && !hasOfficialSources)
 
       console.log(`   - ¿Necesita más información?: ${needsMore ? 'SÍ' : 'NO'}`)
       if (evaluation.gaps && evaluation.gaps.length > 0) {
@@ -235,14 +263,15 @@ IMPORTANTE:
       }
     } catch (error) {
       console.error(`❌ Error en evaluación de completitud:`, error)
-      // Fallback: si hay pocas fuentes, necesita más
-      const needsMore = uniqueSources.length < (this.config.minSourcesForCompletion || 3) ||
-                       (this.config.requireOfficialSources && officialSources.length === 0)
+      // Fallback basado en heurísticas
+      const hasEnoughSources = uniqueSources.length >= (this.config.minSourcesForCompletion || 3)
+      const hasOfficialSources = officialSources.length >= 2
+      const needsMore = !hasEnoughSources || (this.config.requireOfficialSources && !hasOfficialSources)
       
       return {
         needsMore,
-        gaps: ["Información adicional necesaria"],
-        refinedQueries: [`${userQuery} Colombia Superintendencia Financiera`, `${userQuery} Colombia DIAN`, `${userQuery} Colombia regulación`]
+        gaps: needsMore ? ["Información adicional necesaria"] : [],
+        refinedQueries: needsMore ? [`${userQuery} Colombia fuente oficial`, `${userQuery} Colombia normatividad`] : []
       }
     }
   }

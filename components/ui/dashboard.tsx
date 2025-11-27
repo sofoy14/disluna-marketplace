@@ -12,6 +12,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { FC, useState, useEffect } from "react"
 import { useSelectFileHandler } from "../chat/chat-hooks/use-select-file-handler"
 import { CommandK } from "../utility/command-k"
+import { motion, AnimatePresence } from "framer-motion"
 
 export const SIDEBAR_WIDTH = 350
 
@@ -104,34 +105,46 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
     <div className="flex size-full">
       <CommandK />
 
-      {/* Overlay para móviles - cierra al tocar fuera */}
-      {isMobile && showSidebar && (
-        <div
-          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300 dark:bg-black/60"
-          onClick={() => setShowSidebar(false)}
-          onTouchStart={(e) => {
-            // Cerrar al hacer swipe left en el overlay
-            const touch = e.touches[0]
-            if (touch.clientX < 50) {
-              setShowSidebar(false)
-            }
-          }}
-          aria-hidden="true"
-        />
-      )}
+      {/* Overlay para móviles con animación suave */}
+      <AnimatePresence>
+        {isMobile && showSidebar && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-md z-40 md:hidden"
+            onClick={() => setShowSidebar(false)}
+            onTouchStart={(e) => {
+              const touch = e.touches[0]
+              if (touch.clientX < 50) {
+                setShowSidebar(false)
+              }
+            }}
+            aria-hidden="true"
+          />
+        )}
+      </AnimatePresence>
 
-      <div
+      <motion.div
+        initial={false}
+        animate={{
+          width: showSidebar ? SIDEBAR_WIDTH : 0,
+          opacity: showSidebar ? 1 : 0
+        }}
+        transition={{
+          type: 'spring',
+          stiffness: 400,
+          damping: 40,
+          mass: 0.8
+        }}
         className={cn(
-          "duration-200 dark:border-none",
+          "overflow-visible",
           isMobile 
-            ? "fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:relative md:z-auto"
-            : "relative",
-          showSidebar && isMobile ? "translate-x-0" : isMobile ? "-translate-x-full" : "",
-          showSidebar ? "border-r-2" : ""
+            ? "fixed inset-y-0 left-0 z-50 md:relative md:z-auto"
+            : "relative"
         )}
         style={{
-          // Sidebar
-          width: isMobile && showSidebar ? `${SIDEBAR_WIDTH}px` : showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
           minWidth: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
           maxWidth: showSidebar ? `${SIDEBAR_WIDTH}px` : "0px",
         }}
@@ -183,7 +196,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
             />
           </Tabs>
         )}
-      </div>
+      </motion.div>
 
       <div
         className="relative flex w-screen min-w-[90%] grow flex-col sm:min-w-fit bg-gradient-to-br from-background via-background to-primary/20"
@@ -200,26 +213,46 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           children
         )}
 
-        {/* Botón de toggle sidebar - más visible en móviles */}
-        <Button
-          className={cn(
-            "absolute z-10 cursor-pointer transition-all duration-200",
-            isMobile 
-              ? "left-2 top-4 size-10 bg-background/80 backdrop-blur-sm border border-border shadow-lg"
-              : showSidebar
-              ? "left-[4px] top-[50%] size-[32px]"
-              : "left-2 top-4 size-10 bg-background/80 backdrop-blur-sm border border-border shadow-sm"
-          )}
-          style={{
-            transform: showSidebar ? "rotate(180deg)" : "rotate(0deg)"
+        {/* Botón de toggle sidebar con animación */}
+        <motion.div
+          initial={false}
+          animate={{
+            x: showSidebar && !isMobile ? -8 : 0,
+            rotate: showSidebar ? 180 : 0
           }}
-          variant={isMobile || !showSidebar ? "outline" : "ghost"}
-          size="icon"
-          onClick={handleToggleSidebar}
-          aria-label={showSidebar ? "Cerrar menú" : "Abrir menú"}
+          transition={{
+            type: 'spring',
+            stiffness: 400,
+            damping: 30
+          }}
+          className={cn(
+            "absolute z-10",
+            isMobile 
+              ? "left-3 top-4"
+              : showSidebar
+              ? "left-[4px] top-[50%] -translate-y-1/2"
+              : "left-3 top-4"
+          )}
         >
-          <IconChevronCompactRight size={isMobile || !showSidebar ? 20 : 24} />
-        </Button>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleToggleSidebar}
+            className={cn(
+              "flex items-center justify-center cursor-pointer transition-colors duration-200",
+              "rounded-xl border backdrop-blur-md",
+              isMobile || !showSidebar
+                ? "size-11 bg-background/90 border-white/10 shadow-lg shadow-black/10 hover:bg-background hover:border-primary/30"
+                : "size-8 bg-background/60 border-white/5 hover:bg-background/80"
+            )}
+            aria-label={showSidebar ? "Cerrar menú" : "Abrir menú"}
+          >
+            <IconChevronCompactRight 
+              size={isMobile || !showSidebar ? 22 : 20} 
+              className="text-foreground/80"
+            />
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   )

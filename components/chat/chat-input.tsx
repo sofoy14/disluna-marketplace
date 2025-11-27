@@ -8,12 +8,14 @@ import {
   IconPlayerStopFilled,
   IconSend
 } from "@tabler/icons-react"
+import { Plus, Square } from "lucide-react"
+import { motion } from "framer-motion"
 import Image from "next/image"
 import { FC, useContext, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Input } from "../ui/input"
-import { PlaceholdersAndVanishInput } from "../ui/placeholders-and-vanish-input"
+import { PlaceholdersAndVanishInput, ModernSendIcon } from "../ui/placeholders-and-vanish-input"
 import { ChatCommandInput } from "./chat-command-input"
 import { ChatFilesDisplay } from "./chat-files-display"
 import { useChatHandler } from "./chat-hooks/use-chat-handler"
@@ -247,36 +249,42 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
             <CreateFileModal onFileCreated={(file) => {
               console.log('Archivo creado:', file)
             }}>
-              <IconCirclePlus
-                className="cursor-pointer p-1 hover:opacity-50"
-                size={32}
-              />
+              <motion.div
+                whileHover={{ scale: 1.05, rotate: 90 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                className={cn(
+                  "flex items-center justify-center",
+                  "w-10 h-10 rounded-xl",
+                  "bg-muted/50 hover:bg-muted",
+                  "cursor-pointer transition-colors duration-200",
+                  "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Plus className="w-5 h-5" />
+              </motion.div>
             </CreateFileModal>
           }
           rightElement={
             isGenerating ? (
-              <IconPlayerStopFilled
-                className="hover:bg-background animate-pulse cursor-pointer rounded bg-transparent p-1"
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={handleStopMessage}
-                size={30}
-              />
-            ) : (
-              <IconSend
                 className={cn(
-                  "bg-primary text-secondary cursor-pointer rounded p-1 transition-opacity hover:opacity-80",
-                  !userInput && "cursor-not-allowed opacity-50"
+                  "flex items-center justify-center",
+                  "w-10 h-10 rounded-xl",
+                  "bg-destructive/90 hover:bg-destructive",
+                  "cursor-pointer transition-colors duration-200",
+                  "animate-pulse"
                 )}
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  console.log('Botón de enviar clickeado')
-                  console.log('userInput:', userInput)
-                  console.log('userInput length:', userInput?.length)
-                  if (!userInput) {
-                    console.log('No hay userInput, no se envía mensaje')
-                    return
-                  }
-                  console.log('Enviando mensaje...')
+              >
+                <Square className="w-4 h-4 text-destructive-foreground fill-current" />
+              </motion.button>
+            ) : (
+              <ModernSendIcon
+                onClick={() => {
+                  if (!userInput) return
                   
                   // Desactivar sugerencias después de enviar la primera pregunta
                   if (showPlaceholderSuggestions) {
@@ -285,7 +293,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
                   
                   handleSendMessage(userInput, chatMessages, false)
                 }}
-                size={30}
+                disabled={!userInput}
               />
             )
           }

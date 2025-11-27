@@ -1,11 +1,145 @@
-// CONFIRMAR USO ANTES DE ELIMINACIÓN - Herramienta redundante con legal-search-specialized.ts
 /**
  * Sistema de búsqueda condicional inteligente
  * Solo busca en internet cuando es necesario información legal colombiana específica
  */
 
-// import { detectLegalQuery, logLegalDetection, LegalDetectionResult } from './smart-legal-detector' // ELIMINADO - archivo movido
 import { searchWithSerperSimple, formatSimpleSearchResults } from './simple-serper-search'
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DETECTOR DE CONSULTAS LEGALES (antes en smart-legal-detector.ts)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface LegalDetectionResult {
+  requiresWebSearch: boolean
+  reason: string
+  confidence: number
+  category: 'legal' | 'general' | 'simple'
+  suggestedQueries: string[]
+}
+
+/**
+ * Detecta si una consulta requiere búsqueda web legal
+ */
+export function detectLegalQuery(query: string): LegalDetectionResult {
+  const queryLower = query.toLowerCase().trim()
+  
+  // Palabras clave legales colombianas
+  const legalKeywords = [
+    // Normativa
+    'ley', 'decreto', 'resolución', 'artículo', 'art.', 'código', 'norma', 'legislación',
+    'constitución', 'constitucional', 'estatuto', 'reglamento',
+    // Instituciones
+    'corte', 'tribunal', 'juzgado', 'consejo de estado', 'corte suprema', 'corte constitucional',
+    'superintendencia', 'ministerio', 'dian', 'procuraduría', 'contraloría', 'defensoría',
+    // Procedimientos
+    'tutela', 'demanda', 'proceso', 'procedimiento', 'trámite', 'recurso', 'apelación',
+    'casación', 'revisión', 'nulidad', 'acción popular', 'acción de grupo',
+    // Materias
+    'penal', 'civil', 'comercial', 'laboral', 'administrativo', 'tributario', 'fiscal',
+    'contencioso', 'disciplinario', 'constitucional',
+    // Conceptos legales
+    'prescripción', 'caducidad', 'término', 'plazo', 'competencia', 'jurisdicción',
+    'derecho', 'obligación', 'responsabilidad', 'contrato', 'indemnización', 'daño',
+    'perjuicio', 'culpa', 'dolo', 'negligencia', 'imprudencia',
+    // Sentencias
+    'sentencia', 'jurisprudencia', 'fallo', 'auto', 'providencia', 'concepto',
+    // Específicos Colombia
+    'colombia', 'colombiano', 'colombiana'
+  ]
+  
+  // Patrones que indican consulta legal
+  const legalPatterns = [
+    /\b(art[íi]culo|art\.?)\s*\d+/i,           // Artículo 123
+    /\b(ley|decreto|resoluci[oó]n)\s*\d+/i,   // Ley 1234
+    /sentencia\s*(c|su|t|ac)-?\d+/i,          // Sentencia C-123
+    /c[oó]digo\s+(civil|penal|comercial|laboral|procesal)/i, // Código civil
+    /constituci[oó]n\s+pol[íi]tica/i,         // Constitución Política
+    /\bcorte\s+(constitucional|suprema)/i,    // Corte Constitucional
+    /\bconsejo\s+de\s+estado/i,               // Consejo de Estado
+    /\bsuperintendencia/i,                     // Superintendencia
+    /\brequisitos\s+para/i,                    // Requisitos para
+    /\bc[oó]mo\s+(iniciar|presentar|interponer)/i, // Cómo iniciar/presentar
+  ]
+  
+  // Consultas simples que NO requieren búsqueda
+  const simplePatterns = [
+    /^(hola|buenos\s+d[íi]as|buenas\s+tardes|buenas\s+noches)/i,
+    /^(gracias|muchas\s+gracias)/i,
+    /^(qu[eé]\s+tal|c[oó]mo\s+est[aá]s?)/i,
+    /^(ok|entendido|perfecto|de\s+acuerdo)/i
+  ]
+  
+  // Verificar si es consulta simple
+  if (simplePatterns.some(pattern => pattern.test(queryLower))) {
+    return {
+      requiresWebSearch: false,
+      reason: 'Consulta de saludo o confirmación simple',
+      confidence: 0.95,
+      category: 'simple',
+      suggestedQueries: []
+    }
+  }
+  
+  // Verificar patrones legales específicos
+  const matchedPatterns = legalPatterns.filter(pattern => pattern.test(query))
+  if (matchedPatterns.length > 0) {
+    return {
+      requiresWebSearch: true,
+      reason: `Patrón legal detectado: consulta sobre normativa/jurisprudencia específica`,
+      confidence: 0.95,
+      category: 'legal',
+      suggestedQueries: [query + ' Colombia', query + ' Colombia site:gov.co']
+    }
+  }
+  
+  // Contar palabras clave legales
+  const keywordMatches = legalKeywords.filter(keyword => queryLower.includes(keyword))
+  const keywordCount = keywordMatches.length
+  
+  if (keywordCount >= 3) {
+    return {
+      requiresWebSearch: true,
+      reason: `Alta densidad de términos legales (${keywordCount} términos)`,
+      confidence: 0.9,
+      category: 'legal',
+      suggestedQueries: [query + ' Colombia derecho legal']
+    }
+  }
+  
+  if (keywordCount >= 1) {
+    return {
+      requiresWebSearch: true,
+      reason: `Términos legales detectados: ${keywordMatches.slice(0, 3).join(', ')}`,
+      confidence: 0.7 + (keywordCount * 0.05),
+      category: 'legal',
+      suggestedQueries: [query + ' Colombia']
+    }
+  }
+  
+  // Consulta general - no requiere búsqueda legal específica
+  return {
+    requiresWebSearch: false,
+    reason: 'No se detectaron términos legales específicos',
+    confidence: 0.6,
+    category: 'general',
+    suggestedQueries: []
+  }
+}
+
+/**
+ * Log de detección legal para debugging
+ */
+export function logLegalDetection(query: string, result: LegalDetectionResult): void {
+  console.log(`\n🔍 DETECCIÓN LEGAL`)
+  console.log(`   Query: "${query.substring(0, 60)}..."`)
+  console.log(`   Requiere búsqueda: ${result.requiresWebSearch ? '✅ SÍ' : '❌ NO'}`)
+  console.log(`   Categoría: ${result.category}`)
+  console.log(`   Confianza: ${(result.confidence * 100).toFixed(1)}%`)
+  console.log(`   Razón: ${result.reason}`)
+  if (result.suggestedQueries.length > 0) {
+    console.log(`   Queries sugeridas: ${result.suggestedQueries.join(', ')}`)
+  }
+}
 
 interface QueryComplexity {
   level: 'simple' | 'moderate' | 'complex'
