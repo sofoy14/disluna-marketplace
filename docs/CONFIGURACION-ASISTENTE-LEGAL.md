@@ -47,8 +47,8 @@ El sistema de tool calling funciona mejor con estos modelos de OpenRouter:
 
 | Modelo | ID en OpenRouter | Costo | Endpoint |
 |--------|-----------------|-------|----------|
-| Tongyi DeepResearch | `alibaba/tongyi-deepresearch-30b-a3b` | ~$0.09/1M input | `/api/chat/langchain-agent` |
-| Kimi K2 Thinking | `moonshotai/kimi-k2` | ~$0.60/1M input | `/api/chat/langchain-agent` |
+| Tongyi DeepResearch (M1) | `alibaba/tongyi-deepresearch-30b-a3b` | ~$0.09/1M input | `/api/chat/langchain-agent` |
+| Kimi K2 Thinking (M1 Pro) | `moonshotai/kimi-k2-thinking` | ~$0.60/1M input | `/api/chat/langchain-agent` |
 
 Estos modelos soportan **tool calling nativo** y son ideales para investigación legal profunda.
 
@@ -104,7 +104,7 @@ const response = await fetch('/api/chat/langchain-agent', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     chatSettings: {
-      model: 'alibaba/tongyi-deepresearch-30b-a3b', // o 'moonshotai/kimi-k2'
+      model: 'alibaba/tongyi-deepresearch-30b-a3b', // M1 o 'moonshotai/kimi-k2-thinking' para M1 Pro
       temperature: 0.3
     },
     messages: [

@@ -47,7 +47,7 @@ console.log('Fuentes:', response.sources)
 
 ```typescript
 const agent = await LegalAgent.create({
-  modelId: 'moonshotai/kimi-k2',
+  modelId: 'moonshotai/kimi-k2-thinking',
   temperature: 0.3
 })
 ```
@@ -80,8 +80,8 @@ const response = await agent.invoke({
 
 | Modelo | ID | Capacidades |
 |--------|-----|-------------|
-| **Kimi K2** | `moonshotai/kimi-k2` | Razonamiento profundo, tool calling |
-| **Tongyi DeepResearch** | `alibaba/tongyi-deepresearch-30b-a3b` | Investigación profunda, búsqueda agéntica |
+| **Kimi K2 Thinking** | `moonshotai/kimi-k2-thinking` | Razonamiento profundo, tool calling (M1 Pro) |
+| **Tongyi DeepResearch** | `alibaba/tongyi-deepresearch-30b-a3b` | Investigación profunda, búsqueda agéntica (M1) |
 | **GPT-4o Mini** | `openai/gpt-4o-mini` | Tool calling eficiente |
 | **Claude 3.5 Sonnet** | `anthropic/claude-3-5-sonnet` | Análisis y razonamiento |
 
@@ -117,7 +117,7 @@ Retorna información del servicio:
 {
   "status": "ok",
   "endpoint": "LangChain Agent - Unified Legal Assistant",
-  "recommendedModels": ["moonshotai/kimi-k2", "alibaba/tongyi-deepresearch-30b-a3b"],
+  "recommendedModels": ["moonshotai/kimi-k2-thinking", "alibaba/tongyi-deepresearch-30b-a3b"],
   "tools": ["search_legal_official", "search_legal_academic", ...],
   "apiKeys": {
     "openrouter": "✅ Configurada",

@@ -14,4 +14,5 @@ export interface ChatMessage {
   fileItems: string[]
   bibliography?: BibliographyItem[]
   answer?: ModelAnswer
+  thinking?: string  // Proceso de razonamiento del agente (streaming)
 }

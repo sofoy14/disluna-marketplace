@@ -172,8 +172,20 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
     }
 
     setSelectedChat(chat)
+    
+    // Modelos de investigación válidos (M1 y M1 Pro)
+    const validModels = [
+      'alibaba/tongyi-deepresearch-30b-a3b',
+      'moonshotai/kimi-k2-thinking'
+    ]
+    
+    // Usar el modelo del chat si es válido, sino usar Tongyi por defecto
+    const chatModel = validModels.includes(chat.model) 
+      ? chat.model 
+      : 'alibaba/tongyi-deepresearch-30b-a3b'
+    
     setChatSettings({
-      model: chat.model as LLMID,
+      model: chatModel as LLMID,
       prompt: chat.prompt,
       temperature: chat.temperature,
       contextLength: chat.context_length,

@@ -276,15 +276,20 @@ export async function POST(request: NextRequest) {
       'anthropic/claude-3-5-sonnet',
       'anthropic/claude-3-haiku',
       'google/gemini-pro-1.5',
-      'meta-llama/llama-3.1-70b-instruct'
+      'meta-llama/llama-3.1-70b-instruct',
+      // Modelos de investigación profunda con tool calling nativo
+      'alibaba/tongyi-deepresearch-30b-a3b',
+      'moonshotai/kimi-k2-thinking'
     ]
     
     // Si el modelo actual no soporta tools, usar fallback
-    const supportsTools = toolCallingModels.some(m => modelName.includes(m.split('/')[1]))
+    const supportsTools = toolCallingModels.some(m => 
+      modelName.includes(m.split('/')[1]) || modelName === m
+    )
     
     if (!supportsTools) {
       console.log(`⚠️ Modelo ${modelName} puede no soportar tool calling`)
-      console.log(`💡 Considera usar: openai/gpt-4o-mini o anthropic/claude-3-haiku`)
+      console.log(`💡 Considera usar: alibaba/tongyi-deepresearch-30b-a3b o moonshotai/kimi-k2-thinking`)
     }
     
     console.log(`📝 Query: "${userQuery.substring(0, 100)}..."`)

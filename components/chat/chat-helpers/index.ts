@@ -387,42 +387,110 @@ export const processResponse = async (
     return fullText
   }
 
-  // Código original para streaming (endpoint legal usa streaming)
+  // Código para streaming con eventos JSON (langchain-agent) o texto plano
   if (response.body) {
     console.log('🔄 Procesando respuesta streaming...')
+    
+    // Detectar si es streaming con eventos JSON (nuevo formato)
+    const isEventStream = contentType.includes('text/event-stream')
+    let thinkingContent = ''
     
     await consumeReadableStream(
       response.body,
       chunk => {
         setFirstTokenReceived(true)
-        setToolInUse("none")
 
         try {
-          // Para el endpoint legal, el chunk viene como texto plano directamente
-          if (typeof chunk === 'string') {
-            contentToAdd = chunk
+          const chunkStr = typeof chunk === 'string' ? chunk : String(chunk)
+          
+          // Procesar eventos JSON (formato: {"type": "...", ...}\n)
+          if (isEventStream || chunkStr.startsWith('{')) {
+            // Dividir por líneas y procesar cada evento JSON
+            const lines = chunkStr.split('\n').filter(line => line.trim())
+            
+            for (const line of lines) {
+              try {
+                const event = JSON.parse(line)
+                
+                switch (event.type) {
+                  case 'thinking':
+                    // Acumular contenido de razonamiento
+                    thinkingContent += (thinkingContent ? '\n' : '') + event.content
+                    setToolInUse("thinking")
+                    console.log('🧠 Thinking:', event.content)
+                    break
+                    
+                  case 'thinking_done':
+                    setToolInUse("none")
+                    break
+                    
+                  case 'tool_start':
+                    thinkingContent += `\n🔧 Usando: ${event.tool}`
+                    setToolInUse(event.tool)
+                    console.log('🔧 Tool start:', event.tool)
+                    break
+                    
+                  case 'tool_end':
+                    thinkingContent += ` → ${event.output}`
+                    setToolInUse("none")
+                    console.log('✅ Tool end:', event.output?.substring(0, 50))
+                    break
+                    
+                  case 'token':
+                    // Agregar token a la respuesta
+                    fullText += event.content
+                    break
+                    
+                  case 'sources':
+                    // Las fuentes se emiten también como tokens, ya incluidas en fullText
+                    console.log('📚 Sources:', event.sources?.length)
+                    break
+                    
+                  case 'done':
+                    console.log('✅ Streaming done:', event.metadata)
+                    break
+                    
+                  case 'error':
+                    fullText += event.message || 'Error desconocido'
+                    break
+                    
+                  default:
+                    // Evento desconocido, intentar agregar como texto
+                    if (event.content) {
+                      fullText += event.content
+                    }
+                }
+              } catch (parseError) {
+                // No es JSON válido, tratar como texto plano
+                fullText += line
+              }
+            }
           } else {
+            // Formato texto plano (legacy)
             contentToAdd = isHosted
-              ? chunk
-              : // Ollama's streaming endpoint returns new-line separated JSON
-                // objects. A chunk may have more than one of these objects, so we
-                // need to split the chunk by new-lines and handle each one
-                // separately.
-                String(chunk)
+              ? chunkStr
+              : String(chunkStr)
                   .trimEnd()
                   .split("\n")
                   .reduce(
-                    (acc: string, line: string) => acc + JSON.parse(line).message.content,
+                    (acc: string, line: string) => {
+                      try {
+                        return acc + JSON.parse(line).message.content
+                      } catch {
+                        return acc + line
+                      }
+                    },
                     ""
                   )
+            fullText += contentToAdd
           }
           
-          fullText += contentToAdd
-          console.log('📝 Chunk recibido:', contentToAdd.substring(0, 50) + '...')
+          console.log('📝 Chunk procesado, texto total:', fullText.length, 'chars')
         } catch (error) {
           console.error("Error parsing chunk:", error, "Chunk:", chunk)
         }
 
+        // Actualizar mensaje con contenido y razonamiento
         setChatMessages(prev =>
           prev.map(chatMessage => {
             if (chatMessage.message.id === lastChatMessage.message.id) {
@@ -431,7 +499,9 @@ export const processResponse = async (
                   ...chatMessage.message,
                   content: fullText
                 },
-                fileItems: chatMessage.fileItems
+                fileItems: chatMessage.fileItems,
+                // Agregar razonamiento al mensaje si existe
+                thinking: thinkingContent || undefined
               }
 
               return updatedChatMessage

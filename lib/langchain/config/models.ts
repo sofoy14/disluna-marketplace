@@ -31,7 +31,7 @@ export interface ModelConfig {
 }
 
 export type ModelId = 
-  | 'moonshotai/kimi-k2'
+  | 'moonshotai/kimi-k2-thinking'
   | 'alibaba/tongyi-deepresearch-30b-a3b'
   | 'openai/gpt-4o-mini'
   | 'anthropic/claude-3-5-sonnet'
@@ -41,8 +41,8 @@ export type ModelId =
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const MODEL_REGISTRY: Record<string, ModelConfig> = {
-  'moonshotai/kimi-k2': {
-    id: 'moonshotai/kimi-k2',
+  'moonshotai/kimi-k2-thinking': {
+    id: 'moonshotai/kimi-k2-thinking',
     name: 'Kimi K2 Thinking',
     provider: 'Moonshot AI',
     description: 'Modelo de razonamiento avanzado con capacidades de pensamiento profundo y tool calling',
@@ -113,7 +113,7 @@ export const MODEL_REGISTRY: Record<string, ModelConfig> = {
 
 // Modelos recomendados para investigación legal
 export const RESEARCH_MODELS = [
-  'moonshotai/kimi-k2',
+  'moonshotai/kimi-k2-thinking',
   'alibaba/tongyi-deepresearch-30b-a3b'
 ] as const
 

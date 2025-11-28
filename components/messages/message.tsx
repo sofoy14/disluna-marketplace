@@ -42,6 +42,7 @@ interface MessageProps {
   message: Tables<"messages">
   fileItems: Tables<"file_items">[]
   bibliography?: BibliographyItem[]
+  thinking?: string  // Proceso de razonamiento del agente
   isEditing: boolean
   isLast: boolean
   onStartEdit: (message: Tables<"messages">) => void
@@ -53,6 +54,7 @@ export const Message: FC<MessageProps> = ({
   message,
   fileItems,
   bibliography,
+  thinking,
   isEditing,
   isLast,
   onStartEdit,
@@ -379,8 +381,16 @@ export const Message: FC<MessageProps> = ({
         onRegenerate={message.role === "assistant" && isLast ? handleRegenerate : undefined}
       >
         <div className="space-y-3">
-          {/* Thinking Process (Native) */}
-          {processedContent && processedContent.thinking && (
+          {/* Thinking Process (Streaming real desde props) */}
+          {thinking && (
+            <ThinkingProcess
+              content={thinking}
+              isStreaming={isGenerating && isLast && message.role === "assistant"}
+            />
+          )}
+          
+          {/* Thinking Process (Native - parseado del contenido) */}
+          {!thinking && processedContent && processedContent.thinking && (
             <ThinkingProcess
               content={processedContent.thinking}
               isStreaming={isGenerating && isLast && message.role === "assistant"}
