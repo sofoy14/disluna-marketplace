@@ -120,7 +120,7 @@ export default function OnboardingPage() {
       // Get user profile to check onboarding step
       const { data: profile } = await supabase
         .from('profiles')
-        .select('onboarding_step, email_verified, onboarding_completed, display_name, username')
+        .select('onboarding_step, email_verified, onboarding_completed, display_name, username, has_onboarded')
         .eq('user_id', user.id)
         .single();
 
@@ -153,7 +153,11 @@ export default function OnboardingPage() {
       }
 
       // Set current step based on profile data
-      if (profile?.onboarding_step === 'plan_selection' || profile?.display_name) {
+      // Skip to plan_selection if:
+      // - onboarding_step is already plan_selection
+      // - user has display_name set (profile already configured)
+      // - user has completed setup (has_onboarded is true)
+      if (profile?.onboarding_step === 'plan_selection' || profile?.display_name || profile?.has_onboarded) {
         setCurrentStep('plan_selection');
       }
     } catch (error) {

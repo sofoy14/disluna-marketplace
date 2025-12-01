@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     // Check if user has a profile (indicates if they're new or existing)
     const { data: profile } = await supabase
       .from('profiles')
-      .select('onboarding_completed, onboarding_step, email_verified')
+      .select('onboarding_completed, onboarding_step, email_verified, display_name, has_onboarded')
       .eq('user_id', user.id)
       .single()
 
@@ -72,19 +72,27 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, requestUrl.origin))
     }
 
-    // 2. If user has no active subscription, always go to onboarding (which includes plan selection)
-    // This ensures users must choose a plan before accessing the chat
+    // 2. If user has no active subscription, check if they need profile setup first
     if (!subscription) {
-      // Update onboarding step if needed
-      const newStep = profile?.display_name ? 'plan_selection' : 'profile_setup'
-      
-      if (!profile?.onboarding_step || profile.onboarding_step !== newStep) {
+      // Mark email as verified since they came from OAuth/email confirmation
+      if (!profile?.email_verified) {
         await supabase
           .from('profiles')
-          .update({ 
-            onboarding_step: newStep,
-            email_verified: true // Mark as verified since they came from OAuth/email confirmation
-          })
+          .update({ email_verified: true })
+          .eq('user_id', user.id)
+      }
+
+      // If user has no display_name or hasn't completed setup, send to /setup first
+      if (!profile?.display_name && !profile?.has_onboarded) {
+        return NextResponse.redirect(new URL('/setup', requestUrl.origin))
+      }
+
+      // User has profile but no subscription - send to onboarding for plan selection
+      // Update onboarding step to plan_selection
+      if (profile?.onboarding_step !== 'plan_selection') {
+        await supabase
+          .from('profiles')
+          .update({ onboarding_step: 'plan_selection' })
           .eq('user_id', user.id)
       }
       return NextResponse.redirect(new URL('/onboarding', requestUrl.origin))

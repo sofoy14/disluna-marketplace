@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
     const user = session.data.session?.user
 
     // Rutas públicas (con o sin prefijo de locale)
-    const publicSegments = ['login', 'auth/verify-email', 'onboarding', 'debug-auth', 'test-signup', 'billing']
+    const publicSegments = ['login', 'auth/verify-email', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'billing']
     const pathname = request.nextUrl.pathname
     const isPublicRoute = publicSegments.some(seg => pathname === `/${seg}` || pathname.includes(`/${seg}`))
 
@@ -93,10 +93,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // Redirigir al chat si está en la raíz
-    const redirectToChat = session && request.nextUrl.pathname === "/"
+    const isRootPath = request.nextUrl.pathname === "/" || request.nextUrl.pathname === ""
 
-    if (redirectToChat) {
-      const { data: homeWorkspace, error } = await supabase
+    if (session && isRootPath) {
+      const { data: homeWorkspace } = await supabase
         .from("workspaces")
         .select("*")
         .eq("user_id", session.data.session?.user.id)
@@ -104,34 +104,18 @@ export async function middleware(request: NextRequest) {
         .single()
 
       if (!homeWorkspace) {
-        // Si es admin y no tiene workspace, crear uno automáticamente
-        if (isAdmin(user.email)) {
-          const { data: newWorkspace, error: createError } = await supabase
-            .from("workspaces")
-            .insert({
-              user_id: user.id,
-              is_home: true,
-              name: "Home",
-              default_context_length: 4096,
-              default_model: "gpt-4-turbo-preview",
-              default_prompt: "You are a friendly, helpful AI assistant.",
-              default_temperature: 0.5,
-              description: "My home workspace.",
-              embeddings_provider: "openai",
-              include_profile_context: true,
-              include_workspace_instructions: true,
-              instructions: ""
-            })
-            .select()
-            .single()
+        // Sin workspace - ir a onboarding
+        return NextResponse.redirect(new URL('/onboarding', request.url))
+      }
 
-          if (newWorkspace && !createError) {
-            return NextResponse.redirect(
-              new URL(`/${newWorkspace.id}/chat`, request.url)
-            )
-          }
+      // Verificar suscripción (excepto admins)
+      if (!isAdmin(user.email) && isBillingEnabled()) {
+        const subscriptionStatus = await checkSubscriptionInMiddleware(supabase, user.id)
+        
+        if (!subscriptionStatus.hasAccess) {
+          // Sin suscripción - ir a onboarding para seleccionar plan
+          return NextResponse.redirect(new URL('/onboarding', request.url))
         }
-        throw new Error(error?.message)
       }
 
       return NextResponse.redirect(
@@ -200,5 +184,5 @@ async function checkSubscriptionInMiddleware(
 }
 
 export const config = {
-  matcher: "/((?!api|static|.*\\..*|_next|auth|onboarding|debug-auth|test-signup|billing).*)"
+  matcher: "/((?!api|static|.*\\..*|_next|auth|onboarding|setup|debug-auth|test-signup|billing).*)"
 }

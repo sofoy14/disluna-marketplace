@@ -34,7 +34,20 @@ export default async function Login({
   const session = (await supabase.auth.getSession()).data.session
 
   if (session) {
-    const { data: homeWorkspace, error } = await supabase
+    // Get user profile to check setup status
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("display_name, has_onboarded")
+      .eq("user_id", session.user.id)
+      .single()
+
+    // If user hasn't set up their profile, redirect to setup
+    if (!profile?.display_name && !profile?.has_onboarded) {
+      return redirect('/setup')
+    }
+
+    // Get user's home workspace
+    const { data: homeWorkspace } = await supabase
       .from("workspaces")
       .select("*")
       .eq("user_id", session.user.id)
@@ -42,9 +55,24 @@ export default async function Login({
       .single()
 
     if (!homeWorkspace) {
-      throw new Error(error.message)
+      // User doesn't have a workspace yet - redirect to setup
+      return redirect('/setup')
     }
 
+    // Check for active subscription
+    const { data: subscription } = await supabase
+      .from("subscriptions")
+      .select("id, status")
+      .eq("user_id", session.user.id)
+      .in("status", ["active", "trialing"])
+      .single()
+
+    if (!subscription) {
+      // No active subscription - redirect to onboarding for plan selection
+      return redirect('/onboarding')
+    }
+
+    // User has workspace and subscription - go to chat
     return redirect(`/${homeWorkspace.id}/chat`)
   }
 
@@ -65,7 +93,8 @@ export default async function Login({
       return redirect(`/login?message=${error.message}`)
     }
 
-    const { data: homeWorkspace, error: homeWorkspaceError } = await supabase
+    // Get workspace
+    const { data: homeWorkspace } = await supabase
       .from("workspaces")
       .select("*")
       .eq("user_id", data.user.id)
@@ -73,11 +102,24 @@ export default async function Login({
       .single()
 
     if (!homeWorkspace) {
-      throw new Error(
-        homeWorkspaceError?.message || "An unexpected error occurred"
-      )
+      // No workspace - go to onboarding
+      return redirect('/onboarding')
     }
 
+    // Check for active subscription
+    const { data: subscription } = await supabase
+      .from("subscriptions")
+      .select("id, status")
+      .eq("user_id", data.user.id)
+      .in("status", ["active", "trialing"])
+      .single()
+
+    if (!subscription) {
+      // No subscription - go to onboarding for plan selection
+      return redirect('/onboarding')
+    }
+
+    // All good - go to chat
     return redirect(`/${homeWorkspace.id}/chat`)
   }
 
