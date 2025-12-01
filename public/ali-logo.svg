@@ -1,4 +1,79 @@
-<svg width="200" height="80" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
-  <rect width="200" height="80" fill="#000000"/>
-  <text x="100" y="50" font-family="Arial, sans-serif" font-size="32" font-weight="bold" text-anchor="middle" dominant-baseline="middle" fill="#8B5CF6">ALI</text>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradiente radial para el fondo de la esfera -->
+    <radialGradient id="sphereGradient" cx="50%" cy="50%" r="50%" fx="35%" fy="35%">
+      <stop offset="0%" stop-color="#0a1628"/>
+      <stop offset="40%" stop-color="#050d1a"/>
+      <stop offset="100%" stop-color="#020408"/>
+    </radialGradient>
+    
+    <!-- Gradiente para el brillo azul/cyan superior derecho -->
+    <radialGradient id="blueGlow" cx="65%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#4dd0e1" stop-opacity="0.8"/>
+      <stop offset="30%" stop-color="#00bcd4" stop-opacity="0.5"/>
+      <stop offset="60%" stop-color="#0097a7" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#006064" stop-opacity="0"/>
+    </radialGradient>
+    
+    <!-- Gradiente para el brillo púrpura inferior izquierdo -->
+    <radialGradient id="purpleGlow" cx="25%" cy="75%" r="50%">
+      <stop offset="0%" stop-color="#f472b6" stop-opacity="0.9"/>
+      <stop offset="25%" stop-color="#e040fb" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#9c27b0" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#7b1fa2" stop-opacity="0"/>
+    </radialGradient>
+    
+    <!-- Gradiente para el reflejo interno azul -->
+    <radialGradient id="innerBlueGlow" cx="55%" cy="45%" r="40%">
+      <stop offset="0%" stop-color="#26c6da" stop-opacity="0.4"/>
+      <stop offset="50%" stop-color="#0097a7" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#00838f" stop-opacity="0"/>
+    </radialGradient>
+    
+    <!-- Filtro de desenfoque para los brillos -->
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Filtro más fuerte para el brillo exterior -->
+    <filter id="strongGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Sombra para el texto -->
+    <filter id="textGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Círculo base (esfera oscura) -->
+  <circle cx="100" cy="100" r="95" fill="url(#sphereGradient)"/>
+  
+  <!-- Capa de brillo azul principal -->
+  <ellipse cx="130" cy="70" rx="70" ry="55" fill="url(#blueGlow)" filter="url(#strongGlow)"/>
+  
+  <!-- Reflejo interno azul más suave -->
+  <ellipse cx="110" cy="95" rx="50" ry="40" fill="url(#innerBlueGlow)" filter="url(#glow)"/>
+  
+  <!-- Capa de brillo púrpura principal -->
+  <ellipse cx="60" cy="140" rx="65" ry="50" fill="url(#purpleGlow)" filter="url(#strongGlow)"/>
+  
+  <!-- Borde sutil de la esfera -->
+  <circle cx="100" cy="100" r="94" fill="none" stroke="#1a3a5c" stroke-width="1" stroke-opacity="0.3"/>
+  
+  <!-- Texto ALI -->
+  <text x="100" y="108" font-family="Arial, Helvetica, sans-serif" font-size="48" font-weight="bold" text-anchor="middle" dominant-baseline="middle" fill="#a855f7" filter="url(#textGlow)">ALI</text>
 </svg>
