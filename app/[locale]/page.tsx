@@ -13,18 +13,6 @@ export default async function HomePage() {
     redirect("/landing")
   }
 
-  // Verificar perfil del usuario
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("display_name, has_onboarded")
-    .eq("user_id", session.user.id)
-    .single()
-
-  // Si no tiene perfil configurado, ir a setup
-  if (!profile?.display_name && !profile?.has_onboarded) {
-    redirect("/setup")
-  }
-
   // Usuario autenticado - verificar workspace y suscripción
   const { data: homeWorkspace } = await supabase
     .from("workspaces")
@@ -34,8 +22,8 @@ export default async function HomePage() {
     .single()
 
   if (!homeWorkspace) {
-    // Sin workspace - ir a setup
-    redirect("/setup")
+    // Sin workspace - ir a onboarding
+    redirect("/onboarding")
   }
 
   // Verificar suscripción activa

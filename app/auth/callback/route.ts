@@ -7,8 +7,14 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code")
   const next = requestUrl.searchParams.get("next")
 
+  // Create the response object early so we can add cookies to it
+  const response = NextResponse.redirect(new URL('/onboarding', requestUrl.origin))
+  
   if (code) {
     const cookieStore = cookies()
+    
+    // Track cookies that need to be set in the response
+    const cookiesToSet: { name: string; value: string; options: CookieOptions }[] = []
     
     // Use anon key for auth callback to properly set session cookies
     const supabase = createServerClient(
@@ -20,6 +26,8 @@ export async function GET(request: Request) {
             return cookieStore.get(name)?.value
           },
           set(name: string, value: string, options: CookieOptions) {
+            // Store cookies to set them on the response
+            cookiesToSet.push({ name, value, options })
             try {
               cookieStore.set({ name, value, ...options })
             } catch (error) {
@@ -27,6 +35,8 @@ export async function GET(request: Request) {
             }
           },
           remove(name: string, options: CookieOptions) {
+            // Store cookie removal as empty value
+            cookiesToSet.push({ name, value: '', options: { ...options, maxAge: 0 } })
             try {
               cookieStore.delete(name)
             } catch (error) {
@@ -50,7 +60,22 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/login?message=Error de autenticación', requestUrl.origin))
     }
 
-    // Check if user has a profile (indicates if they're new or existing)
+    // Apply all cookies to the response before returning
+    const applyAuthCookies = (targetResponse: NextResponse) => {
+      cookiesToSet.forEach(({ name, value, options }) => {
+        targetResponse.cookies.set(name, value, {
+          path: options.path || '/',
+          maxAge: options.maxAge,
+          domain: options.domain,
+          secure: options.secure,
+          httpOnly: options.httpOnly,
+          sameSite: options.sameSite as 'lax' | 'strict' | 'none' | undefined
+        })
+      })
+      return targetResponse
+    }
+
+    // Check if user has a profile
     const { data: profile } = await supabase
       .from('profiles')
       .select('onboarding_completed, onboarding_step, email_verified, display_name, has_onboarded')
@@ -67,10 +92,10 @@ export async function GET(request: Request) {
 
     // If there's a specific next URL (like password reset), redirect there
     if (next) {
-      return NextResponse.redirect(new URL(next, requestUrl.origin))
+      return applyAuthCookies(NextResponse.redirect(new URL(next, requestUrl.origin)))
     }
 
-    // Mark email as verified for OAuth users (their email is already verified by the provider)
+    // Mark email as verified for OAuth users
     if (user.email_confirmed_at && profile && !profile.email_verified) {
       await supabase
         .from('profiles')
@@ -78,7 +103,7 @@ export async function GET(request: Request) {
         .eq('user_id', user.id)
     }
 
-    // Check for active subscription first
+    // Check for active subscription
     const { data: subscription } = await supabase
       .from('subscriptions')
       .select('id, status')
@@ -86,54 +111,31 @@ export async function GET(request: Request) {
       .in('status', ['active', 'trialing'])
       .single()
 
-    // Determine where to redirect the user
     // 1. If user has an active subscription, go to chat
     if (subscription && homeWorkspace) {
-      // Ensure onboarding is marked complete
       if (!profile?.onboarding_completed) {
         await supabase
           .from('profiles')
           .update({ onboarding_completed: true, onboarding_step: 'completed' })
           .eq('user_id', user.id)
       }
-      return NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, requestUrl.origin))
+      return applyAuthCookies(NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, requestUrl.origin)))
     }
 
-    // 2. If user has no active subscription, check if they need profile setup first
-    if (!subscription) {
-      // Mark email as verified since they came from OAuth/email confirmation
-      if (!profile?.email_verified) {
-        await supabase
-          .from('profiles')
-          .update({ email_verified: true })
-          .eq('user_id', user.id)
-      }
-
-      // If user has no display_name or hasn't completed setup, send to /setup first
-      if (!profile?.display_name && !profile?.has_onboarded) {
-        return NextResponse.redirect(new URL('/setup', requestUrl.origin))
-      }
-
-      // User has profile but no subscription - send to onboarding for plan selection
-      // Update onboarding step to plan_selection
-      if (profile?.onboarding_step !== 'plan_selection') {
-        await supabase
-          .from('profiles')
-          .update({ onboarding_step: 'plan_selection' })
-          .eq('user_id', user.id)
-      }
-      return NextResponse.redirect(new URL('/onboarding', requestUrl.origin))
-    }
-
-    // 3. Fallback: If we have a workspace, go to chat, otherwise onboarding
-    if (homeWorkspace) {
-      return NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, requestUrl.origin))
-    } else {
-      return NextResponse.redirect(new URL('/onboarding', requestUrl.origin))
-    }
+    // 2. No subscription - redirect to onboarding for plan selection
+    // Update onboarding step and email verified
+    await supabase
+      .from('profiles')
+      .update({ 
+        email_verified: true,
+        onboarding_step: 'plan_selection'
+      })
+      .eq('user_id', user.id)
+    
+    return applyAuthCookies(NextResponse.redirect(new URL('/onboarding', requestUrl.origin)))
   }
 
-  // No code provided - redirect based on next param or to home
+  // No code provided - redirect to home
   if (next) {
     return NextResponse.redirect(new URL(next, requestUrl.origin))
   } else {

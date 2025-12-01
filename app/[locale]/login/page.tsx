@@ -34,18 +34,6 @@ export default async function Login({
   const session = (await supabase.auth.getSession()).data.session
 
   if (session) {
-    // Get user profile to check setup status
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("display_name, has_onboarded")
-      .eq("user_id", session.user.id)
-      .single()
-
-    // If user hasn't set up their profile, redirect to setup
-    if (!profile?.display_name && !profile?.has_onboarded) {
-      return redirect('/setup')
-    }
-
     // Get user's home workspace
     const { data: homeWorkspace } = await supabase
       .from("workspaces")
@@ -55,8 +43,8 @@ export default async function Login({
       .single()
 
     if (!homeWorkspace) {
-      // User doesn't have a workspace yet - redirect to setup
-      return redirect('/setup')
+      // No workspace - redirect to onboarding
+      return redirect('/onboarding')
     }
 
     // Check for active subscription

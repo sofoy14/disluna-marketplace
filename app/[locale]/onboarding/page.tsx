@@ -34,7 +34,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type OnboardingStep = 'profile_setup' | 'plan_selection';
+type OnboardingStep = 'loading' | 'profile_setup' | 'plan_selection';
 
 interface Plan {
   id: string;
@@ -62,7 +62,7 @@ interface SpecialOffer {
 }
 
 export default function OnboardingPage() {
-  const [currentStep, setCurrentStep] = useState<OnboardingStep>('profile_setup');
+  const [currentStep, setCurrentStep] = useState<OnboardingStep>('loading');
   const [isLoading, setIsLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -85,16 +85,16 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   useEffect(() => {
-    checkOnboardingStatus();
-    fetchPlansAndOffers();
+    initializePage();
   }, []);
 
-  const checkOnboardingStatus = async () => {
+  const initializePage = async () => {
     try {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
       
-      if (!user) {
+      if (userError || !user) {
+        console.log('No user found, redirecting to login');
         router.push('/login');
         return;
       }
@@ -117,7 +117,7 @@ export default function OnboardingPage() {
         setWorkspaceId(workspace.id);
       }
 
-      // Get user profile to check onboarding step
+      // Get user profile
       const { data: profile } = await supabase
         .from('profiles')
         .select('onboarding_step, email_verified, onboarding_completed, display_name, username, has_onboarded')
@@ -128,18 +128,18 @@ export default function OnboardingPage() {
       const { data: subscription } = await supabase
         .from('subscriptions')
         .select('id, status')
-        .eq('workspace_id', workspace?.id)
-        .eq('status', 'active')
+        .eq('user_id', user.id)
+        .in('status', ['active', 'trialing'])
         .single();
 
-      if (subscription) {
-        // User has active subscription, mark onboarding complete and go to chat
+      if (subscription && workspace) {
+        // User has active subscription, go to chat
         await supabase
           .from('profiles')
           .update({ onboarding_completed: true, onboarding_step: 'completed' })
           .eq('user_id', user.id);
         
-        router.push(`/${workspace?.id}/chat`);
+        router.push(`/${workspace.id}/chat`);
         return;
       }
 
@@ -152,18 +152,22 @@ export default function OnboardingPage() {
         }));
       }
 
-      // Set current step based on profile data
-      // Skip to plan_selection if:
-      // - onboarding_step is already plan_selection
-      // - user has display_name set (profile already configured)
-      // - user has completed setup (has_onboarded is true)
-      if (profile?.onboarding_step === 'plan_selection' || profile?.display_name || profile?.has_onboarded) {
+      // Fetch plans
+      await fetchPlansAndOffers();
+
+      // Determine which step to show
+      // If user has display_name (from OAuth or previous setup), go to plan selection
+      if (profile?.display_name || profile?.has_onboarded || profile?.onboarding_step === 'plan_selection') {
         setCurrentStep('plan_selection');
+      } else {
+        setCurrentStep('profile_setup');
       }
-    } catch (error) {
-      console.error('Error checking onboarding status:', error);
-    } finally {
+      
       setPageLoading(false);
+    } catch (error) {
+      console.error('Error initializing onboarding:', error);
+      setPageLoading(false);
+      setCurrentStep('profile_setup');
     }
   };
 
@@ -209,153 +213,94 @@ export default function OnboardingPage() {
         .update({
           display_name: profileData.display_name,
           username: profileData.username,
-          onboarding_step: 'plan_selection'
+          onboarding_step: 'plan_selection',
+          has_onboarded: true
         })
         .eq('user_id', user.id);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       setCurrentStep('plan_selection');
-
-    } catch (error) {
-      setMessage({
-        type: 'error',
-        text: error instanceof Error ? error.message : 'Error actualizando perfil'
-      });
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || 'Error al guardar el perfil' });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSubscribe = async (planId: string) => {
-    if (!workspaceId) {
-      setMessage({ type: 'error', text: 'Error: No se encontró el workspace' });
-      return;
-    }
-
     setProcessingPlanId(planId);
+    setMessage(null);
 
     try {
       const response = await fetch('/api/billing/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan_id: planId,
-          workspace_id: workspaceId
-        })
+        body: JSON.stringify({ plan_id: planId })
       });
 
-      const result = await response.json();
+      const data = await response.json();
 
-      if (!result.success) {
-        throw new Error(result.error || 'Error al iniciar suscripción');
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al procesar la suscripción');
       }
 
-      // Create form and redirect to Wompi
-      const form = document.createElement('form');
-      form.method = 'GET';
-      form.action = result.data.checkout_url;
+      // Redirect to Wompi checkout
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      } else if (data.wompiData) {
+        // Create form and submit to Wompi
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = data.wompiData.checkoutUrl;
+        
+        Object.entries(data.wompiData).forEach(([key, value]) => {
+          if (key !== 'checkoutUrl' && value) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = String(value);
+            form.appendChild(input);
+          }
+        });
 
-      Object.entries(result.data.checkout_data).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value as string;
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-
-    } catch (error) {
-      console.error('Error initiating subscription:', error);
-      setMessage({
-        type: 'error',
-        text: error instanceof Error ? error.message : 'Error al procesar el pago'
-      });
-    } finally {
+        document.body.appendChild(form);
+        form.submit();
+      }
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || 'Error al procesar el pago' });
       setProcessingPlanId(null);
     }
   };
 
+  // Helper functions for plans
   const formatPrice = (amountInCents: number) => {
     return new Intl.NumberFormat('es-CO', {
-      style: 'decimal',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amountInCents / 100);
   };
 
-  // Get plans by type and billing period
-  const getPlan = (planType: 'pro' | 'basic', billingPeriod: 'monthly' | 'yearly') => {
-    return plans.find(p => p.plan_type === planType && p.billing_period === billingPeriod);
+  const currentBillingPeriod = isYearly ? 'yearly' : 'monthly';
+  
+  const getPlan = (type: 'basic' | 'pro', period: 'monthly' | 'yearly') => {
+    return plans.find(p => p.plan_type === type && p.billing_period === period);
   };
 
-  // Get special offer for a plan
   const getOfferForPlan = (planId: string) => {
     return specialOffers.find(o => o.plan_id === planId);
   };
 
-  const currentBillingPeriod = isYearly ? 'yearly' : 'monthly';
-  
   const professionalPlan = getPlan('pro', currentBillingPeriod);
   const studentPlan = getPlan('basic', currentBillingPeriod);
-  
   const professionalOffer = professionalPlan ? getOfferForPlan(professionalPlan.id) : null;
 
-  // Calculate monthly equivalent for yearly plans
   const getMonthlyEquivalent = (yearlyAmount: number) => {
     return Math.round(yearlyAmount / 12);
   };
 
-  const renderStepIndicator = () => {
-    const steps = [
-      { key: 'profile_setup', label: 'Perfil', icon: User },
-      { key: 'plan_selection', label: 'Plan', icon: CreditCard }
-    ];
-
-    return (
-      <div className="flex items-center justify-center space-x-4 mb-8">
-        {steps.map((step, index) => {
-          const Icon = step.icon;
-          const isActive = step.key === currentStep;
-          const isCompleted = steps.findIndex(s => s.key === currentStep) > index;
-          
-          return (
-            <div key={step.key} className="flex items-center">
-              <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors ${
-                isActive 
-                  ? 'border-violet-600 bg-violet-600 text-white' 
-                  : isCompleted 
-                    ? 'border-emerald-600 bg-emerald-600 text-white'
-                    : 'border-slate-300 bg-white text-slate-400'
-              }`}>
-                {isCompleted ? (
-                  <CheckCircle className="w-5 h-5" />
-                ) : (
-                  <Icon className="w-5 h-5" />
-                )}
-              </div>
-              <span className={`ml-2 text-sm font-medium hidden sm:inline ${
-                isActive ? 'text-violet-600' : isCompleted ? 'text-emerald-600' : 'text-slate-400'
-              }`}>
-                {step.label}
-              </span>
-              {index < steps.length - 1 && (
-                <div className={`w-12 h-0.5 mx-4 ${
-                  isCompleted ? 'bg-emerald-600' : 'bg-slate-200'
-                }`} />
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
-
-  if (pageLoading) {
+  // Loading state
+  if (pageLoading || currentStep === 'loading') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 flex items-center justify-center">
         <div className="text-center">
@@ -387,12 +332,50 @@ export default function OnboardingPage() {
               Bienvenido a tu <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Asistente Legal</span>
             </h1>
             <p className="text-slate-400">
-              Configuremos tu cuenta en unos simples pasos
+              {currentStep === 'profile_setup' ? 'Configura tu perfil para comenzar' : 'Selecciona el plan que mejor se ajuste a ti'}
             </p>
           </motion.div>
         </div>
 
-        {renderStepIndicator()}
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center space-x-4 mb-8">
+          {[
+            { key: 'profile_setup', label: 'Perfil', icon: User },
+            { key: 'plan_selection', label: 'Plan', icon: CreditCard }
+          ].map((step, index) => {
+            const Icon = step.icon;
+            const isActive = step.key === currentStep;
+            const isCompleted = currentStep === 'plan_selection' && step.key === 'profile_setup';
+            
+            return (
+              <div key={step.key} className="flex items-center">
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors ${
+                  isActive 
+                    ? 'border-violet-500 bg-violet-500 text-white' 
+                    : isCompleted 
+                      ? 'border-emerald-500 bg-emerald-500 text-white'
+                      : 'border-slate-600 bg-slate-800 text-slate-400'
+                }`}>
+                  {isCompleted ? (
+                    <CheckCircle className="w-5 h-5" />
+                  ) : (
+                    <Icon className="w-5 h-5" />
+                  )}
+                </div>
+                <span className={`ml-2 text-sm font-medium hidden sm:inline ${
+                  isActive ? 'text-violet-400' : isCompleted ? 'text-emerald-400' : 'text-slate-500'
+                }`}>
+                  {step.label}
+                </span>
+                {index < 1 && (
+                  <div className={`w-12 h-0.5 mx-4 ${
+                    isCompleted ? 'bg-emerald-500' : 'bg-slate-700'
+                  }`} />
+                )}
+              </div>
+            );
+          })}
+        </div>
 
         {message && (
           <Alert className={`mb-6 ${
@@ -458,7 +441,7 @@ export default function OnboardingPage() {
                     <Button 
                       type="submit" 
                       className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white shadow-lg shadow-violet-500/25" 
-                      disabled={isLoading}
+                      disabled={isLoading || !profileData.display_name || !profileData.username}
                     >
                       {isLoading ? (
                         <>
@@ -493,12 +476,6 @@ export default function OnboardingPage() {
                   <Sparkles className="w-3 h-3 mr-1" />
                   Elige tu plan
                 </Badge>
-                <h2 className="text-2xl font-bold text-white">
-                  Selecciona el plan que mejor se ajuste a ti
-                </h2>
-                <p className="text-slate-400 mt-2">
-                  Sin compromisos, cancela cuando quieras
-                </p>
               </div>
 
               {/* Billing Period Toggle */}
@@ -564,12 +541,8 @@ export default function OnboardingPage() {
                           {!isYearly && professionalOffer ? (
                             <div className="space-y-1">
                               <div className="flex items-baseline justify-center gap-2">
-                                <span className="text-4xl font-bold text-white">
-                                  $3.960
-                                </span>
-                                <span className="text-lg text-slate-500 line-through">
-                                  ${formatPrice(professionalPlan.amount_in_cents)}
-                                </span>
+                                <span className="text-4xl font-bold text-white">$3.960</span>
+                                <span className="text-lg text-slate-500 line-through">${formatPrice(professionalPlan.amount_in_cents)}</span>
                               </div>
                               <p className="text-sm text-emerald-400">COP primer mes</p>
                               <p className="text-xs text-slate-500">Luego ${formatPrice(professionalPlan.amount_in_cents)} COP/mes</p>
@@ -577,13 +550,9 @@ export default function OnboardingPage() {
                           ) : (
                             <div>
                               <div className="flex items-baseline justify-center gap-1">
-                                <span className="text-4xl font-bold text-white">
-                                  ${formatPrice(professionalPlan.amount_in_cents)}
-                                </span>
+                                <span className="text-4xl font-bold text-white">${formatPrice(professionalPlan.amount_in_cents)}</span>
                               </div>
-                              <p className="text-sm text-slate-400">
-                                COP / {isYearly ? 'año' : 'mes'}
-                              </p>
+                              <p className="text-sm text-slate-400">COP / {isYearly ? 'año' : 'mes'}</p>
                               {isYearly && (
                                 <p className="text-xs text-emerald-400 mt-1">
                                   Equivale a ${formatPrice(getMonthlyEquivalent(professionalPlan.amount_in_cents))} COP/mes
@@ -694,13 +663,9 @@ export default function OnboardingPage() {
                         
                         <div className="mt-4">
                           <div className="flex items-baseline justify-center gap-1">
-                            <span className="text-4xl font-bold text-white">
-                              ${formatPrice(studentPlan.amount_in_cents)}
-                            </span>
+                            <span className="text-4xl font-bold text-white">${formatPrice(studentPlan.amount_in_cents)}</span>
                           </div>
-                          <p className="text-sm text-slate-400">
-                            COP / {isYearly ? 'año' : 'mes'}
-                          </p>
+                          <p className="text-sm text-slate-400">COP / {isYearly ? 'año' : 'mes'}</p>
                           {isYearly && (
                             <p className="text-xs text-emerald-400 mt-1">
                               Equivale a ${formatPrice(getMonthlyEquivalent(studentPlan.amount_in_cents))} COP/mes
@@ -789,18 +754,6 @@ export default function OnboardingPage() {
                     </Card>
                   </motion.div>
                 )}
-              </div>
-
-              {/* Back button */}
-              <div className="text-center mt-6">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setCurrentStep('profile_setup')}
-                  className="text-slate-400 hover:text-white hover:bg-slate-800"
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  Volver al perfil
-                </Button>
               </div>
 
               {/* Trust badges */}
