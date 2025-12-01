@@ -193,7 +193,7 @@ export const useChatHandler = () => {
       // })
     }
 
-    // Navegar a la ruta del chat (siempre navegar para refrescar)
+    // Navegar a la ruta del chat
     return router.push(`/${selectedWorkspace.id}/chat`)
   }
 
@@ -205,6 +205,10 @@ export const useChatHandler = () => {
     if (abortController) {
       abortController.abort()
     }
+    // Resetear estado inmediatamente al presionar Stop
+    setIsGenerating(false)
+    setFirstTokenReceived(false)
+    setToolInUse("none")
   }
 
   const handleSendMessage = async (
@@ -215,12 +219,6 @@ export const useChatHandler = () => {
     const startingInput = messageContent
 
     try {
-      console.log('handleSendMessage iniciado')
-      console.log('messageContent:', messageContent)
-      console.log('chatSettings:', chatSettings)
-      console.log('profile:', profile)
-      console.log('selectedWorkspace:', selectedWorkspace)
-      
       setUserInput("")
       setIsGenerating(true)
       setIsPromptPickerOpen(false)
@@ -229,6 +227,22 @@ export const useChatHandler = () => {
 
       const newAbortController = new AbortController()
       setAbortController(newAbortController)
+
+      // Crear chatSettings por defecto si es null
+      const effectiveChatSettings = chatSettings || {
+        model: "alibaba/tongyi-deepresearch-30b-a3b" as LLMID,
+        prompt: "Eres un asistente legal inteligente especializado en derecho colombiano.",
+        temperature: 0.3,
+        contextLength: 4096,
+        includeProfileContext: true,
+        includeWorkspaceInstructions: true,
+        embeddingsProvider: "openai" as "openai" | "local"
+      }
+
+      // Si chatSettings era null, actualizarlo en el contexto
+      if (!chatSettings) {
+        setChatSettings(effectiveChatSettings)
+      }
 
       // Usar Tongyi Deep Research 30B A3B por defecto para asegurar funcionalidad
       let modelData = [
@@ -243,7 +257,7 @@ export const useChatHandler = () => {
         ...LLM_LIST,
         ...availableLocalModels,
         ...availableOpenRouterModels
-      ].find(llm => llm.modelId === chatSettings?.model)
+      ].find(llm => llm.modelId === effectiveChatSettings.model)
 
       // Si no se encuentra el modelo, usar Tongyi Deep Research por defecto
       if (!modelData) {
@@ -255,21 +269,15 @@ export const useChatHandler = () => {
           platformLink: "https://openrouter.ai",
           imageInput: false
         }
-        
-        console.log('✅ Usando Tongyi Deep Research por defecto:', modelData)
       }
 
-      console.log('✅ Modelo configurado:', modelData.modelId, '- Proveedor:', modelData.provider)
-
       validateChatSettings(
-        chatSettings,
+        effectiveChatSettings,
         modelData,
         profile,
         selectedWorkspace,
         messageContent
       )
-      
-      console.log('Validación de chat settings pasada')
 
       let currentChat = selectedChat ? { ...selectedChat } : null
 
@@ -287,7 +295,7 @@ export const useChatHandler = () => {
           userInput,
           newMessageFiles,
           chatFiles,
-          chatSettings!.embeddingsProvider,
+          effectiveChatSettings.embeddingsProvider,
           sourceCount
         )
       }
@@ -296,7 +304,7 @@ export const useChatHandler = () => {
         createTempMessages(
           messageContent,
           chatMessages,
-          chatSettings!,
+          effectiveChatSettings,
           b64Images,
           isRegeneration,
           setChatMessages,
@@ -304,7 +312,7 @@ export const useChatHandler = () => {
         )
 
       let payload: ChatPayload = {
-        chatSettings: chatSettings!,
+        chatSettings: effectiveChatSettings,
         workspaceInstructions: selectedWorkspace!.instructions || "",
         chatMessages: isRegeneration
           ? [...chatMessages]
@@ -317,86 +325,41 @@ export const useChatHandler = () => {
       let generatedText = ""
       let bibliography: BibliographyItem[] | undefined
 
-      if (selectedTools.length > 0) {
-        setToolInUse("Tools")
-
-        const formattedMessages = await buildFinalMessages(
+      // Detectar si es un modelo de investigación que debe usar LangChain
+      const modelId = payload.chatSettings.model?.toLowerCase() || ''
+      const isResearchModel = modelId.includes('tongyi') || 
+                              modelId.includes('deepresearch') || 
+                              modelId.includes('alibaba') ||
+                              modelId.includes('kimi') ||
+                              modelId.includes('moonshot')
+      
+      // Usar LangChain Agent para modelos de investigación O si hay tools seleccionadas
+      if (isResearchModel || selectedTools.length > 0) {
+        setToolInUse("thinking")
+        
+        // Usar handleHostedChat que procesa streaming y detecta el modelo automáticamente
+        generatedText = await handleHostedChat(
           payload,
           profile!,
-          chatImages
+          modelData!,
+          tempAssistantChatMessage,
+          isRegeneration,
+          newAbortController,
+          newMessageImages,
+          chatImages,
+          setIsGenerating,
+          setFirstTokenReceived,
+          setChatMessages,
+          setToolInUse
         )
-
-        // Usar siempre LangChain Agent - soporta tool calling nativo
-        const modelId = payload.chatSettings.model?.toLowerCase() || ''
-        const endpoint = "/api/chat/langchain-agent"
         
-        console.log(`🤖 Modelo: ${modelId}`)
-        console.log(`🔗 Usando LangChain Agent: ${endpoint}`)
-        
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            chatSettings: payload.chatSettings,
-            messages: formattedMessages,
-            // RAG condicional: si hay archivos en el chat o mensaje
-            fileIds: [
-              ...new Set([
-                ...newMessageFiles.map(f => f.id).filter(Boolean),
-                ...chatFiles.map(f => f.id).filter(Boolean)
-              ])
-            ]
-          })
-        })
-
         setToolInUse("none")
-
-        // Manejar respuesta del endpoint simple-direct (JSON con bibliografia separada)
-        if (response.ok) {
-          const contentType = response.headers.get("content-type") || ""
-          const isPlainText = contentType.includes("text/plain")
-          
-          if (isPlainText) {
-            // Respuesta de texto plano (legacy)
-            generatedText = await response.text()
-          } else {
-            // Respuesta JSON con bibliografia separada
-            const data = await response.json()
-            generatedText = data.message || "No se pudo generar respuesta"
-            bibliography = Array.isArray(data.bibliography) ? data.bibliography : undefined
-
-            if (bibliography && bibliography.length > 0) {
-              console.log('Bibliografia recibida:', bibliography)
-            }
-          }
-          
-          // Actualizar el mensaje del asistente
-          const updatedMessage = {
-            ...tempAssistantChatMessage,
-            message: {
-              ...tempAssistantChatMessage.message,
-              content: generatedText
-            },
-            bibliography
-          }
-
-          setChatMessages(prev =>
-            prev.map(chatMessage =>
-              chatMessage.message.id === tempAssistantChatMessage.message.id ? updatedMessage : chatMessage
-            )
-          )
-        } else {
-          const errorData = await response.json()
-          generatedText = errorData.message || "Error en el chat"
-        }
       } else {
         if (modelData!.provider === "ollama") {
           generatedText = await handleLocalChat(
             payload,
             profile!,
-            chatSettings!,
+            effectiveChatSettings,
             tempAssistantChatMessage,
             isRegeneration,
             newAbortController,
@@ -425,7 +388,7 @@ export const useChatHandler = () => {
 
       if (!currentChat) {
         currentChat = await handleCreateChat(
-          chatSettings!,
+          effectiveChatSettings,
           profile!,
           selectedWorkspace!,
           messageContent,
@@ -465,14 +428,13 @@ export const useChatHandler = () => {
         selectedAssistant,
         bibliography
       )
-
-      setIsGenerating(false)
-      setFirstTokenReceived(false)
     } catch (error) {
-      console.error('Error en handleSendMessage:', error)
+      setUserInput(startingInput)
+    } finally {
+      // Siempre resetear el estado al final
       setIsGenerating(false)
       setFirstTokenReceived(false)
-      setUserInput(startingInput)
+      setToolInUse("none")
     }
   }
 

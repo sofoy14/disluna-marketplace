@@ -8,6 +8,7 @@ interface ThemePreferences {
   themeMode: 'dark' | 'light'
   customPrimaryColor: string
   selectedPalette: string
+  selectedShader: number
 }
 
 interface ThemeContextType {
@@ -36,7 +37,8 @@ export function ThemePreferencesProvider({ children, profile }: ThemePreferences
   const [themePreferences, setThemePreferencesState] = useState<ThemePreferences>({
     themeMode: (profile?.theme_mode as 'dark' | 'light') || 'dark',
     customPrimaryColor: profile?.custom_primary_color || '#8b5cf6',
-    selectedPalette: profile?.selected_palette || 'purple'
+    selectedPalette: profile?.selected_palette || 'purple',
+    selectedShader: (profile as any)?.selected_shader || 1
   })
 
   // Aplicar colores personalizados
@@ -104,7 +106,8 @@ export function ThemePreferencesProvider({ children, profile }: ThemePreferences
       const newPrefs = {
         themeMode: (profile.theme_mode as 'dark' | 'light') || 'dark',
         customPrimaryColor: profile.custom_primary_color || '#8b5cf6',
-        selectedPalette: profile.selected_palette || 'purple'
+        selectedPalette: profile.selected_palette || 'purple',
+        selectedShader: (profile as any)?.selected_shader || 1
       }
       setThemePreferencesState(newPrefs)
       
@@ -115,6 +118,12 @@ export function ThemePreferencesProvider({ children, profile }: ThemePreferences
       
       // Aplicar color personalizado
       applyCustomColors(newPrefs.customPrimaryColor)
+      
+      // Emitir evento de cambio de shader para componentes que escuchan
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('shaderChanged', { detail: newPrefs.selectedShader }))
+        localStorage.setItem('selectedShader', newPrefs.selectedShader.toString())
+      }
     }
   }, [profile, setTheme, applyCustomColors])
 
@@ -133,6 +142,12 @@ export function ThemePreferencesProvider({ children, profile }: ThemePreferences
     // Aplicar color personalizado
     if (prefs.customPrimaryColor) {
       applyCustomColors(prefs.customPrimaryColor)
+    }
+
+    // Emitir evento de cambio de shader
+    if (prefs.selectedShader !== undefined && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('shaderChanged', { detail: prefs.selectedShader }))
+      localStorage.setItem('selectedShader', prefs.selectedShader.toString())
     }
   }, [applyCustomColors, setTheme])
 

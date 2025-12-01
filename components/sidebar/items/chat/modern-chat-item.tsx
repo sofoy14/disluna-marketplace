@@ -1,14 +1,13 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { ModelIcon } from "@/components/models/model-icon"
 import { WithTooltip } from "@/components/ui/with-tooltip"
 import { ChatbotUIContext } from "@/context/context"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { cn } from "@/lib/utils"
 import { Tables } from "@/supabase/types"
 import { LLM } from "@/types"
-import { IconRobotFace } from "@tabler/icons-react"
+import { IconRobotFace, IconCpu, IconBrain, IconBolt } from "@tabler/icons-react"
 import Image from "next/image"
 import { useParams, useRouter } from "next/navigation"
 import { FC, useContext, useRef, useState } from "react"
@@ -26,6 +25,26 @@ const itemVariants = {
     x: 0,
     transition: { type: 'spring', stiffness: 400, damping: 30 }
   }
+}
+
+// Model ID to friendly name mapping
+const M1_SMALL_MODEL = "liquid/lfm-2.2-6b"
+const M1_MODEL = "alibaba/tongyi-deepresearch-30b-a3b"
+const M1_PRO_MODEL = "moonshotai/kimi-k2-thinking"
+
+type ModelVariant = "small" | "standard" | "pro" | "other"
+
+const getModelDisplayName = (modelId: string | undefined, modelName?: string): { name: string; variant: ModelVariant } => {
+  if (modelId === M1_SMALL_MODEL) return { name: "M1 Small", variant: "small" }
+  if (modelId === M1_MODEL) return { name: "M1", variant: "standard" }
+  if (modelId === M1_PRO_MODEL) return { name: "M1 Pro", variant: "pro" }
+  // Fallback: use shortened model name or provider
+  if (modelName) {
+    // Try to get a short version of the model name
+    const shortName = modelName.split('/').pop()?.split('-')[0] || modelName
+    return { name: shortName.slice(0, 12), variant: "other" }
+  }
+  return { name: "Modelo", variant: "other" }
 }
 
 export const ModernChatItem: FC<ModernChatItemProps> = ({ chat }) => {
@@ -65,6 +84,9 @@ export const ModernChatItem: FC<ModernChatItemProps> = ({ chat }) => {
   const assistantImage = assistantImages.find(
     image => image.assistantId === chat.assistant_id
   )?.base64
+
+  // Get friendly model display name
+  const modelDisplay = getModelDisplayName(chat.model, MODEL_DATA?.modelName)
 
   // Formato relativo de tiempo
   const getRelativeTime = (dateString: string) => {
@@ -141,14 +163,16 @@ export const ModernChatItem: FC<ModernChatItemProps> = ({ chat }) => {
         ) : (
           <WithTooltip
             delayDuration={200}
-            display={<div className="text-xs">{MODEL_DATA?.modelName || 'Modelo'}</div>}
+            display={<div className="text-xs">{modelDisplay.name}</div>}
             trigger={
               <div className="w-5 h-5 flex items-center justify-center">
-                <ModelIcon 
-                  provider={MODEL_DATA?.provider} 
-                  height={20} 
-                  width={20} 
-                />
+                {modelDisplay.variant === "pro" ? (
+                  <IconBrain size={18} className="text-violet-500" />
+                ) : modelDisplay.variant === "small" ? (
+                  <IconBolt size={18} className="text-emerald-500" />
+                ) : (
+                  <IconCpu size={18} className="text-primary" />
+                )}
               </div>
             }
           />
@@ -170,11 +194,27 @@ export const ModernChatItem: FC<ModernChatItemProps> = ({ chat }) => {
           )}>
             {getRelativeTime(chat.updated_at || chat.created_at)}
           </span>
-          {MODEL_DATA?.provider && (
+          {chat.model && (
             <>
               <span className="text-muted-foreground/40">•</span>
-              <span className="text-[11px] text-muted-foreground truncate">
-                {MODEL_DATA.provider}
+              <span className={cn(
+                "inline-flex items-center gap-1 text-[11px] font-medium truncate",
+                modelDisplay.variant === "pro" 
+                  ? "text-violet-500 dark:text-violet-400" 
+                  : modelDisplay.variant === "small"
+                    ? "text-emerald-500 dark:text-emerald-400"
+                    : isActive 
+                      ? "text-primary/80" 
+                      : "text-muted-foreground"
+              )}>
+                {modelDisplay.variant === "pro" ? (
+                  <IconBrain size={11} className="flex-shrink-0" />
+                ) : modelDisplay.variant === "small" ? (
+                  <IconBolt size={11} className="flex-shrink-0" />
+                ) : (
+                  <IconCpu size={11} className="flex-shrink-0" />
+                )}
+                {modelDisplay.name}
               </span>
             </>
           )}

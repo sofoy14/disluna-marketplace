@@ -9,8 +9,7 @@
  * Estructura:
  * - search-tools.ts: Herramientas de búsqueda web
  * - content-tools.ts: Herramientas de extracción de contenido
- * - [futuro] analysis-tools.ts: Herramientas de análisis
- * - [futuro] document-tools.ts: Herramientas de documentos
+ * - article-search-tool.ts: Herramientas especializadas para buscar artículos de leyes
  */
 
 import { StructuredTool } from "@langchain/core/tools"
@@ -30,6 +29,13 @@ import {
   verifySourcesTool
 } from "./content-tools"
 
+// Importar herramientas de búsqueda de artículos (PRIORITARIAS)
+import {
+  articleSearchTools,
+  searchArticleTool,
+  googleSearchDirectTool
+} from "./article-search-tool"
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // TODAS LAS HERRAMIENTAS
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -37,13 +43,17 @@ import {
 /**
  * Array con todas las herramientas disponibles para el agente
  * 
- * Para agregar nuevas herramientas:
- * 1. Crear el archivo de tools (ej: my-tools.ts)
- * 2. Importar las herramientas
- * 3. Agregarlas a este array
+ * ORDEN DE PRIORIDAD:
+ * 1. buscar_articulo_ley - Para consultas de artículos específicos
+ * 2. google_search_directo - Para búsquedas con extracción automática
+ * 3. search_legal_official - Para búsquedas generales en fuentes oficiales
+ * 4. extract_web_content - Para extraer contenido de URLs
+ * 5. Otras herramientas
  */
 export const ALL_TOOLS: StructuredTool[] = [
-  // Herramientas de búsqueda
+  // 🔴 PRIORITARIAS: Herramientas de búsqueda de artículos
+  ...articleSearchTools,
+  // Herramientas de búsqueda general
   ...searchTools,
   // Herramientas de contenido
   ...contentTools
@@ -54,6 +64,7 @@ export const ALL_TOOLS: StructuredTool[] = [
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export const TOOL_CATEGORIES = {
+  article: articleSearchTools,
   search: searchTools,
   content: contentTools
 } as const
@@ -91,6 +102,10 @@ export function getToolByName(name: string): StructuredTool | undefined {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export {
+  // Article search tools (PRIORITY)
+  articleSearchTools,
+  searchArticleTool,
+  googleSearchDirectTool,
   // Search tools
   searchTools,
   searchLegalOfficialTool,

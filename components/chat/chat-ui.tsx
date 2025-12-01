@@ -18,7 +18,6 @@ import { ModelSelectorToggle } from "./model-selector-toggle"
 import { useScroll } from "./chat-hooks/use-scroll"
 import { ChatInput } from "./chat-input"
 import { ChatMessages } from "./chat-messages"
-import { ChatScrollButtons } from "./chat-scroll-buttons"
 import { ChatSecondaryButtons } from "./chat-secondary-buttons"
 
 interface ChatUIProps {}
@@ -50,11 +49,7 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
     messagesEndRef,
     handleScroll,
     scrollToBottom,
-    setIsAtBottom,
-    isAtTop,
-    isAtBottom,
-    isOverflowing,
-    scrollToTop
+    setIsAtBottom
   } = useScroll()
 
   const [loading, setLoading] = useState(true)
@@ -202,23 +197,9 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
   return (
     <div className="flex h-full flex-col bg-gradient-to-br from-background via-background to-primary/20 overflow-hidden">
       {/* Header */}
-      <div className="px-3 md:px-6 py-3 md:py-4 border-b border-border flex items-center justify-between relative">
-        <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1 pl-12 md:pl-0">
-          <span className="text-sm truncate">{selectedChat?.name || "Chat"}</span>
-        </div>
-
+      <div className="px-3 md:px-6 py-3 md:py-4 border-b border-border flex items-center justify-end relative">
         <div className="flex-shrink-0 z-20">
           <ModelSelectorToggle />
-        </div>
-
-        <div className="absolute left-4 top-2.5 flex justify-center z-10">
-          <ChatScrollButtons
-            isAtTop={isAtTop}
-            isAtBottom={isAtBottom}
-            isOverflowing={isOverflowing}
-            scrollToTop={scrollToTop}
-            scrollToBottom={scrollToBottom}
-          />
         </div>
       </div>
 

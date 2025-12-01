@@ -28,10 +28,29 @@ export default function TranscriptionsPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [selectedShader, setSelectedShader] = useState(1)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetchTranscriptions()
+    
+    // Cargar shader guardado
+    if (typeof window !== 'undefined') {
+      const savedShader = localStorage.getItem('selectedShader')
+      if (savedShader) {
+        setSelectedShader(parseInt(savedShader, 10))
+      }
+
+      // Escuchar cambios de shader
+      const handleShaderChanged = (e: CustomEvent<number>) => {
+        setSelectedShader(e.detail)
+      }
+
+      window.addEventListener('shaderChanged', handleShaderChanged as EventListener)
+      return () => {
+        window.removeEventListener('shaderChanged', handleShaderChanged as EventListener)
+      }
+    }
   }, [])
 
   const fetchTranscriptions = async () => {
@@ -195,12 +214,12 @@ export default function TranscriptionsPage() {
                 onDrop={handleDrop}
               >
                 <div className="flex items-center justify-center mx-auto mb-4">
-                  <ShaderCanvas size={80} />
+                  <ShaderCanvas size={80} shaderId={selectedShader} />
                 </div>
                 
                 <h2 className="text-xl font-semibold mb-2 text-foreground">Transcribe a texto tu primer audio</h2>
                 <p className="text-muted-foreground mb-6">
-                  Sube un archivo de audio para transcribirlo a texto. Luego podrás hacerle consultas a Ariel acerca de ese audio.
+                  Sube o arrastra tu archivo de audio aquí para transcribirlo a texto, luego podrás hacerle consultas a el Asistente Legal Inteligente sobre la información de la grabación
                 </p>
 
                 <button
@@ -220,6 +239,14 @@ export default function TranscriptionsPage() {
                     </>
                   )}
                 </button>
+                
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="audio/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
               </div>
             </div>
           </div>

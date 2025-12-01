@@ -42,28 +42,34 @@ const sanitizeEntryLine = (line: string) => line.replace(NUMBER_PREFIX_REGEX, ""
 const looksLikeHeading = (line: string) =>
   HEADING_KEYWORDS.some(keyword => line === keyword || line.startsWith(`${keyword} `))
 
-const looksLikeCitationLine = (line: string) => {
+const looksLikeCitationLine = (line: string, afterBibHeading = false) => {
   const trimmed = line.trim()
   if (!trimmed) return false
 
-  const normalized = normalizeForMatch(trimmed)
-
-  if (URL_REGEX.test(trimmed)) return true
-  if (/^\s*[-*]/.test(trimmed)) return true
-  if (/^\s*\d+[\]\).:-]/.test(trimmed)) return true
-  if (normalized.length <= 180) {
-    if (normalized.includes("sentencia")) return true
-    if (normalized.includes("ley")) return true
-    if (normalized.includes("decreto")) return true
-    if (normalized.includes("articulo")) return true
-    if (normalized.includes("resolucion")) return true
-    if (normalized.includes("acuerdo")) return true
-    if (normalized.includes("jurisprudencia")) return true
-    if (normalized.includes("gaceta")) return true
-    if (normalized.includes("codigo")) return true
+  // Si estamos después de un encabezado de bibliografía, ser más permisivo
+  if (afterBibHeading) {
+    if (URL_REGEX.test(trimmed)) return true
+    if (/^\s*[-*•]\s/.test(trimmed)) return true
+    if (/^\s*\d+[\]\).:-]\s/.test(trimmed)) return true
+    return trimmed.length < 200 // Cualquier línea corta después del encabezado
   }
 
-  return false
+  // Si NO estamos después de un encabezado, ser muy estricto
+  // Solo detectar URLs como citas
+  if (URL_REGEX.test(trimmed)) return true
+
+  // Solo detectar formatos muy específicos de citación legal colombiana
+  // Ejemplo: "Sentencia T-123 de 2020" o "Ley 100 de 1993"
+  const specificPatterns = [
+    /^sentencia\s+[A-Z]-?\d+\s+de\s+\d{4}/i,
+    /^ley\s+\d+\s+de\s+\d{4}/i,
+    /^decreto\s+\d+\s+de\s+\d{4}/i,
+    /^resolucion\s+\d+\s+de\s+\d{4}/i,
+    /^acuerdo\s+\d+\s+de\s+\d{4}/i,
+  ]
+
+  const normalized = normalizeForMatch(trimmed)
+  return specificPatterns.some(pattern => pattern.test(normalized))
 }
 
 const trimTrailingEmptyLines = (lines: string[]) => {
@@ -220,7 +226,8 @@ const collectSectionAfterHeading = (lines: string[], headingIndex: number) => {
       break
     }
 
-    if (!looksLikeCitationLine(raw) && normalized.length > 0 && normalized.length < 20) {
+    // Después de un encabezado de bibliografía, ser más permisivo
+    if (!looksLikeCitationLine(raw, true) && normalized.length > 0 && normalized.length < 20) {
       endIndex = i
       break
     }
@@ -251,7 +258,8 @@ const collectTrailingCitations = (lines: string[]) => {
       continue
     }
 
-    if (looksLikeCitationLine(line)) {
+    // Sin encabezado de bibliografía, solo URLs son citas válidas al final
+    if (looksLikeCitationLine(line, false)) {
       collecting = true
       startIndex = i
       continue

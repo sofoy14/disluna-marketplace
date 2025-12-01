@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { themeMode, customPrimaryColor, selectedPalette } = body
+    const { themeMode, customPrimaryColor, selectedPalette, selectedShader } = body
 
     // Validar datos
     if (themeMode && !['dark', 'light'].includes(themeMode)) {
@@ -47,11 +47,20 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validar shader (1-10)
+    if (selectedShader !== undefined && (typeof selectedShader !== 'number' || selectedShader < 1 || selectedShader > 10)) {
+      return NextResponse.json(
+        { error: 'Shader inválido. Debe ser un número entre 1 y 10' },
+        { status: 400 }
+      )
+    }
+
     // Actualizar perfil
     const updateData: any = {}
     if (themeMode) updateData.theme_mode = themeMode
     if (customPrimaryColor) updateData.custom_primary_color = customPrimaryColor
     if (selectedPalette) updateData.selected_palette = selectedPalette
+    if (selectedShader !== undefined) updateData.selected_shader = selectedShader
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json(

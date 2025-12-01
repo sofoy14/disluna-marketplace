@@ -4,7 +4,6 @@ import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { BibliographyItem } from "@/types/chat-message"
 import { LLM, LLMID, MessageImage, ModelProvider } from "@/types"
 import {
-  IconBolt,
   IconCaretDownFilled,
   IconCaretRightFilled,
   IconCircleFilled,
@@ -14,6 +13,7 @@ import {
 } from "@tabler/icons-react"
 import Image from "next/image"
 import { FC, useContext, useEffect, useMemo, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import { ModelIcon } from "../models/model-icon"
 import { Button } from "../ui/button"
 import { FileIcon } from "../ui/file-icon"
@@ -32,9 +32,6 @@ import { CitationsPanel } from "./citations-panel"
 import { parseModelAnswer } from "@/lib/parsers/model-answer"
 import { processStreamContent } from "@/lib/stream-processor"
 import { DocumentSheet } from "../chat/document-sheet"
-import { ReasoningSteps } from "../chat/reasoning-steps"
-import { ThinkingProcess } from "../chat/thinking-process"
-import { PromptRequest } from "../chat/prompt-request"
 
 const ICON_SIZE = 32
 
@@ -80,9 +77,12 @@ export const Message: FC<MessageProps> = ({
     setSuggestedQuestions,
     showSuggestedQuestions,
     setShowSuggestedQuestions,
-    setUserInput
+    setUserInput,
+    selectedWorkspace,
+    selectedChat
   } = useContext(ChatbotUIContext)
 
+  const router = useRouter()
   const { handleSendMessage } = useChatHandler()
   const { generateSuggestedQuestions } = useSuggestedQuestions()
 
@@ -194,6 +194,41 @@ export const Message: FC<MessageProps> = ({
       chatMessages,
       true
     )
+  }
+
+  // Handle branching the chat from this message
+  const handleBranchChat = () => {
+    // Navigate to a new chat with the context up to this message
+    if (selectedWorkspace) {
+      // Store the branch context in sessionStorage
+      const branchContext = chatMessages
+        .filter(msg => msg.message.sequence_number <= message.sequence_number)
+        .map(msg => ({
+          role: msg.message.role,
+          content: msg.message.content
+        }))
+      sessionStorage.setItem('branchChatContext', JSON.stringify(branchContext))
+      router.push(`/${selectedWorkspace.id}/chat`)
+      toast.success("Nuevo chat creado desde este punto")
+    }
+  }
+
+  // Handle reporting a message
+  const handleReport = () => {
+    // In production, this would open a report modal or send to moderation
+    toast.info("Gracias por tu reporte. Lo revisaremos pronto.")
+  }
+
+  // Handle liking a message
+  const handleLike = () => {
+    // In production, this would save the feedback
+    toast.success("¡Gracias por tu feedback!")
+  }
+
+  // Handle disliking a message
+  const handleDislike = () => {
+    // In production, this would save the feedback and optionally ask for more details
+    toast.info("Gracias por tu feedback. Trabajaremos para mejorar.")
   }
 
   const handleSuggestedQuestionClick = (question: string) => {
@@ -308,13 +343,12 @@ export const Message: FC<MessageProps> = ({
     // Solo mostrar indicador de carga si es el último mensaje del asistente y está generando
     if (!firstTokenReceived && isGenerating && isLast && message.role === "assistant") {
       return (
-        <div className="flex flex-col animate-pulse space-y-1">
-          <div className="flex items-center space-x-2">
-            <IconBolt size={20} />
-            <div>Pensando a profundidad...</div>
-          </div>
-          <div className="text-xs text-muted-foreground ml-7">
-            Buscando en fuentes oficiales colombianas
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm font-medium text-muted-foreground">Pensando</span>
+          <div className="flex space-x-1">
+            <span className="w-1.5 h-1.5 bg-primary/70 rounded-full animate-bounce [animation-delay:-0.3s]" />
+            <span className="w-1.5 h-1.5 bg-primary/70 rounded-full animate-bounce [animation-delay:-0.15s]" />
+            <span className="w-1.5 h-1.5 bg-primary/70 rounded-full animate-bounce" />
           </div>
         </div>
       )
@@ -372,45 +406,21 @@ export const Message: FC<MessageProps> = ({
     >
       <MessageBubble
         variant={message.role === "user" ? "user" : "ai"}
-        content=""
+        content={message.role === "assistant" ? assistantAnswer.text : message.content}
         timestamp={new Date(message.created_at)}
         avatar={getAvatarImage()}
         userName={getUserName()}
         status={message.role === "user" ? "delivered" : undefined}
         onCopy={message.role === "assistant" ? handleCopy : undefined}
         onRegenerate={message.role === "assistant" && isLast ? handleRegenerate : undefined}
+        onBranchChat={message.role === "assistant" ? handleBranchChat : undefined}
+        onReport={message.role === "assistant" ? handleReport : undefined}
+        onLike={message.role === "assistant" ? handleLike : undefined}
+        onDislike={message.role === "assistant" ? handleDislike : undefined}
+        isLast={isLast}
+        isGenerating={isGenerating}
       >
         <div className="space-y-3">
-          {/* Thinking Process (Streaming real desde props) */}
-          {thinking && (
-            <ThinkingProcess
-              content={thinking}
-              isStreaming={isGenerating && isLast && message.role === "assistant"}
-            />
-          )}
-          
-          {/* Thinking Process (Native - parseado del contenido) */}
-          {!thinking && processedContent && processedContent.thinking && (
-            <ThinkingProcess
-              content={processedContent.thinking}
-              isStreaming={isGenerating && isLast && message.role === "assistant"}
-            />
-          )}
-
-          {/* Pasos de razonamiento */}
-          {processedContent && processedContent.reasoningSteps.length > 0 && (
-          <ReasoningSteps 
-            steps={processedContent.reasoningSteps.map(rs => ({
-              step: rs.step,
-              description: rs.description,
-              status: rs.status
-            }))}
-          />
-        )}
-        {processedContent?.promptBlock && (
-          <PromptRequest payload={processedContent.promptBlock} />
-        )}
-
           {/* Contenido del mensaje */}
           {renderMessageContent()}
 

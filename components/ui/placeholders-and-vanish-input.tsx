@@ -250,12 +250,10 @@ export function PlaceholdersAndVanishInput({
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Llamar al onKeyDown externo si existe
     if (onKeyDown) {
       onKeyDown(e)
     }
     
-    // Solo manejar enter aquí si no fue manejado externamente
     if (!e.defaultPrevented && e.key === "Enter" && !e.shiftKey && !disabled) {
       e.preventDefault()
       vanishAndSubmit()

@@ -15,10 +15,17 @@ import {
   ArrowLeft,
   Sparkles,
   Star,
-  Zap
+  Zap,
+  X,
+  MessageSquare,
+  FolderOpen,
+  Mic,
+  Building2,
+  TrendingUp
 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/browser-client';
+import { motion } from 'framer-motion';
 
 interface Plan {
   id: string;
@@ -30,8 +37,13 @@ interface Plan {
   features: string[];
   query_limit: number;
   sort_order: number;
-  first_month_price?: number;
-  has_first_month_promo?: boolean;
+  plan_type?: 'basic' | 'pro' | 'enterprise';
+  max_output_tokens_monthly?: number;
+  max_processes?: number;
+  max_transcription_hours?: number;
+  has_multiple_workspaces?: boolean;
+  has_processes?: boolean;
+  has_transcriptions?: boolean;
 }
 
 interface Subscription {
@@ -46,12 +58,23 @@ interface Subscription {
     description: string;
     amount_in_cents: number;
     billing_period: string;
+    plan_type?: string;
   };
+}
+
+interface UsageData {
+  tokens_used: number;
+  tokens_limit: number;
+  processes_used: number;
+  processes_limit: number;
+  transcription_seconds_used: number;
+  transcription_limit: number;
 }
 
 export default function BillingPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
+  const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
@@ -62,7 +85,6 @@ export default function BillingPage() {
   const supabase = createClient();
 
   useEffect(() => {
-    // Leer alerta de URL
     const alertParam = searchParams.get('alert');
     if (alertParam) {
       setAlert(alertParam);
@@ -108,6 +130,19 @@ export default function BillingPage() {
           if (subscriptionData.success && subscriptionData.data) {
             setCurrentSubscription(subscriptionData.data);
           }
+        }
+
+        // Obtener uso actual
+        try {
+          const usageResponse = await fetch(`/api/billing/usage?workspace_id=${workspaces.id}`);
+          if (usageResponse.ok) {
+            const usageResult = await usageResponse.json();
+            if (usageResult.success) {
+              setUsageData(usageResult.data);
+            }
+          }
+        } catch (e) {
+          console.log('Usage data not available');
         }
       }
     } catch (error) {
@@ -203,6 +238,45 @@ export default function BillingPage() {
 
   const alertInfo = getAlertMessage();
 
+  // Filter plans to show basic and pro
+  const basicPlan = plans.find(p => p.plan_type === 'basic') || {
+    id: 'basic',
+    name: 'Plan Básico',
+    description: 'Ideal para abogados que buscan asistencia IA',
+    amount_in_cents: 2900000,
+    currency: 'COP',
+    billing_period: 'monthly' as const,
+    plan_type: 'basic' as const,
+    max_output_tokens_monthly: 2000000,
+    max_processes: 0,
+    max_transcription_hours: 0,
+    has_multiple_workspaces: false,
+    has_processes: false,
+    has_transcriptions: false,
+    features: [],
+    query_limit: 0,
+    sort_order: 1
+  };
+
+  const proPlan = plans.find(p => p.plan_type === 'pro') || {
+    id: 'pro',
+    name: 'Plan PRO',
+    description: 'La solución completa para profesionales del derecho',
+    amount_in_cents: 6800000,
+    currency: 'COP',
+    billing_period: 'monthly' as const,
+    plan_type: 'pro' as const,
+    max_output_tokens_monthly: -1,
+    max_processes: 7,
+    max_transcription_hours: 5,
+    has_multiple_workspaces: true,
+    has_processes: true,
+    has_transcriptions: true,
+    features: [],
+    query_limit: 0,
+    sort_order: 2
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center">
@@ -214,9 +288,7 @@ export default function BillingPage() {
     );
   }
 
-  // Separar planes por período
-  const monthlyPlan = plans.find(p => p.billing_period === 'monthly');
-  const yearlyPlan = plans.find(p => p.billing_period === 'yearly');
+  const currentPlanType = currentSubscription?.plans?.plan_type;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -225,13 +297,13 @@ export default function BillingPage() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Sparkles className="w-4 h-4" />
-            Oferta de lanzamiento
+            Gestiona tu suscripción
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            Elige tu Plan
+            Facturación y Planes
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Accede a tu asistente legal inteligente con IA avanzada
+            Administra tu suscripción y consulta tu uso
           </p>
         </div>
 
@@ -249,182 +321,382 @@ export default function BillingPage() {
           </div>
         )}
 
-        {/* Suscripción actual */}
+        {/* Suscripción actual y uso */}
         {currentSubscription && currentSubscription.status === 'active' && (
-          <Card className="mb-10 border-2 border-green-300 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-800">
-                <Crown className="h-6 w-6" />
-                Tu Suscripción Actual
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xl font-semibold text-slate-900">{currentSubscription.plans?.name || 'Plan'}</h3>
-                  <p className="text-slate-600">{currentSubscription.plans?.description}</p>
-                  <p className="text-sm text-slate-500 mt-2">
-                    Válido hasta: {new Date(currentSubscription.current_period_end).toLocaleDateString('es-CO', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
-                  </p>
+          <div className="mb-10 space-y-6">
+            <Card className="border-2 border-green-300 bg-gradient-to-r from-green-50 to-emerald-50 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-green-800">
+                  <Crown className="h-6 w-6" />
+                  Tu Suscripción Actual
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-semibold text-slate-900">{currentSubscription.plans?.name || 'Plan'}</h3>
+                    <p className="text-slate-600">{currentSubscription.plans?.description}</p>
+                    <p className="text-sm text-slate-500 mt-2">
+                      Válido hasta: {new Date(currentSubscription.current_period_end).toLocaleDateString('es-CO', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    {getStatusBadge(currentSubscription.status)}
+                  </div>
                 </div>
-                <div className="text-right">
-                  {getStatusBadge(currentSubscription.status)}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+
+            {/* Usage Stats */}
+            {usageData && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-indigo-600" />
+                    Tu uso este mes
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {/* Tokens */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-600">Tokens de chat</span>
+                        <span className="font-medium">
+                          {usageData.tokens_limit === -1 
+                            ? `${(usageData.tokens_used / 1000000).toFixed(2)}M usados`
+                            : `${(usageData.tokens_used / 1000000).toFixed(2)}M / ${(usageData.tokens_limit / 1000000).toFixed(0)}M`
+                          }
+                        </span>
+                      </div>
+                      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${
+                            usageData.tokens_limit === -1 
+                              ? 'bg-gradient-to-r from-purple-500 to-purple-600 w-1/4'
+                              : usageData.tokens_used / usageData.tokens_limit > 0.9 
+                                ? 'bg-red-500'
+                                : 'bg-gradient-to-r from-blue-500 to-blue-600'
+                          }`}
+                          style={{ 
+                            width: usageData.tokens_limit === -1 
+                              ? '25%' 
+                              : `${Math.min((usageData.tokens_used / usageData.tokens_limit) * 100, 100)}%` 
+                          }}
+                        />
+                      </div>
+                      {usageData.tokens_limit === -1 && (
+                        <p className="text-xs text-purple-600">Ilimitado</p>
+                      )}
+                    </div>
+
+                    {/* Procesos */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-600">Procesos</span>
+                        <span className="font-medium">
+                          {usageData.processes_limit === 0 
+                            ? 'No disponible'
+                            : `${usageData.processes_used} / ${usageData.processes_limit}`
+                          }
+                        </span>
+                      </div>
+                      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${
+                            usageData.processes_limit === 0 
+                              ? 'bg-slate-300 w-0'
+                              : 'bg-gradient-to-r from-emerald-500 to-emerald-600'
+                          }`}
+                          style={{ 
+                            width: usageData.processes_limit === 0 
+                              ? '0%' 
+                              : `${Math.min((usageData.processes_used / usageData.processes_limit) * 100, 100)}%` 
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Transcripción */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-600">Transcripción</span>
+                        <span className="font-medium">
+                          {usageData.transcription_limit === 0 
+                            ? 'No disponible'
+                            : `${(usageData.transcription_seconds_used / 3600).toFixed(1)}h / ${usageData.transcription_limit}h`
+                          }
+                        </span>
+                      </div>
+                      <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full ${
+                            usageData.transcription_limit === 0 
+                              ? 'bg-slate-300 w-0'
+                              : 'bg-gradient-to-r from-pink-500 to-pink-600'
+                          }`}
+                          style={{ 
+                            width: usageData.transcription_limit === 0 
+                              ? '0%' 
+                              : `${Math.min((usageData.transcription_seconds_used / (usageData.transcription_limit * 3600)) * 100, 100)}%` 
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         )}
 
         {/* Planes */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Plan Mensual */}
-          {monthlyPlan && (
-            <Card className="relative border-2 border-indigo-300 shadow-xl hover:shadow-2xl transition-all duration-300 bg-white overflow-hidden">
-              {/* Badge destacado */}
-              <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-1.5 text-sm shadow-lg">
-                  <Star className="w-4 h-4 mr-1 fill-current" />
-                  Más Popular
-                </Badge>
-              </div>
-
-              <CardHeader className="text-center pt-10 pb-4">
-                <CardTitle className="text-2xl font-bold text-slate-900">
-                  {monthlyPlan.name}
-                </CardTitle>
-                <CardDescription className="text-slate-600">
-                  {monthlyPlan.description}
-                </CardDescription>
-
-                {/* Precio */}
-                <div className="mt-6 space-y-2">
-                  {monthlyPlan.has_first_month_promo && (
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-lg text-slate-400 line-through">
-                        ${formatPrice(monthlyPlan.amount_in_cents)}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-slate-900 text-center mb-8">
+            {currentSubscription ? 'Cambiar de Plan' : 'Elige tu Plan'}
+          </h2>
+          
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Plan Básico */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0 }}
+            >
+              <Card className={`relative h-full border-2 shadow-lg bg-white overflow-hidden ${
+                currentPlanType === 'basic' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-blue-200'
+              }`}>
+                {currentPlanType === 'basic' && (
+                  <div className="absolute top-3 right-3">
+                    <Badge className="bg-blue-600 text-white">Plan Actual</Badge>
+                  </div>
+                )}
+                
+                <CardHeader className="text-center pt-8 pb-4">
+                  <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700">
+                    <MessageSquare className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-xl">{basicPlan.name}</CardTitle>
+                  <CardDescription className="text-slate-600">{basicPlan.description}</CardDescription>
+                  
+                  <div className="mt-4">
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-4xl font-bold text-slate-900">
+                        ${formatPrice(basicPlan.amount_in_cents)}
                       </span>
-                      <Badge className="bg-green-100 text-green-700 font-semibold">
-                        Primer mes
-                      </Badge>
                     </div>
-                  )}
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-extrabold text-slate-900">
-                      ${formatPrice(monthlyPlan.first_month_price || monthlyPlan.amount_in_cents)}
-                    </span>
-                    <span className="text-lg text-slate-500">COP</span>
+                    <p className="text-sm text-slate-500">COP / mes</p>
                   </div>
-                  <p className="text-sm text-slate-500">
-                    Luego ${formatPrice(monthlyPlan.amount_in_cents)}/mes
-                  </p>
+                </CardHeader>
+
+                {/* Highlights */}
+                <div className="mx-6 mb-4 p-3 rounded-xl bg-slate-50 grid grid-cols-2 gap-2">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4 text-blue-500" />
+                    <div>
+                      <p className="text-[10px] uppercase text-slate-500">Chat IA</p>
+                      <p className="text-xs font-semibold">2M tokens</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-slate-400" />
+                    <div>
+                      <p className="text-[10px] uppercase text-slate-500">Workspace</p>
+                      <p className="text-xs font-semibold">1</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FolderOpen className="w-4 h-4 text-slate-300" />
+                    <div>
+                      <p className="text-[10px] uppercase text-slate-500">Procesos</p>
+                      <p className="text-xs font-semibold text-slate-400">—</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mic className="w-4 h-4 text-slate-300" />
+                    <div>
+                      <p className="text-[10px] uppercase text-slate-500">Transcripción</p>
+                      <p className="text-xs font-semibold text-slate-400">—</p>
+                    </div>
+                  </div>
                 </div>
-              </CardHeader>
 
-              <CardContent className="pt-2">
-                <ul className="space-y-3 mb-8">
-                  {monthlyPlan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-slate-700">{feature}</span>
+                <CardContent className="pt-0">
+                  <ul className="space-y-2 mb-6 text-sm">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-600">Chat con asistente legal IA</span>
                     </li>
-                  ))}
-                </ul>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-600">Hasta 2 millones de tokens/mes</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-600">Análisis de normativa colombiana</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <X className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-400 line-through">Procesos legales</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <X className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-400 line-through">Transcripción de audio</span>
+                    </li>
+                  </ul>
 
-                <Button
-                  onClick={() => handleSubscribe(monthlyPlan.id)}
-                  disabled={currentSubscription?.plan_id === monthlyPlan.id || processingPlanId !== null}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-200"
-                  size="lg"
-                >
-                  {processingPlanId === monthlyPlan.id ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Procesando...
-                    </>
-                  ) : currentSubscription?.plan_id === monthlyPlan.id ? (
-                    'Plan Actual'
-                  ) : (
-                    <>
-                      <Zap className="w-4 h-4 mr-2" />
-                      Comenzar por $4.000
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+                  <Button
+                    onClick={() => handleSubscribe(basicPlan.id)}
+                    disabled={currentPlanType === 'basic' || processingPlanId !== null}
+                    variant="outline"
+                    className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                    size="lg"
+                  >
+                    {processingPlanId === basicPlan.id ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Procesando...
+                      </>
+                    ) : currentPlanType === 'basic' ? (
+                      'Plan Actual'
+                    ) : currentPlanType === 'pro' ? (
+                      'Cambiar a Básico'
+                    ) : (
+                      'Elegir Plan Básico'
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
 
-          {/* Plan Anual */}
-          {yearlyPlan && (
-            <Card className="relative border-2 border-slate-200 shadow-lg hover:shadow-xl transition-all duration-300 bg-white overflow-hidden">
-              {/* Badge de ahorro */}
-              <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-4 py-1.5 text-sm shadow-lg">
-                  💰 Ahorra 10%
-                </Badge>
-              </div>
-
-              <CardHeader className="text-center pt-10 pb-4">
-                <CardTitle className="text-2xl font-bold text-slate-900">
-                  {yearlyPlan.name}
-                </CardTitle>
-                <CardDescription className="text-slate-600">
-                  {yearlyPlan.description}
-                </CardDescription>
-
-                {/* Precio */}
-                <div className="mt-6 space-y-2">
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="text-lg text-slate-400 line-through">
-                      ${formatPrice(5800000 * 12)}
-                    </span>
+            {/* Plan PRO */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Card className={`relative h-full border-2 shadow-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white overflow-hidden ${
+                currentPlanType === 'pro' ? 'border-purple-500 ring-2 ring-purple-300' : 'border-purple-400'
+              }`}>
+                {/* Background effects */}
+                <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl" />
+                <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl" />
+                
+                {/* Badges */}
+                {currentPlanType === 'pro' ? (
+                  <div className="absolute top-3 right-3 z-10">
+                    <Badge className="bg-purple-600 text-white">Plan Actual</Badge>
                   </div>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-extrabold text-slate-900">
-                      ${formatPrice(yearlyPlan.amount_in_cents)}
-                    </span>
-                    <span className="text-lg text-slate-500">COP</span>
+                ) : (
+                  <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                    <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-1.5 shadow-lg border-0">
+                      <Star className="w-3.5 h-3.5 mr-1 fill-current" />
+                      Recomendado
+                    </Badge>
                   </div>
-                  <p className="text-sm text-green-600 font-medium">
-                    Equivale a ${formatPrice(Math.round(yearlyPlan.amount_in_cents / 12))}/mes
-                  </p>
+                )}
+
+                <CardHeader className="text-center pt-10 pb-4 relative z-10">
+                  <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br from-purple-500 to-purple-700">
+                    <Crown className="w-6 h-6 text-white" />
+                  </div>
+                  <CardTitle className="text-xl text-white">{proPlan.name}</CardTitle>
+                  <CardDescription className="text-slate-300">{proPlan.description}</CardDescription>
+                  
+                  <div className="mt-4">
+                    <div className="flex items-baseline justify-center gap-1">
+                      <span className="text-4xl font-bold text-white">
+                        ${formatPrice(proPlan.amount_in_cents)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-400">COP / mes</p>
+                  </div>
+                </CardHeader>
+
+                {/* Highlights */}
+                <div className="mx-6 mb-4 p-3 rounded-xl bg-white/5 grid grid-cols-2 gap-2 relative z-10">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4 text-purple-400" />
+                    <div>
+                      <p className="text-[10px] uppercase text-slate-500">Chat IA</p>
+                      <p className="text-xs font-semibold text-white">Ilimitado</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-4 h-4 text-amber-400" />
+                    <div>
+                      <p className="text-[10px] uppercase text-slate-500">Workspaces</p>
+                      <p className="text-xs font-semibold text-white">∞</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <FolderOpen className="w-4 h-4 text-emerald-400" />
+                    <div>
+                      <p className="text-[10px] uppercase text-slate-500">Procesos</p>
+                      <p className="text-xs font-semibold text-white">7</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Mic className="w-4 h-4 text-pink-400" />
+                    <div>
+                      <p className="text-[10px] uppercase text-slate-500">Transcripción</p>
+                      <p className="text-xs font-semibold text-white">5 horas</p>
+                    </div>
+                  </div>
                 </div>
-              </CardHeader>
 
-              <CardContent className="pt-2">
-                <ul className="space-y-3 mb-8">
-                  {yearlyPlan.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-slate-700">{feature}</span>
+                <CardContent className="pt-0 relative z-10">
+                  <ul className="space-y-2 mb-6 text-sm">
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-300">Chat IA ilimitado</span>
                     </li>
-                  ))}
-                </ul>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-300">Múltiples workspaces</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-300">7 procesos legales incluidos</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-300">5 horas de transcripción</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-slate-300">Soporte prioritario 24/7</span>
+                    </li>
+                  </ul>
 
-                <Button
-                  onClick={() => handleSubscribe(yearlyPlan.id)}
-                  disabled={currentSubscription?.plan_id === yearlyPlan.id || processingPlanId !== null}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white"
-                  size="lg"
-                >
-                  {processingPlanId === yearlyPlan.id ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Procesando...
-                    </>
-                  ) : currentSubscription?.plan_id === yearlyPlan.id ? (
-                    'Plan Actual'
-                  ) : (
-                    'Suscribirse Anualmente'
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+                  <Button
+                    onClick={() => handleSubscribe(proPlan.id)}
+                    disabled={currentPlanType === 'pro' || processingPlanId !== null}
+                    className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white shadow-lg"
+                    size="lg"
+                  >
+                    {processingPlanId === proPlan.id ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Procesando...
+                      </>
+                    ) : currentPlanType === 'pro' ? (
+                      'Plan Actual'
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4 mr-2" />
+                        {currentPlanType === 'basic' ? 'Actualizar a PRO' : 'Elegir Plan PRO'}
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
         </div>
 
         {/* Info de seguridad */}

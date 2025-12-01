@@ -67,6 +67,10 @@ export function UserPanelModal({ children }: UserPanelModalProps) {
   const [selectedPalette, setSelectedPalette] = useState(((profile as any)?.selected_palette as string) || 'purple');
   const [saving, setSaving] = useState(false);
   const [selectedShader, setSelectedShader] = useState<number>(() => {
+    // Primero intentar usar el valor del perfil, luego localStorage
+    if ((profile as any)?.selected_shader) {
+      return (profile as any).selected_shader;
+    }
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('selectedShader');
       return saved ? parseInt(saved, 10) : 1;
@@ -553,12 +557,22 @@ export function UserPanelModal({ children }: UserPanelModalProps) {
                       <CardContent>
                         <ShaderSelector
                           selectedShader={selectedShader}
-                          onSelectShader={(id) => {
+                          onSelectShader={async (id) => {
                             setSelectedShader(id);
                             if (typeof window !== 'undefined') {
                               localStorage.setItem('selectedShader', id.toString());
                               // Dispatch custom event to notify other components
                               window.dispatchEvent(new CustomEvent('shaderChanged', { detail: id }));
+                            }
+                            // Guardar en backend
+                            try {
+                              await fetch('/api/user/update-theme', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ selectedShader: id })
+                              });
+                            } catch (error) {
+                              console.error('Error saving shader preference:', error);
                             }
                           }}
                         />

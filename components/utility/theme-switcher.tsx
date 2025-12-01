@@ -9,10 +9,20 @@ interface ThemeSwitcherProps {}
 export const ThemeSwitcher: FC<ThemeSwitcherProps> = () => {
   const { setTheme, theme } = useTheme()
 
-  const handleChange = (theme: "dark" | "light") => {
-    localStorage.setItem("theme", theme)
-
-    setTheme(theme)
+  const handleChange = async (newTheme: "dark" | "light") => {
+    localStorage.setItem("theme", newTheme)
+    setTheme(newTheme)
+    
+    // Guardar en backend
+    try {
+      await fetch('/api/user/update-theme', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ themeMode: newTheme })
+      })
+    } catch (error) {
+      console.error('Error saving theme preference:', error)
+    }
   }
 
   return (

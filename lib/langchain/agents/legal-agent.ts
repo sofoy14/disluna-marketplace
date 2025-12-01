@@ -74,7 +74,7 @@ export class LegalAgent {
     const { 
       modelId, 
       temperature = 0.3, 
-      maxIterations = 6,
+      maxIterations = 10, // Aumentado de 6 a 10 para consultas legales complejas
       verbose = false,
       tools: toolNames
     } = config
@@ -122,6 +122,9 @@ export class LegalAgent {
       verbose,
       returnIntermediateSteps: true,
       handleParsingErrors: true,
+      // Importante: cuando se alcance el límite de iteraciones, generar respuesta parcial
+      // en lugar de lanzar error "Agent stopped due to max iterations"
+      earlyStoppingMethod: "generate",
     })
 
     console.log(`✅ Agente Legal creado exitosamente`)
@@ -181,8 +184,29 @@ export class LegalAgent {
         }
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Error en el agente:`, error)
+      
+      // Manejar específicamente el error de max iterations
+      if (error.message?.includes('max iterations') || error.message?.includes('Agent stopped')) {
+        console.warn(`⚠️ Agente alcanzó límite de iteraciones, generando respuesta parcial...`)
+        
+        return {
+          output: "He recopilado información relevante pero la consulta requiere más investigación de la que puedo completar en este momento. " +
+                  "Te recomiendo dividir tu pregunta en consultas más específicas para obtener respuestas más detalladas. " +
+                  "También puedes consultar directamente las fuentes oficiales como la Corte Constitucional (corteconstitucional.gov.co) " +
+                  "o la Secretaría del Senado (secretariasenado.gov.co).",
+          intermediateSteps: [],
+          sources: [],
+          toolsUsed: [],
+          metadata: {
+            model: this.config.modelId,
+            iterations: this.config.maxIterations || 6,
+            processingTime: Date.now() - startTime
+          }
+        }
+      }
+      
       throw error
     }
   }
@@ -389,7 +413,7 @@ export async function createDefaultLegalAgent(modelId?: string): Promise<LegalAg
   return LegalAgent.create({
     modelId: modelId || 'alibaba/tongyi-deepresearch-30b-a3b',
     temperature: 0.3,
-    maxIterations: 6,
+    maxIterations: 10,
     verbose: process.env.NODE_ENV === 'development'
   })
 }

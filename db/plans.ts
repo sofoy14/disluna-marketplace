@@ -4,6 +4,7 @@
 import { supabase } from "@/lib/supabase/robust-client"
 
 export type BillingPeriod = 'monthly' | 'yearly';
+export type PlanType = 'basic' | 'pro' | 'enterprise';
 
 export interface Plan {
   id: string;
@@ -18,6 +19,14 @@ export interface Plan {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  // New plan feature fields
+  plan_type: PlanType;
+  max_output_tokens_monthly: number; // -1 = unlimited
+  max_processes: number;
+  max_transcription_hours: number;
+  has_multiple_workspaces: boolean;
+  has_processes: boolean;
+  has_transcriptions: boolean;
 }
 
 export const getPlans = async (billingPeriod?: BillingPeriod): Promise<Plan[]> => {

@@ -274,12 +274,12 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
                 className={cn(
                   "flex items-center justify-center",
                   "w-10 h-10 rounded-xl",
-                  "bg-destructive/90 hover:bg-destructive",
-                  "cursor-pointer transition-colors duration-200",
-                  "animate-pulse"
+                  "bg-muted hover:bg-destructive/80",
+                  "cursor-pointer transition-all duration-200",
+                  "border border-border hover:border-destructive"
                 )}
               >
-                <Square className="w-4 h-4 text-destructive-foreground fill-current" />
+                <Square className="w-4 h-4 text-muted-foreground hover:text-destructive-foreground fill-current transition-colors" />
               </motion.button>
             ) : (
               <ModernSendIcon

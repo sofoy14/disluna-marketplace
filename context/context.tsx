@@ -38,6 +38,8 @@ interface ChatbotUIContext {
   setTools: Dispatch<SetStateAction<Tables<"tools">[]>>
   workspaces: Tables<"workspaces">[]
   setWorkspaces: Dispatch<SetStateAction<Tables<"workspaces">[]>>
+  transcriptions: Tables<"transcriptions">[]
+  setTranscriptions: Dispatch<SetStateAction<Tables<"transcriptions">[]>>
 
   // MODELS STORE
   envKeyMap: Record<string, VALID_ENV_KEYS>
@@ -174,6 +176,8 @@ export const ChatbotUIContext = createContext<ChatbotUIContext>({
   setTools: () => {},
   workspaces: [],
   setWorkspaces: () => {},
+  transcriptions: [],
+  setTranscriptions: () => {},
 
   // MODELS STORE
   envKeyMap: {},

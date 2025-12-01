@@ -1311,155 +1311,213 @@ function TestimonialsGrid() {
 }
 
 function PricingDark() {
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
-
-  const plans = {
-    monthly: {
-      name: "Plan Mensual",
-      regularPrice: "$58.000",
-      promoPrice: "$4.000",
-      promoLabel: "Primer mes",
+  const plans = [
+    {
+      id: "basic",
+      name: "Plan Básico",
+      price: "$29.000",
       period: "/mes",
+      description: "Ideal para abogados que buscan asistencia IA en sus consultas diarias",
+      icon: FileText,
+      popular: false,
+      color: "blue",
       features: [
-        "Chat ilimitado con IA legal",
-        "Análisis de documentos",
-        "Consultas legales colombianas",
-        "Soporte prioritario"
+        { name: "Chat con asistente legal IA", included: true },
+        { name: "Hasta 2 millones de tokens/mes", included: true },
+        { name: "Análisis de normativa colombiana", included: true },
+        { name: "Búsqueda inteligente de jurisprudencia", included: true },
+        { name: "Soporte por email", included: true },
+        { name: "1 espacio de trabajo", included: true },
+        { name: "Procesos legales (expedientes)", included: false },
+        { name: "Transcripción de audiencias", included: false },
       ],
-      highlight: true
+      highlights: [
+        { label: "Chat IA", value: "2M tokens" },
+        { label: "Workspace", value: "1" },
+      ]
     },
-    yearly: {
-      name: "Plan Anual",
-      regularPrice: "$696.000",
-      promoPrice: "$626.400",
-      promoLabel: "Ahorra 10%",
-      period: "/año",
+    {
+      id: "pro",
+      name: "Plan PRO",
+      price: "$68.000",
+      period: "/mes",
+      description: "La solución completa para profesionales del derecho",
+      icon: Scale,
+      popular: true,
+      color: "purple",
       features: [
-        "Todo lo del plan mensual",
-        "10% de descuento",
-        "Ahorro de $69.600",
-        "Sin preocupaciones mensuales"
+        { name: "Chat con asistente legal IA ilimitado", included: true },
+        { name: "Tokens de chat ilimitados", included: true },
+        { name: "Análisis de normativa colombiana", included: true },
+        { name: "Búsqueda inteligente de jurisprudencia", included: true },
+        { name: "Soporte prioritario 24/7", included: true },
+        { name: "Múltiples espacios de trabajo", included: true },
+        { name: "7 procesos legales incluidos", included: true },
+        { name: "5 horas de transcripción de audio", included: true },
       ],
-      highlight: false
+      highlights: [
+        { label: "Chat IA", value: "Ilimitado" },
+        { label: "Procesos", value: "7" },
+        { label: "Transcripción", value: "5 horas" },
+        { label: "Workspaces", value: "∞" },
+      ]
     }
-  }
-
-  const currentPlan = plans[billingPeriod]
+  ]
 
   return (
     <section id="pricing" className="py-32 relative overflow-hidden bg-[#030305]">
        {/* Radial gradient background */}
-       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-t from-blue-900/20 to-transparent opacity-50 pointer-events-none" />
+       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-t from-purple-900/20 to-transparent opacity-50 pointer-events-none" />
+       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
 
        <div className="container mx-auto px-4 relative z-10">
-         <div className="text-center mb-12">
-           <h2 className="text-3xl font-bold text-white mb-4">Un Solo Plan, Todo Incluido</h2>
-           <p className="text-gray-400 mb-8">Acceso completo a todas las funcionalidades del asistente legal</p>
-           
-           {/* Toggle Mensual/Anual */}
-           <div className="inline-flex bg-white/5 p-1 rounded-full border border-white/10">
-             <button
-               onClick={() => setBillingPeriod('monthly')}
-               className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
-                 billingPeriod === 'monthly'
-                   ? 'bg-white text-black'
-                   : 'text-gray-400 hover:text-white'
-               }`}
-             >
-               Mensual
-             </button>
-             <button
-               onClick={() => setBillingPeriod('yearly')}
-               className={`px-6 py-2 rounded-full text-sm font-medium transition-all relative ${
-                 billingPeriod === 'yearly'
-                   ? 'bg-white text-black'
-                   : 'text-gray-400 hover:text-white'
-               }`}
-             >
-               Anual
-               <span className="absolute -top-2 -right-2 bg-green-500 text-[10px] text-white px-1.5 py-0.5 rounded-full">
-                 -10%
-               </span>
-             </button>
-           </div>
+         <div className="text-center mb-16">
+           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-sm mb-6">
+             <Sparkles className="w-4 h-4" />
+             Precios simples y transparentes
+           </span>
+           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Elige el plan perfecto para ti</h2>
+           <p className="text-gray-400 max-w-2xl mx-auto">
+             Dos planes diseñados para abogados colombianos. Sin costos ocultos, cancela cuando quieras.
+           </p>
          </div>
 
-         <div className="max-w-lg mx-auto">
-           <GlassCard className="p-8 flex flex-col border-blue-500/50 bg-blue-900/10 shadow-[0_0_40px_rgba(59,130,246,0.2)]">
-             {/* Badge */}
-             <div className="flex justify-center mb-6">
-               <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-500/30 text-blue-300 text-sm">
-                 <Sparkles className="w-4 h-4" />
-                 {billingPeriod === 'monthly' ? '⭐ Oferta Primer Mes' : '💰 Mejor Valor'}
-               </span>
-             </div>
+         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+           {plans.map((plan, index) => {
+             const isPro = plan.popular
+             const Icon = plan.icon
+             
+             return (
+               <motion.div
+                 key={plan.id}
+                 initial={{ opacity: 0, y: 30 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ delay: index * 0.15, duration: 0.5 }}
+               >
+                 <GlassCard 
+                   className={`p-0 h-full flex flex-col relative overflow-hidden ${
+                     isPro 
+                       ? '!border-purple-500/50 !bg-purple-900/20 shadow-[0_0_60px_rgba(139,92,246,0.3)]' 
+                       : '!border-blue-500/30 !bg-blue-900/10'
+                   }`}
+                   hoverEffect={false}
+                 >
+                   {/* Pro badge */}
+                   {isPro && (
+                     <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-20">
+                       <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm font-semibold shadow-lg">
+                         <Star className="w-3.5 h-3.5 fill-current" />
+                         Recomendado
+                       </span>
+                     </div>
+                   )}
 
-             <div className="text-center mb-8">
-               <h3 className="text-2xl font-bold text-white mb-2">{currentPlan.name}</h3>
-               
-               {/* Pricing */}
-               <div className="mt-4">
-                 {billingPeriod === 'monthly' && (
-                   <div className="flex items-center justify-center gap-2 mb-2">
-                     <span className="text-gray-500 line-through text-lg">{currentPlan.regularPrice}</span>
-                     <span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded-full">
-                       {currentPlan.promoLabel}
-                     </span>
+                   {/* Header */}
+                   <div className="p-8 pb-6 text-center pt-10">
+                     <div className={`w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center ${
+                       isPro 
+                         ? 'bg-gradient-to-br from-purple-500 to-purple-700' 
+                         : 'bg-gradient-to-br from-blue-500 to-blue-700'
+                     }`}>
+                       <Icon className="w-7 h-7 text-white" />
+                     </div>
+                     
+                     <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+                     <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
+                     
+                     <div className="flex items-baseline justify-center gap-1 mb-2">
+                       <span className="text-5xl font-bold text-white">{plan.price}</span>
+                     </div>
+                     <p className="text-gray-500 text-sm">COP {plan.period}</p>
                    </div>
-                 )}
-                 <div className="flex items-baseline justify-center gap-1">
-                   <span className="text-5xl font-bold text-white">{currentPlan.promoPrice}</span>
-                   <span className="text-gray-400">COP{currentPlan.period}</span>
-                 </div>
-                 {billingPeriod === 'monthly' && (
-                   <p className="text-sm text-gray-500 mt-2">Luego {currentPlan.regularPrice}/mes</p>
-                 )}
-                 {billingPeriod === 'yearly' && (
-                   <p className="text-sm text-green-400 mt-2">Equivale a $52.200/mes</p>
-                 )}
-               </div>
-             </div>
 
-             <ul className="space-y-4 mb-8 flex-1">
-               {currentPlan.features.map((f, i) => (
-                 <li key={i} className="flex items-center gap-3 text-gray-300">
-                   <div className="w-5 h-5 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                     <Check className="w-3 h-3 text-green-400" />
+                   {/* Highlights Grid */}
+                   <div className={`mx-6 mb-6 p-4 rounded-xl grid grid-cols-2 gap-3 ${
+                     isPro ? 'bg-white/5' : 'bg-white/5'
+                   }`}>
+                     {plan.highlights.map((h, idx) => (
+                       <div key={idx} className="text-center">
+                         <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-0.5">
+                           {h.label}
+                         </p>
+                         <p className={`text-sm font-bold ${isPro ? 'text-purple-300' : 'text-blue-300'}`}>
+                           {h.value}
+                         </p>
+                       </div>
+                     ))}
                    </div>
-                   {f}
-                 </li>
-               ))}
-             </ul>
 
-             <Button 
-               className="w-full h-14 rounded-full bg-white text-black hover:bg-gray-200 text-lg font-bold shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-               asChild
-             >
-               <Link href={`/login?plan=${billingPeriod}`}>
-                 {billingPeriod === 'monthly' ? 'Comenzar por $4.000' : 'Suscribirse Anualmente'}
-               </Link>
-             </Button>
+                   {/* Features */}
+                   <div className="px-8 pb-6 flex-1">
+                     <ul className="space-y-3">
+                       {plan.features.map((f, i) => (
+                         <li key={i} className="flex items-start gap-3">
+                           {f.included ? (
+                             <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                               isPro ? 'bg-purple-500/20' : 'bg-blue-500/20'
+                             }`}>
+                               <Check className={`w-3 h-3 ${isPro ? 'text-purple-400' : 'text-blue-400'}`} />
+                             </div>
+                           ) : (
+                             <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                               <span className="text-gray-600 text-xs">✕</span>
+                             </div>
+                           )}
+                           <span className={f.included ? 'text-gray-300' : 'text-gray-600 line-through'}>
+                             {f.name}
+                           </span>
+                         </li>
+                       ))}
+                     </ul>
+                   </div>
 
-             <p className="text-center text-gray-500 text-sm mt-4">
-               Cancela cuando quieras · Sin compromisos
-             </p>
-           </GlassCard>
+                   {/* CTA */}
+                   <div className="p-8 pt-0">
+                     <Button 
+                       className={`w-full h-14 rounded-full text-lg font-bold transition-all ${
+                         isPro 
+                           ? 'bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white shadow-[0_0_30px_rgba(139,92,246,0.4)]' 
+                           : 'bg-white text-black hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                       }`}
+                       asChild
+                     >
+                       <Link href={`/login?plan=${plan.id}`}>
+                         {isPro ? 'Comenzar con PRO' : 'Comenzar con Básico'}
+                       </Link>
+                     </Button>
+                     <p className="text-center text-gray-500 text-xs mt-3">
+                       Sin permanencia · Cancela cuando quieras
+                     </p>
+                   </div>
+                 </GlassCard>
+               </motion.div>
+             )
+           })}
          </div>
 
          {/* Trust badges */}
-         <div className="flex flex-wrap justify-center gap-8 mt-12 text-sm text-gray-500">
+         <div className="flex flex-wrap justify-center gap-8 mt-16 text-sm text-gray-500">
            <div className="flex items-center gap-2">
              <Shield className="w-4 h-4" />
              Pago seguro con Wompi
            </div>
            <div className="flex items-center gap-2">
              <Check className="w-4 h-4 text-green-500" />
-             Soporte en español
+             Facturación mensual
            </div>
            <div className="flex items-center gap-2">
              <Zap className="w-4 h-4 text-yellow-500" />
              Activación inmediata
            </div>
+         </div>
+
+         {/* Comparison note */}
+         <div className="mt-8 text-center max-w-2xl mx-auto">
+           <p className="text-gray-500 text-sm">
+             ¿No estás seguro? El <strong className="text-purple-400">Plan PRO</strong> incluye todo lo que necesitas para gestionar 
+             tus casos legales de manera integral, incluyendo procesos y transcripciones.
+           </p>
          </div>
        </div>
     </section>
@@ -1470,19 +1528,30 @@ function FinalCTADark() {
   return (
     <section className="py-24 relative overflow-hidden bg-black">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-50"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none" />
+      
       <div className="container mx-auto px-4 relative z-10 text-center">
         <div className="max-w-3xl mx-auto space-y-8">
           <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
             El futuro no espera.
           </h2>
           <p className="text-xl text-gray-400">
-            Únete hoy a la revolución legal tecnológica.
+            Elige entre el Plan Básico desde <span className="text-blue-400 font-semibold">$29.000/mes</span> o el Plan PRO a <span className="text-purple-400 font-semibold">$68.000/mes</span> con todas las funciones incluidas.
           </p>
-          <div className="flex justify-center pt-4">
-            <Button size="lg" className="h-16 px-12 rounded-full text-lg bg-white text-black hover:scale-105 transition-transform font-bold" asChild>
-               <Link href="/login">Comenzar Gratis</Link>
+          <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
+            <Button size="lg" className="h-16 px-10 rounded-full text-lg bg-white text-black hover:scale-105 transition-transform font-bold" asChild>
+               <Link href="/login?plan=basic">Plan Básico</Link>
+            </Button>
+            <Button size="lg" className="h-16 px-10 rounded-full text-lg bg-gradient-to-r from-purple-500 to-purple-700 text-white hover:scale-105 transition-transform font-bold shadow-[0_0_30px_rgba(139,92,246,0.4)]" asChild>
+               <Link href="/login?plan=pro">
+                 <Sparkles className="w-5 h-5 mr-2" />
+                 Plan PRO
+               </Link>
             </Button>
           </div>
+          <p className="text-sm text-gray-500">
+            Sin permanencia · Cancela cuando quieras · Pago seguro con Wompi
+          </p>
         </div>
       </div>
     </section>

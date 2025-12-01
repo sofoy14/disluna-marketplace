@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
+import { canCreateProcess } from "@/lib/billing/plan-access"
+import { incrementProcessCount } from "@/db/usage-tracking"
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +16,24 @@ export async function POST(request: Request) {
         { error: "No autorizado" },
         { status: 401 }
       )
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // BILLING CHECK: Verify user can create processes
+    // ═══════════════════════════════════════════════════════════════════════
+    if (process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true') {
+      const canCreate = await canCreateProcess(user.id)
+      
+      if (!canCreate.allowed) {
+        return NextResponse.json(
+          { 
+            error: canCreate.reason || "Tu plan no permite crear más procesos",
+            code: "PLAN_LIMIT_EXCEEDED",
+            needsUpgrade: true
+          },
+          { status: 402 } // Payment Required
+        )
+      }
     }
 
     // Parse FormData
@@ -104,6 +124,19 @@ export async function POST(request: Request) {
     if (pwError) {
       console.error("Error creating process_workspace relation:", pwError)
       // No fallar el proceso si solo falla la relación, pero registrar el error
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // USAGE TRACKING: Increment process count
+    // ═══════════════════════════════════════════════════════════════════════
+    if (process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true') {
+      try {
+        await incrementProcessCount(user.id)
+        console.log(`📊 Process count incremented for user ${user.id}`)
+      } catch (trackingError) {
+        console.error('Error tracking process usage:', trackingError)
+        // Don't fail the request for tracking errors
+      }
     }
     
     // Ya no necesitamos actualizar el workspace_id porque lo incluimos desde el inicio

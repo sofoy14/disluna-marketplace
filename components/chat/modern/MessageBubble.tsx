@@ -5,9 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ShaderCanvas } from '@/components/shader-canvas'
 import { cn } from '@/lib/utils'
 import { Check, CheckCheck, Clock, AlertCircle, Copy, RefreshCw } from 'lucide-react'
-import { formatDistanceToNow } from 'date-fns'
-import { es } from 'date-fns/locale'
 import { useEffect, useState } from 'react'
+import { MessageActionBar } from '@/components/messages/message-action-bar'
 
 interface MessageBubbleProps {
   variant: 'user' | 'ai' | 'system'
@@ -18,6 +17,12 @@ interface MessageBubbleProps {
   userName?: string
   onCopy?: () => void
   onRegenerate?: () => void
+  onBranchChat?: () => void
+  onReport?: () => void
+  onLike?: () => void
+  onDislike?: () => void
+  isLast?: boolean
+  isGenerating?: boolean
   children?: React.ReactNode
 }
 
@@ -37,6 +42,12 @@ export function MessageBubble({
   userName = 'Usuario',
   onCopy,
   onRegenerate,
+  onBranchChat,
+  onReport,
+  onLike,
+  onDislike,
+  isLast = false,
+  isGenerating = false,
   children
 }: MessageBubbleProps) {
   const [copied, setCopied] = useState(false)
@@ -76,12 +87,12 @@ export function MessageBubble({
   if (isSystem) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 10, filter: 'blur(8px)' }}
+        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="flex justify-center my-4"
       >
-        <div className="px-4 py-2 rounded-full bg-muted text-muted-foreground text-sm">
+        <div className="px-5 py-2.5 rounded-full bg-gradient-to-r from-muted/80 to-muted/60 backdrop-blur-sm text-muted-foreground text-sm font-medium border border-border/50 shadow-sm">
           {content}
         </div>
       </motion.div>
@@ -90,12 +101,12 @@ export function MessageBubble({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={{ opacity: 0, y: 16, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{
         type: 'spring',
-        stiffness: 400,
-        damping: 30,
+        stiffness: 350,
+        damping: 28,
       }}
       className={cn(
         'group flex gap-3 px-4 py-3',
@@ -104,104 +115,102 @@ export function MessageBubble({
     >
       {/* Avatar: usuario con foto; asistente con ShaderCanvas */}
       {isUser ? (
-        <Avatar className="w-8 h-8 flex-shrink-0">
-          <AvatarImage src={avatar} alt={userName} />
-          <AvatarFallback className={cn(
-            'text-xs font-medium',
-            'bg-primary text-primary-foreground'
-          )}>
-            {userName.charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
+        >
+          <Avatar className="w-9 h-9 flex-shrink-0 ring-2 ring-primary/20 ring-offset-2 ring-offset-background shadow-lg">
+            <AvatarImage src={avatar} alt={userName} />
+            <AvatarFallback className={cn(
+              'text-xs font-semibold',
+              'bg-gradient-to-br from-primary to-primary/70 text-primary-foreground'
+            )}>
+              {userName.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </motion.div>
       ) : (
-        <div className="w-8 h-8 flex-shrink-0 rounded-full overflow-hidden">
-          <ShaderCanvas size={32} shaderId={shaderId} />
-        </div>
+        <motion.div 
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
+          className="w-9 h-9 flex-shrink-0 rounded-full overflow-hidden ring-2 ring-violet-500/20 ring-offset-2 ring-offset-background shadow-lg shadow-violet-500/10"
+        >
+          <ShaderCanvas size={36} shaderId={shaderId} />
+        </motion.div>
       )}
 
       {/* Message Container */}
       <div className={cn(
-        'flex flex-col gap-1.5',
+        'flex flex-col gap-2',
         isUser ? 'items-end max-w-[70%] sm:max-w-[70%]' : 'items-start max-w-[80%] sm:max-w-[75%]'
       )}>
         {/* Bubble */}
         <motion.div
-          whileHover={{ scale: 1.01 }}
-          transition={{ duration: 0.1 }}
+          whileHover={{ scale: 1.005 }}
+          transition={{ duration: 0.15 }}
           className={cn(
-            'px-4 py-3 rounded-2xl relative',
-            'border transition-shadow duration-150',
+            'relative overflow-hidden',
+            'px-4 py-3.5 rounded-2xl',
+            'transition-all duration-200',
             isUser && [
-              'bg-background text-foreground',
-              'rounded-tr-md',
-              'shadow-md shadow-primary/20',
-              'hover:shadow-lg hover:shadow-primary/30',
-              'border border-border',
+              'bg-gradient-to-br from-primary via-primary to-primary/90',
+              'text-primary-foreground',
+              'rounded-tr-sm',
+              'shadow-lg shadow-primary/25',
+              'hover:shadow-xl hover:shadow-primary/30',
+              'border-0',
             ],
             isAI && [
-              'bg-muted text-foreground',
-              'rounded-tl-md',
-              'border-border',
-              'hover:shadow-md',
+              'bg-gradient-to-br from-card via-card to-muted/50',
+              'text-card-foreground',
+              'rounded-tl-sm',
+              'border border-border/60',
+              'shadow-md shadow-black/5 dark:shadow-black/20',
+              'hover:shadow-lg hover:border-border/80',
+              'backdrop-blur-sm',
             ],
           )}
         >
+          {/* Subtle glass effect overlay for AI messages */}
+          {isAI && (
+            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
+          )}
+          
+          {/* Shine effect for user messages */}
+          {isUser && (
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out pointer-events-none" />
+          )}
+
           {/* Content */}
           {children || (
             <div className={cn(
-              'text-sm leading-relaxed whitespace-pre-wrap',
-              isUser && 'text-foreground font-medium',
+              'text-[15px] leading-relaxed whitespace-pre-wrap relative z-10',
+              isUser && 'font-medium',
+              isAI && 'font-normal',
             )}>
               {content}
             </div>
           )}
 
-          {/* Actions on hover (para AI messages) */}
-          {isAI && (onCopy || onRegenerate) && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileHover={{ opacity: 1, scale: 1 }}
-              className="absolute -right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <div className="flex gap-1 bg-background border border-border rounded-lg shadow-md p-1">
-                {onCopy && (
-                  <button
-                    onClick={handleCopy}
-                    className="p-1.5 hover:bg-muted rounded transition-colors"
-                    aria-label="Copiar mensaje"
-                  >
-                    {copied ? (
-                      <Check className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </button>
-                )}
-                {onRegenerate && (
-                  <button
-                    onClick={onRegenerate}
-                    className="p-1.5 hover:bg-muted rounded transition-colors"
-                    aria-label="Regenerar respuesta"
-                  >
-                    <RefreshCw className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            </motion.div>
-          )}
         </motion.div>
 
-        {/* Metadata */}
-        <div className={cn(
-          'flex items-center gap-2 text-xs text-muted-foreground px-2',
-          isUser && 'flex-row-reverse'
-        )}>
-          {timestamp && !isNaN(timestamp.getTime()) && (
-            <time dateTime={timestamp.toISOString()}>
-              {formatDistanceToNow(timestamp, { addSuffix: true, locale: es })}
-            </time>
-          )}
-        </div>
+        {/* Action Bar for AI messages */}
+        {isAI && onCopy && (
+          <MessageActionBar
+            messageContent={typeof children === 'string' ? children : content}
+            isAssistant={true}
+            isLast={isLast}
+            isGenerating={isGenerating}
+            onCopy={onCopy}
+            onRegenerate={onRegenerate}
+            onBranchChat={onBranchChat}
+            onReport={onReport}
+            onLike={onLike}
+            onDislike={onDislike}
+          />
+        )}
       </div>
     </motion.div>
   )

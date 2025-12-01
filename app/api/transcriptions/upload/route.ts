@@ -1,9 +1,7 @@
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
-import { createTranscription, updateTranscriptionStatus } from "@/db/transcriptions"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
-import { uploadFile } from "@/db/storage/files"
 
 export const maxDuration = 300 // 5 minutos para upload de archivos grandes
 
@@ -29,7 +27,7 @@ export async function POST(request: Request) {
     }
 
     // Validar formato de audio
-    const validAudioFormats = ["audio/mpeg", "audio/wav", "audio/mp4", "audio/webm", "audio/ogg", "audio/x-m4a"]
+    const validAudioFormats = ["audio/mpeg", "audio/wav", "audio/mp4", "audio/webm", "audio/ogg", "audio/x-m4a", "audio/mp3"]
     if (!validAudioFormats.includes(file.type)) {
       return NextResponse.json(
         { error: "Invalid audio format. Supported: MP3, WAV, M4A, OGG, WEBM" },
@@ -46,25 +44,42 @@ export async function POST(request: Request) {
       )
     }
 
-    // Subir archivo a Supabase Storage
-    const fileName = `${profile.user_id}/${Date.now()}-${file.name}`
-    const filePath = await uploadFile(file, {
-      name: fileName,
-      user_id: profile.user_id,
-      file_id: fileName
-    })
+    // Subir archivo a Supabase Storage usando el cliente admin
+    const fileName = `${profile.user_id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+    const filePath = fileName
 
-    // Crear registro de transcripción
-    const transcription = await createTranscription({
-      user_id: profile.user_id,
-      workspace_id: workspace_id || null,
-      name: name || file.name,
-      audio_path: filePath,
-      file_size: file.size,
-      audio_format: file.type,
-      status: "pending",
-      description: description || null
-    })
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from("files")
+      .upload(filePath, file, {
+        upsert: true,
+        contentType: file.type
+      })
+
+    if (uploadError) {
+      console.error("Error uploading file to storage:", uploadError)
+      throw new Error(`Failed to upload file: ${uploadError.message}`)
+    }
+
+    // Crear registro de transcripción usando el cliente admin
+    const { data: transcription, error: transcriptionError } = await supabaseAdmin
+      .from("transcriptions")
+      .insert({
+        user_id: profile.user_id,
+        workspace_id: workspace_id || null,
+        name: name || file.name,
+        audio_path: filePath,
+        file_size: file.size,
+        audio_format: file.type,
+        status: "pending",
+        description: description || null
+      })
+      .select("*")
+      .single()
+
+    if (transcriptionError || !transcription) {
+      console.error("Error creating transcription:", transcriptionError)
+      throw new Error(`Failed to create transcription: ${transcriptionError?.message || "Unknown error"}`)
+    }
 
     // NOTA: En producción deberías usar un job queue (ej: Bull, pg-boss)
     // Por ahora, el frontend llamará a /api/transcriptions/transcribe después de subir

@@ -3,13 +3,14 @@ import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
-import { updateTranscriptionStatus, getTranscriptionById, updateTranscription } from "@/db/transcriptions"
 import { FileItemChunk } from "@/types"
 import { encode } from "gpt-tokenizer"
 
 export const maxDuration = 300 // 5 minutos para transcripción
 
 export async function POST(request: Request) {
+  let transcription_id: string | null = null
+  
   try {
     const profile = await getServerProfile()
     const supabaseAdmin = createClient<Database>(
@@ -17,7 +18,9 @@ export async function POST(request: Request) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    const { transcription_id, audio_path } = await request.json()
+    const body = await request.json()
+    transcription_id = body.transcription_id
+    const audio_path = body.audio_path
 
     if (!transcription_id) {
       return NextResponse.json(
@@ -26,8 +29,15 @@ export async function POST(request: Request) {
       )
     }
 
-    // Actualizar estado a "processing"
-    await updateTranscriptionStatus(transcription_id, "processing")
+    // Actualizar estado a "processing" usando el cliente admin
+    const { error: statusError } = await supabaseAdmin
+      .from("transcriptions")
+      .update({ status: "processing", updated_at: new Date().toISOString() })
+      .eq("id", transcription_id)
+
+    if (statusError) {
+      throw new Error(`Failed to update transcription status: ${statusError.message}`)
+    }
 
     // Obtener audio de Supabase Storage
     const { data: audioFile, error: fileError } = await supabaseAdmin.storage
@@ -63,22 +73,33 @@ export async function POST(request: Request) {
       temperature: 0.0
     })
 
-    console.log(`✅ Transcription completed: ${transcription.text?.substring(0, 100)}...`)
+    if (!transcription.text) {
+      throw new Error("Transcription returned empty text")
+    }
+
+    console.log(`✅ Transcription completed: ${transcription.text.substring(0, 100)}...`)
 
     // Calcular tokens
     const tokens = encode(transcription.text).length
     const duration = (transcription as any).duration || 0
 
-    // Actualizar transcripción con los resultados
-    await updateTranscription(transcription_id, {
-      transcript: transcription.text,
-      language: (transcription as any).language || null,
-      duration: duration,
-      tokens: tokens,
-      model: "whisper-1",
-      status: "completed",
-      updated_at: new Date().toISOString()
-    })
+    // Actualizar transcripción con los resultados usando el cliente admin
+    const { error: updateError } = await supabaseAdmin
+      .from("transcriptions")
+      .update({
+        transcript: transcription.text,
+        language: (transcription as any).language || null,
+        duration: duration,
+        tokens: tokens,
+        model: "whisper-1",
+        status: "completed",
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", transcription_id)
+
+    if (updateError) {
+      throw new Error(`Failed to update transcription: ${updateError.message}`)
+    }
 
     // Dividir transcripción en chunks para embeddings
     const chunks = splitTranscriptionIntoChunks(transcription.text)
@@ -116,13 +137,21 @@ export async function POST(request: Request) {
   } catch (error: any) {
     console.error("Error transcribing audio:", error)
     
-    // Intentar actualizar estado a "failed"
-    try {
-      const { transcription_id } = await request.json()
-      if (transcription_id) {
-        await updateTranscriptionStatus(transcription_id, "failed")
+    // Intentar actualizar estado a "failed" usando el cliente admin
+    if (transcription_id) {
+      try {
+        const supabaseAdmin = createClient<Database>(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!
+        )
+        await supabaseAdmin
+          .from("transcriptions")
+          .update({ status: "failed", updated_at: new Date().toISOString() })
+          .eq("id", transcription_id)
+      } catch (updateError) {
+        console.error("Error updating transcription status to failed:", updateError)
       }
-    } catch {}
+    }
 
     return NextResponse.json(
       { error: error.message || "Failed to transcribe audio" },

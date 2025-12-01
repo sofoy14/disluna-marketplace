@@ -17,10 +17,17 @@ import {
   CreditCard,
   Sparkles,
   Star,
-  Zap
+  Zap,
+  X,
+  Crown,
+  MessageSquare,
+  FolderOpen,
+  Mic,
+  Building2
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 type OnboardingStep = 'profile_setup' | 'plan_selection';
 
@@ -32,8 +39,13 @@ interface Plan {
   currency: string;
   billing_period: 'monthly' | 'yearly';
   features: string[];
-  first_month_price?: number;
-  has_first_month_promo?: boolean;
+  plan_type?: 'basic' | 'pro' | 'enterprise';
+  max_output_tokens_monthly?: number;
+  max_processes?: number;
+  max_transcription_hours?: number;
+  has_multiple_workspaces?: boolean;
+  has_processes?: boolean;
+  has_transcriptions?: boolean;
 }
 
 export default function OnboardingPage() {
@@ -245,9 +257,50 @@ export default function OnboardingPage() {
     }).format(amountInCents / 100);
   };
 
-  // Separar planes
-  const monthlyPlan = plans.find(p => p.billing_period === 'monthly');
-  const yearlyPlan = plans.find(p => p.billing_period === 'yearly');
+  // Filter plans to show basic and pro
+  const basicPlan = plans.find(p => p.plan_type === 'basic') || {
+    id: 'basic',
+    name: 'Plan Básico',
+    description: 'Ideal para abogados que buscan asistencia IA',
+    amount_in_cents: 2900000,
+    currency: 'COP',
+    billing_period: 'monthly' as const,
+    plan_type: 'basic' as const,
+    max_output_tokens_monthly: 2000000,
+    max_processes: 0,
+    max_transcription_hours: 0,
+    has_multiple_workspaces: false,
+    has_processes: false,
+    has_transcriptions: false,
+    features: [
+      'Chat con asistente legal IA',
+      'Hasta 2 millones de tokens/mes',
+      'Análisis de normativa colombiana',
+      'Búsqueda inteligente de jurisprudencia'
+    ]
+  };
+
+  const proPlan = plans.find(p => p.plan_type === 'pro') || {
+    id: 'pro',
+    name: 'Plan PRO',
+    description: 'La solución completa para profesionales del derecho',
+    amount_in_cents: 6800000,
+    currency: 'COP',
+    billing_period: 'monthly' as const,
+    plan_type: 'pro' as const,
+    max_output_tokens_monthly: -1,
+    max_processes: 7,
+    max_transcription_hours: 5,
+    has_multiple_workspaces: true,
+    has_processes: true,
+    has_transcriptions: true,
+    features: [
+      'Chat con asistente legal IA ilimitado',
+      'Tokens de chat ilimitados',
+      '7 procesos legales incluidos',
+      '5 horas de transcripción de audio'
+    ]
+  };
 
   const renderStepIndicator = () => {
     const steps = [
@@ -307,7 +360,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
@@ -397,68 +450,224 @@ export default function OnboardingPage() {
             <div className="text-center mb-8">
               <Badge className="bg-indigo-100 text-indigo-700 mb-4">
                 <Sparkles className="w-3 h-3 mr-1" />
-                Oferta de lanzamiento
+                Elige tu plan
               </Badge>
               <h2 className="text-2xl font-bold text-slate-900">
-                Elige tu Plan
+                Selecciona el plan que mejor se ajuste a ti
               </h2>
               <p className="text-slate-600 mt-2">
-                Accede a todas las funcionalidades del asistente legal
+                Sin compromisos, cancela cuando quieras
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-              {/* Plan Mensual */}
-              {monthlyPlan && (
-                <Card className="relative border-2 border-indigo-300 shadow-xl bg-white overflow-hidden">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <Badge className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1 shadow-lg">
-                      <Star className="w-3 h-3 mr-1 fill-current" />
-                      Popular
-                    </Badge>
-                  </div>
-
-                  <CardHeader className="text-center pt-8 pb-2">
-                    <CardTitle className="text-xl">{monthlyPlan.name}</CardTitle>
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              {/* Plan Básico */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0 }}
+              >
+                <Card className="relative h-full border-2 border-blue-200 shadow-lg bg-white overflow-hidden">
+                  <CardHeader className="text-center pt-8 pb-4">
+                    <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700">
+                      <MessageSquare className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-xl">{basicPlan.name}</CardTitle>
+                    <CardDescription className="text-slate-600">{basicPlan.description}</CardDescription>
+                    
                     <div className="mt-4">
-                      {monthlyPlan.has_first_month_promo && (
-                        <div className="flex items-center justify-center gap-2 mb-1">
-                          <span className="text-slate-400 line-through text-sm">
-                            ${formatPrice(monthlyPlan.amount_in_cents)}
-                          </span>
-                          <Badge className="bg-green-100 text-green-700 text-xs">
-                            Primer mes
-                          </Badge>
-                        </div>
-                      )}
                       <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-4xl font-bold">
-                          ${formatPrice(monthlyPlan.first_month_price || monthlyPlan.amount_in_cents)}
+                        <span className="text-4xl font-bold text-slate-900">
+                          ${formatPrice(basicPlan.amount_in_cents)}
                         </span>
-                        <span className="text-slate-500">COP</span>
                       </div>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Luego ${formatPrice(monthlyPlan.amount_in_cents)}/mes
-                      </p>
+                      <p className="text-sm text-slate-500">COP / mes</p>
                     </div>
                   </CardHeader>
 
-                  <CardContent>
+                  {/* Highlights */}
+                  <div className="mx-6 mb-4 p-3 rounded-xl bg-slate-50 grid grid-cols-2 gap-2">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4 text-blue-500" />
+                      <div>
+                        <p className="text-[10px] uppercase text-slate-500">Chat IA</p>
+                        <p className="text-xs font-semibold">2M tokens</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-slate-400" />
+                      <div>
+                        <p className="text-[10px] uppercase text-slate-500">Workspace</p>
+                        <p className="text-xs font-semibold">1</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FolderOpen className="w-4 h-4 text-slate-300" />
+                      <div>
+                        <p className="text-[10px] uppercase text-slate-500">Procesos</p>
+                        <p className="text-xs font-semibold text-slate-400">—</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mic className="w-4 h-4 text-slate-300" />
+                      <div>
+                        <p className="text-[10px] uppercase text-slate-500">Transcripción</p>
+                        <p className="text-xs font-semibold text-slate-400">—</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <CardContent className="pt-0">
                     <ul className="space-y-2 mb-6 text-sm">
-                      {monthlyPlan.features.slice(0, 4).map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                          <span className="text-slate-600">{feature}</span>
-                        </li>
-                      ))}
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-600">Chat con asistente legal IA</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-600">Hasta 2 millones de tokens/mes</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-600">Análisis de normativa colombiana</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-600">Búsqueda de jurisprudencia</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <X className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-400 line-through">Procesos legales</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <X className="w-4 h-4 text-slate-300 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-400 line-through">Transcripción de audio</span>
+                      </li>
                     </ul>
 
                     <Button
-                      onClick={() => handleSubscribe(monthlyPlan.id)}
+                      onClick={() => handleSubscribe(basicPlan.id)}
                       disabled={processingPlanId !== null}
-                      className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                      variant="outline"
+                      className="w-full border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white"
+                      size="lg"
                     >
-                      {processingPlanId === monthlyPlan.id ? (
+                      {processingPlanId === basicPlan.id ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Procesando...
+                        </>
+                      ) : (
+                        'Elegir Plan Básico'
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Plan PRO */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <Card className="relative h-full border-2 border-purple-400 shadow-2xl bg-gradient-to-br from-slate-900 via-slate-900 to-indigo-950 text-white overflow-hidden">
+                  {/* Background effects */}
+                  <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl" />
+                  <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl" />
+                  
+                  {/* Badge */}
+                  <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                    <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-1.5 shadow-lg border-0">
+                      <Star className="w-3.5 h-3.5 mr-1 fill-current" />
+                      Recomendado
+                    </Badge>
+                  </div>
+
+                  <CardHeader className="text-center pt-10 pb-4 relative z-10">
+                    <div className="w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br from-purple-500 to-purple-700">
+                      <Crown className="w-6 h-6 text-white" />
+                    </div>
+                    <CardTitle className="text-xl text-white">{proPlan.name}</CardTitle>
+                    <CardDescription className="text-slate-300">{proPlan.description}</CardDescription>
+                    
+                    <div className="mt-4">
+                      <div className="flex items-baseline justify-center gap-1">
+                        <span className="text-4xl font-bold text-white">
+                          ${formatPrice(proPlan.amount_in_cents)}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-400">COP / mes</p>
+                    </div>
+                  </CardHeader>
+
+                  {/* Highlights */}
+                  <div className="mx-6 mb-4 p-3 rounded-xl bg-white/5 grid grid-cols-2 gap-2 relative z-10">
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4 text-purple-400" />
+                      <div>
+                        <p className="text-[10px] uppercase text-slate-500">Chat IA</p>
+                        <p className="text-xs font-semibold text-white">Ilimitado</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Building2 className="w-4 h-4 text-amber-400" />
+                      <div>
+                        <p className="text-[10px] uppercase text-slate-500">Workspaces</p>
+                        <p className="text-xs font-semibold text-white">∞</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FolderOpen className="w-4 h-4 text-emerald-400" />
+                      <div>
+                        <p className="text-[10px] uppercase text-slate-500">Procesos</p>
+                        <p className="text-xs font-semibold text-white">7</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Mic className="w-4 h-4 text-pink-400" />
+                      <div>
+                        <p className="text-[10px] uppercase text-slate-500">Transcripción</p>
+                        <p className="text-xs font-semibold text-white">5 horas</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <CardContent className="pt-0 relative z-10">
+                    <ul className="space-y-2 mb-6 text-sm">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-300">Chat con asistente legal IA ilimitado</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-300">Tokens de chat ilimitados</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-300">Múltiples espacios de trabajo</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-300">7 procesos legales incluidos</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-300">5 horas de transcripción de audio</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                        <span className="text-slate-300">Soporte prioritario 24/7</span>
+                      </li>
+                    </ul>
+
+                    <Button
+                      onClick={() => handleSubscribe(proPlan.id)}
+                      disabled={processingPlanId !== null}
+                      className="w-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white shadow-lg"
+                      size="lg"
+                    >
+                      {processingPlanId === proPlan.id ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Procesando...
@@ -466,71 +675,13 @@ export default function OnboardingPage() {
                       ) : (
                         <>
                           <Zap className="w-4 h-4 mr-2" />
-                          Comenzar por $4.000
+                          Elegir Plan PRO
                         </>
                       )}
                     </Button>
                   </CardContent>
                 </Card>
-              )}
-
-              {/* Plan Anual */}
-              {yearlyPlan && (
-                <Card className="relative border-2 border-slate-200 shadow-lg bg-white overflow-hidden">
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <Badge className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-1 shadow-lg">
-                      💰 -10%
-                    </Badge>
-                  </div>
-
-                  <CardHeader className="text-center pt-8 pb-2">
-                    <CardTitle className="text-xl">{yearlyPlan.name}</CardTitle>
-                    <div className="mt-4">
-                      <div className="flex items-center justify-center gap-2 mb-1">
-                        <span className="text-slate-400 line-through text-sm">
-                          ${formatPrice(5800000 * 12)}
-                        </span>
-                      </div>
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-4xl font-bold">
-                          ${formatPrice(yearlyPlan.amount_in_cents)}
-                        </span>
-                        <span className="text-slate-500">COP</span>
-                      </div>
-                      <p className="text-xs text-green-600 mt-1">
-                        ${formatPrice(Math.round(yearlyPlan.amount_in_cents / 12))}/mes
-                      </p>
-                    </div>
-                  </CardHeader>
-
-                  <CardContent>
-                    <ul className="space-y-2 mb-6 text-sm">
-                      {yearlyPlan.features.slice(0, 4).map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                          <span className="text-slate-600">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-
-                    <Button
-                      onClick={() => handleSubscribe(yearlyPlan.id)}
-                      disabled={processingPlanId !== null}
-                      variant="outline"
-                      className="w-full border-slate-900 text-slate-900 hover:bg-slate-900 hover:text-white"
-                    >
-                      {processingPlanId === yearlyPlan.id ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Procesando...
-                        </>
-                      ) : (
-                        'Suscribirse Anualmente'
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
+              </motion.div>
             </div>
 
             {/* Back button */}

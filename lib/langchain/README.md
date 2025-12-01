@@ -30,7 +30,7 @@ import { LegalAgent } from '@/lib/langchain'
 const agent = await LegalAgent.create({
   modelId: 'alibaba/tongyi-deepresearch-30b-a3b',
   temperature: 0.3,
-  maxIterations: 6
+  maxIterations: 10
 })
 
 // Ejecutar consulta
@@ -188,7 +188,7 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 │     ▼                                                            │
 │  4. Recibe resultados y EVALÚA si necesita más                  │
 │     ▼                                                            │
-│  5. Repite 3-4 hasta tener información suficiente (máx 6x)      │
+│  5. Repite 3-4 hasta tener información suficiente (máx 10x)     │
 │     ▼                                                            │
 │  6. Genera respuesta final con fuentes                          │
 │                                                                  │
@@ -199,7 +199,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 - **Tool Calling Nativo**: El modelo decide autónomamente cuándo y qué herramientas usar
 - **Cache de Agentes**: Los agentes se cachean por chatId para reutilizar en conversaciones
-- **Máximo 6 iteraciones**: Previene loops infinitos de tool calling
+- **Máximo 10 iteraciones**: Previene loops infinitos de tool calling
+- **Early Stopping Graceful**: Si se alcanza el límite de iteraciones, genera respuesta parcial en lugar de error
 - **Prioridad de fuentes**: Oficiales > Académicas > Generales
 
 ## 🔗 Referencias

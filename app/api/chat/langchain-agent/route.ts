@@ -26,6 +26,15 @@ import { NextRequest, NextResponse } from "next/server"
 import { HumanMessage, AIMessage, BaseMessage } from "@langchain/core/messages"
 import { LegalAgent, getModelConfig, RESEARCH_MODELS } from "@/lib/langchain"
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base"
+import { createClient } from '@supabase/supabase-js'
+import { canContinueChat, getUserPlanStatus } from '@/lib/billing/plan-access'
+import { incrementTokenUsage } from '@/db/usage-tracking'
+
+// Supabase client for auth and billing
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export const runtime = "nodejs"
 export const maxDuration = 180 // 3 minutos para investigación completa
@@ -192,15 +201,12 @@ async function getOrCreateAgent(
   const cached = agentCache.get(cacheKey)
   if (cached) {
     cached.lastUsed = new Date()
-    console.log(`♻️ Reutilizando agente en caché: ${cacheKey}`)
     return cached.agent
   }
-
-  console.log(`🆕 Creando nuevo agente: ${cacheKey}`)
   const agent = await LegalAgent.create({
     modelId,
     temperature,
-    maxIterations: 6,
+    maxIterations: 10, // Aumentado para consultas legales complejas
     verbose: process.env.NODE_ENV === 'development'
   })
 
@@ -220,13 +226,40 @@ export async function POST(request: NextRequest) {
     cleanupInterval = setInterval(cleanupCache, CACHE_TTL)
   }
 
-  console.log(`\n${'═'.repeat(80)}`)
-  console.log(`🤖 LANGCHAIN AGENT - ENDPOINT UNIFICADO`)
-  console.log(`${'═'.repeat(80)}`)
-
   try {
     const body = await request.json() as RequestBody
     const { chatSettings, messages, chatId, userId } = body
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // BILLING CHECK: Verify user can continue chatting
+    // ═══════════════════════════════════════════════════════════════════════
+    let effectiveUserId = userId
+    
+    // If no userId provided, try to get from auth header
+    if (!effectiveUserId) {
+      const authHeader = request.headers.get('Authorization')
+      if (authHeader?.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1]
+        const { data: { user } } = await supabase.auth.getUser(token)
+        effectiveUserId = user?.id
+      }
+    }
+
+    // Check if billing is enabled and user has access
+    if (process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true' && effectiveUserId) {
+      const canChat = await canContinueChat(effectiveUserId)
+      
+      if (!canChat.allowed) {
+        return NextResponse.json(
+          { 
+            error: canChat.reason || "Has alcanzado el límite de tu plan",
+            code: "USAGE_LIMIT_EXCEEDED",
+            needsUpgrade: true
+          },
+          { status: 402 } // Payment Required
+        )
+      }
+    }
 
     // Validar API Key
     const apiKey = process.env.OPENROUTER_API_KEY
@@ -243,20 +276,10 @@ export async function POST(request: NextRequest) {
 
     // Verificar que el modelo soporte tools
     const modelConfig = getModelConfig(modelId)
-    if (modelConfig && !modelConfig.supportsTools) {
-      console.warn(`⚠️ Modelo ${modelId} no soporta tools, usando fallback`)
-      // Podrías hacer fallback a otro modelo aquí
-    }
 
     // Extraer el último mensaje del usuario
     const userMessages = messages.filter(m => m.role === 'user')
     const lastUserMessage = userMessages[userMessages.length - 1]?.content || ''
-
-    console.log(`📝 Query: "${lastUserMessage.substring(0, 100)}..."`)
-    console.log(`🤖 Modelo: ${modelId}`)
-    console.log(`🌡️ Temperature: ${temperature}`)
-    console.log(`💬 Chat ID: ${chatId || 'N/A'}`)
-    console.log(`👤 User ID: ${userId || 'N/A'}`)
 
     // Obtener o crear agente
     const effectiveChatId = chatId || `temp-${Date.now()}`
@@ -265,23 +288,30 @@ export async function POST(request: NextRequest) {
     // Convertir historial (excluyendo el último mensaje del usuario)
     const chatHistory = convertMessages(messages.slice(0, -1))
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // EJECUTAR AGENTE CON STREAMING REAL
-    // ═══════════════════════════════════════════════════════════════════════════
-
-    console.log(`🚀 Ejecutando agente con streaming real...`)
-
     // Crear stream de respuesta con eventos JSON
     const encoder = new TextEncoder()
     
     const stream = new ReadableStream({
       async start(controller) {
-        // Helper para emitir eventos
+        let isClosed = false
+        
+        // Helper para emitir eventos de forma segura
         const emit = (event: object) => {
+          if (isClosed) return
           try {
             controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'))
           } catch (e) {
-            console.error('Error emitting:', e)
+            // Ignorar errores si el controller ya está cerrado
+          }
+        }
+        
+        const safeClose = () => {
+          if (isClosed) return
+          isClosed = true
+          try {
+            controller.close()
+          } catch (e) {
+            // Ignorar errores si ya está cerrado
           }
         }
 
@@ -388,6 +418,27 @@ export async function POST(request: NextRequest) {
             }
           }
 
+          // ═══════════════════════════════════════════════════════════════════
+          // TOKEN TRACKING: Track usage for billing
+          // ═══════════════════════════════════════════════════════════════════
+          if (effectiveUserId && process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true') {
+            // Estimate token usage (rough approximation)
+            // Output tokens: approximately 1 token per 4 characters
+            const outputTokens = Math.ceil(cleanOutput.length / 4)
+            // Input tokens: sum of all message characters
+            const inputTokens = Math.ceil(
+              messages.reduce((acc, m) => acc + m.content.length, 0) / 4
+            )
+            
+            try {
+              await incrementTokenUsage(effectiveUserId, outputTokens, inputTokens)
+              console.log(`📊 Token usage tracked: output=${outputTokens}, input=${inputTokens}`)
+            } catch (trackingError) {
+              console.error('Error tracking token usage:', trackingError)
+              // Don't fail the request for tracking errors
+            }
+          }
+
           // Emitir evento de finalización
           const processingTime = ((Date.now() - startTime) / 1000).toFixed(1)
           emit({ 
@@ -400,19 +451,24 @@ export async function POST(request: NextRequest) {
             }
           })
           
-          controller.close()
+          safeClose()
 
-          console.log(`\n${'═'.repeat(60)}`)
-          console.log(`✅ RESPUESTA COMPLETADA (Streaming real)`)
-          console.log(`   ⏱️ Tiempo: ${processingTime}s`)
-          console.log(`   🔧 Tools: ${result.toolsUsed?.join(', ') || 'Ninguna'}`)
-          console.log(`   📚 Fuentes: ${result.sources?.length || 0}`)
-          console.log(`${'═'.repeat(60)}\n`)
-
-        } catch (error) {
-          console.error('❌ Error en streaming:', error)
-          emit({ type: 'error', message: 'Hubo un error procesando tu consulta. Por favor, intenta de nuevo.' })
-          controller.close()
+        } catch (error: any) {
+          
+          // Mensaje específico para error de max iterations
+          let errorMessage = 'Hubo un error procesando tu consulta. Por favor, intenta de nuevo.'
+          
+          if (error.message?.includes('max iterations') || error.message?.includes('Agent stopped')) {
+            errorMessage = 'La consulta requiere más investigación de la que puedo completar en este momento. ' +
+                          'Te recomiendo dividir tu pregunta en consultas más específicas.'
+            // Emitir como respuesta parcial, no como error
+            emit({ type: 'token', content: errorMessage })
+            emit({ type: 'done', metadata: { partial: true } })
+          } else {
+            emit({ type: 'error', message: errorMessage })
+          }
+          
+          safeClose()
         }
       }
     })
@@ -428,8 +484,6 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error: any) {
-    console.error(`❌ Error en LangChain Agent:`, error)
-    
     return NextResponse.json(
       { 
         error: error.message || "Error procesando la consulta",
@@ -476,6 +530,7 @@ export async function GET() {
     }
   })
 }
+
 
 
 

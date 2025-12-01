@@ -292,24 +292,15 @@ export const ShaderCanvas = ({
     mousePositionRef.current = [0.5, 0.5]; // Reset to center
   };
 
-  // Border color based on theme
-  const borderColor = isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)';
-
   return (
     <canvas 
       ref={canvasRef} 
-      className="rounded-full transition-transform duration-300" 
+      className="rounded-full transition-transform duration-300 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.5)]" 
       style={{ 
         width: size, 
         height: size,
         transform: isHovered ? 'scale(1.03)' : 'scale(1)',
-        cursor: 'pointer',
-        border: `2px solid ${borderColor}`,
-        boxShadow: hasActiveReminders 
-          ? '0 0 30px rgba(66, 153, 225, 0.4)' 
-          : hasUpcomingReminders
-            ? '0 0 30px rgba(72, 187, 120, 0.4)'
-            : (isHovered ? '0 0 30px rgba(255, 255, 255, 0.2)' : 'none')
+        cursor: 'pointer'
       }}
       onClick={onClick}
       onMouseEnter={() => setIsHovered(true)}

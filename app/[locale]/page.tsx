@@ -1,19 +1,6 @@
-"use client"
-
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { redirect } from "next/navigation"
 
 export default function HomePage() {
-  const router = useRouter()
-
-  useEffect(() => {
-    // Redirigir a la landing page
-    router.push("/landing")
-  }, [router])
-
-  return (
-    <div className="flex size-full flex-col items-center justify-center">
-      <div className="text-lg">Redirigiendo a la página principal...</div>
-    </div>
-  )
+  // Redirigir inmediatamente a la landing page sin mostrar mensaje
+  redirect("/landing")
 }

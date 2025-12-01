@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageSquare, FolderOpen, Mic, X } from 'lucide-react'
+import { MessageSquare, FolderOpen, Mic, X, Lock, Crown } from 'lucide-react'
 import { FC, ElementType, useContext, useMemo, useEffect, useState } from 'react'
 import { ChatbotUIContext } from '@/context/context'
 import { ContentType } from '@/types'
@@ -10,6 +10,9 @@ import { cn } from '@/lib/utils'
 import { SidebarDataList } from '../sidebar-data-list'
 import { Button } from '@/components/ui/button'
 import { WorkspaceSwitcher } from '@/components/utility/workspace-switcher'
+import { usePlanAccess } from '@/lib/hooks/use-plan-access'
+import { UpgradePrompt, UpgradeBadge, TokenLimitWarning } from '@/components/billing/UpgradePrompt'
+import { useChatHandler } from '@/components/chat/chat-hooks/use-chat-handler'
 
 interface ModernSidebarProps {
   contentType: ContentType
@@ -78,11 +81,25 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
   onContentTypeChange,
   onClose
 }) => {
-  const { chats, collections, folders } =
+  const { chats, collections, folders, transcriptions } =
     useContext(ChatbotUIContext)
+  
+  // Plan access control
+  const { 
+    isLoading: planLoading,
+    hasActiveSubscription,
+    access,
+    usage,
+    limits,
+    plan,
+    isPro
+  } = usePlanAccess()
+  
+  const { handleNewChat } = useChatHandler()
     
   const [isMobile, setIsMobile] = useState(false)
   const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [upgradeFeature, setUpgradeFeature] = useState<'processes' | 'transcriptions' | 'workspaces' | 'tokens' | null>(null)
   
   useEffect(() => {
     const checkMobile = () => {
@@ -118,34 +135,85 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
         return chats
       case 'collections':
         return collections
+      case 'transcriptions':
+        return transcriptions || []
       default:
         return []
     }
-  }, [chats, collections, contentType])
+  }, [chats, collections, transcriptions, contentType])
 
   const contentTypeFolders = useMemo(
     () => folders.filter(folder => folder.type === contentType),
     [folders, contentType]
   )
 
+  // Define nav items with plan access control
   const navItems: Array<{
     key: ContentType
     label: string
     count: number
     icon: ElementType
-  }> = [
-    { key: 'chats', label: 'Chats', count: chats.length, icon: MessageSquare },
-    { key: 'collections', label: 'Procesos', count: collections.length, icon: FolderOpen },
-    { key: 'transcriptions', label: 'Transcripciones', count: 0, icon: Mic }
-  ]
+    locked: boolean
+    upgradeFeature?: 'processes' | 'transcriptions'
+  }> = useMemo(() => [
+    { 
+      key: 'chats', 
+      label: 'Chats', 
+      count: chats.length, 
+      icon: MessageSquare,
+      locked: false 
+    },
+    { 
+      key: 'collections', 
+      label: 'Procesos', 
+      count: collections.length, 
+      icon: FolderOpen,
+      locked: !access.processes && hasActiveSubscription,
+      upgradeFeature: 'processes' as const
+    },
+    { 
+      key: 'transcriptions', 
+      label: 'Transcripciones', 
+      count: (transcriptions || []).length, 
+      icon: Mic,
+      locked: !access.transcriptions && hasActiveSubscription,
+      upgradeFeature: 'transcriptions' as const
+    }
+  ], [chats.length, collections.length, transcriptions, access, hasActiveSubscription])
+
+  const handleAliClick = () => {
+    handleNewChat()
+    // Cerrar sidebar después de crear chat (siempre, no solo en móvil)
+    onClose?.()
+  }
 
   const handleSelectContentType = (type: ContentType) => {
+    // Si ya está seleccionado el tipo "chats", crear un nuevo chat
+    if (type === 'chats' && type === contentType) {
+      handleNewChat()
+      // Cerrar sidebar después de crear chat (siempre, no solo en móvil)
+      onClose?.()
+      return
+    }
+    
     if (type === contentType) return
+    
+    // Check if feature is locked
+    const item = navItems.find(n => n.key === type)
+    if (item?.locked && item.upgradeFeature) {
+      setUpgradeFeature(item.upgradeFeature)
+      return
+    }
+    
     onContentTypeChange?.(type)
     // Cerrar sidebar en móviles después de seleccionar
     if (isMobile) {
       onClose?.()
     }
+  }
+  
+  const handleUpgradeForTokens = () => {
+    setUpgradeFeature('tokens')
   }
 
   return (
@@ -183,9 +251,11 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
             <div className="relative z-10">
               <div className="flex items-center justify-between gap-2 mb-3">
                 <motion.div 
-                  className="flex-1 flex items-center justify-center"
+                  className="flex-1 flex items-center justify-center cursor-pointer"
                   whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   transition={{ type: 'spring', stiffness: 400 }}
+                  onClick={handleAliClick}
                 >
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent text-center tracking-tight">ALI</h2>
                 </motion.div>
@@ -230,6 +300,7 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
               {navItems.map((item, index) => {
                 const IconComponent = item.icon
                 const isActive = item.key === contentType
+                const isLocked = item.locked
                 return (
                   <motion.button
                     key={item.key}
@@ -246,32 +317,64 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
                       'flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200',
                       isActive
                         ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/25'
-                        : 'text-muted-foreground hover:bg-foreground/5 hover:text-foreground'
+                        : isLocked
+                          ? 'text-muted-foreground/60 hover:bg-foreground/5'
+                          : 'text-muted-foreground hover:bg-foreground/5 hover:text-foreground'
                     )}
                   >
                     <motion.div
                       animate={isActive ? { rotate: [0, -10, 10, 0] } : {}}
                       transition={{ duration: 0.4 }}
+                      className="relative"
                     >
-                      <IconComponent className={cn('w-4 h-4', isActive ? 'text-primary-foreground' : 'text-muted-foreground')} />
+                      <IconComponent className={cn(
+                        'w-4 h-4', 
+                        isActive ? 'text-primary-foreground' : isLocked ? 'text-muted-foreground/60' : 'text-muted-foreground'
+                      )} />
+                      {isLocked && (
+                        <Lock className="absolute -bottom-1 -right-1 w-2.5 h-2.5 text-amber-500" />
+                      )}
                     </motion.div>
                     <span className="flex-1 text-left">{item.label}</span>
-                    <motion.span
-                      animate={isActive ? { scale: [1, 1.1, 1] } : {}}
-                      transition={{ duration: 0.3 }}
-                      className={cn(
-                        'min-w-[28px] rounded-lg px-2 py-1 text-center text-xs font-semibold leading-none',
-                        isActive
-                          ? 'bg-primary-foreground/20 text-primary-foreground'
-                          : 'bg-foreground/5 text-muted-foreground'
-                      )}
-                    >
-                      {item.count}
-                    </motion.span>
+                    {isLocked ? (
+                      <span className="px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide rounded bg-gradient-to-r from-amber-500/20 to-amber-600/20 text-amber-400 border border-amber-500/30">
+                        PRO
+                      </span>
+                    ) : (
+                      <motion.span
+                        animate={isActive ? { scale: [1, 1.1, 1] } : {}}
+                        transition={{ duration: 0.3 }}
+                        className={cn(
+                          'min-w-[28px] rounded-lg px-2 py-1 text-center text-xs font-semibold leading-none',
+                          isActive
+                            ? 'bg-primary-foreground/20 text-primary-foreground'
+                            : 'bg-foreground/5 text-muted-foreground'
+                        )}
+                      >
+                        {item.count}
+                      </motion.span>
+                    )}
                   </motion.button>
                 )
               })}
             </nav>
+            
+            {/* Plan indicator for Basic users */}
+            {hasActiveSubscription && !isPro && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="mt-4 p-2.5 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-500/10 border border-indigo-500/20"
+              >
+                <div className="flex items-center gap-2">
+                  <Crown className="w-4 h-4 text-amber-400" />
+                  <div className="flex-1">
+                    <p className="text-xs font-medium text-foreground">Plan Básico</p>
+                    <p className="text-[10px] text-muted-foreground">Actualiza para más funciones</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Separador */}
@@ -291,6 +394,15 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
 
           {/* Separador inferior */}
           <div className="mx-4 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+          
+          {/* Token limit warning for Basic plan */}
+          {usage && !isPro && usage.tokens.percentage >= 80 && (
+            <TokenLimitWarning
+              tokensUsed={usage.tokens.percentage}
+              tokensLimit={100}
+              onUpgrade={handleUpgradeForTokens}
+            />
+          )}
 
           {/* Profile Card */}
           <motion.div variants={itemVariants}>
@@ -298,6 +410,13 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
           </motion.div>
         </motion.div>
       )}
+      
+      {/* Upgrade Prompt Dialog */}
+      <UpgradePrompt
+        feature={upgradeFeature || 'processes'}
+        isOpen={upgradeFeature !== null}
+        onClose={() => setUpgradeFeature(null)}
+      />
     </AnimatePresence>
   )
 }

@@ -19,7 +19,7 @@ import { ModelItem } from "./items/models/model-item"
 import { PresetItem } from "./items/presets/preset-item"
 import { PromptItem } from "./items/prompts/prompt-item"
 import { ToolItem } from "./items/tools/tool-item"
-import { IconCalendar, IconCalendarEvent, IconCalendarWeek, IconHistory } from "@tabler/icons-react"
+import { IconCalendar, IconCalendarEvent, IconCalendarWeek, IconHistory, IconMicrophone } from "@tabler/icons-react"
 
 interface SidebarDataListProps {
   contentType: ContentType
@@ -232,6 +232,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
               <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/10">
                 {contentType === "chats" ? (
                   <IconHistory className="w-8 h-8 text-primary/50" />
+                ) : contentType === "transcriptions" ? (
+                  <IconMicrophone className="w-8 h-8 text-primary/50" />
                 ) : (
                   <IconCalendar className="w-8 h-8 text-primary/50" />
                 )}

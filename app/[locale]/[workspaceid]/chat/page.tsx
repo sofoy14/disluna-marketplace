@@ -10,23 +10,19 @@ import { LegalWritingScreen } from "@/components/chat/legal-writing-screen"
 import useHotkey from "@/lib/hooks/use-hotkey"
 
 const CHAT_MODE_EVENT = "chat-mode-changed"
-
 type ChatMode = "default" | "legal-writing"
 
 export default function ChatPage() {
-  const { chatMessages, selectedChat } = useContext(ChatbotUIContext)
+  const { chatMessages, selectedChat, isGenerating } = useContext(ChatbotUIContext)
   const { handleNewChat, handleFocusChatInput } = useChatHandler()
   const params = useParams()
-
   const [chatMode, setChatMode] = useState<ChatMode>("default")
 
   useHotkey("o", () => handleNewChat())
   useHotkey("l", () => handleFocusChatInput())
 
   useEffect(() => {
-    if (typeof window === "undefined") {
-      return
-    }
+    if (typeof window === "undefined") return
 
     const updateChatMode = () => {
       const stored = localStorage.getItem("chatMode")
@@ -35,19 +31,18 @@ export default function ChatPage() {
 
     updateChatMode()
     window.addEventListener(CHAT_MODE_EVENT, updateChatMode)
-
-    return () => {
-      window.removeEventListener(CHAT_MODE_EVENT, updateChatMode)
-    }
+    return () => window.removeEventListener(CHAT_MODE_EVENT, updateChatMode)
   }, [])
 
-  // Si hay un chatid en la URL o hay mensajes/seleccionado un chat, mostrar ChatUI
-  const hasChatData = params.chatid || (chatMessages.length > 0 && selectedChat)
+  // Mostrar ChatUI si hay actividad de chat
+  const showChatUI = params.chatid || 
+                     chatMessages.length > 0 || 
+                     selectedChat !== null ||
+                     isGenerating
 
-  if (hasChatData) {
+  if (showChatUI) {
     return <ChatUI />
   }
 
-  // Si no hay datos de chat, mostrar welcome screen inmediatamente
   return chatMode === "legal-writing" ? <LegalWritingScreen /> : <WelcomeScreen />
 }

@@ -36,9 +36,6 @@ export const validateChatSettings = (
   }
 
   // Permitir que el modelo no se encuentre - usar configuración por defecto
-  if (!modelData) {
-    console.log("Model not found, using default configuration")
-  }
 
   if (!profile) {
     throw new Error("Profile not found")
@@ -235,13 +232,8 @@ export const handleHostedChat = async (
   
   if (chatMode === 'legal-writing') {
     apiEndpoint = "/api/chat/legal-writing"
-    console.log(`🤖 Modo: Redacción Legal - usando endpoint: ${apiEndpoint}`)
   } else if (isLangChainModel) {
-    // Modelos con tool calling nativo -> usar LangChain Agent
     apiEndpoint = "/api/chat/langchain-agent"
-    console.log(`🔗 Modelo LangChain detectado (${modelId}) - usando endpoint: ${apiEndpoint}`)
-  } else {
-    console.log(`🤖 Usando endpoint: ${apiEndpoint} - tool calling habilitado para búsqueda legal`)
   }
 
   const requestBody = {
@@ -320,7 +312,6 @@ export const processResponse = async (
   const contentType = response.headers.get('content-type') || ''
   const isPlainText = contentType.includes('text/plain')
 
-  console.log('📄 Procesando respuesta:', { contentType, isPlainText, status: response.status })
 
   if (contentType.includes('application/json')) {
     try {
@@ -364,7 +355,6 @@ export const processResponse = async (
     // Si es texto plano, leer toda la respuesta de una vez
     const text = await response.text()
     fullText = text
-    console.log('✅ Respuesta texto plano recibida:', fullText.substring(0, 100) + '...')
     
     // Actualizar el mensaje del asistente
     setChatMessages(prev =>
@@ -389,7 +379,6 @@ export const processResponse = async (
 
   // Código para streaming con eventos JSON (langchain-agent) o texto plano
   if (response.body) {
-    console.log('🔄 Procesando respuesta streaming...')
     
     // Detectar si es streaming con eventos JSON (nuevo formato)
     const isEventStream = contentType.includes('text/event-stream')
@@ -398,8 +387,6 @@ export const processResponse = async (
     await consumeReadableStream(
       response.body,
       chunk => {
-        setFirstTokenReceived(true)
-
         try {
           const chunkStr = typeof chunk === 'string' ? chunk : String(chunk)
           
@@ -414,10 +401,8 @@ export const processResponse = async (
                 
                 switch (event.type) {
                   case 'thinking':
-                    // Acumular contenido de razonamiento
                     thinkingContent += (thinkingContent ? '\n' : '') + event.content
                     setToolInUse("thinking")
-                    console.log('🧠 Thinking:', event.content)
                     break
                     
                   case 'thinking_done':
@@ -427,42 +412,41 @@ export const processResponse = async (
                   case 'tool_start':
                     thinkingContent += `\n🔧 Usando: ${event.tool}`
                     setToolInUse(event.tool)
-                    console.log('🔧 Tool start:', event.tool)
                     break
                     
                   case 'tool_end':
                     thinkingContent += ` → ${event.output}`
                     setToolInUse("none")
-                    console.log('✅ Tool end:', event.output?.substring(0, 50))
                     break
                     
                   case 'token':
-                    // Agregar token a la respuesta
+                    // Agregar token a la respuesta - AHORA sí tenemos contenido real
                     fullText += event.content
+                    setFirstTokenReceived(true)
                     break
                     
                   case 'sources':
-                    // Las fuentes se emiten también como tokens, ya incluidas en fullText
-                    console.log('📚 Sources:', event.sources?.length)
                     break
                     
                   case 'done':
-                    console.log('✅ Streaming done:', event.metadata)
                     break
                     
                   case 'error':
                     fullText += event.message || 'Error desconocido'
+                    setFirstTokenReceived(true)
                     break
                     
                   default:
                     // Evento desconocido, intentar agregar como texto
                     if (event.content) {
                       fullText += event.content
+                      setFirstTokenReceived(true)
                     }
                 }
               } catch (parseError) {
                 // No es JSON válido, tratar como texto plano
                 fullText += line
+                setFirstTokenReceived(true)
               }
             }
           } else {
@@ -483,11 +467,11 @@ export const processResponse = async (
                     ""
                   )
             fullText += contentToAdd
+            setFirstTokenReceived(true)
           }
           
-          console.log('📝 Chunk procesado, texto total:', fullText.length, 'chars')
         } catch (error) {
-          console.error("Error parsing chunk:", error, "Chunk:", chunk)
+          // Error parsing chunk - ignorar
         }
 
         // Actualizar mensaje con contenido y razonamiento
@@ -514,7 +498,6 @@ export const processResponse = async (
       controller.signal
     )
 
-    console.log('✅ Streaming completado, texto final:', fullText.substring(0, 100) + '...')
     return fullText
   } else {
     throw new Error("Response body is null")
