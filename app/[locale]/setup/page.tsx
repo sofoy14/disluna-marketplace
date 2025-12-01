@@ -65,16 +65,28 @@ export default function SetupPage() {
 
   useEffect(() => {
     ;(async () => {
-      const session = (await supabase.auth.getSession()).data.session
+      try {
+        const session = (await supabase.auth.getSession()).data.session
 
-      if (!session) {
-        return router.push("/login")
-      } else {
+        if (!session) {
+          return router.push("/login")
+        }
+
         const user = session.user
 
-        const profile = await getProfileByUserId(user.id)
+        // Try to get profile, but handle if it doesn't exist yet
+        let profile
+        try {
+          profile = await getProfileByUserId(user.id)
+        } catch (error) {
+          console.log("Profile not found, user needs to set up profile")
+          // Profile doesn't exist yet, show setup form
+          setLoading(false)
+          return
+        }
+
         setProfile(profile)
-        setUsername(profile.username)
+        setUsername(profile.username || '')
         
         // Pre-fill display name from profile if available
         if (profile.display_name) {
@@ -84,22 +96,31 @@ export default function SetupPage() {
         if (!profile.has_onboarded) {
           setLoading(false)
         } else {
-          const data = await fetchHostedModels(profile)
+          // User already onboarded, redirect to chat or onboarding for plan
+          try {
+            const homeWorkspaceId = await getHomeWorkspaceByUserId(user.id)
+            
+            // Check if user has subscription
+            const { data: subscription } = await supabase
+              .from('subscriptions')
+              .select('id, status')
+              .eq('user_id', user.id)
+              .in('status', ['active', 'trialing'])
+              .single()
 
-          if (!data) return
-
-          setEnvKeyMap(data.envKeyMap)
-          setAvailableHostedModels(data.hostedModels)
-
-          if (profile["openrouter_api_key"] || data.envKeyMap["openrouter"]) {
-            const openRouterModels = await fetchOpenRouterModels()
-            if (!openRouterModels) return
-            setAvailableOpenRouterModels(openRouterModels)
+            if (subscription) {
+              return router.push(`/${homeWorkspaceId}/chat`)
+            } else {
+              return router.push('/onboarding')
+            }
+          } catch (error) {
+            // No workspace found, redirect to onboarding
+            return router.push('/onboarding')
           }
-
-          const homeWorkspaceId = await getHomeWorkspaceByUserId(session.user.id)
-          return router.push(`/${homeWorkspaceId}/chat`)
         }
+      } catch (error) {
+        console.error("Error in setup page:", error)
+        setLoading(false)
       }
     })()
   }, [])
@@ -119,33 +140,54 @@ export default function SetupPage() {
   const handleSaveSetupSetting = async () => {
     setSaving(true)
     
-    const session = (await supabase.auth.getSession()).data.session
-    if (!session) {
-      return router.push("/login")
+    try {
+      const session = (await supabase.auth.getSession()).data.session
+      if (!session) {
+        return router.push("/login")
+      }
+
+      const user = session.user
+      
+      // Try to get existing profile
+      let existingProfile
+      try {
+        existingProfile = await getProfileByUserId(user.id)
+      } catch (error) {
+        console.log("No existing profile found, will create during onboarding")
+      }
+
+      if (existingProfile) {
+        // Update existing profile
+        const updateProfilePayload: TablesUpdate<"profiles"> = {
+          ...existingProfile,
+          has_onboarded: true,
+          onboarding_step: 'plan_selection',
+          display_name: displayName,
+          username
+        }
+
+        const updatedProfile = await updateProfile(existingProfile.id, updateProfilePayload)
+        setProfile(updatedProfile)
+
+        const workspaces = await getWorkspacesByUserId(user.id)
+        const homeWorkspace = workspaces.find(w => w.is_home)
+
+        if (homeWorkspace) {
+          setSelectedWorkspace(homeWorkspace)
+          setWorkspaces(workspaces)
+        }
+      } else {
+        // Profile should have been created by trigger, but if not, redirect to onboarding
+        // which can handle profile creation
+        console.log("Profile not found after save attempt, redirecting to onboarding")
+      }
+
+      // Redirect to onboarding for plan selection
+      return router.push('/onboarding')
+    } catch (error) {
+      console.error("Error saving setup:", error)
+      setSaving(false)
     }
-
-    const user = session.user
-    const profile = await getProfileByUserId(user.id)
-
-    const updateProfilePayload: TablesUpdate<"profiles"> = {
-      ...profile,
-      has_onboarded: true,
-      onboarding_step: 'plan_selection', // Mark that profile is done, now need plan
-      display_name: displayName,
-      username
-    }
-
-    const updatedProfile = await updateProfile(profile.id, updateProfilePayload)
-    setProfile(updatedProfile)
-
-    const workspaces = await getWorkspacesByUserId(profile.user_id)
-    const homeWorkspace = workspaces.find(w => w.is_home)
-
-    setSelectedWorkspace(homeWorkspace!)
-    setWorkspaces(workspaces)
-
-    // Redirect to onboarding for plan selection instead of chat
-    return router.push('/onboarding')
   }
 
   // Username availability check with debounce

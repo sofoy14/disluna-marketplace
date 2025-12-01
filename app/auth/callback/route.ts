@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server"
+import { createServerClient, type CookieOptions } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
@@ -9,7 +9,34 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
+    
+    // Use anon key for auth callback to properly set session cookies
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          get(name: string) {
+            return cookieStore.get(name)?.value
+          },
+          set(name: string, value: string, options: CookieOptions) {
+            try {
+              cookieStore.set({ name, value, ...options })
+            } catch (error) {
+              // Ignore errors from Server Components
+            }
+          },
+          remove(name: string, options: CookieOptions) {
+            try {
+              cookieStore.delete(name)
+            } catch (error) {
+              // Ignore errors from Server Components
+            }
+          }
+        }
+      }
+    )
+    
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (error) {
