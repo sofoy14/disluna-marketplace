@@ -1,7 +1,11 @@
 # Exclude separate projects that shouldn't be built
-Landing Desing/
-Chatbot Design/
-esfera 3d/
+Landing-Design
+Landing Desing
+Landing\ Desing
+Chatbot Design
+Chatbot\ Design
+esfera 3d
+esfera\ 3d
 
 # Dependencies
 node_modules/
