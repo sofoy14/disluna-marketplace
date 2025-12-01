@@ -13,9 +13,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Precio especial primer mes para plan mensual: $4,000 COP = 400000 centavos
-const FIRST_MONTH_PRICE_CENTS = 400000;
-
 // Calcular fecha de fin del período
 function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date()): Date {
   const endDate = new Date(startDate);
@@ -25,6 +22,34 @@ function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date())
     endDate.setMonth(endDate.getMonth() + 1);
   }
   return endDate;
+}
+
+// Get applicable special offer for a plan
+async function getSpecialOffer(planId: string, workspaceId: string) {
+  // Check if user has had any previous subscriptions
+  const { count: prevSubCount } = await supabase
+    .from('subscriptions')
+    .select('id', { count: 'exact', head: true })
+    .eq('workspace_id', workspaceId)
+    .in('status', ['active', 'canceled', 'expired']);
+  
+  // Only apply first month offers if user has no previous subscriptions
+  if (prevSubCount && prevSubCount > 0) {
+    return null;
+  }
+
+  // Get active special offer for this plan
+  const { data: offer } = await supabase
+    .from('special_offers')
+    .select('*')
+    .eq('plan_id', planId)
+    .eq('is_active', true)
+    .eq('applies_to', 'first_month')
+    .lte('valid_from', new Date().toISOString())
+    .or(`valid_until.is.null,valid_until.gt.${new Date().toISOString()}`)
+    .single();
+
+  return offer;
 }
 
 export async function POST(req: NextRequest) {
@@ -125,20 +150,21 @@ export async function POST(req: NextRequest) {
 
     // Determinar el monto a cobrar
     let amountToCharge = plan.amount_in_cents;
+    let specialOffer = null;
     let isFirstMonth = false;
     
+    // Check for special offers (only for monthly plans)
     if (plan.billing_period === 'monthly') {
-      // Verificar si el usuario ya tuvo una suscripción antes
-      const { count } = await supabase
-        .from('subscriptions')
-        .select('id', { count: 'exact', head: true })
-        .eq('workspace_id', workspace_id)
-        .in('status', ['active', 'canceled', 'expired']);
+      specialOffer = await getSpecialOffer(plan_id, workspace_id);
       
-      // Si no ha tenido suscripciones previas activas/canceladas/expiradas, aplica primer mes
-      if (!count || count === 0) {
-        amountToCharge = FIRST_MONTH_PRICE_CENTS;
-        isFirstMonth = true;
+      if (specialOffer) {
+        if (specialOffer.discount_type === 'fixed_price') {
+          amountToCharge = specialOffer.discount_value;
+          isFirstMonth = true;
+        } else if (specialOffer.discount_type === 'percentage') {
+          amountToCharge = Math.round(plan.amount_in_cents * (1 - specialOffer.discount_value / 100));
+          isFirstMonth = true;
+        }
       }
     }
 
@@ -257,6 +283,15 @@ export async function POST(req: NextRequest) {
       'collect-customer-legal-id': 'true'
     };
 
+    // Format amount for display
+    const formatAmount = (cents: number) => {
+      return new Intl.NumberFormat('es-CO', {
+        style: 'decimal',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+      }).format(cents / 100);
+    };
+
     return NextResponse.json({
       success: true,
       data: {
@@ -266,6 +301,13 @@ export async function POST(req: NextRequest) {
         checkout_url: getWompiCheckoutUrl(),
         checkout_data: checkoutData,
         is_first_month: isFirstMonth,
+        special_offer: specialOffer ? {
+          id: specialOffer.id,
+          name: specialOffer.name,
+          description: specialOffer.description,
+          discount_type: specialOffer.discount_type,
+          discount_value: specialOffer.discount_value
+        } : null,
         plan: {
           id: plan.id,
           name: plan.name,
@@ -275,9 +317,10 @@ export async function POST(req: NextRequest) {
           features: plan.features
         },
         amount_to_charge: amountToCharge,
+        original_amount: plan.amount_in_cents,
         amount_display: isFirstMonth 
-          ? '$4.000 COP (primer mes especial)' 
-          : `$${(amountToCharge / 100).toLocaleString('es-CO')} COP`
+          ? `$${formatAmount(amountToCharge)} COP (primer mes especial - luego $${formatAmount(plan.amount_in_cents)} COP/mes)` 
+          : `$${formatAmount(amountToCharge)} COP${plan.billing_period === 'yearly' ? '/año' : '/mes'}`
       }
     });
 
