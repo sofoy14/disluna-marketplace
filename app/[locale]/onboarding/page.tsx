@@ -85,91 +85,124 @@ export default function OnboardingPage() {
   const router = useRouter();
 
   useEffect(() => {
-    initializePage();
-  }, []);
-
-  const initializePage = async () => {
-    try {
-      const supabase = createClient();
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      
-      if (userError || !user) {
-        console.log('No user found, redirecting to login');
-        router.push('/login');
-        return;
-      }
-
-      // Check if email is verified (skip for OAuth users)
-      if (!user.email_confirmed_at && user.app_metadata?.provider === 'email') {
-        router.push('/auth/verify-email');
-        return;
-      }
-
-      // Get workspace
-      const { data: workspace } = await supabase
-        .from('workspaces')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('is_home', true)
-        .single();
-
-      if (workspace) {
-        setWorkspaceId(workspace.id);
-      }
-
-      // Get user profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('onboarding_step, email_verified, onboarding_completed, display_name, username, has_onboarded')
-        .eq('user_id', user.id)
-        .single();
-
-      // Check if user has active subscription - if so, go to chat
-      const { data: subscription } = await supabase
-        .from('subscriptions')
-        .select('id, status')
-        .eq('user_id', user.id)
-        .in('status', ['active', 'trialing'])
-        .single();
-
-      if (subscription && workspace) {
-        // User has active subscription, go to chat
-        await supabase
-          .from('profiles')
-          .update({ onboarding_completed: true, onboarding_step: 'completed' })
-          .eq('user_id', user.id);
+    let isMounted = true;
+    
+    const initializePage = async () => {
+      try {
+        const supabase = createClient();
         
-        router.push(`/${workspace.id}/chat`);
-        return;
-      }
+        // First, try to get the session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+        }
+        
+        // If no session, wait a moment and try again (for OAuth redirect)
+        if (!session) {
+          // Wait for potential OAuth redirect to complete
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          const { data: { session: retrySession } } = await supabase.auth.getSession();
+          
+          if (!retrySession) {
+            console.log('No session after retry, redirecting to login');
+            if (isMounted) router.push('/login');
+            return;
+          }
+        }
+        
+        // Get fresh user data
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        
+        if (userError || !user) {
+          console.log('No user found, redirecting to login');
+          if (isMounted) router.push('/login');
+          return;
+        }
 
-      // Pre-fill profile data if exists
-      if (profile?.display_name) {
-        setProfileData(prev => ({
-          ...prev,
-          display_name: profile.display_name || '',
-          username: profile.username || ''
-        }));
-      }
+        // Check if email is verified (skip for OAuth users)
+        if (!user.email_confirmed_at && user.app_metadata?.provider === 'email') {
+          if (isMounted) router.push('/auth/verify-email');
+          return;
+        }
 
-      // Fetch plans
-      await fetchPlansAndOffers();
+        // Get workspace
+        const { data: workspace } = await supabase
+          .from('workspaces')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('is_home', true)
+          .single();
 
-      // Determine which step to show
-      // If user has display_name (from OAuth or previous setup), go to plan selection
-      if (profile?.display_name || profile?.has_onboarded || profile?.onboarding_step === 'plan_selection') {
-        setCurrentStep('plan_selection');
-      } else {
-        setCurrentStep('profile_setup');
+        if (workspace && isMounted) {
+          setWorkspaceId(workspace.id);
+        }
+
+        // Get user profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('onboarding_step, email_verified, onboarding_completed, display_name, username, has_onboarded')
+          .eq('user_id', user.id)
+          .single();
+
+        // Check if user has active subscription - if so, go to chat
+        const { data: subscription } = await supabase
+          .from('subscriptions')
+          .select('id, status')
+          .eq('user_id', user.id)
+          .in('status', ['active', 'trialing'])
+          .single();
+
+        if (subscription && workspace) {
+          // User has active subscription, go to chat
+          await supabase
+            .from('profiles')
+            .update({ onboarding_completed: true, onboarding_step: 'completed' })
+            .eq('user_id', user.id);
+          
+          if (isMounted) router.push(`/${workspace.id}/chat`);
+          return;
+        }
+
+        // Pre-fill profile data if exists
+        if (profile?.display_name && isMounted) {
+          setProfileData(prev => ({
+            ...prev,
+            display_name: profile.display_name || '',
+            username: profile.username || ''
+          }));
+        }
+
+        // Fetch plans
+        await fetchPlansAndOffers();
+
+        if (!isMounted) return;
+
+        // Determine which step to show
+        // If user has display_name (from OAuth or previous setup), go to plan selection
+        if (profile?.display_name || profile?.has_onboarded || profile?.onboarding_step === 'plan_selection') {
+          setCurrentStep('plan_selection');
+        } else {
+          setCurrentStep('profile_setup');
+        }
+        
+        setPageLoading(false);
+      } catch (error) {
+        console.error('Error initializing onboarding:', error);
+        if (isMounted) {
+          setPageLoading(false);
+          setCurrentStep('profile_setup');
+        }
       }
-      
-      setPageLoading(false);
-    } catch (error) {
-      console.error('Error initializing onboarding:', error);
-      setPageLoading(false);
-      setCurrentStep('profile_setup');
-    }
-  };
+    };
+
+    initializePage();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [router]);
 
   const fetchPlansAndOffers = async () => {
     try {

@@ -7,16 +7,16 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code")
   const next = requestUrl.searchParams.get("next")
 
-  // Create the response object early so we can add cookies to it
-  const response = NextResponse.redirect(new URL('/onboarding', requestUrl.origin))
-  
+  console.log('[Auth Callback] Received request:', { 
+    hasCode: !!code, 
+    next,
+    origin: requestUrl.origin 
+  })
+
   if (code) {
     const cookieStore = cookies()
     
-    // Track cookies that need to be set in the response
-    const cookiesToSet: { name: string; value: string; options: CookieOptions }[] = []
-    
-    // Use anon key for auth callback to properly set session cookies
+    // Create Supabase client with proper cookie handling
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -26,119 +26,82 @@ export async function GET(request: Request) {
             return cookieStore.get(name)?.value
           },
           set(name: string, value: string, options: CookieOptions) {
-            // Store cookies to set them on the response
-            cookiesToSet.push({ name, value, options })
             try {
               cookieStore.set({ name, value, ...options })
             } catch (error) {
-              // Ignore errors from Server Components
+              // Ignore - might be called from Server Component
             }
           },
           remove(name: string, options: CookieOptions) {
-            // Store cookie removal as empty value
-            cookiesToSet.push({ name, value: '', options: { ...options, maxAge: 0 } })
             try {
               cookieStore.delete(name)
             } catch (error) {
-              // Ignore errors from Server Components
+              // Ignore - might be called from Server Component
             }
           }
         }
       }
     )
     
+    // Exchange the code for a session
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (error) {
-      console.error('Error exchanging code for session:', error)
-      return NextResponse.redirect(new URL('/login?message=Error verificando email', requestUrl.origin))
-    }
-
-    const user = data.user
-    if (!user) {
-      console.error('No user after exchanging code')
+      console.error('[Auth Callback] Error exchanging code:', error)
       return NextResponse.redirect(new URL('/login?message=Error de autenticación', requestUrl.origin))
     }
 
-    // Apply all cookies to the response before returning
-    const applyAuthCookies = (targetResponse: NextResponse) => {
-      cookiesToSet.forEach(({ name, value, options }) => {
-        targetResponse.cookies.set(name, value, {
-          path: options.path || '/',
-          maxAge: options.maxAge,
-          domain: options.domain,
-          secure: options.secure,
-          httpOnly: options.httpOnly,
-          sameSite: options.sameSite as 'lax' | 'strict' | 'none' | undefined
-        })
-      })
-      return targetResponse
+    if (!data.user) {
+      console.error('[Auth Callback] No user after code exchange')
+      return NextResponse.redirect(new URL('/login?message=No se pudo obtener usuario', requestUrl.origin))
     }
 
-    // Check if user has a profile
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed, onboarding_step, email_verified, display_name, has_onboarded')
-      .eq('user_id', user.id)
-      .single()
+    console.log('[Auth Callback] User authenticated:', data.user.email)
 
-    // Get user's home workspace
-    const { data: homeWorkspace } = await supabase
-      .from('workspaces')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('is_home', true)
-      .single()
-
-    // If there's a specific next URL (like password reset), redirect there
+    // If there's a specific next URL, redirect there
     if (next) {
-      return applyAuthCookies(NextResponse.redirect(new URL(next, requestUrl.origin)))
-    }
-
-    // Mark email as verified for OAuth users
-    if (user.email_confirmed_at && profile && !profile.email_verified) {
-      await supabase
-        .from('profiles')
-        .update({ email_verified: true })
-        .eq('user_id', user.id)
+      return NextResponse.redirect(new URL(next, requestUrl.origin))
     }
 
     // Check for active subscription
     const { data: subscription } = await supabase
       .from('subscriptions')
       .select('id, status')
-      .eq('user_id', user.id)
+      .eq('user_id', data.user.id)
       .in('status', ['active', 'trialing'])
       .single()
 
-    // 1. If user has an active subscription, go to chat
-    if (subscription && homeWorkspace) {
-      if (!profile?.onboarding_completed) {
-        await supabase
-          .from('profiles')
-          .update({ onboarding_completed: true, onboarding_step: 'completed' })
-          .eq('user_id', user.id)
-      }
-      return applyAuthCookies(NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, requestUrl.origin)))
-    }
+    // Get home workspace
+    const { data: homeWorkspace } = await supabase
+      .from('workspaces')
+      .select('id')
+      .eq('user_id', data.user.id)
+      .eq('is_home', true)
+      .single()
 
-    // 2. No subscription - redirect to onboarding for plan selection
-    // Update onboarding step and email verified
+    // Update profile for OAuth users
     await supabase
       .from('profiles')
       .update({ 
         email_verified: true,
-        onboarding_step: 'plan_selection'
+        onboarding_step: subscription ? 'completed' : 'plan_selection'
       })
-      .eq('user_id', user.id)
-    
-    return applyAuthCookies(NextResponse.redirect(new URL('/onboarding', requestUrl.origin)))
+      .eq('user_id', data.user.id)
+
+    // Redirect based on subscription status
+    if (subscription && homeWorkspace) {
+      console.log('[Auth Callback] User has subscription, redirecting to chat')
+      return NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, requestUrl.origin))
+    }
+
+    console.log('[Auth Callback] No subscription, redirecting to onboarding')
+    return NextResponse.redirect(new URL('/onboarding', requestUrl.origin))
   }
 
-  // No code provided - redirect to home
+  // No code provided
+  console.log('[Auth Callback] No code provided')
   if (next) {
     return NextResponse.redirect(new URL(next, requestUrl.origin))
-  } else {
-    return NextResponse.redirect(new URL('/', requestUrl.origin))
   }
+  return NextResponse.redirect(new URL('/', requestUrl.origin))
 }

@@ -193,12 +193,18 @@ export default async function Login({
     "use server"
     
     const cookieStore = cookies()
+    const headerStore = headers()
     const supabase = createClient(cookieStore)
+    
+    // Get the origin from headers or use env variable
+    const origin = headerStore.get('origin') || headerStore.get('x-forwarded-host') 
+      ? `https://${headerStore.get('x-forwarded-host') || headerStore.get('host')}`
+      : process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro'
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+        redirectTo: `${origin}/auth/callback`
       }
     })
 
@@ -215,12 +221,18 @@ export default async function Login({
     "use server"
     
     const cookieStore = cookies()
+    const headerStore = headers()
     const supabase = createClient(cookieStore)
+    
+    // Get the origin from headers or use env variable
+    const origin = headerStore.get('origin') || headerStore.get('x-forwarded-host') 
+      ? `https://${headerStore.get('x-forwarded-host') || headerStore.get('host')}`
+      : process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro'
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`
+        redirectTo: `${origin}/auth/callback`
       }
     })
 
