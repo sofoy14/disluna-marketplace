@@ -1,13 +1,14 @@
 import { FileItemChunk } from "@/types"
 import { encode } from "gpt-tokenizer"
-import { PDFLoader } from "langchain/document_loaders/fs/pdf"
+import pdfParse from "pdf-parse"
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter"
 import { CHUNK_OVERLAP, CHUNK_SIZE } from "."
 
 export const processPdf = async (pdf: Blob): Promise<FileItemChunk[]> => {
-  const loader = new PDFLoader(pdf)
-  const docs = await loader.load()
-  let completeText = docs.map(doc => doc.pageContent).join(" ")
+  const arrayBuffer = await pdf.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+  const data = await pdfParse(buffer)
+  const completeText = data.text
 
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: CHUNK_SIZE,

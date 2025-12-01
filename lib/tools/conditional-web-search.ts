@@ -412,8 +412,8 @@ JERARQUÍA LEGAL COLOMBIANA (ESTRICTA):
 IMPORTANTE:
 - Prioriza siempre la jurisprudencia vigente y unificada.
 - Verifica la vigencia de las normas citadas.
-- Usa terminología jurídica colombiana exacta.`
-No menciones búsqueda web ya que no fue necesaria.`
+- Usa terminología jurídica colombiana exacta.
+- No menciones búsqueda web ya que no fue necesaria.`
   }
   
   // Si se ejecutó búsqueda, generar mensaje apropiado según el resultado
