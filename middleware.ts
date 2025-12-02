@@ -7,19 +7,28 @@ import { isAdmin } from "@/lib/admin/check-admin"
 // Rutas que requieren suscripción activa para acceder
 const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
 
+// Rutas de autenticación que NO deben pasar por i18n (están en route group (auth))
+const AUTH_ROUTES = ['/onboarding', '/login', '/setup', '/auth/verify-email']
+
 // Verificar si billing está habilitado
 const isBillingEnabled = () => process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true';
 
 export async function middleware(request: NextRequest) {
-  const i18nResult = i18nRouter(request, i18nConfig)
-  if (i18nResult) return i18nResult
+  const pathname = request.nextUrl.pathname
+  
+  // Skip i18n processing for auth routes - they have their own route group
+  const isAuthRoute = AUTH_ROUTES.some(route => pathname === route || pathname.startsWith(`${route}/`))
+  
+  if (!isAuthRoute) {
+    const i18nResult = i18nRouter(request, i18nConfig)
+    if (i18nResult) return i18nResult
+  }
 
   try {
     const { supabase, response } = createClient(request)
     
     // Rutas públicas (con o sin prefijo de locale) - check first to avoid unnecessary auth calls
     const publicSegments = ['login', 'auth/verify-email', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'billing', 'landing']
-    const pathname = request.nextUrl.pathname
     const isPublicRoute = publicSegments.some(seg => pathname === `/${seg}` || pathname.includes(`/${seg}`))
 
     if (isPublicRoute) {
@@ -187,5 +196,6 @@ async function checkSubscriptionInMiddleware(
 }
 
 export const config = {
-  matcher: "/((?!api|static|.*\\..*|_next|auth|onboarding|setup|debug-auth|test-signup|billing).*)"
+  // Include auth routes but NOT api, static files, _next
+  matcher: "/((?!api|static|.*\\..*|_next).*)"
 }
