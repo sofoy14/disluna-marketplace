@@ -115,12 +115,40 @@ export default function OnboardingPage() {
         }
 
         // Get workspace
-        const { data: workspace } = await supabase
+        let { data: workspace } = await supabase
           .from('workspaces')
           .select('id')
           .eq('user_id', user.id)
           .eq('is_home', true)
           .maybeSingle();
+
+        // Si no existe el workspace, crearlo
+        if (!workspace) {
+          const { data: newWorkspace, error: createError } = await supabase
+            .from('workspaces')
+            .insert({
+              user_id: user.id,
+              is_home: true,
+              name: 'Home',
+              default_context_length: 4096,
+              default_model: 'gpt-4-turbo-preview',
+              default_prompt: 'You are a friendly, helpful AI assistant.',
+              default_temperature: 0.5,
+              description: 'My home workspace.',
+              embeddings_provider: 'openai',
+              include_profile_context: true,
+              include_workspace_instructions: true,
+              instructions: ''
+            })
+            .select('id')
+            .single();
+
+          if (createError) {
+            console.error('Error creating workspace:', createError);
+          } else {
+            workspace = newWorkspace;
+          }
+        }
 
         if (workspace && isMounted) {
           setWorkspaceId(workspace.id);
@@ -258,11 +286,18 @@ export default function OnboardingPage() {
     setProcessingPlanId(planId);
     setMessage(null);
 
+    // Verificar que tenemos workspace_id
+    if (!workspaceId) {
+      setMessage({ type: 'error', text: 'No se encontró tu workspace. Por favor recarga la página.' });
+      setProcessingPlanId(null);
+      return;
+    }
+
     try {
       const response = await fetch('/api/billing/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan_id: planId })
+        body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId })
       });
 
       const data = await response.json();

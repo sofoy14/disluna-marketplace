@@ -1,9 +1,8 @@
-# Use Node.js 20
-FROM node:20-alpine AS base
+# Use Node.js 20 with Debian Slim (includes glibc for onnxruntime-node compatibility)
+FROM node:20-slim AS base
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Copy package files
