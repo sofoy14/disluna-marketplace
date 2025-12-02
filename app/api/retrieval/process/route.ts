@@ -1,4 +1,5 @@
-import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
+// Dynamic import for local embeddings to avoid onnxruntime-node loading in Alpine Linux
+// import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
 import { generateOpenRouterEmbedding, generateMultipleOpenRouterEmbeddings } from "@/lib/generate-openrouter-embedding"
 import {
   processCSV,
@@ -13,6 +14,12 @@ import { FileItemChunk } from "@/types"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
+
+// Dynamic import function for local embeddings (only loaded when needed)
+async function getLocalEmbedding(text: string) {
+  const { generateLocalEmbedding } = await import("@/lib/generate-local-embedding")
+  return generateLocalEmbedding(text)
+}
 
 export async function POST(req: Request) {
   try {
@@ -161,7 +168,7 @@ export async function POST(req: Request) {
       console.log('Using local embeddings for document processing')
       const embeddingPromises = chunks.map(async chunk => {
         try {
-          return await generateLocalEmbedding(chunk.content)
+          return await getLocalEmbedding(chunk.content)
         } catch (error) {
           console.error(`Error generating embedding for chunk: ${chunk}`, error)
           return null

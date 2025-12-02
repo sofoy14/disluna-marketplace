@@ -1,9 +1,16 @@
-import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
+// Dynamic import for local embeddings to avoid onnxruntime-node loading in Alpine Linux
+// import { generateLocalEmbedding } from "@/lib/generate-local-embedding"
 import { generateOpenRouterEmbedding } from "@/lib/generate-openrouter-embedding"
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
 import OpenAI from "openai"
+
+// Dynamic import function for local embeddings (only loaded when needed)
+async function getLocalEmbedding(text: string) {
+  const { generateLocalEmbedding } = await import("@/lib/generate-local-embedding")
+  return generateLocalEmbedding(text)
+}
 
 export async function POST(request: Request) {
   const json = await request.json()
@@ -117,7 +124,7 @@ export async function POST(request: Request) {
         throw new Error('Failed to retrieve with OpenRouter embeddings')
       }
     } else if (embeddingsProvider === "local") {
-      const localEmbedding = await generateLocalEmbedding(userInput)
+      const localEmbedding = await getLocalEmbedding(userInput)
 
       const { data: localFileItems, error: localFileItemsError } =
         await supabaseAdmin.rpc("match_file_items_local", {
