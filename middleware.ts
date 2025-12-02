@@ -146,7 +146,7 @@ async function checkSubscriptionInMiddleware(
       .in('status', ['active', 'trialing', 'past_due'])
       .order('created_at', { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     if (error || !subscription) {
       return { hasAccess: false, reason: 'no_subscription' }

@@ -53,7 +53,7 @@ export default async function Login({
       .select("id, status")
       .eq("user_id", session.user.id)
       .in("status", ["active", "trialing"])
-      .single()
+      .maybeSingle()
 
     if (!subscription) {
       // No active subscription - redirect to onboarding for plan selection
@@ -100,7 +100,7 @@ export default async function Login({
       .select("id, status")
       .eq("user_id", data.user.id)
       .in("status", ["active", "trialing"])
-      .single()
+      .maybeSingle()
 
     if (!subscription) {
       // No subscription - go to onboarding for plan selection

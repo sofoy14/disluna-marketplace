@@ -19,7 +19,7 @@ export default async function HomePage() {
     .select("id")
     .eq("user_id", session.user.id)
     .eq("is_home", true)
-    .single()
+    .maybeSingle()
 
   if (!homeWorkspace) {
     // Sin workspace - ir a onboarding
@@ -32,7 +32,7 @@ export default async function HomePage() {
     .select("id, status")
     .eq("user_id", session.user.id)
     .in("status", ["active", "trialing"])
-    .single()
+    .maybeSingle()
 
   if (!subscription) {
     // Sin suscripción - ir a onboarding para seleccionar plan

@@ -69,7 +69,7 @@ export async function GET(request: Request) {
       .select('id, status')
       .eq('user_id', data.user.id)
       .in('status', ['active', 'trialing'])
-      .single()
+      .maybeSingle()
 
     // Get home workspace
     const { data: homeWorkspace } = await supabase
@@ -77,7 +77,7 @@ export async function GET(request: Request) {
       .select('id')
       .eq('user_id', data.user.id)
       .eq('is_home', true)
-      .single()
+      .maybeSingle()
 
     // Update profile for OAuth users
     await supabase

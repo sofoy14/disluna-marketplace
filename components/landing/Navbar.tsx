@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from "react"
 import { Menu, X } from "lucide-react"
 import { motion } from "framer-motion"
 import Brand from "./Brand"
-import NavLink from "./NavLink"
 import ThemeToggle from "./ThemeToggle"
 import { Button } from "@/components/ui/button"
 

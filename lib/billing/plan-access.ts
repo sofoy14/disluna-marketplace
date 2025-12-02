@@ -124,7 +124,7 @@ export const getUserPlanStatus = async (userId: string): Promise<UserPlanStatus>
       .in('status', ['active', 'trialing', 'past_due'])
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (subError && subError.code !== 'PGRST116') {
       console.error('Error fetching subscription:', subError);
@@ -323,6 +323,7 @@ export const getFeatureAccessMap = async (userId: string): Promise<{
     planName: status.features.planName
   };
 };
+
 
 
 

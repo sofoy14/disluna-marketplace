@@ -42,9 +42,9 @@ export async function checkSubscriptionAccess(userId: string): Promise<Subscript
       .in('status', ['active', 'trialing', 'past_due'])
       .order('created_at', { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       console.error('Error checking subscription:', error);
       throw error;
     }
