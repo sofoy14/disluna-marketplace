@@ -73,42 +73,54 @@ export default async function Login({
     const cookieStore = cookies()
     const supabase = createClient(cookieStore)
 
+    console.log('[Login] Attempting sign in for:', email)
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     })
 
     if (error) {
+      console.log('[Login] Auth error:', error.message)
       return redirect(`/login?message=${error.message}`)
     }
 
+    console.log('[Login] Auth successful for user:', data.user.id)
+
     // Get workspace
-    const { data: homeWorkspace } = await supabase
+    const { data: homeWorkspace, error: workspaceError } = await supabase
       .from("workspaces")
       .select("*")
       .eq("user_id", data.user.id)
       .eq("is_home", true)
       .maybeSingle()
 
+    console.log('[Login] Workspace check:', { found: !!homeWorkspace, error: workspaceError?.message })
+
     if (!homeWorkspace) {
       // No workspace - go to onboarding
+      console.log('[Login] No workspace, redirecting to /onboarding')
       return redirect('/onboarding')
     }
 
     // Check for active subscription
-    const { data: subscription } = await supabase
+    const { data: subscription, error: subError } = await supabase
       .from("subscriptions")
       .select("id, status")
       .eq("user_id", data.user.id)
       .in("status", ["active", "trialing"])
       .maybeSingle()
 
+    console.log('[Login] Subscription check:', { found: !!subscription, error: subError?.message })
+
     if (!subscription) {
       // No subscription - go to onboarding for plan selection
+      console.log('[Login] No subscription, redirecting to /onboarding')
       return redirect('/onboarding')
     }
 
     // All good - go to chat
+    console.log('[Login] All good, redirecting to chat:', homeWorkspace.id)
     return redirect(`/${homeWorkspace.id}/chat`)
   }
 
