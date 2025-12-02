@@ -83,47 +83,34 @@ export default function OnboardingPage() {
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
 
   const router = useRouter();
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    // Prevent multiple initializations
+    if (initialized) return;
+    
     let isMounted = true;
     
     const initializePage = async () => {
       try {
         const supabase = createClient();
         
-        // First, try to get the session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('Session error:', sessionError);
-        }
-        
-        // If no session, wait a moment and try again (for OAuth redirect)
-        if (!session) {
-          // Wait for potential OAuth redirect to complete
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
-          const { data: { session: retrySession } } = await supabase.auth.getSession();
-          
-          if (!retrySession) {
-            console.log('No session after retry, redirecting to login');
-            if (isMounted) router.push('/login');
-            return;
-          }
-        }
-        
-        // Get fresh user data
+        // Use getUser() instead of getSession() for secure authentication
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         
         if (userError || !user) {
           console.log('No user found, redirecting to login');
-          if (isMounted) router.push('/login');
+          if (isMounted) {
+            window.location.href = '/login';
+          }
           return;
         }
 
         // Check if email is verified (skip for OAuth users)
         if (!user.email_confirmed_at && user.app_metadata?.provider === 'email') {
-          if (isMounted) router.push('/auth/verify-email');
+          if (isMounted) {
+            window.location.href = '/auth/verify-email';
+          }
           return;
         }
 
@@ -133,7 +120,7 @@ export default function OnboardingPage() {
           .select('id')
           .eq('user_id', user.id)
           .eq('is_home', true)
-          .single();
+          .maybeSingle();
 
         if (workspace && isMounted) {
           setWorkspaceId(workspace.id);
@@ -144,7 +131,7 @@ export default function OnboardingPage() {
           .from('profiles')
           .select('onboarding_step, email_verified, onboarding_completed, display_name, username, has_onboarded')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
 
         // Check if user has active subscription - if so, go to chat
         const { data: subscription } = await supabase
@@ -161,7 +148,9 @@ export default function OnboardingPage() {
             .update({ onboarding_completed: true, onboarding_step: 'completed' })
             .eq('user_id', user.id);
           
-          if (isMounted) router.push(`/${workspace.id}/chat`);
+          if (isMounted) {
+            window.location.href = `/${workspace.id}/chat`;
+          }
           return;
         }
 
@@ -179,6 +168,9 @@ export default function OnboardingPage() {
 
         if (!isMounted) return;
 
+        // Mark as initialized to prevent re-runs
+        setInitialized(true);
+
         // Determine which step to show
         // If user has display_name (from OAuth or previous setup), go to plan selection
         if (profile?.display_name || profile?.has_onboarded || profile?.onboarding_step === 'plan_selection') {
@@ -191,6 +183,7 @@ export default function OnboardingPage() {
       } catch (error) {
         console.error('Error initializing onboarding:', error);
         if (isMounted) {
+          setInitialized(true);
           setPageLoading(false);
           setCurrentStep('profile_setup');
         }
@@ -202,7 +195,7 @@ export default function OnboardingPage() {
     return () => {
       isMounted = false;
     };
-  }, [router]);
+  }, [initialized]);
 
   const fetchPlansAndOffers = async () => {
     try {

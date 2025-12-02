@@ -31,16 +31,17 @@ export default async function Login({
       }
     }
   )
-  const session = (await supabase.auth.getSession()).data.session
+  // Use getUser() for secure authentication
+  const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-  if (session) {
+  if (!authError && user) {
     // Get user's home workspace
     const { data: homeWorkspace } = await supabase
       .from("workspaces")
       .select("*")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .eq("is_home", true)
-      .single()
+      .maybeSingle()
 
     if (!homeWorkspace) {
       // No workspace - redirect to onboarding
@@ -51,7 +52,7 @@ export default async function Login({
     const { data: subscription } = await supabase
       .from("subscriptions")
       .select("id, status")
-      .eq("user_id", session.user.id)
+      .eq("user_id", user.id)
       .in("status", ["active", "trialing"])
       .maybeSingle()
 
@@ -87,7 +88,7 @@ export default async function Login({
       .select("*")
       .eq("user_id", data.user.id)
       .eq("is_home", true)
-      .single()
+      .maybeSingle()
 
     if (!homeWorkspace) {
       // No workspace - go to onboarding

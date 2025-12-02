@@ -16,11 +16,9 @@ export async function middleware(request: NextRequest) {
 
   try {
     const { supabase, response } = createClient(request)
-    const session = await supabase.auth.getSession()
-    const user = session.data.session?.user
-
-    // Rutas públicas (con o sin prefijo de locale)
-    const publicSegments = ['login', 'auth/verify-email', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'billing']
+    
+    // Rutas públicas (con o sin prefijo de locale) - check first to avoid unnecessary auth calls
+    const publicSegments = ['login', 'auth/verify-email', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'billing', 'landing']
     const pathname = request.nextUrl.pathname
     const isPublicRoute = publicSegments.some(seg => pathname === `/${seg}` || pathname.includes(`/${seg}`))
 
@@ -28,8 +26,11 @@ export async function middleware(request: NextRequest) {
       return response
     }
 
+    // Use getUser() for secure authentication
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
     // Redirigir a login si no hay sesión
-    if (!user) {
+    if (authError || !user) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
@@ -59,7 +60,7 @@ export async function middleware(request: NextRequest) {
           .from('profiles')
           .select('onboarding_completed')
           .eq('user_id', user.id)
-          .single()
+          .maybeSingle()
 
         // Si no tiene onboarding completado, redirigir
         if (!profile?.onboarding_completed) {
@@ -92,16 +93,18 @@ export async function middleware(request: NextRequest) {
       }
     }
 
-    // Redirigir al chat si está en la raíz
-    const isRootPath = request.nextUrl.pathname === "/" || request.nextUrl.pathname === ""
+    // Redirigir al chat si está en la raíz (including locale paths like /es, /en)
+    const isRootPath = request.nextUrl.pathname === "/" || 
+                       request.nextUrl.pathname === "" ||
+                       /^\/[a-z]{2}$/.test(request.nextUrl.pathname) // matches /es, /en, etc.
 
-    if (session && isRootPath) {
+    if (user && isRootPath) {
       const { data: homeWorkspace } = await supabase
         .from("workspaces")
         .select("*")
-        .eq("user_id", session.data.session?.user.id)
+        .eq("user_id", user.id)
         .eq("is_home", true)
-        .single()
+        .maybeSingle()
 
       if (!homeWorkspace) {
         // Sin workspace - ir a onboarding
