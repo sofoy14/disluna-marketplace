@@ -115,15 +115,19 @@ export default function OnboardingPage() {
         }
 
         // Get workspace
-        let { data: workspace } = await supabase
+        console.log('[Onboarding] Fetching workspace for user:', user.id);
+        let { data: workspace, error: workspaceError } = await supabase
           .from('workspaces')
           .select('id')
           .eq('user_id', user.id)
           .eq('is_home', true)
           .maybeSingle();
 
+        console.log('[Onboarding] Workspace query result:', { workspace, workspaceError });
+
         // Si no existe el workspace, crearlo
         if (!workspace) {
+          console.log('[Onboarding] No workspace found, creating one...');
           const { data: newWorkspace, error: createError } = await supabase
             .from('workspaces')
             .insert({
@@ -144,14 +148,18 @@ export default function OnboardingPage() {
             .single();
 
           if (createError) {
-            console.error('Error creating workspace:', createError);
+            console.error('[Onboarding] Error creating workspace:', createError);
           } else {
+            console.log('[Onboarding] Created new workspace:', newWorkspace);
             workspace = newWorkspace;
           }
         }
 
         if (workspace && isMounted) {
+          console.log('[Onboarding] Setting workspaceId to:', workspace.id);
           setWorkspaceId(workspace.id);
+        } else {
+          console.error('[Onboarding] Failed to get/create workspace!');
         }
 
         // Get user profile
@@ -286,14 +294,20 @@ export default function OnboardingPage() {
     setProcessingPlanId(planId);
     setMessage(null);
 
+    // Debug logs
+    console.log('[Onboarding] handleSubscribe called with planId:', planId);
+    console.log('[Onboarding] Current workspaceId state:', workspaceId);
+
     // Verificar que tenemos workspace_id
     if (!workspaceId) {
+      console.error('[Onboarding] No workspace_id available!');
       setMessage({ type: 'error', text: 'No se encontró tu workspace. Por favor recarga la página.' });
       setProcessingPlanId(null);
       return;
     }
 
     try {
+      console.log('[Onboarding] Sending request to /api/billing/subscribe with:', { plan_id: planId, workspace_id: workspaceId });
       const response = await fetch('/api/billing/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
