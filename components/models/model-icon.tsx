@@ -1,5 +1,4 @@
 import { cn } from "@/lib/utils"
-import robotLogo from "@/public/robot-logo.svg"
 import { ModelProvider } from "@/types"
 import { useTheme } from "next-themes"
 import Image from "next/image"
@@ -7,6 +6,9 @@ import { FC, HTMLAttributes } from "react"
 import { AnthropicSVG } from "../icons/anthropic-svg"
 import { GoogleSVG } from "../icons/google-svg"
 import { OpenAISVG } from "../icons/openai-svg"
+
+// Logo path from public folder
+const LOGO_PATH = "/legal-logo.svg"
 
 interface ModelIconProps extends HTMLAttributes<HTMLDivElement> {
   provider: ModelProvider
@@ -42,7 +44,7 @@ export const ModelIcon: FC<ModelIconProps> = ({
             "rounded-sm p-1",
             theme === "dark" ? "bg-white" : "border-DEFAULT border-black"
           )}
-          src={robotLogo.src}
+          src={LOGO_PATH}
           alt="Asistente Legal"
           width={width}
           height={height}
@@ -55,7 +57,7 @@ export const ModelIcon: FC<ModelIconProps> = ({
             "rounded-sm p-0",
             theme === "dark" ? "bg-white" : "border-DEFAULT border-black"
           )}
-          src={robotLogo.src}
+          src={LOGO_PATH}
           alt="Asistente Legal"
           width={width}
           height={height}
@@ -92,7 +94,7 @@ export const ModelIcon: FC<ModelIconProps> = ({
             "rounded-sm p-1",
             theme === "dark" ? "bg-white" : "border-DEFAULT border-black"
           )}
-          src={robotLogo.src}
+          src={LOGO_PATH}
           alt="Asistente Legal"
           width={width}
           height={height}
