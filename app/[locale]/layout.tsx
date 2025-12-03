@@ -26,6 +26,7 @@ interface RootLayoutProps {
 }
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://aliado.pro'),
   applicationName: APP_NAME,
   title: {
     default: APP_DEFAULT_TITLE,
