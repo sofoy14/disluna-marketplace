@@ -3,17 +3,17 @@ import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
 // Get the correct app URL for redirects
-function getAppUrl(requestUrl: URL): string {
-  // In production, always use the configured APP_URL or the request origin
+function getAppUrl(): string {
+  // Always prioritize configured URL, fallback to production domain
+  // NEVER use localhost in production
   const configuredUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL;
   
-  // If we have a configured URL and we're not in localhost, use it
-  if (configuredUrl && !requestUrl.origin.includes('localhost')) {
+  if (configuredUrl) {
     return configuredUrl;
   }
   
-  // Otherwise use the request origin (works for both dev and production)
-  return requestUrl.origin;
+  // Hardcoded production fallback - NEVER localhost
+  return 'https://aliado.pro';
 }
 
 export async function GET(request: Request) {
@@ -21,14 +21,14 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code")
   const next = requestUrl.searchParams.get("next")
   
-  // Get the correct base URL for redirects
-  const appUrl = getAppUrl(requestUrl);
+  // Get the correct base URL for redirects - ALWAYS use production URL
+  const appUrl = getAppUrl();
 
   console.log('[Auth Callback] Received request:', { 
     hasCode: !!code, 
     next,
-    origin: requestUrl.origin,
-    appUrl
+    appUrl,
+    envAppUrl: process.env.NEXT_PUBLIC_APP_URL || 'NOT SET'
   })
 
   if (code) {
