@@ -53,10 +53,14 @@ async function getSpecialOffer(planId: string, workspaceId: string) {
 }
 
 export async function POST(req: NextRequest) {
+  console.log('[Subscribe API] ========== START ==========');
+  
   try {
     // Verificar configuración de Wompi
+    console.log('[Subscribe API] Validating Wompi config...');
     const validation = validateWompiConfig();
     if (!validation.isValid) {
+      console.error('[Subscribe API] Wompi config invalid:', validation.missingFields);
       return NextResponse.json(
         { 
           success: false, 
@@ -66,8 +70,11 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    console.log('[Subscribe API] Wompi config OK');
 
-    const { plan_id, workspace_id } = await req.json();
+    const body = await req.json();
+    const { plan_id, workspace_id } = body;
+    console.log('[Subscribe API] Request body:', { plan_id, workspace_id });
 
     if (!plan_id || !workspace_id) {
       return NextResponse.json(
@@ -96,6 +103,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Obtener detalles del plan
+    console.log('[Subscribe API] Fetching plan:', plan_id);
     const { data: plan, error: planError } = await supabase
       .from('plans')
       .select('*')
@@ -104,14 +112,16 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (planError || !plan) {
-      console.error('Error fetching plan:', planError);
+      console.error('[Subscribe API] Plan error:', planError);
       return NextResponse.json(
-        { success: false, error: 'Plan not found or inactive' },
+        { success: false, error: 'Plan not found or inactive', details: planError?.message },
         { status: 404 }
       );
     }
+    console.log('[Subscribe API] Plan found:', plan.name);
 
     // Obtener workspace y usuario
+    console.log('[Subscribe API] Fetching workspace:', workspace_id);
     const { data: workspace, error: workspaceError } = await supabase
       .from('workspaces')
       .select('*')
@@ -119,27 +129,33 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (workspaceError || !workspace) {
+      console.error('[Subscribe API] Workspace error:', workspaceError);
       return NextResponse.json(
-        { success: false, error: 'Workspace not found' },
+        { success: false, error: 'Workspace not found', details: workspaceError?.message },
         { status: 404 }
       );
     }
+    console.log('[Subscribe API] Workspace found, user_id:', workspace.user_id);
 
     // Obtener perfil y email del usuario
+    console.log('[Subscribe API] Fetching profile...');
     const { data: profile } = await supabase
       .from('profiles')
       .select('display_name')
       .eq('user_id', workspace.user_id)
       .single();
 
+    console.log('[Subscribe API] Fetching user email...');
     const { data: userData, error: userError } = await supabase.auth.admin.getUserById(workspace.user_id);
     
     if (userError || !userData.user?.email) {
+      console.error('[Subscribe API] User email error:', userError);
       return NextResponse.json(
-        { success: false, error: 'User email not found' },
+        { success: false, error: 'User email not found', details: userError?.message },
         { status: 404 }
       );
     }
+    console.log('[Subscribe API] User email found:', userData.user.email);
 
     // Generar referencia única para esta transacción
     const wompiReference = generateTransactionReference('SUB');
@@ -294,7 +310,7 @@ export async function POST(req: NextRequest) {
       }).format(cents / 100);
     };
 
-    return NextResponse.json({
+    const responseData = {
       success: true,
       data: {
         subscription_id: subscription.id,
@@ -324,10 +340,18 @@ export async function POST(req: NextRequest) {
           ? `$${formatAmount(amountToCharge)} COP (primer mes especial - luego $${formatAmount(plan.amount_in_cents)} COP/mes)` 
           : `$${formatAmount(amountToCharge)} COP${plan.billing_period === 'yearly' ? '/año' : '/mes'}`
       }
-    });
+    };
+
+    console.log('[Subscribe API] SUCCESS! Checkout URL:', responseData.data.checkout_url);
+    console.log('[Subscribe API] Reference:', responseData.data.reference);
+    console.log('[Subscribe API] Amount:', responseData.data.amount_to_charge);
+    console.log('[Subscribe API] ========== END SUCCESS ==========');
+    
+    return NextResponse.json(responseData);
 
   } catch (error) {
-    console.error('Error initiating subscription:', error);
+    console.error('[Subscribe API] ========== ERROR ==========');
+    console.error('[Subscribe API] Error:', error);
     return NextResponse.json(
       { 
         success: false, 

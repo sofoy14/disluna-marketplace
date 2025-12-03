@@ -308,24 +308,38 @@ export default function OnboardingPage() {
 
     try {
       console.log('[Onboarding] Sending request to /api/billing/subscribe with:', { plan_id: planId, workspace_id: workspaceId });
+      
       const response = await fetch('/api/billing/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId })
       });
 
+      console.log('[Onboarding] Response status:', response.status);
+      
       const responseData = await response.json();
+      console.log('[Onboarding] Response data:', responseData);
 
       if (!response.ok) {
-        throw new Error(responseData.error || 'Error al procesar la suscripción');
+        console.error('[Onboarding] API error:', responseData);
+        throw new Error(responseData.error || responseData.message || 'Error al procesar la suscripción');
+      }
+
+      if (!responseData.success) {
+        console.error('[Onboarding] API returned success=false:', responseData);
+        throw new Error(responseData.error || responseData.message || 'Error en la respuesta del servidor');
       }
 
       // Redirect to Wompi checkout
-      // La API devuelve { success: true, data: { checkout_url, checkout_data, ... } }
       const checkoutUrl = responseData.data?.checkout_url;
       const checkoutData = responseData.data?.checkout_data;
 
+      console.log('[Onboarding] Checkout URL:', checkoutUrl);
+      console.log('[Onboarding] Checkout data keys:', checkoutData ? Object.keys(checkoutData) : 'null');
+
       if (checkoutUrl && checkoutData) {
+        console.log('[Onboarding] Creating form for Wompi checkout...');
+        
         // Create form and submit to Wompi Web Checkout
         const form = document.createElement('form');
         form.method = 'GET';
@@ -341,12 +355,15 @@ export default function OnboardingPage() {
           }
         });
 
+        console.log('[Onboarding] Form created, submitting to:', checkoutUrl);
         document.body.appendChild(form);
         form.submit();
       } else {
+        console.error('[Onboarding] Missing checkout data:', { checkoutUrl, checkoutData });
         throw new Error('No se recibieron los datos de checkout de Wompi');
       }
     } catch (error: any) {
+      console.error('[Onboarding] Catch error:', error);
       setMessage({ type: 'error', text: error.message || 'Error al procesar el pago' });
       setProcessingPlanId(null);
     }
