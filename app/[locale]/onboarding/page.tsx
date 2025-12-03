@@ -85,6 +85,38 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [initialized, setInitialized] = useState(false);
 
+  // Check for error params on mount (from failed redirects)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const error = params.get('error');
+      const details = params.get('details');
+      
+      if (error) {
+        const errorMessages: Record<string, string> = {
+          'missing_params': 'Parámetros faltantes. Por favor intenta de nuevo.',
+          'wompi_config': 'Error de configuración del sistema de pagos.',
+          'plan_not_found': 'El plan seleccionado no está disponible.',
+          'workspace_not_found': 'No se encontró tu workspace.',
+          'user_not_found': 'No se encontró información del usuario.',
+          'subscription_create': 'Error al crear la suscripción.',
+          'subscription_update': 'Error al actualizar la suscripción.',
+          'server_error': 'Error del servidor. Por favor intenta más tarde.'
+        };
+        
+        const errorText = errorMessages[error] || `Error: ${error}`;
+        setMessage({ 
+          type: 'error', 
+          text: details ? `${errorText} (${details})` : errorText 
+        });
+        
+        // Clean URL
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, '', cleanUrl);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     // Prevent multiple initializations
     if (initialized) return;
@@ -305,13 +337,13 @@ export default function OnboardingPage() {
       return;
     }
 
-    // Direct navigation to checkout endpoint - no fetch needed
-    // The API will handle everything and redirect to Wompi
+    // Use direct navigation to checkout-redirect endpoint
+    // This avoids fetch issues and handles the redirect server-side
     const checkoutUrl = `/api/billing/checkout-redirect?plan_id=${encodeURIComponent(planId)}&workspace_id=${encodeURIComponent(workspaceId)}`;
     
     console.log('[Onboarding] Redirecting to checkout endpoint:', checkoutUrl);
     
-    // Use direct navigation - browser will follow the redirect automatically
+    // Direct navigation - browser will follow the HTTP redirect to Wompi
     window.location.href = checkoutUrl;
   };
 

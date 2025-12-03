@@ -5,12 +5,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
-import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig } from '@/lib/wompi/config';
+import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig, getWompiConfigStatus } from '@/lib/wompi/config';
 
+// Client for server-side API routes
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
+
+// Helper to get error redirect URL
+function getErrorRedirectUrl(baseUrl: string, error: string, details?: string): URL {
+  const url = new URL('/onboarding', baseUrl);
+  url.searchParams.set('error', error);
+  if (details) {
+    url.searchParams.set('details', details);
+  }
+  return url;
+}
 
 function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date()): Date {
   const endDate = new Date(startDate);
@@ -25,6 +36,10 @@ function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date())
 export async function GET(req: NextRequest) {
   console.log('[Checkout Redirect] ========== START ==========');
   
+  // Get base URL for redirects
+  const baseUrl = req.nextUrl.origin;
+  console.log('[Checkout Redirect] Base URL:', baseUrl);
+  
   try {
     const { searchParams } = new URL(req.url);
     const plan_id = searchParams.get('plan_id');
@@ -35,14 +50,15 @@ export async function GET(req: NextRequest) {
     // Validate params
     if (!plan_id || !workspace_id) {
       console.error('[Checkout Redirect] Missing params');
-      return NextResponse.redirect(new URL('/onboarding?error=missing_params', req.url));
+      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'missing_params'));
     }
 
     // Validate Wompi config
+    console.log('[Checkout Redirect] Wompi config status:', getWompiConfigStatus());
     const validation = validateWompiConfig();
     if (!validation.isValid) {
-      console.error('[Checkout Redirect] Wompi config invalid');
-      return NextResponse.redirect(new URL('/onboarding?error=wompi_config', req.url));
+      console.error('[Checkout Redirect] Wompi config invalid:', validation.missingFields);
+      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'wompi_config', validation.missingFields.join(',')));
     }
 
     // Get plan
@@ -55,9 +71,9 @@ export async function GET(req: NextRequest) {
 
     if (planError || !plan) {
       console.error('[Checkout Redirect] Plan not found:', planError);
-      return NextResponse.redirect(new URL('/onboarding?error=plan_not_found', req.url));
+      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'plan_not_found'));
     }
-    console.log('[Checkout Redirect] Plan:', plan.name);
+    console.log('[Checkout Redirect] Plan:', plan.name, 'Amount:', plan.amount_in_cents);
 
     // Get workspace
     const { data: workspace, error: workspaceError } = await supabase
@@ -68,7 +84,7 @@ export async function GET(req: NextRequest) {
 
     if (workspaceError || !workspace) {
       console.error('[Checkout Redirect] Workspace not found:', workspaceError);
-      return NextResponse.redirect(new URL('/onboarding?error=workspace_not_found', req.url));
+      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'workspace_not_found'));
     }
     console.log('[Checkout Redirect] Workspace user:', workspace.user_id);
 
@@ -84,7 +100,7 @@ export async function GET(req: NextRequest) {
     
     if (userError || !userData.user?.email) {
       console.error('[Checkout Redirect] User email not found:', userError);
-      return NextResponse.redirect(new URL('/onboarding?error=user_not_found', req.url));
+      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'user_not_found'));
     }
     console.log('[Checkout Redirect] User email:', userData.user.email);
 
@@ -125,9 +141,10 @@ export async function GET(req: NextRequest) {
 
       if (createSubError) {
         console.error('[Checkout Redirect] Error creating subscription:', createSubError);
-        return NextResponse.redirect(new URL('/onboarding?error=subscription_create', req.url));
+        return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'subscription_create', createSubError.message));
       }
       subscription = newSubscription;
+      console.log('[Checkout Redirect] Created new subscription:', subscription.id);
     } else {
       const { data: updatedSub, error: updateError } = await supabase
         .from('subscriptions')
@@ -144,11 +161,11 @@ export async function GET(req: NextRequest) {
 
       if (updateError) {
         console.error('[Checkout Redirect] Error updating subscription:', updateError);
-        return NextResponse.redirect(new URL('/onboarding?error=subscription_update', req.url));
+        return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'subscription_update', updateError.message));
       }
       subscription = updatedSub;
+      console.log('[Checkout Redirect] Updated existing subscription:', subscription.id);
     }
-    console.log('[Checkout Redirect] Subscription ID:', subscription.id);
 
     // Create invoice
     const { data: existingInvoice } = await supabase
@@ -190,33 +207,44 @@ export async function GET(req: NextRequest) {
     const redirectUrl = `${appUrl}/billing/success`;
 
     // Build Wompi checkout URL with all params
+    // Note: Wompi uses custom parameter names with colons, which need special handling
     const checkoutBaseUrl = getWompiCheckoutUrl();
-    const params = new URLSearchParams({
-      'public-key': wompiConfig.publicKey,
-      'currency': 'COP',
-      'amount-in-cents': amountToCharge.toString(),
-      'reference': wompiReference,
-      'signature:integrity': signature,
-      'redirect-url': redirectUrl,
-      'customer-data:email': userData.user.email,
-      'customer-data:full-name': profile?.display_name || 'Usuario',
-      'customer-data:legal-id-type': 'CC',
-      'collect-customer-legal-id': 'true'
-    });
-
-    const fullCheckoutUrl = `${checkoutBaseUrl}?${params.toString()}`;
     
-    console.log('[Checkout Redirect] SUCCESS! Redirecting to:', checkoutBaseUrl);
+    // Build query string manually to preserve colons in parameter names
+    // URLSearchParams would URL-encode the colons which breaks Wompi's parsing
+    const queryParams = [
+      `public-key=${encodeURIComponent(wompiConfig.publicKey)}`,
+      `currency=COP`,
+      `amount-in-cents=${amountToCharge}`,
+      `reference=${encodeURIComponent(wompiReference)}`,
+      `signature:integrity=${encodeURIComponent(signature)}`,
+      `redirect-url=${encodeURIComponent(redirectUrl)}`,
+      `customer-data:email=${encodeURIComponent(userData.user.email)}`,
+      `customer-data:full-name=${encodeURIComponent(profile?.display_name || 'Usuario')}`,
+      `customer-data:legal-id-type=CC`,
+      `collect-customer-legal-id=true`
+    ].join('&');
+
+    const fullCheckoutUrl = `${checkoutBaseUrl}?${queryParams}`;
+    
+    console.log('[Checkout Redirect] SUCCESS! Redirecting to Wompi');
+    console.log('[Checkout Redirect] Checkout URL:', fullCheckoutUrl);
     console.log('[Checkout Redirect] Reference:', wompiReference);
     console.log('[Checkout Redirect] Amount:', amountToCharge);
+    console.log('[Checkout Redirect] Public Key:', wompiConfig.publicKey.substring(0, 20) + '...');
     console.log('[Checkout Redirect] ========== END ==========');
 
     // HTTP Redirect to Wompi
     return NextResponse.redirect(fullCheckoutUrl);
 
   } catch (error) {
-    console.error('[Checkout Redirect] ERROR:', error);
-    return NextResponse.redirect(new URL('/onboarding?error=server_error', req.url));
+    console.error('[Checkout Redirect] FATAL ERROR:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    // Fallback to using req.url for error redirect
+    const errorUrl = new URL('/onboarding', req.url);
+    errorUrl.searchParams.set('error', 'server_error');
+    errorUrl.searchParams.set('message', errorMessage.substring(0, 100));
+    return NextResponse.redirect(errorUrl);
   }
 }
 

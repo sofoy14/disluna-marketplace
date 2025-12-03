@@ -86,6 +86,37 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [initialized, setInitialized] = useState(false);
 
+  // Check for error params on mount (from failed redirects)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const error = params.get('error');
+      const details = params.get('details');
+      
+      if (error) {
+        const errorMessages: Record<string, string> = {
+          'missing_params': 'Parámetros faltantes. Por favor intenta de nuevo.',
+          'wompi_config': 'Error de configuración del sistema de pagos.',
+          'plan_not_found': 'El plan seleccionado no está disponible.',
+          'workspace_not_found': 'No se encontró tu workspace.',
+          'user_not_found': 'No se encontró información del usuario.',
+          'subscription_create': 'Error al crear la suscripción.',
+          'subscription_update': 'Error al actualizar la suscripción.',
+          'server_error': 'Error del servidor. Por favor intenta más tarde.'
+        };
+        
+        const errorText = errorMessages[error] || `Error: ${error}`;
+        setMessage({ 
+          type: 'error', 
+          text: details ? `${errorText} (${details})` : errorText 
+        });
+        
+        // Clean URL
+        window.history.replaceState({}, '', '/onboarding');
+      }
+    }
+  }, []);
+
   useEffect(() => {
     // Prevent multiple initializations
     if (initialized) return;
@@ -311,46 +342,14 @@ export default function OnboardingPage() {
       return;
     }
 
-    try {
-      console.log('[Onboarding] Sending request to /api/billing/subscribe with:', { plan_id: planId, workspace_id: workspaceId });
-      const response = await fetch('/api/billing/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Error al procesar la suscripción');
-      }
-
-      // Redirect to Wompi checkout
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else if (data.wompiData) {
-        // Create form and submit to Wompi
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = data.wompiData.checkoutUrl;
-        
-        Object.entries(data.wompiData).forEach(([key, value]) => {
-          if (key !== 'checkoutUrl' && value) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = String(value);
-            form.appendChild(input);
-          }
-        });
-
-        document.body.appendChild(form);
-        form.submit();
-      }
-    } catch (error: any) {
-      setMessage({ type: 'error', text: error.message || 'Error al procesar el pago' });
-      setProcessingPlanId(null);
-    }
+    // Use direct navigation to checkout-redirect endpoint
+    // This avoids fetch issues and handles the redirect server-side
+    const checkoutUrl = `/api/billing/checkout-redirect?plan_id=${encodeURIComponent(planId)}&workspace_id=${encodeURIComponent(workspaceId)}`;
+    
+    console.log('[Onboarding] Redirecting to checkout endpoint:', checkoutUrl);
+    
+    // Direct navigation - browser will follow the HTTP redirect to Wompi
+    window.location.href = checkoutUrl;
   };
 
   // Helper functions for plans
