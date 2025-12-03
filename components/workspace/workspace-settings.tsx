@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { WORKSPACE_INSTRUCTIONS_MAX } from "@/db/limits"
 import {
   getWorkspaceImageFromStorage,
@@ -41,7 +41,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({ trigger }) => {
     setChatSettings,
     workspaceImages,
     setWorkspaceImages
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
 
   const buttonRef = useRef<HTMLButtonElement>(null)
 

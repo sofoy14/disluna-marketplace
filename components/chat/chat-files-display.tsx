@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { getFileFromStorage } from "@/db/storage/files"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
 import useHotkey from "@/lib/hooks/use-hotkey"
@@ -47,7 +47,7 @@ export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
     setChatFiles,
     setUseRetrieval,
     collections
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
 
   const [selectedFile, setSelectedFile] = useState<ChatFile | null>(null)
   const [selectedImage, setSelectedImage] = useState<MessageImage | null>(null)
@@ -362,7 +362,7 @@ export const ChatFilesDisplay: FC<ChatFilesDisplayProps> = ({}) => {
 }
 
 const RetrievalToggle = ({ fileCount = 0 }: { fileCount?: number }) => {
-  const { useRetrieval, setUseRetrieval } = useContext(ChatbotUIContext)
+  const { useRetrieval, setUseRetrieval } = useContext(ALIContext)
 
   return (
     <div className="flex items-center">

@@ -1,5 +1,5 @@
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { BibliographyItem } from "@/types/chat-message"
 import { LLM, LLMID, MessageImage, ModelProvider } from "@/types"
@@ -80,7 +80,7 @@ export const Message: FC<MessageProps> = ({
     setUserInput,
     selectedWorkspace,
     selectedChat
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
 
   const router = useRouter()
   const { handleSendMessage } = useChatHandler()

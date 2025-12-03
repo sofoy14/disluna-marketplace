@@ -1,5 +1,5 @@
 import { useContext, useState } from "react"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { cn } from "@/lib/utils"
 import { ChatSettings, OpenRouterLLMID } from "@/types"
 import { IconBrain, IconCpu, IconChevronDown, IconBolt } from "@tabler/icons-react"
@@ -37,7 +37,7 @@ const MODELS = [
 ]
 
 export const ModelSelectorToggle = () => {
-  const { chatSettings, setChatSettings, profile } = useContext(ChatbotUIContext)
+  const { chatSettings, setChatSettings, profile } = useContext(ALIContext)
 
   // Use M1 as default if chatSettings is null
   const currentModel = chatSettings?.model || M1_MODEL

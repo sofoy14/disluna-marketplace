@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageSquare, FolderOpen, Mic, X, Lock, Crown } from 'lucide-react'
 import { FC, ElementType, useContext, useMemo, useEffect, useState } from 'react'
-import { ChatbotUIContext } from '@/context/context'
+import { ALIContext } from '@/context/context'
 import { ContentType } from '@/types'
 import { ModernProfileCard } from './ModernProfileCard'
 import { cn } from '@/lib/utils'
@@ -82,7 +82,7 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
   onClose
 }) => {
   const { chats, collections, folders, transcriptions } =
-    useContext(ChatbotUIContext)
+    useContext(ALIContext)
   
   // Plan access control
   const { 

@@ -1,5 +1,5 @@
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { Tables } from "@/supabase/types"
 import { FC, useContext, useState } from "react"
 import { Message } from "../messages/message"
@@ -9,7 +9,7 @@ import { AnimatePresence } from "framer-motion"
 interface ChatMessagesProps {}
 
 export const ChatMessages: FC<ChatMessagesProps> = ({}) => {
-  const { chatMessages, chatFileItems, isGenerating, firstTokenReceived } = useContext(ChatbotUIContext)
+  const { chatMessages, chatFileItems, isGenerating, firstTokenReceived } = useContext(ALIContext)
 
   const { handleSendEdit } = useChatHandler()
 

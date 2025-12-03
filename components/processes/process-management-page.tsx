@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useContext, useEffect } from 'react';
-import { ChatbotUIContext } from '@/context/context';
+import { ALIContext } from '@/context/context';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ interface ProcessManagementPageProps {
 }
 
 export function ProcessManagementPage({ collectionId, onBack }: ProcessManagementPageProps) {
-  const { collections, chats, setSelectedChat } = useContext(ChatbotUIContext);
+  const { collections, chats, setSelectedChat } = useContext(ALIContext);
   const router = useRouter();
   
   const [activeTab, setActiveTab] = useState<'chats' | 'files'>('chats');

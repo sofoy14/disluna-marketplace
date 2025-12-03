@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { WithTooltip } from "@/components/ui/with-tooltip"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { cn } from "@/lib/utils"
 import { Tables } from "@/supabase/types"
@@ -54,7 +54,7 @@ export const ModernChatItem: FC<ModernChatItemProps> = ({ chat }) => {
     availableLocalModels,
     assistantImages,
     availableOpenRouterModels
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
 
   const router = useRouter()
   const params = useParams()

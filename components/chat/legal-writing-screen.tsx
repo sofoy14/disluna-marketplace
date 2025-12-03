@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FileText, ArrowRight } from "lucide-react"
 import { ChatInput } from "./chat-input"
 import { useContext } from "react"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 
 interface Suggestion {
   id: string
@@ -36,7 +36,7 @@ const suggestions: Suggestion[] = [
 ]
 
 export function LegalWritingScreen() {
-  const { setUserInput } = useContext(ChatbotUIContext)
+  const { setUserInput } = useContext(ALIContext)
 
   const handleSuggestionClick = (prompt: string) => {
     setUserInput(prompt)

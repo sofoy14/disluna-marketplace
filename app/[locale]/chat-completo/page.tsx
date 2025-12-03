@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { ContentType } from '@/types'
 import { useTheme } from 'next-themes'
-import { ChatbotUIContext } from '@/context/context'
+import { ALIContext } from '@/context/context'
 
 export default function ChatCompletoPage() {
   const [isTyping, setIsTyping] = useState(false)
@@ -108,7 +108,7 @@ export default function ChatCompletoPage() {
   } as any
 
   return (
-    <ChatbotUIContext.Provider value={mockContextValue}>
+    <ALIContext.Provider value={mockContextValue}>
       <div className="flex h-screen bg-background overflow-hidden">
         {/* Sidebar moderna */}
         <div className={`transition-all duration-300 ${showSidebar ? 'w-80' : 'w-0'} overflow-hidden`}>
@@ -254,7 +254,7 @@ export default function ChatCompletoPage() {
           </div>
         </div>
       </div>
-    </ChatbotUIContext.Provider>
+    </ALIContext.Provider>
   )
 }
 

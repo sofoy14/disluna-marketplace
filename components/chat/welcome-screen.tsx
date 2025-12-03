@@ -2,7 +2,7 @@
 
 import { Plus } from "lucide-react"
 import { useState, useEffect, useContext } from "react"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import { ShaderCanvas } from "@/components/shader-canvas"
 import { ModelSelectorToggle } from "@/components/chat/model-selector-toggle"
@@ -12,7 +12,7 @@ import { CreateFileModal } from "@/components/modals/CreateFileModal"
 import { cn } from "@/lib/utils"
 
 export function WelcomeScreen() {
-  const { selectedWorkspace } = useContext(ChatbotUIContext)
+  const { selectedWorkspace } = useContext(ALIContext)
   const { handleNewChat, handleSendMessage } = useChatHandler()
   const [inputValue, setInputValue] = useState("")
   const [selectedShader, setSelectedShader] = useState(1)

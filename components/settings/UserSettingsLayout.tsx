@@ -1,7 +1,7 @@
 'use client'
 
 import { useContext } from "react"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -16,7 +16,7 @@ interface UserSettingsLayoutProps {
 }
 
 export function UserSettingsLayout({ children }: UserSettingsLayoutProps) {
-  const { profile } = useContext(ChatbotUIContext)
+  const { profile } = useContext(ALIContext)
   const router = useRouter()
 
   const Sidebar = (

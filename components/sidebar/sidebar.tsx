@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { Tables } from "@/supabase/types"
 import { ContentType } from "@/types"
 import { FC, useContext, useState } from "react"
@@ -24,7 +24,7 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar, onContentT
     collections,
     assistants,
     tools
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
   
   const [useModernDesign] = useState(true) // Flag para activar el diseño moderno
 

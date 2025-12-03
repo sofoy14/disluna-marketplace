@@ -33,7 +33,7 @@ import {
   Moon,
   Lock
 } from 'lucide-react';
-import { ChatbotUIContext } from '@/context/context';
+import { ALIContext } from '@/context/context';
 import { useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
@@ -57,7 +57,7 @@ interface UserStats {
 }
 
 export function UserPanelModal({ children }: UserPanelModalProps) {
-  const { profile } = useContext(ChatbotUIContext);
+  const { profile } = useContext(ALIContext);
   const router = useRouter();
   
   const [isOpen, setIsOpen] = useState(false);

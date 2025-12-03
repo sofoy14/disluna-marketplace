@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
 import { useAttachFilesToChat } from "@/lib/hooks/use-attach-files-to-chat"
 import { cn } from "@/lib/utils"
@@ -31,7 +31,7 @@ export const Folder: FC<FolderProps> = ({
   const itemRef = useRef<HTMLDivElement>(null)
 
   const { files: allFiles, collections: allCollections } =
-    useContext(ChatbotUIContext)
+    useContext(ALIContext)
   const attachFilesToChat = useAttachFilesToChat()
 
   const [isDragOver, setIsDragOver] = useState(false)

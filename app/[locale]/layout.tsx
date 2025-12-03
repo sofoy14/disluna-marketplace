@@ -13,10 +13,10 @@ import { ReactNode } from "react"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
-const APP_NAME = "ALI"
-const APP_DEFAULT_TITLE = "ALI"
+const APP_NAME = "Asistente Legal Inteligente"
+const APP_DEFAULT_TITLE = "Asistente Legal Inteligente"
 const APP_TITLE_TEMPLATE = "%s - ALI"
-const APP_DESCRIPTION = "ALI, Inteligencia artificial con todas las de la ley"
+const APP_DESCRIPTION = "ALI - Inteligencia artificial con todas las de la ley"
 
 interface RootLayoutProps {
   children: ReactNode
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "black",
-    title: APP_DEFAULT_TITLE
+    title: "ALI"
     // startUpImage: [],
   },
   formatDetection: {
@@ -100,7 +100,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning className="dark" style={{ colorScheme: 'dark' }}>
       <head>
         <link rel="icon" href="/favicon-ali.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+        <link rel="apple-touch-icon" href="/icon-192x192.svg" />
         <link rel="shortcut icon" href="/favicon-ali.svg" />
         <style
           dangerouslySetInnerHTML={{

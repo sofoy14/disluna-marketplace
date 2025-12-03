@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { cn } from "@/lib/utils"
@@ -60,7 +60,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     assistantImages,
     showPlaceholderSuggestions,
     setShowPlaceholderSuggestions
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
 
   const {
     chatInputRef,

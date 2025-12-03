@@ -2,7 +2,7 @@
 
 "use client"
 
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { getProfileByUserId } from "@/db/profile"
 import { getWorkspaceImageFromStorage } from "@/db/storage/workspace-images"
 import { getWorkspacesByUserId } from "@/db/workspaces"
@@ -325,7 +325,7 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
 
   return (
     <ThemePreferencesProvider profile={profile}>
-      <ChatbotUIContext.Provider
+      <ALIContext.Provider
         value={{
         // PROFILE STORE
         profile,
@@ -463,7 +463,7 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
       }}
       >
         {isLoading ? <LoadingScreen message={loadingMessage} /> : children}
-      </ChatbotUIContext.Provider>
+      </ALIContext.Provider>
     </ThemePreferencesProvider>
   )
 }

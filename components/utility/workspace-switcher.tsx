@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { createWorkspace } from "@/db/workspaces"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { IconBuilding, IconHome, IconPlus, IconSettings } from "@tabler/icons-react"
@@ -33,7 +33,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
     selectedWorkspace,
     setSelectedWorkspace,
     setWorkspaces
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
 
   const { handleNewChat } = useChatHandler()
 

@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useContext } from "react"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { Tables } from "@/supabase/types"
 import { ChatFile } from "@/types"
 import { toast } from "sonner"
@@ -19,7 +19,7 @@ const mapToChatFile = (file: Tables<"files">): ChatFile => ({
 
 export const useAttachFilesToChat = () => {
   const { setChatFiles, setShowFilesDisplay, setUseRetrieval } =
-    useContext(ChatbotUIContext)
+    useContext(ALIContext)
 
   return useCallback(
     (filesToAttach: Tables<"files">[], options: AttachOptions = {}) => {

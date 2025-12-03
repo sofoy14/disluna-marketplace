@@ -2,7 +2,7 @@
 
 import { useContext, useEffect, useState } from "react"
 import { useParams } from "next/navigation"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import { ChatUI } from "@/components/chat/chat-ui"
 import { WelcomeScreen } from "@/components/chat/welcome-screen"
@@ -13,7 +13,7 @@ const CHAT_MODE_EVENT = "chat-mode-changed"
 type ChatMode = "default" | "legal-writing"
 
 export default function ChatPage() {
-  const { chatMessages, selectedChat, isGenerating } = useContext(ChatbotUIContext)
+  const { chatMessages, selectedChat, isGenerating } = useContext(ALIContext)
   const { handleNewChat, handleFocusChatInput } = useChatHandler()
   const params = useParams()
   const [chatMode, setChatMode] = useState<ChatMode>("default")

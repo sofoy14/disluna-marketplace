@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { getAssistantCollectionsByAssistantId } from "@/db/assistant-collections"
 import { getAssistantFilesByAssistantId } from "@/db/assistant-files"
 import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
@@ -72,7 +72,7 @@ export const useChatHandler = () => {
     setShowPlaceholderSuggestions,
     setSuggestedQuestions,
     setShowSuggestedQuestions
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
 
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
 

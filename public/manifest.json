@@ -1,22 +1,28 @@
 {
   "short_name": "ALI",
-  "name": "ALI",
+  "name": "Asistente Legal Inteligente",
+  "description": "ALI - Inteligencia artificial con todas las de la ley",
   "icons": [
     {
-      "src": "/icon-192x192.png",
-      "type": "image/ico",
+      "src": "/favicon-ali.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "/icon-192x192.svg",
+      "type": "image/svg+xml",
       "sizes": "192x192"
     },
     {
-      "src": "/icon-256x256.png",
-      "type": "image/png",
+      "src": "/icon-256x256.svg",
+      "type": "image/svg+xml",
       "sizes": "256x256"
     },
     {
-      "src": "/icon-512x512.png",
-      "type": "image/png",
+      "src": "/icon-512x512.svg",
+      "type": "image/svg+xml",
       "sizes": "512x512",
-      "purpose":"maskable"
+      "purpose": "maskable"
     }
   ],
   "start_url": "/",

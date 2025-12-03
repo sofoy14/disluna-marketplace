@@ -4,13 +4,13 @@ import { motion } from "framer-motion"
 import { Mail, ChevronRight } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { useContext } from "react"
 import { ProfileSettings } from "@/components/utility/profile-settings"
 import { UserPanelModal } from "@/components/modals/UserPanelModal"
 
 export function ModernProfileCard() {
-  const { profile } = useContext(ChatbotUIContext)
+  const { profile } = useContext(ALIContext)
 
   if (!profile) return null
 

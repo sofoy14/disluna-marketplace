@@ -12,7 +12,7 @@ import { AssistantImage } from "@/types/images/assistant-image"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { Dispatch, SetStateAction, createContext } from "react"
 
-interface ChatbotUIContext {
+interface ALIContext {
   // PROFILE STORE
   profile: Tables<"profiles"> | null
   setProfile: Dispatch<SetStateAction<Tables<"profiles"> | null>>
@@ -150,7 +150,7 @@ interface ChatbotUIContext {
   setShowSuggestedQuestions: Dispatch<SetStateAction<boolean>>
 }
 
-export const ChatbotUIContext = createContext<ChatbotUIContext>({
+export const ALIContext = createContext<ALIContext>({
   // PROFILE STORE
   profile: null,
   setProfile: () => {},

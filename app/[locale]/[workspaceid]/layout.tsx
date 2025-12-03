@@ -1,7 +1,7 @@
 "use client"
 
 import { Dashboard } from "@/components/ui/dashboard"
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import { getChatsByWorkspaceId } from "@/db/chats"
 import { getFileWorkspacesByWorkspaceId } from "@/db/files"
 import { getModelWorkspacesByWorkspaceId } from "@/db/models"
@@ -47,7 +47,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setNewMessageFiles,
     setNewMessageImages,
     setShowFilesDisplay
-  } = useContext(ChatbotUIContext)
+  } = useContext(ALIContext)
 
   const [loading, setLoading] = useState(true)
 

@@ -1,4 +1,4 @@
-import { ChatbotUIContext } from "@/context/context"
+import { ALIContext } from "@/context/context"
 import {
   PROFILE_CONTEXT_MAX,
   PROFILE_DISPLAY_NAME_MAX,
@@ -59,7 +59,7 @@ const debounce = <Args extends unknown[]>(
 }
 
 export const ProfileSettings: FC<ProfileSettingsProps> = ({ trigger }) => {
-  const { profile, setProfile } = useContext(ChatbotUIContext)
+  const { profile, setProfile } = useContext(ALIContext)
   const router = useRouter()
 
   const buttonRef = useRef<HTMLButtonElement>(null)
