@@ -338,26 +338,21 @@ export default function OnboardingPage() {
       console.log('[Onboarding] Checkout data keys:', checkoutData ? Object.keys(checkoutData) : 'null');
 
       if (checkoutUrl && checkoutData) {
-        console.log('[Onboarding] Creating form for Wompi checkout...');
+        console.log('[Onboarding] Building Wompi checkout URL...');
         
-        // Create form and submit to Wompi Web Checkout
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = checkoutUrl;
-        
+        // Build URL with query parameters for Wompi Web Checkout
+        const params = new URLSearchParams();
         Object.entries(checkoutData).forEach(([key, value]) => {
-          if (value) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = String(value);
-            form.appendChild(input);
+          if (value !== null && value !== undefined && value !== '') {
+            params.append(key, String(value));
           }
         });
-
-        console.log('[Onboarding] Form created, submitting to:', checkoutUrl);
-        document.body.appendChild(form);
-        form.submit();
+        
+        const fullCheckoutUrl = `${checkoutUrl}?${params.toString()}`;
+        console.log('[Onboarding] Redirecting to Wompi:', fullCheckoutUrl);
+        
+        // Direct redirect - more reliable than form submission
+        window.location.href = fullCheckoutUrl;
       } else {
         console.error('[Onboarding] Missing checkout data:', { checkoutUrl, checkoutData });
         throw new Error('No se recibieron los datos de checkout de Wompi');
