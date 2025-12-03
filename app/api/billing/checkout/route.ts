@@ -91,6 +91,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Use production URL as default
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro';
+    
     // Generate checkout data
     const checkoutData = generateCheckoutData({
       planId: plan.id,
@@ -99,7 +102,7 @@ export async function POST(req: NextRequest) {
       workspaceId: workspace.id,
       userEmail: user.user.email,
       userName: profile.display_name || 'Usuario',
-      redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/billing/success`
+      redirectUrl: `${appUrl}/billing/success`
     });
 
     return NextResponse.json({

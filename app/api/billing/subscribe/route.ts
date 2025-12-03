@@ -267,7 +267,9 @@ export async function POST(req: NextRequest) {
       currency: 'COP'
     });
 
-    const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/billing/success`;
+    // Use production URL as default, never localhost in production
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro';
+    const redirectUrl = `${appUrl}/billing/success`;
 
     // Generar datos de checkout para Wompi Web Checkout
     const checkoutData: Record<string, string> = {

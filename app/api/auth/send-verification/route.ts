@@ -17,12 +17,15 @@ export async function POST(req: NextRequest) {
     const cookieStore = cookies();
     const supabase = createClient(cookieStore);
 
+    // Use production URL as default
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro';
+    
     // Send verification email
     const { error } = await supabase.auth.resend({
       type: 'signup',
       email: email,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/auth/verify-email`
+        emailRedirectTo: `${appUrl}/auth/callback?next=/auth/verify-email`
       }
     });
 

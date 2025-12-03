@@ -7,7 +7,7 @@ import { createServerClient } from "@supabase/ssr"
 import { get } from "@vercel/edge-config"
 import { Metadata } from "next"
 import { ShaderCanvas } from "@/components/shader-canvas"
-import { cookies, headers } from "next/headers"
+import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 export const metadata: Metadata = {
@@ -165,11 +165,14 @@ export default async function Login({
     const cookieStore = cookies()
     const supabase = createClient(cookieStore)
 
+    // Get app URL from env or use production default
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro';
+    
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/auth/verify-email`
+        emailRedirectTo: `${appUrl}/auth/callback?next=/auth/verify-email`
       }
     })
 
@@ -186,13 +189,15 @@ export default async function Login({
   const handleResetPassword = async (formData: FormData) => {
     "use server"
 
-    const origin = headers().get("origin")
     const email = formData.get("email") as string
     const cookieStore = cookies()
     const supabase = createClient(cookieStore)
+    
+    // Always use the configured APP_URL
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro'
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${origin}/auth/callback?next=/login/password`
+      redirectTo: `${appUrl}/auth/callback?next=/login/password`
     })
 
     if (error) {
@@ -206,18 +211,17 @@ export default async function Login({
     "use server"
     
     const cookieStore = cookies()
-    const headerStore = headers()
     const supabase = createClient(cookieStore)
     
-    // Get the origin from headers or use env variable
-    const origin = headerStore.get('origin') || headerStore.get('x-forwarded-host') 
-      ? `https://${headerStore.get('x-forwarded-host') || headerStore.get('host')}`
-      : process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro'
+    // Always use the configured APP_URL for OAuth redirects
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro'
+    
+    console.log('[Login] Google OAuth redirectTo:', `${appUrl}/auth/callback`)
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${origin}/auth/callback`
+        redirectTo: `${appUrl}/auth/callback`
       }
     })
 
@@ -234,18 +238,17 @@ export default async function Login({
     "use server"
     
     const cookieStore = cookies()
-    const headerStore = headers()
     const supabase = createClient(cookieStore)
     
-    // Get the origin from headers or use env variable
-    const origin = headerStore.get('origin') || headerStore.get('x-forwarded-host') 
-      ? `https://${headerStore.get('x-forwarded-host') || headerStore.get('host')}`
-      : process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro'
+    // Always use the configured APP_URL for OAuth redirects
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro'
+    
+    console.log('[Login] Facebook OAuth redirectTo:', `${appUrl}/auth/callback`)
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: {
-        redirectTo: `${origin}/auth/callback`
+        redirectTo: `${appUrl}/auth/callback`
       }
     })
 
