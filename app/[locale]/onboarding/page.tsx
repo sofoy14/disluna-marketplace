@@ -294,7 +294,6 @@ export default function OnboardingPage() {
     setProcessingPlanId(planId);
     setMessage(null);
 
-    // Debug logs
     console.log('[Onboarding] handleSubscribe called with planId:', planId);
     console.log('[Onboarding] Current workspaceId state:', workspaceId);
 
@@ -306,90 +305,14 @@ export default function OnboardingPage() {
       return;
     }
 
-    try {
-      console.log('[Onboarding] Sending request to /api/billing/subscribe with:', { plan_id: planId, workspace_id: workspaceId });
-      
-      let response;
-      try {
-        // Create AbortController with 30 second timeout
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 30000);
-        
-        response = await fetch('/api/billing/subscribe', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
-          },
-          body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId }),
-          signal: controller.signal,
-          cache: 'no-store'
-        });
-        
-        clearTimeout(timeoutId);
-        console.log('[Onboarding] Fetch completed, status:', response.status);
-      } catch (fetchError: any) {
-        console.error('[Onboarding] Fetch failed:', fetchError);
-        if (fetchError.name === 'AbortError') {
-          throw new Error('La solicitud tardó demasiado. Por favor intenta de nuevo.');
-        }
-        throw new Error('Error de conexión al servidor: ' + fetchError.message);
-      }
-
-      let responseData;
-      try {
-        const responseText = await response.text();
-        console.log('[Onboarding] Response text length:', responseText.length);
-        responseData = JSON.parse(responseText);
-        console.log('[Onboarding] Response parsed:', responseData);
-      } catch (parseError) {
-        console.error('[Onboarding] JSON parse error:', parseError);
-        throw new Error('Error al procesar la respuesta del servidor');
-      }
-
-      if (!response.ok) {
-        console.error('[Onboarding] API error:', responseData);
-        throw new Error(responseData.error || responseData.message || 'Error al procesar la suscripción');
-      }
-
-      if (!responseData.success) {
-        console.error('[Onboarding] API returned success=false:', responseData);
-        throw new Error(responseData.error || responseData.message || 'Error en la respuesta del servidor');
-      }
-
-      // Redirect to Wompi checkout
-      const checkoutUrl = responseData.data?.checkout_url;
-      const checkoutData = responseData.data?.checkout_data;
-
-      console.log('[Onboarding] Checkout URL:', checkoutUrl);
-      console.log('[Onboarding] Checkout data:', JSON.stringify(checkoutData, null, 2));
-
-      if (checkoutUrl && checkoutData) {
-        console.log('[Onboarding] Building Wompi checkout URL...');
-        
-        // Build URL with query parameters for Wompi Web Checkout
-        const params = new URLSearchParams();
-        Object.entries(checkoutData).forEach(([key, value]) => {
-          if (value !== null && value !== undefined && value !== '') {
-            params.append(key, String(value));
-          }
-        });
-        
-        const fullCheckoutUrl = `${checkoutUrl}?${params.toString()}`;
-        console.log('[Onboarding] REDIRECTING NOW to:', fullCheckoutUrl);
-        
-        // Use window.location.replace for immediate redirect
-        window.location.replace(fullCheckoutUrl);
-      } else {
-        console.error('[Onboarding] Missing checkout data:', { checkoutUrl, checkoutData });
-        throw new Error('No se recibieron los datos de checkout de Wompi');
-      }
-    } catch (error: any) {
-      console.error('[Onboarding] CATCH ERROR:', error);
-      setMessage({ type: 'error', text: error.message || 'Error al procesar el pago' });
-      setProcessingPlanId(null);
-    }
+    // Direct navigation to checkout endpoint - no fetch needed
+    // The API will handle everything and redirect to Wompi
+    const checkoutUrl = `/api/billing/checkout-redirect?plan_id=${encodeURIComponent(planId)}&workspace_id=${encodeURIComponent(workspaceId)}`;
+    
+    console.log('[Onboarding] Redirecting to checkout endpoint:', checkoutUrl);
+    
+    // Use direct navigation - browser will follow the redirect automatically
+    window.location.href = checkoutUrl;
   };
 
   // Helper functions for plans
