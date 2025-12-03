@@ -309,16 +309,29 @@ export default function OnboardingPage() {
     try {
       console.log('[Onboarding] Sending request to /api/billing/subscribe with:', { plan_id: planId, workspace_id: workspaceId });
       
-      const response = await fetch('/api/billing/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId })
-      });
+      let response;
+      try {
+        response = await fetch('/api/billing/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId })
+        });
+        console.log('[Onboarding] Fetch completed, status:', response.status);
+      } catch (fetchError) {
+        console.error('[Onboarding] Fetch failed:', fetchError);
+        throw new Error('Error de conexión al servidor');
+      }
 
-      console.log('[Onboarding] Response status:', response.status);
-      
-      const responseData = await response.json();
-      console.log('[Onboarding] Response data:', responseData);
+      let responseData;
+      try {
+        const responseText = await response.text();
+        console.log('[Onboarding] Response text length:', responseText.length);
+        responseData = JSON.parse(responseText);
+        console.log('[Onboarding] Response parsed:', responseData);
+      } catch (parseError) {
+        console.error('[Onboarding] JSON parse error:', parseError);
+        throw new Error('Error al procesar la respuesta del servidor');
+      }
 
       if (!response.ok) {
         console.error('[Onboarding] API error:', responseData);
@@ -335,7 +348,7 @@ export default function OnboardingPage() {
       const checkoutData = responseData.data?.checkout_data;
 
       console.log('[Onboarding] Checkout URL:', checkoutUrl);
-      console.log('[Onboarding] Checkout data keys:', checkoutData ? Object.keys(checkoutData) : 'null');
+      console.log('[Onboarding] Checkout data:', JSON.stringify(checkoutData, null, 2));
 
       if (checkoutUrl && checkoutData) {
         console.log('[Onboarding] Building Wompi checkout URL...');
@@ -349,16 +362,16 @@ export default function OnboardingPage() {
         });
         
         const fullCheckoutUrl = `${checkoutUrl}?${params.toString()}`;
-        console.log('[Onboarding] Redirecting to Wompi:', fullCheckoutUrl);
+        console.log('[Onboarding] REDIRECTING NOW to:', fullCheckoutUrl);
         
-        // Direct redirect - more reliable than form submission
-        window.location.href = fullCheckoutUrl;
+        // Use window.location.replace for immediate redirect
+        window.location.replace(fullCheckoutUrl);
       } else {
         console.error('[Onboarding] Missing checkout data:', { checkoutUrl, checkoutData });
         throw new Error('No se recibieron los datos de checkout de Wompi');
       }
     } catch (error: any) {
-      console.error('[Onboarding] Catch error:', error);
+      console.error('[Onboarding] CATCH ERROR:', error);
       setMessage({ type: 'error', text: error.message || 'Error al procesar el pago' });
       setProcessingPlanId(null);
     }
