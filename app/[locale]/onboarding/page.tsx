@@ -311,15 +311,30 @@ export default function OnboardingPage() {
       
       let response;
       try {
+        // Create AbortController with 30 second timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+        
         response = await fetch('/api/billing/subscribe', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId })
+          headers: { 
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
+          },
+          body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId }),
+          signal: controller.signal,
+          cache: 'no-store'
         });
+        
+        clearTimeout(timeoutId);
         console.log('[Onboarding] Fetch completed, status:', response.status);
-      } catch (fetchError) {
+      } catch (fetchError: any) {
         console.error('[Onboarding] Fetch failed:', fetchError);
-        throw new Error('Error de conexión al servidor');
+        if (fetchError.name === 'AbortError') {
+          throw new Error('La solicitud tardó demasiado. Por favor intenta de nuevo.');
+        }
+        throw new Error('Error de conexión al servidor: ' + fetchError.message);
       }
 
       let responseData;
