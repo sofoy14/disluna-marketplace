@@ -314,23 +314,25 @@ export default function OnboardingPage() {
         body: JSON.stringify({ plan_id: planId, workspace_id: workspaceId })
       });
 
-      const data = await response.json();
+      const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al procesar la suscripción');
+        throw new Error(responseData.error || 'Error al procesar la suscripción');
       }
 
       // Redirect to Wompi checkout
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else if (data.wompiData) {
-        // Create form and submit to Wompi
+      // La API devuelve { success: true, data: { checkout_url, checkout_data, ... } }
+      const checkoutUrl = responseData.data?.checkout_url;
+      const checkoutData = responseData.data?.checkout_data;
+
+      if (checkoutUrl && checkoutData) {
+        // Create form and submit to Wompi Web Checkout
         const form = document.createElement('form');
         form.method = 'GET';
-        form.action = data.wompiData.checkoutUrl;
+        form.action = checkoutUrl;
         
-        Object.entries(data.wompiData).forEach(([key, value]) => {
-          if (key !== 'checkoutUrl' && value) {
+        Object.entries(checkoutData).forEach(([key, value]) => {
+          if (value) {
             const input = document.createElement('input');
             input.type = 'hidden';
             input.name = key;
@@ -341,6 +343,8 @@ export default function OnboardingPage() {
 
         document.body.appendChild(form);
         form.submit();
+      } else {
+        throw new Error('No se recibieron los datos de checkout de Wompi');
       }
     } catch (error: any) {
       setMessage({ type: 'error', text: error.message || 'Error al procesar el pago' });
