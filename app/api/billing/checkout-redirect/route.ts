@@ -33,6 +33,60 @@ function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date())
   return endDate;
 }
 
+// Get applicable special offer for a plan (first month discount)
+async function getSpecialOffer(planId: string, workspaceId: string) {
+  console.log('[Checkout Redirect] Checking special offer for plan:', planId, 'workspace:', workspaceId);
+  
+  // Check if user has had any previous subscriptions (active, canceled, or expired)
+  const { count: prevSubCount, error: subError } = await supabase
+    .from('subscriptions')
+    .select('id', { count: 'exact', head: true })
+    .eq('workspace_id', workspaceId)
+    .in('status', ['active', 'canceled', 'expired']);
+  
+  console.log('[Checkout Redirect] Previous subscriptions count:', prevSubCount, subError?.message);
+  
+  // Only apply first month offers if user has no previous subscriptions
+  if (prevSubCount && prevSubCount > 0) {
+    console.log('[Checkout Redirect] User has previous subscriptions, no special offer');
+    return null;
+  }
+
+  // Get active special offer for this plan
+  // Using simpler query without .or() to avoid syntax issues
+  const now = new Date().toISOString();
+  console.log('[Checkout Redirect] Querying special offers for plan_id:', planId, 'at:', now);
+  
+  const { data: offers, error } = await supabase
+    .from('special_offers')
+    .select('*')
+    .eq('plan_id', planId)
+    .eq('is_active', true)
+    .eq('applies_to', 'first_month')
+    .lte('valid_from', now);
+
+  if (error) {
+    console.log('[Checkout Redirect] Error querying special offers:', error.message);
+    return null;
+  }
+
+  console.log('[Checkout Redirect] Found offers:', offers?.length);
+
+  // Filter by valid_until manually (null means no expiration)
+  const validOffer = offers?.find(offer => {
+    if (!offer.valid_until) return true; // No expiration
+    return new Date(offer.valid_until) > new Date();
+  });
+
+  if (!validOffer) {
+    console.log('[Checkout Redirect] No valid special offer found');
+    return null;
+  }
+
+  console.log('[Checkout Redirect] Special offer found:', validOffer.name, 'discount_type:', validOffer.discount_type, 'discount_value:', validOffer.discount_value);
+  return validOffer;
+}
+
 export async function GET(req: NextRequest) {
   console.log('[Checkout Redirect] ========== START ==========');
   
@@ -108,7 +162,36 @@ export async function GET(req: NextRequest) {
     const wompiReference = generateTransactionReference('SUB');
     const now = new Date();
     const periodEnd = calculatePeriodEnd(plan.billing_period, now);
-    const amountToCharge = plan.amount_in_cents;
+    
+    // Determine amount to charge (check for special offers on monthly plans)
+    let amountToCharge = plan.amount_in_cents;
+    let specialOffer = null;
+    let isFirstMonth = false;
+    
+    if (plan.billing_period === 'monthly') {
+      specialOffer = await getSpecialOffer(plan_id, workspace_id);
+      
+      if (specialOffer) {
+        if (specialOffer.discount_type === 'fixed_price') {
+          // Fixed price - charge exactly this amount (e.g., $0.99 USD = 3960 COP centavos)
+          amountToCharge = specialOffer.discount_value;
+          isFirstMonth = true;
+          console.log('[Checkout Redirect] Applied fixed_price offer:', amountToCharge, 'centavos');
+        } else if (specialOffer.discount_type === 'fixed_amount') {
+          // Fixed amount discount - subtract from original price
+          amountToCharge = Math.max(0, plan.amount_in_cents - specialOffer.discount_value);
+          isFirstMonth = true;
+          console.log('[Checkout Redirect] Applied fixed_amount discount:', specialOffer.discount_value, 'final:', amountToCharge);
+        } else if (specialOffer.discount_type === 'percentage') {
+          // Percentage discount
+          amountToCharge = Math.round(plan.amount_in_cents * (1 - specialOffer.discount_value / 100));
+          isFirstMonth = true;
+          console.log('[Checkout Redirect] Applied percentage offer:', specialOffer.discount_value + '%');
+        }
+      }
+    }
+    
+    console.log('[Checkout Redirect] Amount to charge:', amountToCharge, isFirstMonth ? '(FIRST MONTH SPECIAL)' : '(regular price)');
 
     // Check for existing pending subscription
     const { data: pendingSubscription } = await supabase
@@ -167,7 +250,7 @@ export async function GET(req: NextRequest) {
       console.log('[Checkout Redirect] Updated existing subscription:', subscription.id);
     }
 
-    // Create invoice
+    // Create invoice with special offer info if applicable
     const { data: existingInvoice } = await supabase
       .from('invoices')
       .select('*')
@@ -175,23 +258,34 @@ export async function GET(req: NextRequest) {
       .single();
     
     if (!existingInvoice) {
+      const invoiceData: Record<string, any> = {
+        subscription_id: subscription.id,
+        workspace_id,
+        plan_id,
+        amount_in_cents: amountToCharge,
+        currency: 'COP',
+        status: 'pending',
+        period_start: now.toISOString(),
+        period_end: periodEnd.toISOString(),
+        reference: wompiReference,
+        attempt_count: 0
+      };
+      
+      // Add special offer info if applicable
+      if (specialOffer && isFirstMonth) {
+        invoiceData.special_offer_id = specialOffer.id;
+        invoiceData.original_amount = plan.amount_in_cents;
+        invoiceData.discount_applied = plan.amount_in_cents - amountToCharge;
+      }
+      
       const { error: invoiceError } = await supabase
         .from('invoices')
-        .insert({
-          subscription_id: subscription.id,
-          workspace_id,
-          plan_id,
-          amount_in_cents: amountToCharge,
-          currency: 'COP',
-          status: 'pending',
-          period_start: now.toISOString(),
-          period_end: periodEnd.toISOString(),
-          reference: wompiReference,
-          attempt_count: 0
-        });
+        .insert(invoiceData);
 
       if (invoiceError) {
         console.error('[Checkout Redirect] Error creating invoice:', invoiceError);
+      } else {
+        console.log('[Checkout Redirect] Invoice created with amount:', amountToCharge);
       }
     }
 
@@ -230,7 +324,9 @@ export async function GET(req: NextRequest) {
     console.log('[Checkout Redirect] SUCCESS! Redirecting to Wompi');
     console.log('[Checkout Redirect] Checkout URL:', fullCheckoutUrl);
     console.log('[Checkout Redirect] Reference:', wompiReference);
-    console.log('[Checkout Redirect] Amount:', amountToCharge);
+    console.log('[Checkout Redirect] Amount to charge:', amountToCharge, 'centavos COP');
+    console.log('[Checkout Redirect] Original plan price:', plan.amount_in_cents, 'centavos COP');
+    console.log('[Checkout Redirect] Special offer applied:', isFirstMonth ? `YES - ${specialOffer?.name}` : 'NO');
     console.log('[Checkout Redirect] Public Key:', wompiConfig.publicKey.substring(0, 20) + '...');
     console.log('[Checkout Redirect] ========== END ==========');
 
