@@ -25,8 +25,17 @@ export default async function Login({
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
+          } catch {
+            // Called from Server Component - ignore
+          }
         }
       }
     }
@@ -60,6 +69,17 @@ export default async function Login({
       // No active subscription - redirect to onboarding for plan selection
       return redirect('/onboarding')
     }
+
+    // CRITICAL: Ensure profile has onboarding_completed = true for middleware check
+    // This fixes users who paid before the bug fix
+    await supabase
+      .from('profiles')
+      .update({ 
+        onboarding_completed: true, 
+        onboarding_step: 'completed',
+        has_onboarded: true
+      })
+      .eq('user_id', user.id)
 
     // User has workspace and subscription - go to chat
     return redirect(`/${homeWorkspace.id}/chat`)
@@ -118,6 +138,16 @@ export default async function Login({
       console.log('[Login] No subscription, redirecting to /onboarding')
       return redirect('/onboarding')
     }
+
+    // CRITICAL: Ensure profile has onboarding_completed = true for middleware check
+    await supabase
+      .from('profiles')
+      .update({ 
+        onboarding_completed: true, 
+        onboarding_step: 'completed',
+        has_onboarded: true
+      })
+      .eq('user_id', data.user.id)
 
     // All good - go to chat
     console.log('[Login] All good, redirecting to chat:', homeWorkspace.id)

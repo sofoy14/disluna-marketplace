@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr"
+import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
@@ -41,27 +41,23 @@ export async function GET(request: Request) {
 
   const cookieStore = cookies()
   
-  // Create Supabase client with proper cookie handling
+  // Create Supabase client with proper cookie handling using getAll/setAll
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value
+        getAll() {
+          return cookieStore.getAll()
         },
-        set(name: string, value: string, options: CookieOptions) {
+        setAll(cookiesToSet) {
           try {
-            cookieStore.set({ name, value, ...options })
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookieStore.set(name, value, options)
+            })
           } catch (error) {
-            // Ignore - might be called from Server Component
-          }
-        },
-        remove(name: string, options: CookieOptions) {
-          try {
-            cookieStore.delete(name)
-          } catch (error) {
-            // Ignore - might be called from Server Component
+            // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing user sessions.
           }
         }
       }
@@ -152,12 +148,14 @@ async function handleAuthenticatedUser(
     .eq('is_home', true)
     .maybeSingle()
 
-  // Update profile for OAuth users
+  // Update profile for OAuth users - CRITICAL: set onboarding_completed for middleware check
   await supabase
     .from('profiles')
     .update({ 
       email_verified: true,
-      onboarding_step: subscription ? 'completed' : 'plan_selection'
+      onboarding_completed: subscription ? true : false,
+      onboarding_step: subscription ? 'completed' : 'plan_selection',
+      has_onboarded: true
     })
     .eq('user_id', user.id)
 

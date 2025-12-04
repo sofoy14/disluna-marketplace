@@ -1,4 +1,4 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr"
+import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
 export const createClient = (request: NextRequest) => {
@@ -14,43 +14,25 @@ export const createClient = (request: NextRequest) => {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value
+        getAll() {
+          return request.cookies.getAll()
         },
-        set(name: string, value: string, options: CookieOptions) {
-          // If the cookie is updated, update the cookies for the request and response
-          request.cookies.set({
-            name,
-            value,
-            ...options
+        setAll(cookiesToSet) {
+          // Update cookies on the request
+          cookiesToSet.forEach(({ name, value, options }) => {
+            request.cookies.set(name, value)
           })
+          
+          // Create new response with updated request
           response = NextResponse.next({
             request: {
               headers: request.headers
             }
           })
-          response.cookies.set({
-            name,
-            value,
-            ...options
-          })
-        },
-        remove(name: string, options: CookieOptions) {
-          // If the cookie is removed, update the cookies for the request and response
-          request.cookies.set({
-            name,
-            value: "",
-            ...options
-          })
-          response = NextResponse.next({
-            request: {
-              headers: request.headers
-            }
-          })
-          response.cookies.set({
-            name,
-            value: "",
-            ...options
+          
+          // Set cookies on the response
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options)
           })
         }
       }
