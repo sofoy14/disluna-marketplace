@@ -250,7 +250,7 @@ export async function GET(req: NextRequest) {
       console.log('[Checkout Redirect] Updated existing subscription:', subscription.id);
     }
 
-    // Create invoice with special offer info if applicable
+    // Create invoice (without special offer columns that may not exist)
     const { data: existingInvoice } = await supabase
       .from('invoices')
       .select('*')
@@ -258,34 +258,25 @@ export async function GET(req: NextRequest) {
       .single();
     
     if (!existingInvoice) {
-      const invoiceData: Record<string, any> = {
-        subscription_id: subscription.id,
-        workspace_id,
-        plan_id,
-        amount_in_cents: amountToCharge,
-        currency: 'COP',
-        status: 'pending',
-        period_start: now.toISOString(),
-        period_end: periodEnd.toISOString(),
-        reference: wompiReference,
-        attempt_count: 0
-      };
-      
-      // Add special offer info if applicable
-      if (specialOffer && isFirstMonth) {
-        invoiceData.special_offer_id = specialOffer.id;
-        invoiceData.original_amount = plan.amount_in_cents;
-        invoiceData.discount_applied = plan.amount_in_cents - amountToCharge;
-      }
-      
       const { error: invoiceError } = await supabase
         .from('invoices')
-        .insert(invoiceData);
+        .insert({
+          subscription_id: subscription.id,
+          workspace_id,
+          plan_id,
+          amount_in_cents: amountToCharge,
+          currency: 'COP',
+          status: 'pending',
+          period_start: now.toISOString(),
+          period_end: periodEnd.toISOString(),
+          reference: wompiReference,
+          attempt_count: 0
+        });
 
       if (invoiceError) {
         console.error('[Checkout Redirect] Error creating invoice:', invoiceError);
       } else {
-        console.log('[Checkout Redirect] Invoice created with amount:', amountToCharge);
+        console.log('[Checkout Redirect] Invoice created with amount:', amountToCharge, isFirstMonth ? '(first month special)' : '');
       }
     }
 
