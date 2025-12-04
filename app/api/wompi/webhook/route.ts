@@ -102,6 +102,13 @@ async function processTransactionUpdate(transactionData: any) {
   const reference = transactionData.reference;
 
   console.log(`🔄 Processing transaction: ${wompiTransactionId}, status: ${status}, ref: ${reference}`);
+  console.log(`📝 Transaction details:`, JSON.stringify({
+    amount: transactionData.amount_in_cents,
+    paymentMethod: transactionData.payment_method_type,
+    customerEmail: transactionData.customer_email,
+    createdAt: transactionData.created_at,
+    finalizedAt: transactionData.finalized_at
+  }, null, 2));
 
   // Solo procesar transacciones finales
   if (!isTransactionFinal(status)) {
@@ -110,10 +117,45 @@ async function processTransactionUpdate(transactionData: any) {
   }
 
   // Buscar invoice por referencia
+  console.log(`🔍 Searching for invoice with reference: "${reference}"`);
   const invoice = await getInvoiceByReference(reference);
   
   if (!invoice) {
     console.log(`⚠️ Invoice not found for reference: ${reference}`);
+    
+    // Try to find invoice with different reference patterns
+    // Sometimes reference might be stored differently
+    const possibleRefs = [
+      reference,
+      reference.toUpperCase(),
+      reference.toLowerCase(),
+      reference.replace(/^SUB-/, ''),
+      `SUB-${reference}`
+    ];
+    
+    console.log(`🔍 Trying alternative reference patterns:`, possibleRefs);
+    
+    // Log recent invoices for debugging
+    try {
+      const { data: recentInvoices } = await supabase
+        .from('invoices')
+        .select('id, reference, status, created_at')
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      console.log(`📋 Recent invoices in database:`, recentInvoices?.map(inv => ({
+        id: inv.id.substring(0, 8) + '...',
+        reference: inv.reference,
+        status: inv.status
+      })));
+    } catch (e) {
+      console.log('⚠️ Could not fetch recent invoices for debugging');
+    }
+    
+    // If we still can't find it, create a record for manual review
+    console.log(`❌ Invoice not found. Transaction ${wompiTransactionId} needs manual review.`);
+    console.log(`📧 Customer email: ${transactionData.customer_email}`);
+    console.log(`💰 Amount: ${transactionData.amount_in_cents} COP`);
     return;
   }
 

@@ -71,7 +71,7 @@ Usa esta herramienta cuando necesites:
 La herramienta devuelve el texto limpio de la página (hasta 5000 caracteres).`,
   schema: z.object({
     url: z.string().url().describe("URL completa de la página a extraer. Debe ser una URL válida."),
-    maxLength: z.number().optional().default(5000).describe("Longitud máxima del contenido a extraer (default: 5000)")
+    maxLength: z.number().nullable().optional().default(5000).describe("Longitud máxima del contenido a extraer (default: 5000)")
   }),
   func: async ({ url, maxLength }) => {
     console.log(`📄 [TOOL] extract_web_content: "${url}"`)

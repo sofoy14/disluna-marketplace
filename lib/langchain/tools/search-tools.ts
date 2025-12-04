@@ -177,7 +177,7 @@ Usa esta herramienta PRIMERO para cualquier pregunta sobre leyes, decretos, sent
       z.string(),
       z.array(z.string())
     ]).describe("Consulta de búsqueda legal. Puede ser un string o un array de strings. Ejemplo: 'prescripción adquisitiva código civil'"),
-    maxResults: z.number().optional().default(5).describe("Número máximo de resultados (default: 5)")
+    maxResults: z.number().nullable().optional().default(5).describe("Número máximo de resultados (default: 5)")
   }),
   func: async ({ query, maxResults }) => {
     // Normalizar query: si es array, usar el primer elemento o unirlos
@@ -266,7 +266,7 @@ Usa esta herramienta para complementar la información oficial con análisis doc
       z.string(),
       z.array(z.string())
     ]).describe("Consulta de búsqueda académica. Puede ser un string o un array de strings."),
-    maxResults: z.number().optional().default(3).describe("Número máximo de resultados (default: 3)")
+    maxResults: z.number().nullable().optional().default(3).describe("Número máximo de resultados (default: 3)")
   }),
   func: async ({ query, maxResults }) => {
     // Normalizar query
@@ -331,7 +331,7 @@ Usa esta herramienta solo cuando las fuentes oficiales y académicas no proporci
       z.string(),
       z.array(z.string())
     ]).describe("Consulta de búsqueda general. Puede ser un string o un array de strings."),
-    maxResults: z.number().optional().default(5).describe("Número máximo de resultados (default: 5)")
+    maxResults: z.number().nullable().optional().default(5).describe("Número máximo de resultados (default: 5)")
   }),
   func: async ({ query, maxResults }) => {
     // Normalizar query

@@ -20,6 +20,7 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get("code")
   const next = requestUrl.searchParams.get("next")
+  const error_description = requestUrl.searchParams.get("error_description")
   
   // Get the correct base URL for redirects - ALWAYS use production URL
   const appUrl = getAppUrl();
@@ -28,45 +29,74 @@ export async function GET(request: Request) {
     hasCode: !!code, 
     next,
     appUrl,
-    envAppUrl: process.env.NEXT_PUBLIC_APP_URL || 'NOT SET'
+    envAppUrl: process.env.NEXT_PUBLIC_APP_URL || 'NOT SET',
+    error_description: error_description || 'none'
   })
 
-  if (code) {
-    const cookieStore = cookies()
-    
-    // Create Supabase client with proper cookie handling
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          get(name: string) {
-            return cookieStore.get(name)?.value
-          },
-          set(name: string, value: string, options: CookieOptions) {
-            try {
-              cookieStore.set({ name, value, ...options })
-            } catch (error) {
-              // Ignore - might be called from Server Component
-            }
-          },
-          remove(name: string, options: CookieOptions) {
-            try {
-              cookieStore.delete(name)
-            } catch (error) {
-              // Ignore - might be called from Server Component
-            }
+  // Handle OAuth errors
+  if (error_description) {
+    console.error('[Auth Callback] OAuth error:', error_description)
+    return NextResponse.redirect(new URL(`/login?message=${encodeURIComponent(error_description)}`, appUrl))
+  }
+
+  const cookieStore = cookies()
+  
+  // Create Supabase client with proper cookie handling
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          try {
+            cookieStore.set({ name, value, ...options })
+          } catch (error) {
+            // Ignore - might be called from Server Component
+          }
+        },
+        remove(name: string, options: CookieOptions) {
+          try {
+            cookieStore.delete(name)
+          } catch (error) {
+            // Ignore - might be called from Server Component
           }
         }
       }
-    )
-    
+    }
+  )
+
+  if (code) {
     // Exchange the code for a session
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (error) {
       console.error('[Auth Callback] Error exchanging code:', error)
-      return NextResponse.redirect(new URL('/login?message=Error de autenticación', appUrl))
+      
+      // PKCE error typically happens when code verifier is missing (different device login)
+      // Try to check if user already has an active session
+      if (error.message?.includes('code verifier') || error.code === 'validation_failed') {
+        console.log('[Auth Callback] PKCE error - attempting to get existing session')
+        
+        // Try to get existing session from cookies
+        const { data: sessionData } = await supabase.auth.getSession()
+        
+        if (sessionData?.session?.user) {
+          console.log('[Auth Callback] Found existing session for:', sessionData.session.user.email)
+          return await handleAuthenticatedUser(supabase, sessionData.session.user, next, appUrl)
+        }
+        
+        // No existing session, redirect to login with helpful message
+        console.log('[Auth Callback] No session found, redirecting to login')
+        return NextResponse.redirect(
+          new URL('/login?message=Tu sesión expiró. Por favor inicia sesión nuevamente.', appUrl)
+        )
+      }
+      
+      // Generic auth error
+      return NextResponse.redirect(new URL('/login?message=Error de autenticación. Por favor intenta nuevamente.', appUrl))
     }
 
     if (!data.user) {
@@ -75,51 +105,68 @@ export async function GET(request: Request) {
     }
 
     console.log('[Auth Callback] User authenticated:', data.user.email)
-
-    // If there's a specific next URL, redirect there
-    if (next) {
-      return NextResponse.redirect(new URL(next, appUrl))
-    }
-
-    // Check for active subscription
-    const { data: subscription } = await supabase
-      .from('subscriptions')
-      .select('id, status')
-      .eq('user_id', data.user.id)
-      .in('status', ['active', 'trialing'])
-      .maybeSingle()
-
-    // Get home workspace
-    const { data: homeWorkspace } = await supabase
-      .from('workspaces')
-      .select('id')
-      .eq('user_id', data.user.id)
-      .eq('is_home', true)
-      .maybeSingle()
-
-    // Update profile for OAuth users
-    await supabase
-      .from('profiles')
-      .update({ 
-        email_verified: true,
-        onboarding_step: subscription ? 'completed' : 'plan_selection'
-      })
-      .eq('user_id', data.user.id)
-
-    // Redirect based on subscription status
-    if (subscription && homeWorkspace) {
-      console.log('[Auth Callback] User has subscription, redirecting to chat')
-      return NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, appUrl))
-    }
-
-    console.log('[Auth Callback] No subscription, redirecting to onboarding')
-    return NextResponse.redirect(new URL('/onboarding', appUrl))
+    return await handleAuthenticatedUser(supabase, data.user, next, appUrl)
   }
 
-  // No code provided
-  console.log('[Auth Callback] No code provided')
+  // No code provided - try to get existing session
+  console.log('[Auth Callback] No code provided, checking for existing session')
+  
+  const { data: sessionData } = await supabase.auth.getSession()
+  
+  if (sessionData?.session?.user) {
+    console.log('[Auth Callback] Found existing session:', sessionData.session.user.email)
+    return await handleAuthenticatedUser(supabase, sessionData.session.user, next, appUrl)
+  }
+  
   if (next) {
     return NextResponse.redirect(new URL(next, appUrl))
   }
   return NextResponse.redirect(new URL('/', appUrl))
+}
+
+// Helper function to handle authenticated user redirect
+async function handleAuthenticatedUser(
+  supabase: any, 
+  user: any, 
+  next: string | null, 
+  appUrl: string
+): Promise<NextResponse> {
+  // If there's a specific next URL, redirect there
+  if (next && !next.includes('callback')) {
+    return NextResponse.redirect(new URL(next, appUrl))
+  }
+
+  // Check for active subscription
+  const { data: subscription } = await supabase
+    .from('subscriptions')
+    .select('id, status')
+    .eq('user_id', user.id)
+    .in('status', ['active', 'trialing'])
+    .maybeSingle()
+
+  // Get home workspace
+  const { data: homeWorkspace } = await supabase
+    .from('workspaces')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('is_home', true)
+    .maybeSingle()
+
+  // Update profile for OAuth users
+  await supabase
+    .from('profiles')
+    .update({ 
+      email_verified: true,
+      onboarding_step: subscription ? 'completed' : 'plan_selection'
+    })
+    .eq('user_id', user.id)
+
+  // Redirect based on subscription status
+  if (subscription && homeWorkspace) {
+    console.log('[Auth Callback] User has subscription, redirecting to chat')
+    return NextResponse.redirect(new URL(`/${homeWorkspace.id}/chat`, appUrl))
+  }
+
+  console.log('[Auth Callback] No subscription, redirecting to onboarding')
+  return NextResponse.redirect(new URL('/onboarding', appUrl))
 }

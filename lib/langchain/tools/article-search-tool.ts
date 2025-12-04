@@ -234,7 +234,7 @@ IMPORTANTE: Siempre devuelve el texto exacto encontrado, NUNCA parafrasees ni in
   schema: z.object({
     articulo: z.string().describe("Número del artículo a buscar. Ej: '82', '1502', '230'"),
     ley: z.string().describe("Nombre o código de la ley. Ej: 'CGP', 'Código Civil', 'Ley 1564 de 2012', 'Constitución'"),
-    tema: z.string().optional().describe("Tema relacionado para refinar la búsqueda (opcional)")
+    tema: z.string().nullable().optional().describe("Tema relacionado para refinar la búsqueda (opcional)")
   }),
 
   func: async ({ articulo, ley, tema }) => {
@@ -393,7 +393,7 @@ La herramienta devuelve tanto los resultados de búsqueda como el contenido extr
 
   schema: z.object({
     query: z.string().describe("Consulta de búsqueda exacta"),
-    extractContent: z.boolean().optional().default(true).describe("Si debe extraer automáticamente el contenido de la primera fuente oficial")
+    extractContent: z.boolean().nullable().optional().default(true).describe("Si debe extraer automáticamente el contenido de la primera fuente oficial")
   }),
 
   func: async ({ query, extractContent: shouldExtract }) => {
@@ -496,6 +496,8 @@ export const articleSearchTools = [
   searchArticleTool,
   googleSearchDirectTool
 ]
+
+
 
 
 

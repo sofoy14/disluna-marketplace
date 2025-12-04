@@ -15,6 +15,7 @@ import { LLMID } from "@/types"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ReactNode, useContext, useEffect, useState } from "react"
 import Loading from "../loading"
+import { DeviceSessionProvider } from "@/components/providers/device-session-provider"
 
 interface WorkspaceLayoutProps {
   children: ReactNode
@@ -168,5 +169,9 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     return <Loading />
   }
 
-  return <Dashboard>{children}</Dashboard>
+  return (
+    <DeviceSessionProvider>
+      <Dashboard>{children}</Dashboard>
+    </DeviceSessionProvider>
+  )
 }
