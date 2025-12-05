@@ -20,6 +20,7 @@ export interface UserSession {
   id: string;
   user_id: string;
   session_token: string;
+  auth_session_id?: string; // Supabase auth.sessions.id for real invalidation
   device_fingerprint?: string;
   device_name?: string;
   device_type?: string;
@@ -35,6 +36,7 @@ export interface UserSession {
 export interface CreateSessionParams {
   userId: string;
   sessionToken: string;
+  authSessionId?: string; // Supabase auth.sessions.id for real invalidation
   deviceFingerprint?: string;
   deviceName?: string;
   deviceType?: string;
@@ -118,7 +120,7 @@ async function checkDeviceLimitDirect(userId: string): Promise<DeviceLimitResult
 export async function createUserSession(params: CreateSessionParams): Promise<CreateSessionResult> {
   const supabase = getAdminClient();
   
-  // First, try using the stored function
+  // First, try using the stored function with auth_session_id
   const { data, error } = await supabase.rpc('create_user_session', {
     p_user_id: params.userId,
     p_session_token: params.sessionToken,
@@ -128,7 +130,8 @@ export async function createUserSession(params: CreateSessionParams): Promise<Cr
     p_browser: params.browser || null,
     p_ip_address: params.ipAddress || null,
     p_user_agent: params.userAgent || null,
-    p_force_create: params.forceCreate || false
+    p_force_create: params.forceCreate || false,
+    p_auth_session_id: params.authSessionId || null  // NEW: Pass auth session ID for invalidation
   });
   
   if (error) {
@@ -138,6 +141,8 @@ export async function createUserSession(params: CreateSessionParams): Promise<Cr
   }
   
   const result = data?.[0];
+  console.log(`[Device Session] RPC created session: ${result?.session_id}, removed: ${result?.removed_session_id || 'none'}`);
+  
   return {
     sessionId: result?.session_id || null,
     created: result?.created || false,
@@ -168,6 +173,21 @@ async function createSessionDirect(params: CreateSessionParams): Promise<CreateS
   
   // If force create and at limit, remove oldest session
   if (limitCheck.activeSessionsCount >= MAX_DEVICES && params.forceCreate && limitCheck.oldestSessionId) {
+    console.log(`[Device Session] Force creating session, removing oldest: ${limitCheck.oldestSessionId}`);
+    
+    // IMPORTANT: Get the auth_session_id BEFORE deactivating so we can invalidate it
+    const { data: oldSession } = await supabase
+      .from('user_sessions')
+      .select('auth_session_id')
+      .eq('id', limitCheck.oldestSessionId)
+      .single();
+    
+    // Invalidate the REAL Supabase auth session
+    if (oldSession?.auth_session_id) {
+      console.log(`[Device Session] Invalidating old auth session: ${oldSession.auth_session_id}`);
+      await invalidateAuthSession(oldSession.auth_session_id);
+    }
+    
     const { error: deactivateError } = await supabase
       .from('user_sessions')
       .update({ is_active: false })
@@ -187,6 +207,7 @@ async function createSessionDirect(params: CreateSessionParams): Promise<CreateS
     .insert({
       user_id: params.userId,
       session_token: params.sessionToken,
+      auth_session_id: params.authSessionId || null, // Store the auth session ID for later invalidation
       device_fingerprint: params.deviceFingerprint,
       device_name: params.deviceName,
       device_type: params.deviceType,
@@ -207,6 +228,8 @@ async function createSessionDirect(params: CreateSessionParams): Promise<CreateS
       errorMessage: 'Error al crear la sesión'
     };
   }
+  
+  console.log(`[Device Session] Created new session: ${newSession?.id} with auth_session_id: ${params.authSessionId || 'none'}`);
   
   return {
     sessionId: newSession?.id || null,
@@ -267,11 +290,36 @@ export async function deactivateSession(sessionToken: string): Promise<boolean> 
 }
 
 /**
- * Deactivate a session by ID
+ * Deactivate a session by ID and invalidate the Supabase auth session
+ * This is the KEY function that actually logs out the user from the other device
  */
 export async function deactivateSessionById(sessionId: string, userId: string): Promise<boolean> {
   const supabase = getAdminClient();
   
+  // First, get the auth_session_id before deactivating
+  const { data: sessionData, error: fetchError } = await supabase
+    .from('user_sessions')
+    .select('auth_session_id')
+    .eq('id', sessionId)
+    .eq('user_id', userId)
+    .single();
+  
+  if (fetchError) {
+    console.error('[Device Session] Error fetching session:', fetchError);
+  }
+  
+  // Invalidate the REAL Supabase auth session if we have the auth_session_id
+  if (sessionData?.auth_session_id) {
+    console.log(`[Device Session] Invalidating auth session: ${sessionData.auth_session_id}`);
+    const invalidated = await invalidateAuthSession(sessionData.auth_session_id);
+    if (!invalidated) {
+      console.warn('[Device Session] Could not invalidate auth session, but will continue');
+    }
+  } else {
+    console.warn('[Device Session] No auth_session_id found, session will expire naturally');
+  }
+  
+  // Mark our session as inactive
   const { error } = await supabase
     .from('user_sessions')
     .update({ is_active: false })
@@ -282,11 +330,93 @@ export async function deactivateSessionById(sessionId: string, userId: string): 
 }
 
 /**
+ * Invalidate a Supabase auth session by deleting it from auth.sessions
+ * This is what actually forces the user to re-authenticate
+ */
+export async function invalidateAuthSession(authSessionId: string): Promise<boolean> {
+  const supabase = getAdminClient();
+  
+  try {
+    // Delete the session from auth.sessions - this invalidates all refresh tokens for that session
+    const { error } = await supabase
+      .from('auth.sessions')
+      .delete()
+      .eq('id', authSessionId);
+    
+    // If direct table access fails, try RPC
+    if (error) {
+      console.log('[Device Session] Direct delete failed, trying RPC method');
+      // Fallback: use raw SQL via RPC
+      const { error: rpcError } = await supabase.rpc('invalidate_auth_session', {
+        p_session_id: authSessionId
+      });
+      
+      if (rpcError) {
+        // Last fallback: direct SQL
+        console.log('[Device Session] RPC failed, trying direct SQL');
+        const { error: sqlError } = await supabase
+          .from('auth.refresh_tokens')
+          .delete()
+          .eq('session_id', authSessionId);
+        
+        if (sqlError) {
+          console.error('[Device Session] All invalidation methods failed:', sqlError);
+          return false;
+        }
+      }
+    }
+    
+    console.log(`[Device Session] Successfully invalidated auth session: ${authSessionId}`);
+    return true;
+  } catch (err) {
+    console.error('[Device Session] Error invalidating auth session:', err);
+    return false;
+  }
+}
+
+/**
  * Deactivate all sessions for a user (logout everywhere)
+ * Also invalidates all Supabase auth sessions
  */
 export async function deactivateAllSessions(userId: string): Promise<boolean> {
   const supabase = getAdminClient();
   
+  // Get all auth_session_ids for this user
+  const { data: sessions, error: fetchError } = await supabase
+    .from('user_sessions')
+    .select('auth_session_id')
+    .eq('user_id', userId)
+    .eq('is_active', true);
+  
+  if (fetchError) {
+    console.error('[Device Session] Error fetching sessions to deactivate:', fetchError);
+  }
+  
+  // Invalidate all Supabase auth sessions
+  if (sessions && sessions.length > 0) {
+    console.log(`[Device Session] Invalidating ${sessions.length} auth sessions`);
+    for (const session of sessions) {
+      if (session.auth_session_id) {
+        await invalidateAuthSession(session.auth_session_id);
+      }
+    }
+  }
+  
+  // Also invalidate ALL auth sessions for this user directly (belt and suspenders)
+  try {
+    const { error: authError } = await supabase
+      .from('auth.sessions')
+      .delete()
+      .eq('user_id', userId);
+    
+    if (authError) {
+      console.log('[Device Session] Could not delete auth.sessions directly');
+    }
+  } catch (err) {
+    console.log('[Device Session] Direct auth.sessions cleanup failed (may not have access)');
+  }
+  
+  // Mark all our sessions as inactive
   const { error } = await supabase
     .from('user_sessions')
     .update({ is_active: false })

@@ -51,6 +51,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [prompts, setPrompts] = useState<Tables<"prompts">[]>([])
   const [tools, setTools] = useState<Tables<"tools">[]>([])
   const [workspaces, setWorkspaces] = useState<Tables<"workspaces">[]>([])
+  const [transcriptions, setTranscriptions] = useState<Tables<"transcriptions">[]>([])
 
   // MODELS STORE
   const [envKeyMap, setEnvKeyMap] = useState<Record<string, VALID_ENV_KEYS>>({})
@@ -225,6 +226,26 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [loadingMessage, setLoadingMessage] = useState<string>("Iniciando...")
 
+  // Listen for auth state changes (session invalidation from another device)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[Auth State Change]', event, session?.user?.email || 'no user')
+      
+      // If signed out or token refresh failed, redirect to login
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+        console.log('[Auth State Change] Session ended, redirecting to login')
+        // Clear local storage session data
+        localStorage.removeItem('ali_session_token')
+        localStorage.removeItem('ali_current_session_id')
+        router.push('/login?message=Tu sesión fue cerrada desde otro dispositivo.')
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [router])
+
   useEffect(() => {
     ;(async () => {
       try {
@@ -352,6 +373,8 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
         setTools,
         workspaces,
         setWorkspaces,
+        transcriptions,
+        setTranscriptions,
 
         // MODELS STORE
         envKeyMap,

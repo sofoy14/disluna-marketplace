@@ -2,7 +2,6 @@
 // API endpoint for user session management (device limit)
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import {
@@ -94,9 +93,34 @@ export async function GET(req: NextRequest) {
 // POST - Create a new session (login)
 export async function POST(req: NextRequest) {
   try {
-    const user = await getAuthenticatedUser(req);
+    const cookieStore = cookies();
     
-    if (!user) {
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) => {
+                cookieStore.set(name, value, options);
+              });
+            } catch {
+              // Called from API route - may not be able to set cookies
+            }
+          }
+        }
+      }
+    );
+    
+    // Get user AND session info
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (userError || !user) {
       return NextResponse.json(
         { error: 'No autorizado' },
         { status: 401 }
@@ -127,10 +151,27 @@ export async function POST(req: NextRequest) {
       }, { status: 403 });
     }
     
-    // Create session
+    // Get the auth session ID from the JWT claims if available
+    // This is the REAL Supabase session ID that we need to invalidate later
+    let authSessionId: string | undefined;
+    if (session?.access_token) {
+      try {
+        // Decode JWT to get session_id claim
+        const payload = JSON.parse(
+          Buffer.from(session.access_token.split('.')[1], 'base64').toString()
+        );
+        authSessionId = payload.session_id;
+        console.log(`[Sessions API] Got auth session_id from JWT: ${authSessionId}`);
+      } catch (err) {
+        console.warn('[Sessions API] Could not decode JWT for session_id');
+      }
+    }
+    
+    // Create session with the auth_session_id for later invalidation
     const result = await createUserSession({
       userId: user.id,
       sessionToken: sessionToken || `session_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      authSessionId, // THIS IS KEY - store the real auth session ID
       deviceFingerprint: fingerprint,
       deviceName: deviceInfo.deviceName,
       deviceType: deviceInfo.deviceType,

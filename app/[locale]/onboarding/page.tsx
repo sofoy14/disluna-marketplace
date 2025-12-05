@@ -2,7 +2,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,13 +13,11 @@ import {
   User, 
   Loader2, 
   ArrowRight,
-  ArrowLeft,
   CreditCard,
   Sparkles,
   Star,
   Zap,
   X,
-  Crown,
   MessageSquare,
   FolderOpen,
   Mic,
@@ -28,11 +25,13 @@ import {
   GraduationCap,
   Briefcase,
   Percent,
-  Gift
+  Gift,
+  Shield
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ShaderCanvas } from '@/components/shader-canvas';
 
 type OnboardingStep = 'loading' | 'profile_setup' | 'plan_selection';
 
@@ -59,6 +58,40 @@ interface SpecialOffer {
   discount_value: number;
   discount_type: string;
   plan_id: string;
+}
+
+// Glass Card Component
+function GlassCard({ 
+  children, 
+  className = "", 
+  highlighted = false,
+  hoverEffect = true 
+}: { 
+  children: React.ReactNode;
+  className?: string;
+  highlighted?: boolean;
+  hoverEffect?: boolean;
+}) {
+  return (
+    <div className={`
+      relative overflow-hidden rounded-3xl
+      ${highlighted 
+        ? 'bg-violet-950/40 border border-violet-500/30' 
+        : 'bg-white/[0.03] border border-white/[0.08]'
+      }
+      backdrop-blur-xl shadow-2xl
+      ${hoverEffect ? 'transition-all duration-500 hover:border-violet-500/40 hover:bg-white/[0.05] hover:shadow-violet-500/10 hover:-translate-y-1' : ''}
+      ${className}
+    `}>
+      {/* Top highlight line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      {/* Inner glow for highlighted cards */}
+      {highlighted && (
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-fuchsia-500/5 pointer-events-none" />
+      )}
+      {children}
+    </div>
+  );
 }
 
 export default function OnboardingPage() {
@@ -376,145 +409,151 @@ export default function OnboardingPage() {
   // Loading state
   if (pageLoading || currentStep === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-violet-500 mx-auto mb-4" />
-          <p className="text-slate-400 font-medium">Cargando...</p>
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/20 via-transparent to-violet-950/10" />
+        
+        <div className="text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="relative"
+          >
+            <ShaderCanvas size={120} shaderId={1} />
+            <div className="absolute inset-0 bg-violet-500/20 blur-3xl rounded-full -z-10 animate-pulse" />
+          </motion.div>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-violet-300/60 font-light mt-6 tracking-wide"
+          >
+            Cargando...
+          </motion.p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-500/20 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-fuchsia-500/20 rounded-full blur-[120px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-[150px]" />
+    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
+      {/* Subtle ambient background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-violet-900/10 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-violet-800/5 rounded-full blur-[120px]" />
       </div>
+      
+      {/* Grid pattern overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.3) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }}
+      />
 
-      <div className="max-w-5xl mx-auto relative z-10">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-              Bienvenido a tu <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Asistente Legal</span>
-            </h1>
-            <p className="text-slate-400">
-              {currentStep === 'profile_setup' ? 'Configura tu perfil para comenzar' : 'Selecciona el plan que mejor se ajuste a ti'}
-            </p>
-          </motion.div>
-        </div>
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+          <AnimatePresence mode="wait">
+            {currentStep === 'profile_setup' && (
+              <motion.div
+                key="profile"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-md"
+              >
+                {/* Orb */}
+                <motion.div 
+                  className="flex justify-center mb-8"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <div className="relative">
+                    <ShaderCanvas size={140} shaderId={1} />
+                    <div className="absolute inset-0 bg-violet-500/30 blur-3xl rounded-full -z-10" />
+                  </div>
+                </motion.div>
 
-        {/* Step Indicator */}
-        <div className="flex items-center justify-center space-x-4 mb-8">
-          {[
-            { key: 'profile_setup', label: 'Perfil', icon: User },
-            { key: 'plan_selection', label: 'Plan', icon: CreditCard }
-          ].map((step, index) => {
-            const Icon = step.icon;
-            const isActive = step.key === currentStep;
-            const isCompleted = currentStep === 'plan_selection' && step.key === 'profile_setup';
-            
-            return (
-              <div key={step.key} className="flex items-center">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-colors ${
-                  isActive 
-                    ? 'border-violet-500 bg-violet-500 text-white' 
-                    : isCompleted 
-                      ? 'border-emerald-500 bg-emerald-500 text-white'
-                      : 'border-slate-600 bg-slate-800 text-slate-400'
-                }`}>
-                  {isCompleted ? (
-                    <CheckCircle className="w-5 h-5" />
-                  ) : (
-                    <Icon className="w-5 h-5" />
-                  )}
-                </div>
-                <span className={`ml-2 text-sm font-medium hidden sm:inline ${
-                  isActive ? 'text-violet-400' : isCompleted ? 'text-emerald-400' : 'text-slate-500'
-                }`}>
-                  {step.label}
-                </span>
-                {index < 1 && (
-                  <div className={`w-12 h-0.5 mx-4 ${
-                    isCompleted ? 'bg-emerald-500' : 'bg-slate-700'
-                  }`} />
+                {/* Welcome Text */}
+                <motion.div 
+                  className="text-center mb-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <h1 className="text-2xl md:text-3xl font-light text-white mb-3 tracking-tight">
+                    Bienvenido al <span className="text-violet-400 font-normal">Asistente Legal</span>
+                  </h1>
+                  <p className="text-violet-300/50 font-light">
+                    Presente e inteligente
+                  </p>
+                </motion.div>
+
+                {message && (
+                  <Alert className={`mb-6 border ${
+                    message.type === 'success' 
+                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' 
+                      : 'border-red-500/30 bg-red-500/10 text-red-400'
+                  }`}>
+                    <AlertDescription>{message.text}</AlertDescription>
+                  </Alert>
                 )}
-              </div>
-            );
-          })}
-        </div>
 
-        {message && (
-          <Alert className={`mb-6 ${
-            message.type === 'success' 
-              ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-400' 
-              : 'border-red-500/50 bg-red-500/10 text-red-400'
-          }`}>
-            <AlertDescription>
-              {message.text}
-            </AlertDescription>
-          </Alert>
-        )}
+                {/* Profile Card */}
+                <GlassCard className="p-8" hoverEffect={false}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 rounded-xl bg-violet-500/10 border border-violet-500/20">
+                      <User className="w-5 h-5 text-violet-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-medium text-white">Configura tu Perfil</h2>
+                      <p className="text-sm text-violet-300/40">Información para personalizar tu experiencia</p>
+                    </div>
+                  </div>
 
-        {/* Step 1: Profile Setup */}
-        <AnimatePresence mode="wait">
-          {currentStep === 'profile_setup' && (
-            <motion.div
-              key="profile"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Card className="max-w-md mx-auto bg-slate-900/80 backdrop-blur-xl border-slate-800 shadow-2xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-white">
-                    <User className="w-5 h-5 text-violet-500" />
-                    Configura tu Perfil
-                  </CardTitle>
-                  <CardDescription className="text-slate-400">
-                    Completa tu información para personalizar tu experiencia
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
                   <form onSubmit={handleProfileSubmit} className="space-y-5">
                     <div>
-                      <Label htmlFor="display_name" className="text-slate-300">Nombre Completo</Label>
+                      <Label htmlFor="display_name" className="text-violet-200/70 text-sm font-light">
+                        Nombre Completo
+                      </Label>
                       <Input
                         id="display_name"
                         value={profileData.display_name}
                         onChange={(e) => setProfileData({...profileData, display_name: e.target.value})}
                         placeholder="Tu nombre completo"
                         required
-                        className="mt-1 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500"
+                        className="mt-2 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-violet-300/30 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12"
                       />
                     </div>
 
                     <div>
-                      <Label htmlFor="username" className="text-slate-300">Nombre de Usuario</Label>
+                      <Label htmlFor="username" className="text-violet-200/70 text-sm font-light">
+                        Nombre de Usuario
+                      </Label>
                       <Input
                         id="username"
                         value={profileData.username}
                         onChange={(e) => setProfileData({...profileData, username: e.target.value.toLowerCase().replace(/\s/g, '_')})}
                         placeholder="tu_usuario"
                         required
-                        className="mt-1 bg-slate-800 border-slate-700 text-white placeholder:text-slate-500 focus:border-violet-500 focus:ring-violet-500"
+                        className="mt-2 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-violet-300/30 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12"
                       />
-                      <p className="text-xs text-slate-500 mt-1">
+                      <p className="text-xs text-violet-300/30 mt-2">
                         Este será tu identificador único
                       </p>
                     </div>
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white shadow-lg shadow-violet-500/25" 
+                      className="w-full h-12 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 mt-2" 
                       disabled={isLoading || !profileData.display_name || !profileData.username}
                     >
                       {isLoading ? (
@@ -530,324 +569,370 @@ export default function OnboardingPage() {
                       )}
                     </Button>
                   </form>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
+                </GlassCard>
 
-          {/* Step 2: Plan Selection */}
-          {currentStep === 'plan_selection' && (
-            <motion.div
-              key="plans"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-6"
-            >
-              <div className="text-center mb-8">
-                <Badge className="bg-gradient-to-r from-violet-500/20 to-fuchsia-500/20 text-violet-300 border-violet-500/30 mb-4">
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Elige tu plan
-                </Badge>
-              </div>
+                {/* Step indicator */}
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  <div className="w-8 h-1 rounded-full bg-violet-500" />
+                  <div className="w-8 h-1 rounded-full bg-white/10" />
+                </div>
+              </motion.div>
+            )}
 
-              {/* Billing Period Toggle */}
-              <div className="flex items-center justify-center gap-4 mb-8">
-                <span className={`text-sm font-medium transition-colors ${!isYearly ? 'text-white' : 'text-slate-400'}`}>
-                  Mensual
-                </span>
-                <div className="relative">
+            {/* Step 2: Plan Selection */}
+            {currentStep === 'plan_selection' && (
+              <motion.div
+                key="plans"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-5xl px-4"
+              >
+                {/* Orb */}
+                <motion.div 
+                  className="flex justify-center mb-6"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <div className="relative">
+                    <ShaderCanvas size={100} shaderId={1} />
+                    <div className="absolute inset-0 bg-violet-500/20 blur-3xl rounded-full -z-10" />
+                  </div>
+                </motion.div>
+
+                {/* Welcome Text */}
+                <motion.div 
+                  className="text-center mb-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <h1 className="text-2xl md:text-3xl font-light text-white mb-3 tracking-tight">
+                    Bienvenido al <span className="text-violet-400 font-normal">Asistente Legal</span>
+                  </h1>
+                  <p className="text-violet-300/50 font-light">
+                    Presente e inteligente
+                  </p>
+                  <p className="text-white/60 mt-4 font-light">
+                    Selecciona el plan que mejor se ajuste a ti
+                  </p>
+                </motion.div>
+
+                {message && (
+                  <Alert className={`mb-6 max-w-md mx-auto border ${
+                    message.type === 'success' 
+                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' 
+                      : 'border-red-500/30 bg-red-500/10 text-red-400'
+                  }`}>
+                    <AlertDescription>{message.text}</AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Billing Period Toggle */}
+                <motion.div 
+                  className="flex items-center justify-center gap-4 mb-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <span className={`text-sm font-light transition-colors ${!isYearly ? 'text-white' : 'text-white/40'}`}>
+                    Mensual
+                  </span>
                   <Switch
                     checked={isYearly}
                     onCheckedChange={setIsYearly}
-                    className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-violet-600 data-[state=checked]:to-fuchsia-600"
+                    className="data-[state=checked]:bg-violet-600"
                   />
-                </div>
-                <span className={`text-sm font-medium transition-colors flex items-center gap-2 ${isYearly ? 'text-white' : 'text-slate-400'}`}>
-                  Anual
-                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
-                    <Percent className="w-3 h-3 mr-1" />
-                    30% OFF
-                  </Badge>
-                </span>
-              </div>
+                  <span className={`text-sm font-light transition-colors flex items-center gap-2 ${isYearly ? 'text-white' : 'text-white/40'}`}>
+                    Anual
+                    <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs font-light">
+                      30% OFF
+                    </Badge>
+                  </span>
+                </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {/* Professional Plan */}
-                {professionalPlan && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0 }}
-                  >
-                    <Card className="relative h-full border-2 border-violet-500/50 shadow-2xl bg-gradient-to-br from-slate-900 via-violet-950/50 to-slate-900 overflow-hidden">
-                      {/* Background effects */}
-                      <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-500/20 rounded-full blur-3xl" />
-                      <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-fuchsia-500/20 rounded-full blur-3xl" />
-                      
-                      {/* Badge */}
-                      <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                        <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1.5 shadow-lg border-0">
-                          <Star className="w-3.5 h-3.5 mr-1 fill-current" />
-                          Recomendado
-                        </Badge>
-                      </div>
-
-                      {/* First Month Offer Badge */}
-                      {!isYearly && professionalOffer && (
-                        <div className="absolute top-3 right-3 z-10">
-                          <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1 shadow-lg border-0">
-                            <Gift className="w-3 h-3 mr-1" />
-                            1er mes $0.99 USD
+                {/* Plans Grid */}
+                <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  {/* Professional Plan */}
+                  {professionalPlan && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                    >
+                      <GlassCard highlighted className="h-full relative">
+                        {/* Recommended Badge */}
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                          <Badge className="bg-violet-600 text-white px-4 py-1 text-xs font-light border-0 shadow-lg shadow-violet-500/30">
+                            <Star className="w-3 h-3 mr-1.5 fill-current" />
+                            Recomendado
                           </Badge>
                         </div>
-                      )}
 
-                      <CardHeader className="text-center pt-10 pb-4 relative z-10">
-                        <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br from-violet-500 to-fuchsia-600 shadow-lg shadow-violet-500/30">
-                          <Briefcase className="w-7 h-7 text-white" />
-                        </div>
-                        <CardTitle className="text-xl text-white">{professionalPlan.name}</CardTitle>
-                        <CardDescription className="text-slate-400">{professionalPlan.description}</CardDescription>
-                        
-                        <div className="mt-4">
-                          {!isYearly && professionalOffer ? (
-                            <div className="space-y-1">
-                              <div className="flex items-baseline justify-center gap-2">
-                                <span className="text-4xl font-bold text-white">$3.960</span>
-                                <span className="text-lg text-slate-500 line-through">${formatPrice(professionalPlan.amount_in_cents)}</span>
-                              </div>
-                              <p className="text-sm text-emerald-400">COP primer mes</p>
-                              <p className="text-xs text-slate-500">Luego ${formatPrice(professionalPlan.amount_in_cents)} COP/mes</p>
+                        {/* First Month Offer Badge */}
+                        {!isYearly && professionalOffer && (
+                          <div className="absolute top-4 right-4 z-10">
+                            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 px-3 py-1 text-xs font-light">
+                              <Gift className="w-3 h-3 mr-1" />
+                              1er mes $0.99 USD
+                            </Badge>
+                          </div>
+                        )}
+
+                        <div className="p-8 pt-10">
+                          {/* Icon & Title */}
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="p-3 rounded-2xl bg-violet-500/10 border border-violet-500/20">
+                              <Briefcase className="w-6 h-6 text-violet-400" />
                             </div>
-                          ) : (
                             <div>
-                              <div className="flex items-baseline justify-center gap-1">
-                                <span className="text-4xl font-bold text-white">${formatPrice(professionalPlan.amount_in_cents)}</span>
-                              </div>
-                              <p className="text-sm text-slate-400">COP / {isYearly ? 'año' : 'mes'}</p>
-                              {isYearly && (
-                                <p className="text-xs text-emerald-400 mt-1">
-                                  Equivale a ${formatPrice(getMonthlyEquivalent(professionalPlan.amount_in_cents))} COP/mes
-                                </p>
-                              )}
+                              <h3 className="text-xl font-medium text-white">{professionalPlan.name}</h3>
+                              <p className="text-sm text-violet-300/50 font-light">{professionalPlan.description}</p>
                             </div>
-                          )}
-                        </div>
-                      </CardHeader>
+                          </div>
 
-                      {/* Highlights */}
-                      <div className="mx-6 mb-4 p-3 rounded-xl bg-white/5 grid grid-cols-2 gap-2 relative z-10">
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="w-4 h-4 text-violet-400" />
-                          <div>
-                            <p className="text-[10px] uppercase text-slate-500">Chat IA</p>
-                            <p className="text-xs font-semibold text-white">Ilimitado</p>
+                          {/* Price */}
+                          <div className="mb-6">
+                            {!isYearly && professionalOffer ? (
+                              <div>
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-4xl font-light text-white">$3.960</span>
+                                  <span className="text-lg text-white/30 line-through font-light">${formatPrice(professionalPlan.amount_in_cents)}</span>
+                                </div>
+                                <p className="text-sm text-emerald-400/80 font-light mt-1">COP primer mes</p>
+                                <p className="text-xs text-white/30 font-light">Luego ${formatPrice(professionalPlan.amount_in_cents)} COP/mes</p>
+                              </div>
+                            ) : (
+                              <div>
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-4xl font-light text-white">${formatPrice(professionalPlan.amount_in_cents)}</span>
+                                  <span className="text-white/40 font-light">COP</span>
+                                </div>
+                                <p className="text-sm text-white/40 font-light">/ {isYearly ? 'año' : 'mes'}</p>
+                                {isYearly && (
+                                  <p className="text-xs text-violet-400/80 font-light mt-1">
+                                    Equivale a ${formatPrice(getMonthlyEquivalent(professionalPlan.amount_in_cents))} COP/mes
+                                  </p>
+                                )}
+                              </div>
+                            )}
                           </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-amber-400" />
-                          <div>
-                            <p className="text-[10px] uppercase text-slate-500">Workspaces</p>
-                            <p className="text-xs font-semibold text-white">Múltiples</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FolderOpen className="w-4 h-4 text-emerald-400" />
-                          <div>
-                            <p className="text-[10px] uppercase text-slate-500">Procesos</p>
-                            <p className="text-xs font-semibold text-white">7</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Mic className="w-4 h-4 text-pink-400" />
-                          <div>
-                            <p className="text-[10px] uppercase text-slate-500">Transcripción</p>
-                            <p className="text-xs font-semibold text-white">5 horas</p>
-                          </div>
-                        </div>
-                      </div>
 
-                      <CardContent className="pt-0 relative z-10">
-                        <ul className="space-y-2 mb-6 text-sm">
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">Chat con asistente legal IA ilimitado</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">Análisis de normativa colombiana</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">Múltiples espacios de trabajo</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">7 procesos legales incluidos</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">5 horas de transcripción de audio</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">Soporte prioritario 24/7</span>
-                          </li>
-                        </ul>
-
-                        <Button
-                          onClick={() => handleSubscribe(professionalPlan.id)}
-                          disabled={processingPlanId !== null}
-                          className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-600 hover:from-violet-600 hover:to-fuchsia-700 text-white shadow-lg shadow-violet-500/25"
-                          size="lg"
-                        >
-                          {processingPlanId === professionalPlan.id ? (
-                            <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              Procesando...
-                            </>
-                          ) : (
-                            <>
-                              <Zap className="w-4 h-4 mr-2" />
-                              {!isYearly && professionalOffer ? 'Comenzar por $0.99 USD' : 'Elegir Plan Profesional'}
-                            </>
-                          )}
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                )}
-
-                {/* Student Plan */}
-                {studentPlan && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <Card className="relative h-full border-2 border-slate-700 shadow-xl bg-slate-900/80 backdrop-blur-xl overflow-hidden">
-                      <CardHeader className="text-center pt-8 pb-4">
-                        <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/30">
-                          <GraduationCap className="w-7 h-7 text-white" />
-                        </div>
-                        <CardTitle className="text-xl text-white">{studentPlan.name}</CardTitle>
-                        <CardDescription className="text-slate-400">{studentPlan.description}</CardDescription>
-                        
-                        <div className="mt-4">
-                          <div className="flex items-baseline justify-center gap-1">
-                            <span className="text-4xl font-bold text-white">${formatPrice(studentPlan.amount_in_cents)}</span>
+                          {/* Highlights Grid */}
+                          <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] mb-6">
+                            <div className="flex items-center gap-2">
+                              <MessageSquare className="w-4 h-4 text-violet-400" />
+                              <div>
+                                <p className="text-[10px] uppercase text-white/30 tracking-wider">Chat IA</p>
+                                <p className="text-sm font-medium text-white">Ilimitado</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Building2 className="w-4 h-4 text-violet-400" />
+                              <div>
+                                <p className="text-[10px] uppercase text-white/30 tracking-wider">Workspaces</p>
+                                <p className="text-sm font-medium text-white">Múltiples</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <FolderOpen className="w-4 h-4 text-violet-400" />
+                              <div>
+                                <p className="text-[10px] uppercase text-white/30 tracking-wider">Procesos</p>
+                                <p className="text-sm font-medium text-white">7</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Mic className="w-4 h-4 text-violet-400" />
+                              <div>
+                                <p className="text-[10px] uppercase text-white/30 tracking-wider">Transcripción</p>
+                                <p className="text-sm font-medium text-white">5 horas</p>
+                              </div>
+                            </div>
                           </div>
-                          <p className="text-sm text-slate-400">COP / {isYearly ? 'año' : 'mes'}</p>
-                          {isYearly && (
-                            <p className="text-xs text-emerald-400 mt-1">
-                              Equivale a ${formatPrice(getMonthlyEquivalent(studentPlan.amount_in_cents))} COP/mes
-                            </p>
-                          )}
-                        </div>
-                      </CardHeader>
 
-                      {/* Highlights */}
-                      <div className="mx-6 mb-4 p-3 rounded-xl bg-slate-800/50 grid grid-cols-2 gap-2">
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="w-4 h-4 text-cyan-400" />
-                          <div>
-                            <p className="text-[10px] uppercase text-slate-500">Chat IA</p>
-                            <p className="text-xs font-semibold text-white">3M tokens</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Building2 className="w-4 h-4 text-slate-500" />
-                          <div>
-                            <p className="text-[10px] uppercase text-slate-500">Workspace</p>
-                            <p className="text-xs font-semibold text-white">1</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <FolderOpen className="w-4 h-4 text-slate-600" />
-                          <div>
-                            <p className="text-[10px] uppercase text-slate-500">Procesos</p>
-                            <p className="text-xs font-semibold text-slate-500">—</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Mic className="w-4 h-4 text-slate-600" />
-                          <div>
-                            <p className="text-[10px] uppercase text-slate-500">Transcripción</p>
-                            <p className="text-xs font-semibold text-slate-500">—</p>
-                          </div>
-                        </div>
-                      </div>
+                          {/* Features List */}
+                          <ul className="space-y-3 mb-8">
+                            {[
+                              'Chat con asistente legal IA ilimitado',
+                              'Análisis de normativa colombiana',
+                              'Múltiples espacios de trabajo',
+                              '7 procesos legales incluidos',
+                              '5 horas de transcripción de audio',
+                              'Soporte prioritario 24/7'
+                            ].map((feature, i) => (
+                              <li key={i} className="flex items-start gap-3">
+                                <CheckCircle className="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" />
+                                <span className="text-sm text-white/70 font-light">{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
 
-                      <CardContent className="pt-0">
-                        <ul className="space-y-2 mb-6 text-sm">
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">Chat con asistente legal IA</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">Hasta 3 millones de tokens/mes</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">Análisis de normativa colombiana</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-300">Búsqueda de jurisprudencia</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <X className="w-4 h-4 text-slate-600 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-500 line-through">Procesos legales</span>
-                          </li>
-                          <li className="flex items-start gap-2">
-                            <X className="w-4 h-4 text-slate-600 flex-shrink-0 mt-0.5" />
-                            <span className="text-slate-500 line-through">Transcripción de audio</span>
-                          </li>
-                        </ul>
+                          {/* CTA Button */}
+                          <Button
+                            onClick={() => handleSubscribe(professionalPlan.id)}
+                            disabled={processingPlanId !== null}
+                            className="w-full h-12 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30"
+                          >
+                            {processingPlanId === professionalPlan.id ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Procesando...
+                              </>
+                            ) : (
+                              <>
+                                <Zap className="w-4 h-4 mr-2" />
+                                {!isYearly && professionalOffer ? 'Comenzar por $0.99 USD' : 'Elegir Plan Profesional'}
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  )}
 
-                        <Button
-                          onClick={() => handleSubscribe(studentPlan.id)}
-                          disabled={processingPlanId !== null}
-                          variant="outline"
-                          className="w-full border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400"
-                          size="lg"
-                        >
-                          {processingPlanId === studentPlan.id ? (
-                            <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              Procesando...
-                            </>
-                          ) : (
-                            'Elegir Plan Estudiantil'
-                          )}
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                )}
-              </div>
+                  {/* Student Plan */}
+                  {studentPlan && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <GlassCard className="h-full">
+                        <div className="p-8">
+                          {/* Icon & Title */}
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="p-3 rounded-2xl bg-white/[0.05] border border-white/[0.08]">
+                              <GraduationCap className="w-6 h-6 text-white/60" />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-medium text-white">{studentPlan.name}</h3>
+                              <p className="text-sm text-white/40 font-light">{studentPlan.description}</p>
+                            </div>
+                          </div>
 
-              {/* Trust badges */}
-              <div className="flex flex-wrap justify-center gap-4 text-xs text-slate-500 mt-8">
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3 text-emerald-500" />
-                  Pago seguro con Wompi
+                          {/* Price */}
+                          <div className="mb-6">
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-4xl font-light text-white">${formatPrice(studentPlan.amount_in_cents)}</span>
+                              <span className="text-white/40 font-light">COP</span>
+                            </div>
+                            <p className="text-sm text-white/40 font-light">/ {isYearly ? 'año' : 'mes'}</p>
+                            {isYearly && (
+                              <p className="text-xs text-violet-400/80 font-light mt-1">
+                                Equivale a ${formatPrice(getMonthlyEquivalent(studentPlan.amount_in_cents))} COP/mes
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Highlights Grid */}
+                          <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] mb-6">
+                            <div className="flex items-center gap-2">
+                              <MessageSquare className="w-4 h-4 text-white/40" />
+                              <div>
+                                <p className="text-[10px] uppercase text-white/20 tracking-wider">Chat IA</p>
+                                <p className="text-sm font-medium text-white/70">3M tokens</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Building2 className="w-4 h-4 text-white/20" />
+                              <div>
+                                <p className="text-[10px] uppercase text-white/20 tracking-wider">Workspace</p>
+                                <p className="text-sm font-medium text-white/70">1</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <FolderOpen className="w-4 h-4 text-white/20" />
+                              <div>
+                                <p className="text-[10px] uppercase text-white/20 tracking-wider">Procesos</p>
+                                <p className="text-sm font-medium text-white/30">—</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Mic className="w-4 h-4 text-white/20" />
+                              <div>
+                                <p className="text-[10px] uppercase text-white/20 tracking-wider">Transcripción</p>
+                                <p className="text-sm font-medium text-white/30">—</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Features List */}
+                          <ul className="space-y-3 mb-8">
+                            {[
+                              { text: 'Chat con asistente legal IA', included: true },
+                              { text: 'Hasta 3 millones de tokens/mes', included: true },
+                              { text: 'Análisis de normativa colombiana', included: true },
+                              { text: 'Búsqueda de jurisprudencia', included: true },
+                              { text: 'Procesos legales', included: false },
+                              { text: 'Transcripción de audio', included: false }
+                            ].map((feature, i) => (
+                              <li key={i} className="flex items-start gap-3">
+                                {feature.included ? (
+                                  <CheckCircle className="w-4 h-4 text-white/40 flex-shrink-0 mt-0.5" />
+                                ) : (
+                                  <X className="w-4 h-4 text-white/20 flex-shrink-0 mt-0.5" />
+                                )}
+                                <span className={`text-sm font-light ${feature.included ? 'text-white/60' : 'text-white/30 line-through'}`}>
+                                  {feature.text}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+
+                          {/* CTA Button */}
+                          <Button
+                            onClick={() => handleSubscribe(studentPlan.id)}
+                            disabled={processingPlanId !== null}
+                            variant="outline"
+                            className="w-full h-12 bg-transparent border-white/10 text-white/70 hover:bg-white/5 hover:border-white/20 hover:text-white rounded-xl font-medium transition-all duration-300"
+                          >
+                            {processingPlanId === studentPlan.id ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Procesando...
+                              </>
+                            ) : (
+                              'Elegir Plan Estudiantil'
+                            )}
+                          </Button>
+                        </div>
+                      </GlassCard>
+                    </motion.div>
+                  )}
                 </div>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3 text-emerald-500" />
-                  Cancela cuando quieras
+
+                {/* Trust badges */}
+                <motion.div 
+                  className="flex flex-wrap justify-center gap-6 text-xs text-white/30 mt-10"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-4 h-4 text-violet-400/50" />
+                    <span className="font-light">Pago seguro con Wompi</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-violet-400/50" />
+                    <span className="font-light">Cancela cuando quieras</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="w-4 h-4 text-violet-400/50" />
+                    <span className="font-light">Soporte en español</span>
+                  </div>
+                </motion.div>
+
+                {/* Step indicator */}
+                <div className="flex items-center justify-center gap-2 mt-10">
+                  <div className="w-8 h-1 rounded-full bg-violet-500/50" />
+                  <div className="w-8 h-1 rounded-full bg-violet-500" />
                 </div>
-                <div className="flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3 text-emerald-500" />
-                  Soporte en español
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
