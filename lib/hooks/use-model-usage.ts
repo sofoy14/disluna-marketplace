@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useContext } from 'react'
 import { ALIContext } from '@/context/context'
+import { createClient } from '@/lib/supabase/client'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -51,7 +52,19 @@ export function useModelUsage(): ModelUsageState {
       setIsLoading(true)
       setError(null)
       
-      const response = await fetch('/api/billing/model-usage')
+      // Get auth token
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session?.access_token) {
+        throw new Error('No authenticated session')
+      }
+      
+      const response = await fetch('/api/billing/model-usage', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      })
       
       if (!response.ok) {
         const data = await response.json()

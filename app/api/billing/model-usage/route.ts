@@ -1,24 +1,42 @@
-import { NextResponse } from "next/server"
-import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs"
-import { cookies } from "next/headers"
-import { getServerProfile } from "@/lib/server/server-chat-helpers"
+import { NextRequest, NextResponse } from "next/server"
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // GET: Obtener uso de modelos del usuario
 // ═══════════════════════════════════════════════════════════════════════════════
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const profile = await getServerProfile()
+    // Get user from authorization header
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { success: false, error: 'Authorization required' },
+        { status: 401 }
+      )
+    }
+
+    const token = authHeader.split(' ')[1]
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired token' },
+        { status: 401 }
+      )
+    }
     
     const { searchParams } = new URL(request.url)
     const modelId = searchParams.get("model_id")
     
-    const supabase = createRouteHandlerClient({ cookies })
-    
     // Si se especifica un modelo, obtener solo ese
     if (modelId) {
       const { data, error } = await supabase.rpc("get_model_usage_status", {
-        p_user_id: profile.user_id,
+        p_user_id: user.id,
         p_model_id: modelId
       })
       
@@ -35,7 +53,7 @@ export async function GET(request: Request) {
     
     // Si no, obtener todos los modelos
     const { data, error } = await supabase.rpc("get_all_model_usage", {
-      p_user_id: profile.user_id
+      p_user_id: user.id
     })
     
     if (error) {
@@ -60,9 +78,26 @@ export async function GET(request: Request) {
 // ═══════════════════════════════════════════════════════════════════════════════
 // POST: Verificar e incrementar uso de un modelo
 // ═══════════════════════════════════════════════════════════════════════════════
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const profile = await getServerProfile()
+    // Get user from authorization header
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader?.startsWith('Bearer ')) {
+      return NextResponse.json(
+        { success: false, error: 'Authorization required' },
+        { status: 401 }
+      )
+    }
+
+    const token = authHeader.split(' ')[1]
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid or expired token' },
+        { status: 401 }
+      )
+    }
     
     const body = await request.json()
     const { model_id, action } = body
@@ -74,12 +109,10 @@ export async function POST(request: Request) {
       )
     }
     
-    const supabase = createRouteHandlerClient({ cookies })
-    
     // Si la acción es "check", solo verificar sin incrementar
     if (action === "check") {
       const { data, error } = await supabase.rpc("get_model_usage_status", {
-        p_user_id: profile.user_id,
+        p_user_id: user.id,
         p_model_id: model_id
       })
       
@@ -98,7 +131,7 @@ export async function POST(request: Request) {
     
     // Por defecto, incrementar uso
     const { data, error } = await supabase.rpc("increment_model_usage", {
-      p_user_id: profile.user_id,
+      p_user_id: user.id,
       p_model_id: model_id
     })
     
