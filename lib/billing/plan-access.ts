@@ -324,6 +324,137 @@ export const getFeatureAccessMap = async (userId: string): Promise<{
   };
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODEL USAGE LIMITS (Plan Estudiantil)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface ModelUsageStatus {
+  model_id: string;
+  model_name: string;
+  usage_count: number;
+  monthly_limit: number;
+  remaining: number;
+  is_unlimited: boolean;
+  can_use: boolean;
+}
+
+/**
+ * Check if user can use a specific model based on their plan limits
+ */
+export const canUseModel = async (
+  userId: string, 
+  modelId: string
+): Promise<{ allowed: boolean; reason?: string; usage?: ModelUsageStatus }> => {
+  try {
+    const { data, error } = await supabase.rpc('get_model_usage_status', {
+      p_user_id: userId,
+      p_model_id: modelId
+    });
+    
+    if (error) {
+      console.error('Error checking model usage:', error);
+      // En caso de error, permitir el uso para no bloquear
+      return { allowed: true };
+    }
+    
+    const status = data?.[0] as ModelUsageStatus | undefined;
+    
+    if (!status) {
+      // No hay configuración para este modelo, permitir por defecto
+      return { allowed: true };
+    }
+    
+    if (!status.can_use) {
+      return {
+        allowed: false,
+        reason: `Has alcanzado el límite de ${status.monthly_limit} consultas para ${status.model_name} este mes. Prueba con M1 Small (ilimitado) o actualiza tu plan.`,
+        usage: status
+      };
+    }
+    
+    return { allowed: true, usage: status };
+  } catch (error) {
+    console.error('Error in canUseModel:', error);
+    // En caso de error, permitir el uso para no bloquear
+    return { allowed: true };
+  }
+};
+
+/**
+ * Increment model usage after a successful query
+ */
+export const incrementModelUsage = async (
+  userId: string,
+  modelId: string
+): Promise<{ success: boolean; error?: string; usage?: ModelUsageStatus }> => {
+  try {
+    const { data, error } = await supabase.rpc('increment_model_usage', {
+      p_user_id: userId,
+      p_model_id: modelId
+    });
+    
+    if (error) {
+      console.error('Error incrementing model usage:', error);
+      return { success: false, error: error.message };
+    }
+    
+    const result = data?.[0];
+    
+    if (!result?.success) {
+      return {
+        success: false,
+        error: result?.error_message || 'Límite de uso alcanzado',
+        usage: {
+          model_id: modelId,
+          model_name: '',
+          usage_count: result?.usage_count || 0,
+          monthly_limit: result?.monthly_limit || 0,
+          remaining: result?.remaining || 0,
+          is_unlimited: false,
+          can_use: false
+        }
+      };
+    }
+    
+    return {
+      success: true,
+      usage: {
+        model_id: modelId,
+        model_name: '',
+        usage_count: result?.usage_count || 0,
+        monthly_limit: result?.monthly_limit || 0,
+        remaining: result?.remaining || 0,
+        is_unlimited: result?.monthly_limit === -1,
+        can_use: true
+      }
+    };
+  } catch (error) {
+    console.error('Error in incrementModelUsage:', error);
+    return { success: false, error: 'Error interno del servidor' };
+  }
+};
+
+/**
+ * Get all model usage for a user
+ */
+export const getAllModelUsage = async (userId: string): Promise<ModelUsageStatus[]> => {
+  try {
+    const { data, error } = await supabase.rpc('get_all_model_usage', {
+      p_user_id: userId
+    });
+    
+    if (error) {
+      console.error('Error getting all model usage:', error);
+      return [];
+    }
+    
+    return data || [];
+  } catch (error) {
+    console.error('Error in getAllModelUsage:', error);
+    return [];
+  }
+};
+
 
 
 

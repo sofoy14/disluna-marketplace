@@ -1,7 +1,7 @@
 'use client'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { MessageSquare, FolderOpen, Mic, X, Lock, Crown } from 'lucide-react'
+import { MessageSquare, FolderOpen, Mic, X, Lock } from 'lucide-react'
 import { FC, ElementType, useContext, useMemo, useEffect, useState } from 'react'
 import { ALIContext } from '@/context/context'
 import { ContentType } from '@/types'
@@ -369,23 +369,6 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
                 )
               })}
             </nav>
-            
-            {/* Plan indicator for Student users */}
-            {isStudentPlan && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="mt-4 p-2.5 rounded-xl bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 border border-blue-500/20"
-              >
-                <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-blue-400" />
-                  <div className="flex-1">
-                    <p className="text-xs font-medium text-foreground">Plan Estudiantil</p>
-                    <p className="text-[10px] text-muted-foreground">Actualiza a Profesional para más funciones</p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
           </motion.div>
 
           {/* Separador */}

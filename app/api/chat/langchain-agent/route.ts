@@ -27,7 +27,7 @@ import { HumanMessage, AIMessage, BaseMessage } from "@langchain/core/messages"
 import { LegalAgent, getModelConfig, RESEARCH_MODELS } from "@/lib/langchain"
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base"
 import { createClient } from '@supabase/supabase-js'
-import { canContinueChat, getUserPlanStatus } from '@/lib/billing/plan-access'
+import { canContinueChat, getUserPlanStatus, canUseModel, incrementModelUsage } from '@/lib/billing/plan-access'
 import { incrementTokenUsage } from '@/db/usage-tracking'
 
 // Supabase client for auth and billing
@@ -259,6 +259,23 @@ export async function POST(request: NextRequest) {
           { status: 402 } // Payment Required
         )
       }
+      
+      // Check model-specific usage limits
+      const modelId = chatSettings.model || 'alibaba/tongyi-deepresearch-30b-a3b'
+      const modelCheck = await canUseModel(effectiveUserId, modelId)
+      
+      if (!modelCheck.allowed) {
+        return NextResponse.json(
+          { 
+            error: modelCheck.reason || "Has alcanzado el límite de uso de este modelo",
+            code: "MODEL_LIMIT_EXCEEDED",
+            needsUpgrade: true,
+            suggestModel: "liquid/lfm-2.2-6b", // M1 Small - ilimitado
+            usage: modelCheck.usage
+          },
+          { status: 402 } // Payment Required
+        )
+      }
     }
 
     // Validar API Key
@@ -435,6 +452,17 @@ export async function POST(request: NextRequest) {
               console.log(`📊 Token usage tracked: output=${outputTokens}, input=${inputTokens}`)
             } catch (trackingError) {
               console.error('Error tracking token usage:', trackingError)
+              // Don't fail the request for tracking errors
+            }
+            
+            // Track model-specific usage for plan limits
+            try {
+              const modelUsageResult = await incrementModelUsage(effectiveUserId, modelId)
+              if (modelUsageResult.success && modelUsageResult.usage) {
+                console.log(`📊 Model usage tracked: ${modelId} - ${modelUsageResult.usage.usage_count}/${modelUsageResult.usage.monthly_limit === -1 ? '∞' : modelUsageResult.usage.monthly_limit}`)
+              }
+            } catch (modelTrackingError) {
+              console.error('Error tracking model usage:', modelTrackingError)
               // Don't fail the request for tracking errors
             }
           }
