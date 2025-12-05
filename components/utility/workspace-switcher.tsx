@@ -9,7 +9,8 @@ import {
 import { ALIContext } from "@/context/context"
 import { createWorkspace } from "@/db/workspaces"
 import useHotkey from "@/lib/hooks/use-hotkey"
-import { IconBuilding, IconHome, IconPlus, IconSettings } from "@tabler/icons-react"
+import { useProfilePlan } from "@/lib/hooks/use-profile-plan"
+import { IconBuilding, IconHome, IconPlus, IconSettings, IconLock } from "@tabler/icons-react"
 import { ChevronsUpDown } from "lucide-react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
@@ -17,6 +18,7 @@ import { FC, useContext, useEffect, useMemo, useState } from "react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { WorkspaceSettings } from "../workspace/workspace-settings"
+import { WithTooltip } from "../ui/with-tooltip"
 
 interface WorkspaceSwitcherProps {
   showSettingsButton?: boolean
@@ -36,6 +38,9 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
   } = useContext(ALIContext)
 
   const { handleNewChat } = useChatHandler()
+  
+  // Plan access control for workspaces - simplified using profile
+  const { canShowWorkspaceSwitcher } = useProfilePlan()
 
   const router = useRouter()
 
@@ -51,6 +56,12 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
 
   const handleCreateWorkspace = async () => {
     if (!selectedWorkspace) return
+    
+    // Check if user can create more workspaces
+    if (!canShowWorkspaceSwitcher) {
+      // Student plan - cannot create additional workspaces
+      return
+    }
 
     const createdWorkspace = await createWorkspace({
       user_id: selectedWorkspace.user_id,
@@ -136,14 +147,38 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
       <PopoverContent className="p-2">
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <Button
-              className="flex items-center space-x-2"
-              size="sm"
-              onClick={handleCreateWorkspace}
-            >
-              <IconPlus />
-              <div className="ml-2">Nuevo espacio</div>
-            </Button>
+            {canShowWorkspaceSwitcher ? (
+              <Button
+                className="flex items-center space-x-2"
+                size="sm"
+                onClick={handleCreateWorkspace}
+              >
+                <IconPlus />
+                <div className="ml-2">Nuevo espacio</div>
+              </Button>
+            ) : (
+              <WithTooltip
+                display={
+                  <div className="max-w-xs">
+                    <p className="font-medium">Función exclusiva del Plan Profesional</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Actualiza tu plan para crear múltiples espacios de trabajo
+                    </p>
+                  </div>
+                }
+                trigger={
+                  <Button
+                    className="flex items-center space-x-2 opacity-60 cursor-not-allowed"
+                    size="sm"
+                    variant="outline"
+                    disabled
+                  >
+                    <IconLock size={16} />
+                    <div className="ml-2">Nuevo espacio</div>
+                  </Button>
+                }
+              />
+            )}
 
             {showSettingsButton && (
               <WorkspaceSettings

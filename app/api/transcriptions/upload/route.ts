@@ -2,6 +2,7 @@ import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
+import { canUseTranscription } from "@/lib/billing/plan-access"
 
 export const maxDuration = 300 // 5 minutos para upload de archivos grandes
 
@@ -24,6 +25,24 @@ export async function POST(request: Request) {
         { error: "No file provided" },
         { status: 400 }
       )
+    }
+    
+    // ═══════════════════════════════════════════════════════════════════════
+    // BILLING CHECK: Verify user can use transcriptions
+    // ═══════════════════════════════════════════════════════════════════════
+    if (process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true') {
+      const canTranscribe = await canUseTranscription(profile.user_id)
+      
+      if (!canTranscribe.allowed) {
+        return NextResponse.json(
+          { 
+            error: canTranscribe.reason || "Tu plan no incluye transcripciones",
+            code: "PLAN_LIMIT_EXCEEDED",
+            needsUpgrade: true
+          },
+          { status: 402 } // Payment Required
+        )
+      }
     }
 
     // Validar formato de audio

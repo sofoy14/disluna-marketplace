@@ -1272,86 +1272,68 @@ export type Database = {
       }
       profiles: {
         Row: {
-          anthropic_api_key: string | null
-          azure_openai_35_turbo_id: string | null
-          azure_openai_45_turbo_id: string | null
-          azure_openai_45_vision_id: string | null
-          azure_openai_api_key: string | null
-          azure_openai_embeddings_id: string | null
-          azure_openai_endpoint: string | null
           bio: string
           created_at: string
+          custom_primary_color: string | null
           display_name: string
-          google_gemini_api_key: string | null
-          groq_api_key: string | null
+          email_verification_sent_at: string | null
+          email_verified: boolean | null
           has_onboarded: boolean
           id: string
           image_path: string
           image_url: string
-          mistral_api_key: string | null
-          openai_api_key: string | null
-          openai_organization_id: string | null
-          openrouter_api_key: string | null
-          perplexity_api_key: string | null
+          onboarding_completed: boolean | null
+          onboarding_step: string | null
+          plan_type: string | null
           profile_context: string
+          selected_palette: string | null
+          selected_shader: number | null
+          theme_mode: string | null
           updated_at: string | null
-          use_azure_openai: boolean
           user_id: string
           username: string
         }
         Insert: {
-          anthropic_api_key?: string | null
-          azure_openai_35_turbo_id?: string | null
-          azure_openai_45_turbo_id?: string | null
-          azure_openai_45_vision_id?: string | null
-          azure_openai_api_key?: string | null
-          azure_openai_embeddings_id?: string | null
-          azure_openai_endpoint?: string | null
           bio: string
           created_at?: string
+          custom_primary_color?: string | null
           display_name: string
-          google_gemini_api_key?: string | null
-          groq_api_key?: string | null
+          email_verification_sent_at?: string | null
+          email_verified?: boolean | null
           has_onboarded?: boolean
           id?: string
           image_path: string
           image_url: string
-          mistral_api_key?: string | null
-          openai_api_key?: string | null
-          openai_organization_id?: string | null
-          openrouter_api_key?: string | null
-          perplexity_api_key?: string | null
+          onboarding_completed?: boolean | null
+          onboarding_step?: string | null
+          plan_type?: string | null
           profile_context: string
+          selected_palette?: string | null
+          selected_shader?: number | null
+          theme_mode?: string | null
           updated_at?: string | null
-          use_azure_openai: boolean
           user_id: string
           username: string
         }
         Update: {
-          anthropic_api_key?: string | null
-          azure_openai_35_turbo_id?: string | null
-          azure_openai_45_turbo_id?: string | null
-          azure_openai_45_vision_id?: string | null
-          azure_openai_api_key?: string | null
-          azure_openai_embeddings_id?: string | null
-          azure_openai_endpoint?: string | null
           bio?: string
           created_at?: string
+          custom_primary_color?: string | null
           display_name?: string
-          google_gemini_api_key?: string | null
-          groq_api_key?: string | null
+          email_verification_sent_at?: string | null
+          email_verified?: boolean | null
           has_onboarded?: boolean
           id?: string
           image_path?: string
           image_url?: string
-          mistral_api_key?: string | null
-          openai_api_key?: string | null
-          openai_organization_id?: string | null
-          openrouter_api_key?: string | null
-          perplexity_api_key?: string | null
+          onboarding_completed?: boolean | null
+          onboarding_step?: string | null
+          plan_type?: string | null
           profile_context?: string
+          selected_palette?: string | null
+          selected_shader?: number | null
+          theme_mode?: string | null
           updated_at?: string | null
-          use_azure_openai?: boolean
           user_id?: string
           username?: string
         }

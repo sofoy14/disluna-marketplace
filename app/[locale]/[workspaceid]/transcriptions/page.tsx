@@ -5,6 +5,9 @@ import { toast } from "sonner"
 import { Icon } from "@/components/ui/icon"
 import { ShaderCanvas } from "@/components/shader-canvas"
 import { useParams, useRouter } from "next/navigation"
+import { useProfilePlan } from "@/lib/hooks/use-profile-plan"
+import { Crown, ArrowRight } from "lucide-react"
+import Link from "next/link"
 
 interface Transcription {
   id: string
@@ -23,6 +26,13 @@ export default function TranscriptionsPage() {
   const params = useParams()
   const router = useRouter()
   const workspaceId = params.workspaceid as string
+  
+  // Plan access control - simplified using profile
+  const { 
+    isLoading: planLoading, 
+    canShowTranscriptions, 
+    hasActivePlan
+  } = useProfilePlan()
 
   const [transcriptions, setTranscriptions] = useState<Transcription[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -184,12 +194,78 @@ export default function TranscriptionsPage() {
     )
   }
 
-  if (isLoading && transcriptions.length === 0) {
+  // Show loading while checking plan
+  if (planLoading || (isLoading && transcriptions.length === 0)) {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
           <Icon.Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="mt-4 text-muted-foreground">Cargando transcripciones...</p>
+          <p className="mt-4 text-muted-foreground">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+  
+  // Access denied for student plan
+  if (!canShowTranscriptions && hasActivePlan) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-background via-background to-primary/5">
+        <div className="max-w-md w-full mx-4">
+          <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+            <div className="flex justify-center mb-6">
+              <div className="p-4 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-600/20 border border-amber-500/30">
+                <Crown className="w-10 h-10 text-amber-500" />
+              </div>
+            </div>
+            
+            <h2 className="text-2xl font-bold text-center mb-3 text-foreground">
+              Función exclusiva del Plan Profesional
+            </h2>
+            
+            <p className="text-muted-foreground text-center mb-6">
+              Las transcripciones de audio están disponibles únicamente en el Plan Profesional. 
+              Actualiza tu suscripción para acceder a esta funcionalidad.
+            </p>
+            
+            <div className="bg-muted/50 rounded-xl p-4 mb-6">
+              <h3 className="font-semibold text-sm text-foreground mb-2">Con el Plan Profesional obtienes:</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  5 horas de transcripción de audio al mes
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  7 procesos legales incluidos
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  Múltiples espacios de trabajo
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  Tokens ilimitados
+                </li>
+              </ul>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              <Link
+                href="/billing"
+                className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/25"
+              >
+                Actualizar a Profesional
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              
+              <button
+                onClick={() => router.push(`/${workspaceId}/chat`)}
+                className="w-full py-3 px-4 text-muted-foreground hover:text-foreground font-medium rounded-xl transition-colors"
+              >
+                Volver al chat
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     )

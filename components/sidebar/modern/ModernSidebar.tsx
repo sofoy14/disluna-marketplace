@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils'
 import { SidebarDataList } from '../sidebar-data-list'
 import { Button } from '@/components/ui/button'
 import { WorkspaceSwitcher } from '@/components/utility/workspace-switcher'
-import { usePlanAccess } from '@/lib/hooks/use-plan-access'
-import { UpgradePrompt, UpgradeBadge, TokenLimitWarning } from '@/components/billing/UpgradePrompt'
+import { useProfilePlan } from '@/lib/hooks/use-profile-plan'
+// Billing components removed - plan access now handled via profile
 import { useChatHandler } from '@/components/chat/chat-hooks/use-chat-handler'
 
 interface ModernSidebarProps {
@@ -84,22 +84,22 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
   const { chats, collections, folders, transcriptions } =
     useContext(ALIContext)
   
-  // Plan access control
+  // Plan access control - simplified using profile
   const { 
     isLoading: planLoading,
-    hasActiveSubscription,
-    access,
-    usage,
-    limits,
-    plan,
-    isPro
-  } = usePlanAccess()
+    hasActivePlan,
+    isStudentPlan,
+    isProfessionalPlan,
+    canShowProcesses,
+    canShowTranscriptions,
+    canShowWorkspaceSwitcher,
+    planDisplayName
+  } = useProfilePlan()
   
   const { handleNewChat } = useChatHandler()
     
   const [isMobile, setIsMobile] = useState(false)
   const [touchStart, setTouchStart] = useState<number | null>(null)
-  const [upgradeFeature, setUpgradeFeature] = useState<'processes' | 'transcriptions' | 'workspaces' | 'tokens' | null>(null)
   
   useEffect(() => {
     const checkMobile = () => {
@@ -148,38 +148,56 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
   )
 
   // Define nav items with plan access control
+  // For student plan: completely hide processes and transcriptions
+  // For pro plan: show all items
   const navItems: Array<{
     key: ContentType
     label: string
     count: number
     icon: ElementType
     locked: boolean
+    hidden: boolean
     upgradeFeature?: 'processes' | 'transcriptions'
-  }> = useMemo(() => [
-    { 
-      key: 'chats', 
-      label: 'Chats', 
-      count: chats.length, 
-      icon: MessageSquare,
-      locked: false 
-    },
-    { 
-      key: 'collections', 
-      label: 'Procesos', 
-      count: collections.length, 
-      icon: FolderOpen,
-      locked: !access.processes && hasActiveSubscription,
-      upgradeFeature: 'processes' as const
-    },
-    { 
-      key: 'transcriptions', 
-      label: 'Transcripciones', 
-      count: (transcriptions || []).length, 
-      icon: Mic,
-      locked: !access.transcriptions && hasActiveSubscription,
-      upgradeFeature: 'transcriptions' as const
-    }
-  ], [chats.length, collections.length, transcriptions, access, hasActiveSubscription])
+  }> = useMemo(() => {
+    const items: Array<{
+      key: ContentType
+      label: string
+      count: number
+      icon: ElementType
+      locked: boolean
+      hidden: boolean
+      upgradeFeature?: 'processes' | 'transcriptions'
+    }> = [
+      { 
+        key: 'chats', 
+        label: 'Chats', 
+        count: chats.length, 
+        icon: MessageSquare,
+        locked: false,
+        hidden: false
+      },
+      { 
+        key: 'collections', 
+        label: 'Procesos', 
+        count: collections.length, 
+        icon: FolderOpen,
+        locked: false, // No longer showing locked state, just hidden
+        hidden: !canShowProcesses, // Hide for student plan
+        upgradeFeature: 'processes' as const
+      },
+      { 
+        key: 'transcriptions', 
+        label: 'Transcripciones', 
+        count: (transcriptions || []).length, 
+        icon: Mic,
+        locked: false, // No longer showing locked state, just hidden
+        hidden: !canShowTranscriptions, // Hide for student plan
+        upgradeFeature: 'transcriptions' as const
+      }
+    ];
+    
+    return items;
+  }, [chats.length, collections.length, transcriptions, canShowProcesses, canShowTranscriptions])
 
   const handleAliClick = () => {
     handleNewChat()
@@ -198,22 +216,11 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
     
     if (type === contentType) return
     
-    // Check if feature is locked
-    const item = navItems.find(n => n.key === type)
-    if (item?.locked && item.upgradeFeature) {
-      setUpgradeFeature(item.upgradeFeature)
-      return
-    }
-    
     onContentTypeChange?.(type)
     // Cerrar sidebar en móviles después de seleccionar
     if (isMobile) {
       onClose?.()
     }
-  }
-  
-  const handleUpgradeForTokens = () => {
-    setUpgradeFeature('tokens')
   }
 
   return (
@@ -278,13 +285,15 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
                   </motion.div>
                 )}
               </div>
-              {/* WorkspaceSwitcher */}
-              <motion.div 
-                className="w-full"
-                variants={itemVariants}
-              >
-                <WorkspaceSwitcher showSettingsButton={false} />
-              </motion.div>
+              {/* WorkspaceSwitcher - Only show for plans that support multiple workspaces */}
+              {canShowWorkspaceSwitcher && (
+                <motion.div 
+                  className="w-full"
+                  variants={itemVariants}
+                >
+                  <WorkspaceSwitcher showSettingsButton={false} />
+                </motion.div>
+              )}
             </div>
           </motion.div>
 
@@ -297,7 +306,9 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
             className="px-4 py-4"
           >
             <nav className="space-y-1.5">
-              {navItems.map((item, index) => {
+              {navItems
+                .filter(item => !item.hidden) // Filter out hidden items for student plan
+                .map((item, index) => {
                 const IconComponent = item.icon
                 const isActive = item.key === contentType
                 const isLocked = item.locked
@@ -359,18 +370,18 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
               })}
             </nav>
             
-            {/* Plan indicator for Basic users */}
-            {hasActiveSubscription && !isPro && (
+            {/* Plan indicator for Student users */}
+            {isStudentPlan && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mt-4 p-2.5 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-indigo-500/10 border border-indigo-500/20"
+                className="mt-4 p-2.5 rounded-xl bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 border border-blue-500/20"
               >
                 <div className="flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-amber-400" />
+                  <Crown className="w-4 h-4 text-blue-400" />
                   <div className="flex-1">
-                    <p className="text-xs font-medium text-foreground">Plan Básico</p>
-                    <p className="text-[10px] text-muted-foreground">Actualiza para más funciones</p>
+                    <p className="text-xs font-medium text-foreground">Plan Estudiantil</p>
+                    <p className="text-[10px] text-muted-foreground">Actualiza a Profesional para más funciones</p>
                   </div>
                 </div>
               </motion.div>
@@ -394,15 +405,6 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
 
           {/* Separador inferior */}
           <div className="mx-4 h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
-          
-          {/* Token limit warning for Basic plan */}
-          {usage && !isPro && usage.tokens.percentage >= 80 && (
-            <TokenLimitWarning
-              tokensUsed={usage.tokens.percentage}
-              tokensLimit={100}
-              onUpgrade={handleUpgradeForTokens}
-            />
-          )}
 
           {/* Profile Card */}
           <motion.div variants={itemVariants}>
@@ -410,13 +412,6 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
           </motion.div>
         </motion.div>
       )}
-      
-      {/* Upgrade Prompt Dialog */}
-      <UpgradePrompt
-        feature={upgradeFeature || 'processes'}
-        isOpen={upgradeFeature !== null}
-        onClose={() => setUpgradeFeature(null)}
-      />
     </AnimatePresence>
   )
 }

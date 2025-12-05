@@ -176,6 +176,12 @@ export function usePlanAccess() {
     // Convenience methods
     isPro: state.plan.type === 'pro' || state.plan.type === 'enterprise',
     isBasic: state.plan.type === 'basic',
+    isStudentPlan: state.plan.type === 'basic' && state.hasActiveSubscription,
+    isProfessionalPlan: (state.plan.type === 'pro' || state.plan.type === 'enterprise') && state.hasActiveSubscription,
+    // Feature visibility - determines if UI elements should be shown at all
+    canShowProcesses: state.features.hasProcesses,
+    canShowTranscriptions: state.features.hasTranscriptions,
+    canShowWorkspaceSwitcher: state.features.hasMultipleWorkspaces,
     needsUpgrade: (feature: 'processes' | 'transcriptions' | 'workspaces') => {
       switch (feature) {
         case 'processes':
@@ -193,6 +199,8 @@ export function usePlanAccess() {
 
 // Export type for context provider
 export type PlanAccessContextType = ReturnType<typeof usePlanAccess>;
+
+
 
 
 
