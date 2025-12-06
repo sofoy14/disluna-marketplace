@@ -14,8 +14,13 @@ const supabase = createClient(
 );
 
 // Helper to get error redirect URL
-function getErrorRedirectUrl(baseUrl: string, error: string, details?: string): URL {
-  const url = new URL('/onboarding', baseUrl);
+// Check referer to determine if we should redirect to billing or onboarding
+function getErrorRedirectUrl(req: NextRequest, error: string, details?: string): URL {
+  const referer = req.headers.get('referer') || '';
+  const isFromBilling = referer.includes('/billing');
+  const redirectPath = isFromBilling ? '/billing' : '/onboarding';
+  
+  const url = new URL(redirectPath, req.nextUrl.origin);
   url.searchParams.set('error', error);
   if (details) {
     url.searchParams.set('details', details);
@@ -104,7 +109,7 @@ export async function GET(req: NextRequest) {
     // Validate params
     if (!plan_id || !workspace_id) {
       console.error('[Checkout Redirect] Missing params');
-      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'missing_params'));
+      return NextResponse.redirect(getErrorRedirectUrl(req, 'missing_params'));
     }
 
     // Validate Wompi config
@@ -112,7 +117,7 @@ export async function GET(req: NextRequest) {
     const validation = validateWompiConfig();
     if (!validation.isValid) {
       console.error('[Checkout Redirect] Wompi config invalid:', validation.missingFields);
-      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'wompi_config', validation.missingFields.join(',')));
+      return NextResponse.redirect(getErrorRedirectUrl(req, 'wompi_config', validation.missingFields.join(',')));
     }
 
     // Get plan
@@ -125,7 +130,7 @@ export async function GET(req: NextRequest) {
 
     if (planError || !plan) {
       console.error('[Checkout Redirect] Plan not found:', planError);
-      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'plan_not_found'));
+      return NextResponse.redirect(getErrorRedirectUrl(req, 'plan_not_found'));
     }
     console.log('[Checkout Redirect] Plan:', plan.name, 'Amount:', plan.amount_in_cents);
 
@@ -138,7 +143,7 @@ export async function GET(req: NextRequest) {
 
     if (workspaceError || !workspace) {
       console.error('[Checkout Redirect] Workspace not found:', workspaceError);
-      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'workspace_not_found'));
+      return NextResponse.redirect(getErrorRedirectUrl(req, 'workspace_not_found'));
     }
     console.log('[Checkout Redirect] Workspace user:', workspace.user_id);
 
@@ -154,7 +159,7 @@ export async function GET(req: NextRequest) {
     
     if (userError || !userData.user?.email) {
       console.error('[Checkout Redirect] User email not found:', userError);
-      return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'user_not_found'));
+      return NextResponse.redirect(getErrorRedirectUrl(req, 'user_not_found'));
     }
     console.log('[Checkout Redirect] User email:', userData.user.email);
 
@@ -224,7 +229,7 @@ export async function GET(req: NextRequest) {
 
       if (createSubError) {
         console.error('[Checkout Redirect] Error creating subscription:', createSubError);
-        return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'subscription_create', createSubError.message));
+        return NextResponse.redirect(getErrorRedirectUrl(req, 'subscription_create', createSubError.message));
       }
       subscription = newSubscription;
       console.log('[Checkout Redirect] Created new subscription:', subscription.id);
@@ -244,7 +249,7 @@ export async function GET(req: NextRequest) {
 
       if (updateError) {
         console.error('[Checkout Redirect] Error updating subscription:', updateError);
-        return NextResponse.redirect(getErrorRedirectUrl(baseUrl, 'subscription_update', updateError.message));
+        return NextResponse.redirect(getErrorRedirectUrl(req, 'subscription_update', updateError.message));
       }
       subscription = updatedSub;
       console.log('[Checkout Redirect] Updated existing subscription:', subscription.id);
@@ -327,11 +332,8 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('[Checkout Redirect] FATAL ERROR:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    // Fallback to using req.url for error redirect
-    const errorUrl = new URL('/onboarding', req.url);
-    errorUrl.searchParams.set('error', 'server_error');
-    errorUrl.searchParams.set('message', errorMessage.substring(0, 100));
-    return NextResponse.redirect(errorUrl);
+    // Use the helper function to determine correct redirect path
+    return NextResponse.redirect(getErrorRedirectUrl(req, 'server_error', errorMessage.substring(0, 100)));
   }
 }
 

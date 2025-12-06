@@ -2,18 +2,16 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { 
-  CreditCard, 
   CheckCircle, 
-  Clock, 
-  AlertCircle,
-  Crown,
-  Loader2,
-  ArrowLeft,
+  Loader2, 
+  ArrowRight,
   Sparkles,
   Star,
   Zap,
@@ -22,15 +20,18 @@ import {
   FolderOpen,
   Mic,
   Building2,
-  TrendingUp,
   GraduationCap,
   Briefcase,
   Percent,
-  Gift
+  Gift,
+  Shield,
+  Crown,
+  TrendingUp
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClient } from '@/lib/supabase/browser-client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShaderCanvas } from '@/components/shader-canvas';
 
 interface Plan {
   id: string;
@@ -40,8 +41,6 @@ interface Plan {
   currency: string;
   billing_period: 'monthly' | 'yearly';
   features: string[];
-  query_limit: number;
-  sort_order: number;
   plan_type?: 'basic' | 'pro' | 'enterprise';
   max_output_tokens_monthly?: number;
   max_processes?: number;
@@ -84,71 +83,122 @@ interface SpecialOffer {
   plan_id: string;
 }
 
+// Glass Card Component
+function GlassCard({ 
+  children, 
+  className = "", 
+  highlighted = false,
+  hoverEffect = true 
+}: { 
+  children: React.ReactNode;
+  className?: string;
+  highlighted?: boolean;
+  hoverEffect?: boolean;
+}) {
+  return (
+    <div className={`
+      relative overflow-hidden rounded-3xl
+      ${highlighted 
+        ? 'bg-violet-950/40 border border-violet-500/30' 
+        : 'bg-white/[0.03] border border-white/[0.08]'
+      }
+      backdrop-blur-xl shadow-2xl
+      ${hoverEffect ? 'transition-all duration-500 hover:border-violet-500/40 hover:bg-white/[0.05] hover:shadow-violet-500/10 hover:-translate-y-1' : ''}
+      ${className}
+    `}>
+      {/* Top highlight line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+      {/* Inner glow for highlighted cards */}
+      {highlighted && (
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 via-transparent to-fuchsia-500/5 pointer-events-none" />
+      )}
+      {children}
+    </div>
+  );
+}
+
 export default function BillingPage() {
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [specialOffers, setSpecialOffers] = useState<SpecialOffer[]>([]);
-  const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
-  const [usageData, setUsageData] = useState<UsageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
-  const [alert, setAlert] = useState<string | null>(null);
+  
+  // Billing period toggle
   const [isYearly, setIsYearly] = useState(false);
   
+  // Plans and offers
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [specialOffers, setSpecialOffers] = useState<SpecialOffer[]>([]);
+  const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
+  const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
+  const [usageData, setUsageData] = useState<UsageData | null>(null);
+
   const router = useRouter();
   const searchParams = useSearchParams();
-  const supabase = createClient();
+
+  // Check for error params on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const error = searchParams.get('error');
+      const details = searchParams.get('details');
+      
+      if (error) {
+        const errorMessages: Record<string, string> = {
+          'missing_params': 'Parámetros faltantes. Por favor intenta de nuevo.',
+          'wompi_config': 'Error de configuración del sistema de pagos.',
+          'plan_not_found': 'El plan seleccionado no está disponible.',
+          'workspace_not_found': 'No se encontró tu workspace.',
+          'user_not_found': 'No se encontró información del usuario.',
+          'subscription_create': 'Error al crear la suscripción.',
+          'subscription_update': 'Error al actualizar la suscripción.',
+          'server_error': 'Error del servidor. Por favor intenta más tarde.'
+        };
+        
+        const errorText = errorMessages[error] || `Error: ${error}`;
+        setMessage({ 
+          type: 'error', 
+          text: details ? `${errorText} (${details})` : errorText 
+        });
+        
+        // Clean URL
+        const cleanUrl = window.location.pathname;
+        window.history.replaceState({}, '', cleanUrl);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
-    const alertParam = searchParams.get('alert');
-    if (alertParam) {
-      setAlert(alertParam);
-    }
-    
     fetchBillingData();
-  }, [searchParams]);
+  }, []);
 
   const fetchBillingData = async () => {
     try {
+      setIsLoading(true);
+      const supabase = createClient();
       const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
       if (userError || !user) {
         router.push('/login');
         return;
       }
 
       // Get workspace
-      const { data: workspaces } = await supabase
+      const { data: workspace } = await supabase
         .from('workspaces')
         .select('*')
         .eq('user_id', user.id)
         .eq('is_home', true)
         .single();
 
-      if (workspaces) {
-        setWorkspaceId(workspaces.id);
+      if (workspace) {
+        setWorkspaceId(workspace.id);
       }
 
       // Fetch plans
-      const plansResponse = await fetch('/api/billing/plans');
-      if (plansResponse.ok) {
-        const plansData = await plansResponse.json();
-        if (plansData.success) {
-          setPlans(plansData.data);
-        }
-      }
-
-      // Fetch special offers
-      const offersResponse = await fetch('/api/billing/offers');
-      if (offersResponse.ok) {
-        const offersData = await offersResponse.json();
-        if (offersData.success) {
-          setSpecialOffers(offersData.data || []);
-        }
-      }
+      await fetchPlansAndOffers();
 
       // Get current subscription
-      if (workspaces?.id) {
-        const subscriptionResponse = await fetch(`/api/billing/subscriptions?workspace_id=${workspaces.id}`);
+      if (workspace?.id) {
+        const subscriptionResponse = await fetch(`/api/billing/subscriptions?workspace_id=${workspace.id}`);
         if (subscriptionResponse.ok) {
           const subscriptionData = await subscriptionResponse.json();
           if (subscriptionData.success && subscriptionData.data) {
@@ -158,7 +208,7 @@ export default function BillingPage() {
 
         // Get usage data
         try {
-          const usageResponse = await fetch(`/api/billing/usage?workspace_id=${workspaces.id}`);
+          const usageResponse = await fetch(`/api/billing/usage?workspace_id=${workspace.id}`);
           if (usageResponse.ok) {
             const usageResult = await usageResponse.json();
             if (usageResult.success) {
@@ -176,225 +226,211 @@ export default function BillingPage() {
     }
   };
 
+  const fetchPlansAndOffers = async () => {
+    try {
+      // Fetch plans
+      const plansResponse = await fetch('/api/billing/plans');
+      const plansData = await plansResponse.json();
+      
+      if (plansData.success) {
+        setPlans(plansData.data);
+      }
+
+      // Fetch special offers
+      const offersResponse = await fetch('/api/billing/offers');
+      if (offersResponse.ok) {
+        const offersData = await offersResponse.json();
+        if (offersData.success) {
+          setSpecialOffers(offersData.data || []);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    }
+  };
+
+  const handleSubscribe = async (planId: string) => {
+    setProcessingPlanId(planId);
+    setMessage(null);
+
+    console.log('[Billing] handleSubscribe called with planId:', planId);
+    console.log('[Billing] Current workspaceId state:', workspaceId);
+
+    // Verificar que tenemos workspace_id
+    if (!workspaceId) {
+      console.error('[Billing] No workspace_id available!');
+      setMessage({ type: 'error', text: 'No se encontró tu workspace. Por favor recarga la página.' });
+      setProcessingPlanId(null);
+      return;
+    }
+
+    // Use direct navigation to checkout-redirect endpoint (same as onboarding)
+    const checkoutUrl = `/api/billing/checkout-redirect?plan_id=${encodeURIComponent(planId)}&workspace_id=${encodeURIComponent(workspaceId)}`;
+    
+    console.log('[Billing] Redirecting to checkout endpoint:', checkoutUrl);
+    
+    // Direct navigation - browser will follow the HTTP redirect to Wompi
+    window.location.href = checkoutUrl;
+  };
+
+  // Helper functions for plans
   const formatPrice = (amountInCents: number) => {
     return new Intl.NumberFormat('es-CO', {
-      style: 'decimal',
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(amountInCents / 100);
   };
 
-  const handleSubscribe = async (planId: string) => {
-    if (!workspaceId) {
-      alert('Error: No se encontró el workspace');
-      return;
-    }
-
-    setProcessingPlanId(planId);
-
-    try {
-      const response = await fetch('/api/billing/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          plan_id: planId,
-          workspace_id: workspaceId
-        })
-      });
-
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error || 'Error al iniciar suscripción');
-      }
-
-      // Create form and redirect to Wompi
-      const form = document.createElement('form');
-      form.method = 'GET';
-      form.action = result.data.checkout_url;
-
-      Object.entries(result.data.checkout_data).forEach(([key, value]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = value as string;
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-
-    } catch (error) {
-      console.error('Error initiating subscription:', error);
-      alert(error instanceof Error ? error.message : 'Error al procesar el pago');
-    } finally {
-      setProcessingPlanId(null);
-    }
+  const currentBillingPeriod = isYearly ? 'yearly' : 'monthly';
+  
+  const getPlan = (type: 'basic' | 'pro', period: 'monthly' | 'yearly') => {
+    return plans.find(p => p.plan_type === type && p.billing_period === period);
   };
 
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'active':
-        return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30"><CheckCircle className="w-3 h-3 mr-1" />Activa</Badge>;
-      case 'trialing':
-        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30"><Clock className="w-3 h-3 mr-1" />Prueba</Badge>;
-      case 'past_due':
-        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30"><AlertCircle className="w-3 h-3 mr-1" />Pago pendiente</Badge>;
-      case 'canceled':
-        return <Badge className="bg-red-500/20 text-red-400 border-red-500/30"><AlertCircle className="w-3 h-3 mr-1" />Cancelada</Badge>;
-      default:
-        return <Badge variant="secondary">{status}</Badge>;
-    }
-  };
-
-  const getAlertMessage = () => {
-    switch (alert) {
-      case 'subscription_required':
-        return { type: 'warning', message: 'Necesitas una suscripción activa para acceder al chatbot' };
-      case 'subscription_expired':
-        return { type: 'error', message: 'Tu suscripción ha expirado. Renueva para continuar usando el servicio' };
-      case 'payment_required':
-        return { type: 'warning', message: 'Tienes un pago pendiente. Por favor actualiza tu método de pago' };
-      default:
-        return null;
-    }
-  };
-
-  const alertInfo = getAlertMessage();
-
-  // Get plans by type and billing period
-  const getPlan = (planType: 'pro' | 'basic', billingPeriod: 'monthly' | 'yearly') => {
-    return plans.find(p => p.plan_type === planType && p.billing_period === billingPeriod);
-  };
-
-  // Get special offer for a plan
   const getOfferForPlan = (planId: string) => {
     return specialOffers.find(o => o.plan_id === planId);
   };
 
-  const currentBillingPeriod = isYearly ? 'yearly' : 'monthly';
-  
   const professionalPlan = getPlan('pro', currentBillingPeriod);
   const studentPlan = getPlan('basic', currentBillingPeriod);
-  
   const professionalOffer = professionalPlan ? getOfferForPlan(professionalPlan.id) : null;
 
-  // Calculate monthly equivalent for yearly plans
   const getMonthlyEquivalent = (yearlyAmount: number) => {
     return Math.round(yearlyAmount / 12);
   };
 
+  const currentPlanId = currentSubscription?.plan_id;
+  const currentPlanType = currentSubscription?.plans?.plan_type;
+
+  // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-violet-500 mx-auto mb-4" />
-          <p className="text-slate-400 font-medium">Cargando planes...</p>
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
+        {/* Subtle gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-violet-950/20 via-transparent to-violet-950/10" />
+        
+        <div className="text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="relative"
+          >
+            <ShaderCanvas size={120} shaderId={1} />
+            <div className="absolute inset-0 bg-violet-500/20 blur-3xl rounded-full -z-10 animate-pulse" />
+          </motion.div>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-violet-300/60 font-light mt-6 tracking-wide"
+          >
+            Cargando...
+          </motion.p>
         </div>
       </div>
     );
   }
 
-  const currentPlanType = currentSubscription?.plans?.plan_type;
-  const currentPlanId = currentSubscription?.plan_id;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-slate-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      {/* Background effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-violet-500/20 rounded-full blur-[120px]" />
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-fuchsia-500/20 rounded-full blur-[120px]" />
+    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
+      {/* Subtle ambient background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-violet-900/10 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-violet-800/5 rounded-full blur-[120px]" />
       </div>
+      
+      {/* Grid pattern overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.015]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(139, 92, 246, 0.3) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.3) 1px, transparent 1px)
+          `,
+          backgroundSize: '60px 60px'
+        }}
+      />
 
-      <div className="max-w-5xl mx-auto relative z-10">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-violet-500/20 text-violet-300 border border-violet-500/30 px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <Sparkles className="w-4 h-4" />
-            Gestiona tu suscripción
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Facturación y <span className="bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">Planes</span>
-          </h1>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Administra tu suscripción y consulta tu uso
-          </p>
-        </div>
-
-        {/* Alert */}
-        {alertInfo && (
-          <div className={`mb-8 p-4 rounded-xl border ${
-            alertInfo.type === 'error' 
-              ? 'bg-red-500/10 border-red-500/30 text-red-400' 
-              : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
-          }`}>
-            <div className="flex items-center gap-3">
-              <AlertCircle className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium">{alertInfo.message}</span>
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+          {/* Orb */}
+          <motion.div 
+            className="flex justify-center mb-6"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="relative">
+              <ShaderCanvas size={100} shaderId={1} />
+              <div className="absolute inset-0 bg-violet-500/20 blur-3xl rounded-full -z-10" />
             </div>
-          </div>
-        )}
+          </motion.div>
 
-        {/* Current Subscription and Usage */}
-        {currentSubscription && currentSubscription.status === 'active' && (
-          <div className="mb-10 space-y-6">
-            <Card className="border-2 border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 backdrop-blur-xl">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-emerald-400">
-                  <Crown className="h-6 w-6" />
-                  Tu Suscripción Actual
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-semibold text-white">{currentSubscription.plans?.name || 'Plan'}</h3>
-                    <p className="text-slate-400">{currentSubscription.plans?.description}</p>
-                    <p className="text-sm text-slate-500 mt-2">
-                      Válido hasta: {new Date(currentSubscription.current_period_end).toLocaleDateString('es-CO', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
-                    </p>
+          {/* Welcome Text */}
+          <motion.div 
+            className="text-center mb-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <h1 className="text-2xl md:text-3xl font-light text-white mb-3 tracking-tight">
+              {currentSubscription ? 'Cambiar tu Plan' : 'Elige tu Plan'}
+            </h1>
+            <p className="text-violet-300/50 font-light">
+              Presente e inteligente
+            </p>
+          </motion.div>
+
+          {message && (
+            <Alert className={`mb-6 max-w-md mx-auto border ${
+              message.type === 'success' 
+                ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' 
+                : 'border-red-500/30 bg-red-500/10 text-red-400'
+            }`}>
+              <AlertDescription>{message.text}</AlertDescription>
+            </Alert>
+          )}
+
+          {/* Current Subscription Info */}
+          {currentSubscription && currentSubscription.status === 'active' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full max-w-md mb-8"
+            >
+              <GlassCard className="p-6" hoverEffect={false}>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                    <Crown className="w-5 h-5 text-emerald-400" />
                   </div>
-                  <div className="text-right">
-                    {getStatusBadge(currentSubscription.status)}
+                  <div>
+                    <h3 className="text-lg font-medium text-white">Plan Actual</h3>
+                    <p className="text-sm text-violet-300/40">{currentSubscription.plans?.name}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Usage Stats */}
-            {usageData && (
-              <Card className="bg-slate-900/80 backdrop-blur-xl border-slate-800">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-white">
-                    <TrendingUp className="h-5 w-5 text-violet-500" />
-                    Tu uso este mes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    {/* Tokens */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-400">Tokens de chat</span>
-                        <span className="font-medium text-white">
+                
+                {usageData && (
+                  <div className="space-y-3 pt-4 border-t border-white/10">
+                    <div>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-violet-300/60">Tokens de chat</span>
+                        <span className="text-white/80">
                           {usageData.tokens_limit === -1 
                             ? `${(usageData.tokens_used / 1000000).toFixed(2)}M usados`
                             : `${(usageData.tokens_used / 1000000).toFixed(2)}M / ${(usageData.tokens_limit / 1000000).toFixed(0)}M`
                           }
                         </span>
                       </div>
-                      <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
                         <div 
                           className={`h-full rounded-full ${
                             usageData.tokens_limit === -1 
-                              ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 w-1/4'
+                              ? 'bg-violet-500 w-1/4'
                               : usageData.tokens_used / usageData.tokens_limit > 0.9 
                                 ? 'bg-red-500'
-                                : 'bg-gradient-to-r from-violet-500 to-fuchsia-500'
+                                : 'bg-violet-500'
                           }`}
                           style={{ 
                             width: usageData.tokens_limit === -1 
@@ -403,239 +439,207 @@ export default function BillingPage() {
                           }}
                         />
                       </div>
-                      {usageData.tokens_limit === -1 && (
-                        <p className="text-xs text-violet-400">Ilimitado</p>
-                      )}
                     </div>
 
-                    {/* Processes */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-400">Procesos</span>
-                        <span className="font-medium text-white">
-                          {usageData.processes_limit === 0 
-                            ? 'No disponible'
-                            : `${usageData.processes_used} / ${usageData.processes_limit}`
-                          }
-                        </span>
+                    {usageData.processes_limit > 0 && (
+                      <div>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-violet-300/60">Procesos</span>
+                          <span className="text-white/80">
+                            {usageData.processes_used} / {usageData.processes_limit}
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full bg-emerald-500"
+                            style={{ 
+                              width: `${Math.min((usageData.processes_used / usageData.processes_limit) * 100, 100)}%` 
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full ${
-                            usageData.processes_limit === 0 
-                              ? 'bg-slate-700 w-0'
-                              : 'bg-gradient-to-r from-emerald-500 to-teal-500'
-                          }`}
-                          style={{ 
-                            width: usageData.processes_limit === 0 
-                              ? '0%' 
-                              : `${Math.min((usageData.processes_used / usageData.processes_limit) * 100, 100)}%` 
-                          }}
-                        />
-                      </div>
-                    </div>
+                    )}
 
-                    {/* Transcription */}
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-400">Transcripción</span>
-                        <span className="font-medium text-white">
-                          {usageData.transcription_limit === 0 
-                            ? 'No disponible'
-                            : `${(usageData.transcription_seconds_used / 3600).toFixed(1)}h / ${usageData.transcription_limit}h`
-                          }
-                        </span>
+                    {usageData.transcription_limit > 0 && (
+                      <div>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-violet-300/60">Transcripción</span>
+                          <span className="text-white/80">
+                            {(usageData.transcription_seconds_used / 3600).toFixed(1)}h / {usageData.transcription_limit}h
+                          </span>
+                        </div>
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full bg-pink-500"
+                            style={{ 
+                              width: `${Math.min((usageData.transcription_seconds_used / (usageData.transcription_limit * 3600)) * 100, 100)}%` 
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full ${
-                            usageData.transcription_limit === 0 
-                              ? 'bg-slate-700 w-0'
-                              : 'bg-gradient-to-r from-pink-500 to-rose-500'
-                          }`}
-                          style={{ 
-                            width: usageData.transcription_limit === 0 
-                              ? '0%' 
-                              : `${Math.min((usageData.transcription_seconds_used / (usageData.transcription_limit * 3600)) * 100, 100)}%` 
-                          }}
-                        />
-                      </div>
-                    </div>
+                    )}
                   </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        )}
-
-        {/* Plans */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white text-center mb-8">
-            {currentSubscription ? 'Cambiar de Plan' : 'Elige tu Plan'}
-          </h2>
+                )}
+              </GlassCard>
+            </motion.div>
+          )}
 
           {/* Billing Period Toggle */}
-          <div className="flex items-center justify-center gap-4 mb-8">
-            <span className={`text-sm font-medium transition-colors ${!isYearly ? 'text-white' : 'text-slate-400'}`}>
+          <motion.div 
+            className="flex items-center justify-center gap-4 mb-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <span className={`text-sm font-light transition-colors ${!isYearly ? 'text-white' : 'text-white/40'}`}>
               Mensual
             </span>
-            <div className="relative">
-              <Switch
-                checked={isYearly}
-                onCheckedChange={setIsYearly}
-                className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-violet-600 data-[state=checked]:to-fuchsia-600"
-              />
-            </div>
-            <span className={`text-sm font-medium transition-colors flex items-center gap-2 ${isYearly ? 'text-white' : 'text-slate-400'}`}>
+            <Switch
+              checked={isYearly}
+              onCheckedChange={setIsYearly}
+              className="data-[state=checked]:bg-violet-600"
+            />
+            <span className={`text-sm font-light transition-colors flex items-center gap-2 ${isYearly ? 'text-white' : 'text-white/40'}`}>
               Anual
-              <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">
-                <Percent className="w-3 h-3 mr-1" />
+              <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs font-light">
                 30% OFF
               </Badge>
             </span>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          </motion.div>
+
+          {/* Plans Grid */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
             {/* Professional Plan */}
             {professionalPlan && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0 }}
+                transition={{ delay: 0.4 }}
               >
-                <Card className={`relative h-full border-2 shadow-2xl bg-gradient-to-br from-slate-900 via-violet-950/50 to-slate-900 overflow-hidden ${
-                  currentPlanId === professionalPlan.id ? 'border-violet-500 ring-2 ring-violet-400/30' : 'border-violet-500/50'
-                }`}>
-                  {/* Background effects */}
-                  <div className="absolute -top-24 -right-24 w-48 h-48 bg-violet-500/20 rounded-full blur-3xl" />
-                  <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-fuchsia-500/20 rounded-full blur-3xl" />
-                  
-                  {/* Badges */}
-                  {currentPlanId === professionalPlan.id ? (
-                    <div className="absolute top-3 right-3 z-10">
-                      <Badge className="bg-violet-600 text-white">Plan Actual</Badge>
-                    </div>
-                  ) : (
-                    <div className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
-                      <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-1.5 shadow-lg border-0">
-                        <Star className="w-3.5 h-3.5 mr-1 fill-current" />
+                <GlassCard highlighted className="h-full relative">
+                  {/* Recommended Badge */}
+                  {currentPlanId !== professionalPlan.id && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                      <Badge className="bg-violet-600 text-white px-4 py-1 text-xs font-light border-0 shadow-lg shadow-violet-500/30">
+                        <Star className="w-3 h-3 mr-1.5 fill-current" />
                         Recomendado
+                      </Badge>
+                    </div>
+                  )}
+
+                  {/* Current Plan Badge */}
+                  {currentPlanId === professionalPlan.id && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                      <Badge className="bg-emerald-600 text-white px-4 py-1 text-xs font-light border-0 shadow-lg shadow-emerald-500/30">
+                        <Crown className="w-3 h-3 mr-1.5" />
+                        Plan Actual
                       </Badge>
                     </div>
                   )}
 
                   {/* First Month Offer Badge */}
                   {!isYearly && professionalOffer && currentPlanId !== professionalPlan.id && (
-                    <div className="absolute top-3 right-3 z-10">
-                      <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1 shadow-lg border-0">
+                    <div className="absolute top-4 right-4 z-10">
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 px-3 py-1 text-xs font-light">
                         <Gift className="w-3 h-3 mr-1" />
                         1er mes $0.99 USD
                       </Badge>
                     </div>
                   )}
 
-                  <CardHeader className="text-center pt-10 pb-4 relative z-10">
-                    <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br from-violet-500 to-fuchsia-600 shadow-lg shadow-violet-500/30">
-                      <Briefcase className="w-7 h-7 text-white" />
+                  <div className="p-8 pt-10">
+                    {/* Icon & Title */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="p-3 rounded-2xl bg-violet-500/10 border border-violet-500/20">
+                        <Briefcase className="w-6 h-6 text-violet-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-medium text-white">{professionalPlan.name}</h3>
+                        <p className="text-sm text-violet-300/50 font-light">{professionalPlan.description}</p>
+                      </div>
                     </div>
-                    <CardTitle className="text-xl text-white">{professionalPlan.name}</CardTitle>
-                    <CardDescription className="text-slate-400">{professionalPlan.description}</CardDescription>
-                    
-                    <div className="mt-4">
+
+                    {/* Price */}
+                    <div className="mb-6">
                       {!isYearly && professionalOffer && currentPlanId !== professionalPlan.id ? (
-                        <div className="space-y-1">
-                          <div className="flex items-baseline justify-center gap-2">
-                            <span className="text-4xl font-bold text-white">
-                              $3.960
-                            </span>
-                            <span className="text-lg text-slate-500 line-through">
-                              ${formatPrice(professionalPlan.amount_in_cents)}
-                            </span>
+                        <div>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-light text-white">$3.960</span>
+                            <span className="text-lg text-white/30 line-through font-light">${formatPrice(professionalPlan.amount_in_cents)}</span>
                           </div>
-                          <p className="text-sm text-emerald-400">COP primer mes</p>
-                          <p className="text-xs text-slate-500">Luego ${formatPrice(professionalPlan.amount_in_cents)} COP/mes</p>
+                          <p className="text-sm text-emerald-400/80 font-light mt-1">COP primer mes</p>
+                          <p className="text-xs text-white/30 font-light">Luego ${formatPrice(professionalPlan.amount_in_cents)} COP/mes</p>
                         </div>
                       ) : (
                         <div>
-                          <div className="flex items-baseline justify-center gap-1">
-                            <span className="text-4xl font-bold text-white">
-                              ${formatPrice(professionalPlan.amount_in_cents)}
-                            </span>
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-4xl font-light text-white">${formatPrice(professionalPlan.amount_in_cents)}</span>
+                            <span className="text-white/40 font-light">COP</span>
                           </div>
-                          <p className="text-sm text-slate-400">
-                            COP / {isYearly ? 'año' : 'mes'}
-                          </p>
+                          <p className="text-sm text-white/40 font-light">/ {isYearly ? 'año' : 'mes'}</p>
                           {isYearly && (
-                            <p className="text-xs text-emerald-400 mt-1">
+                            <p className="text-xs text-violet-400/80 font-light mt-1">
                               Equivale a ${formatPrice(getMonthlyEquivalent(professionalPlan.amount_in_cents))} COP/mes
                             </p>
                           )}
                         </div>
                       )}
                     </div>
-                  </CardHeader>
 
-                  {/* Highlights */}
-                  <div className="mx-6 mb-4 p-3 rounded-xl bg-white/5 grid grid-cols-2 gap-2 relative z-10">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="w-4 h-4 text-violet-400" />
-                      <div>
-                        <p className="text-[10px] uppercase text-slate-500">Chat IA</p>
-                        <p className="text-xs font-semibold text-white">Ilimitado</p>
+                    {/* Highlights Grid */}
+                    <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] mb-6">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-violet-400" />
+                        <div>
+                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Chat IA</p>
+                          <p className="text-sm font-medium text-white">Ilimitado</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-violet-400" />
+                        <div>
+                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Workspaces</p>
+                          <p className="text-sm font-medium text-white">Múltiples</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FolderOpen className="w-4 h-4 text-violet-400" />
+                        <div>
+                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Procesos</p>
+                          <p className="text-sm font-medium text-white">7</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Mic className="w-4 h-4 text-violet-400" />
+                        <div>
+                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Transcripción</p>
+                          <p className="text-sm font-medium text-white">5 horas</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-amber-400" />
-                      <div>
-                        <p className="text-[10px] uppercase text-slate-500">Workspaces</p>
-                        <p className="text-xs font-semibold text-white">Múltiples</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FolderOpen className="w-4 h-4 text-emerald-400" />
-                      <div>
-                        <p className="text-[10px] uppercase text-slate-500">Procesos</p>
-                        <p className="text-xs font-semibold text-white">7</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Mic className="w-4 h-4 text-pink-400" />
-                      <div>
-                        <p className="text-[10px] uppercase text-slate-500">Transcripción</p>
-                        <p className="text-xs font-semibold text-white">5 horas</p>
-                      </div>
-                    </div>
-                  </div>
 
-                  <CardContent className="pt-0 relative z-10">
-                    <ul className="space-y-2 mb-6 text-sm">
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-300">Chat IA ilimitado</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-300">Múltiples workspaces</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-300">7 procesos legales incluidos</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-300">5 horas de transcripción</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-300">Soporte prioritario 24/7</span>
-                      </li>
+                    {/* Features List */}
+                    <ul className="space-y-3 mb-8">
+                      {[
+                        'Chat con asistente legal IA ilimitado',
+                        'Análisis de normativa colombiana',
+                        'Múltiples espacios de trabajo',
+                        '7 procesos legales incluidos',
+                        '5 horas de transcripción de audio',
+                        'Soporte prioritario 24/7'
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <CheckCircle className="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-white/70 font-light">{feature}</span>
+                        </li>
+                      ))}
                     </ul>
 
+                    {/* CTA Button */}
                     <Button
                       onClick={() => handleSubscribe(professionalPlan.id)}
-                      disabled={currentPlanId === professionalPlan.id || processingPlanId !== null}
-                      className="w-full bg-gradient-to-r from-violet-500 to-fuchsia-600 hover:from-violet-600 hover:to-fuchsia-700 text-white shadow-lg shadow-violet-500/25"
-                      size="lg"
+                      disabled={processingPlanId !== null || currentPlanId === professionalPlan.id}
+                      className="w-full h-12 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30"
                     >
                       {processingPlanId === professionalPlan.id ? (
                         <>
@@ -647,13 +651,13 @@ export default function BillingPage() {
                       ) : (
                         <>
                           <Zap className="w-4 h-4 mr-2" />
-                          {currentPlanType === 'basic' ? 'Actualizar a Profesional' : 
+                          {currentPlanType === 'basic' ? 'Actualizar a Profesional' :
                            !isYearly && professionalOffer ? 'Comenzar por $0.99 USD' : 'Elegir Plan Profesional'}
                         </>
                       )}
                     </Button>
-                  </CardContent>
-                </Card>
+                  </div>
+                </GlassCard>
               </motion.div>
             )}
 
@@ -662,103 +666,106 @@ export default function BillingPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+                transition={{ delay: 0.5 }}
               >
-                <Card className={`relative h-full border-2 shadow-xl bg-slate-900/80 backdrop-blur-xl overflow-hidden ${
-                  currentPlanId === studentPlan.id ? 'border-cyan-500 ring-2 ring-cyan-400/30' : 'border-slate-700'
-                }`}>
+                <GlassCard className="h-full relative">
+                  {/* Current Plan Badge */}
                   {currentPlanId === studentPlan.id && (
-                    <div className="absolute top-3 right-3">
-                      <Badge className="bg-cyan-600 text-white">Plan Actual</Badge>
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
+                      <Badge className="bg-emerald-600 text-white px-4 py-1 text-xs font-light border-0 shadow-lg shadow-emerald-500/30">
+                        <Crown className="w-3 h-3 mr-1.5" />
+                        Plan Actual
+                      </Badge>
                     </div>
                   )}
-                  
-                  <CardHeader className="text-center pt-8 pb-4">
-                    <div className="w-14 h-14 rounded-2xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/30">
-                      <GraduationCap className="w-7 h-7 text-white" />
-                    </div>
-                    <CardTitle className="text-xl text-white">{studentPlan.name}</CardTitle>
-                    <CardDescription className="text-slate-400">{studentPlan.description}</CardDescription>
-                    
-                    <div className="mt-4">
-                      <div className="flex items-baseline justify-center gap-1">
-                        <span className="text-4xl font-bold text-white">
-                          ${formatPrice(studentPlan.amount_in_cents)}
-                        </span>
+
+                  <div className="p-8 pt-10">
+                    {/* Icon & Title */}
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="p-3 rounded-2xl bg-white/[0.05] border border-white/[0.08]">
+                        <GraduationCap className="w-6 h-6 text-white/60" />
                       </div>
-                      <p className="text-sm text-slate-400">
-                        COP / {isYearly ? 'año' : 'mes'}
-                      </p>
+                      <div>
+                        <h3 className="text-xl font-medium text-white">{studentPlan.name}</h3>
+                        <p className="text-sm text-white/40 font-light">{studentPlan.description}</p>
+                      </div>
+                    </div>
+
+                    {/* Price */}
+                    <div className="mb-6">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-4xl font-light text-white">${formatPrice(studentPlan.amount_in_cents)}</span>
+                        <span className="text-white/40 font-light">COP</span>
+                      </div>
+                      <p className="text-sm text-white/40 font-light">/ {isYearly ? 'año' : 'mes'}</p>
                       {isYearly && (
-                        <p className="text-xs text-emerald-400 mt-1">
+                        <p className="text-xs text-violet-400/80 font-light mt-1">
                           Equivale a ${formatPrice(getMonthlyEquivalent(studentPlan.amount_in_cents))} COP/mes
                         </p>
                       )}
                     </div>
-                  </CardHeader>
 
-                  {/* Highlights */}
-                  <div className="mx-6 mb-4 p-3 rounded-xl bg-slate-800/50 grid grid-cols-2 gap-2">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="w-4 h-4 text-cyan-400" />
-                      <div>
-                        <p className="text-[10px] uppercase text-slate-500">Chat IA</p>
-                        <p className="text-xs font-semibold text-white">3M tokens</p>
+                    {/* Highlights Grid */}
+                    <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] mb-6">
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-white/40" />
+                        <div>
+                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Chat IA</p>
+                          <p className="text-sm font-medium text-white/70">3M tokens</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-white/20" />
+                        <div>
+                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Workspace</p>
+                          <p className="text-sm font-medium text-white/70">1</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FolderOpen className="w-4 h-4 text-white/20" />
+                        <div>
+                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Procesos</p>
+                          <p className="text-sm font-medium text-white/30">—</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Mic className="w-4 h-4 text-white/20" />
+                        <div>
+                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Transcripción</p>
+                          <p className="text-sm font-medium text-white/30">—</p>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Building2 className="w-4 h-4 text-slate-500" />
-                      <div>
-                        <p className="text-[10px] uppercase text-slate-500">Workspace</p>
-                        <p className="text-xs font-semibold text-white">1</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <FolderOpen className="w-4 h-4 text-slate-600" />
-                      <div>
-                        <p className="text-[10px] uppercase text-slate-500">Procesos</p>
-                        <p className="text-xs font-semibold text-slate-500">—</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Mic className="w-4 h-4 text-slate-600" />
-                      <div>
-                        <p className="text-[10px] uppercase text-slate-500">Transcripción</p>
-                        <p className="text-xs font-semibold text-slate-500">—</p>
-                      </div>
-                    </div>
-                  </div>
 
-                  <CardContent className="pt-0">
-                    <ul className="space-y-2 mb-6 text-sm">
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-300">Chat con asistente legal IA</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-300">Hasta 3 millones de tokens/mes</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <CheckCircle className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-300">Análisis de normativa colombiana</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <X className="w-4 h-4 text-slate-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-500 line-through">Procesos legales</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <X className="w-4 h-4 text-slate-600 flex-shrink-0 mt-0.5" />
-                        <span className="text-slate-500 line-through">Transcripción de audio</span>
-                      </li>
+                    {/* Features List */}
+                    <ul className="space-y-3 mb-8">
+                      {[
+                        { text: 'Chat con asistente legal IA', included: true },
+                        { text: 'Hasta 3 millones de tokens/mes', included: true },
+                        { text: 'Análisis de normativa colombiana', included: true },
+                        { text: 'Búsqueda de jurisprudencia', included: true },
+                        { text: 'Procesos legales', included: false },
+                        { text: 'Transcripción de audio', included: false }
+                      ].map((feature, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          {feature.included ? (
+                            <CheckCircle className="w-4 h-4 text-white/40 flex-shrink-0 mt-0.5" />
+                          ) : (
+                            <X className="w-4 h-4 text-white/20 flex-shrink-0 mt-0.5" />
+                          )}
+                          <span className={`text-sm font-light ${feature.included ? 'text-white/60' : 'text-white/30 line-through'}`}>
+                            {feature.text}
+                          </span>
+                        </li>
+                      ))}
                     </ul>
 
+                    {/* CTA Button */}
                     <Button
                       onClick={() => handleSubscribe(studentPlan.id)}
-                      disabled={currentPlanId === studentPlan.id || processingPlanId !== null}
+                      disabled={processingPlanId !== null || currentPlanId === studentPlan.id}
                       variant="outline"
-                      className="w-full border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400"
-                      size="lg"
+                      className="w-full h-12 bg-transparent border-white/10 text-white/70 hover:bg-white/5 hover:border-white/20 hover:text-white rounded-xl font-medium transition-all duration-300"
                     >
                       {processingPlanId === studentPlan.id ? (
                         <>
@@ -773,41 +780,32 @@ export default function BillingPage() {
                         'Elegir Plan Estudiantil'
                       )}
                     </Button>
-                  </CardContent>
-                </Card>
+                  </div>
+                </GlassCard>
               </motion.div>
             )}
           </div>
-        </div>
 
-        {/* Security info */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex flex-wrap justify-center gap-6 text-sm text-slate-500">
-            <div className="flex items-center gap-2">
-              <CreditCard className="w-4 h-4" />
-              Pago seguro con Wompi
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-500" />
-              Cancela cuando quieras
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-emerald-500" />
-              Sin compromisos
-            </div>
-          </div>
-        </div>
-
-        {/* Back button */}
-        <div className="mt-10 text-center">
-          <Button 
-            variant="ghost" 
-            onClick={() => router.back()}
-            className="text-slate-400 hover:text-white hover:bg-slate-800"
+          {/* Trust badges */}
+          <motion.div 
+            className="flex flex-wrap justify-center gap-6 text-xs text-white/30 mt-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Volver
-          </Button>
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-violet-400/50" />
+              <span className="font-light">Pago seguro con Wompi</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-violet-400/50" />
+              <span className="font-light">Cancela cuando quieras</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4 text-violet-400/50" />
+              <span className="font-light">Soporte en español</span>
+            </div>
+          </motion.div>
         </div>
       </div>
     </div>
