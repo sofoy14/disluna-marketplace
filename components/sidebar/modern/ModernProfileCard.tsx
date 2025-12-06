@@ -101,10 +101,10 @@ export function ModernProfileCard() {
             Actualizar a Profesional
           </Link>
         ) : (
-          <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
-            <Mail className="h-3 w-3" />
-            {profile.username || "Usuario"}
-          </p>
+        <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
+          <Mail className="h-3 w-3" />
+          {profile.username || "Usuario"}
+        </p>
         )}
       </div>
 

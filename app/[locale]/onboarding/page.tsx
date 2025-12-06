@@ -234,25 +234,32 @@ export default function OnboardingPage() {
           .eq('user_id', user.id)
           .maybeSingle();
 
-        // Check if user has active subscription - if so, go to chat
+        // Check if user has active subscription
         const { data: subscription } = await supabase
           .from('subscriptions')
-          .select('id, status')
+          .select('id, status, current_period_end')
           .eq('user_id', user.id)
           .in('status', ['active', 'trialing'])
           .maybeSingle();
 
-        if (subscription && workspace) {
-          // User has active subscription, go to chat
+        // Verificar que la suscripción no haya expirado
+        let hasActiveSubscription = false;
+        if (subscription) {
+          const periodEnd = new Date(subscription.current_period_end);
+          const now = new Date();
+          hasActiveSubscription = periodEnd > now;
+        }
+
+        // Si tiene suscripción activa, marcar onboarding como completado pero NO redirigir automáticamente
+        // Esto permite que el usuario navegue libremente si quiere
+        if (hasActiveSubscription && workspace) {
           await supabase
             .from('profiles')
             .update({ onboarding_completed: true, onboarding_step: 'completed' })
             .eq('user_id', user.id);
           
-          if (isMounted) {
-            window.location.href = `/${workspace.id}/chat`;
-          }
-          return;
+          // NO redirigir automáticamente - dejar que el usuario decida
+          // Solo continuar cargando la página normalmente
         }
 
         // Pre-fill profile data if exists

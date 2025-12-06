@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { 
   CheckCircle, 
-  Loader2, 
+  Loader2,
   ArrowRight,
   Sparkles,
   Star,
@@ -131,7 +131,7 @@ export default function BillingPage() {
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
-
+  
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -162,7 +162,7 @@ export default function BillingPage() {
         // Clean URL
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, '', cleanUrl);
-      }
+    }
     }
   }, [searchParams]);
 
@@ -290,7 +290,7 @@ export default function BillingPage() {
   const getOfferForPlan = (planId: string) => {
     return specialOffers.find(o => o.plan_id === planId);
   };
-
+  
   const professionalPlan = getPlan('pro', currentBillingPeriod);
   const studentPlan = getPlan('basic', currentBillingPeriod);
   const professionalOffer = professionalPlan ? getOfferForPlan(professionalPlan.id) : null;
@@ -339,7 +339,7 @@ export default function BillingPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-violet-900/10 rounded-full blur-[150px]" />
         <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-violet-800/5 rounded-full blur-[120px]" />
       </div>
-      
+
       {/* Grid pattern overlay */}
       <div 
         className="absolute inset-0 opacity-[0.015]"
@@ -365,7 +365,7 @@ export default function BillingPage() {
             <div className="relative">
               <ShaderCanvas size={100} shaderId={1} />
               <div className="absolute inset-0 bg-violet-500/20 blur-3xl rounded-full -z-10" />
-            </div>
+          </div>
           </motion.div>
 
           {/* Welcome Text */}
@@ -377,10 +377,10 @@ export default function BillingPage() {
           >
             <h1 className="text-2xl md:text-3xl font-light text-white mb-3 tracking-tight">
               {currentSubscription ? 'Cambiar tu Plan' : 'Elige tu Plan'}
-            </h1>
+          </h1>
             <p className="text-violet-300/50 font-light">
               Presente e inteligente
-            </p>
+          </p>
           </motion.div>
 
           {message && (
@@ -388,13 +388,13 @@ export default function BillingPage() {
               message.type === 'success' 
                 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' 
                 : 'border-red-500/30 bg-red-500/10 text-red-400'
-            }`}>
+          }`}>
               <AlertDescription>{message.text}</AlertDescription>
             </Alert>
-          )}
+        )}
 
           {/* Current Subscription Info */}
-          {currentSubscription && currentSubscription.status === 'active' && (
+        {currentSubscription && currentSubscription.status === 'active' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -410,8 +410,8 @@ export default function BillingPage() {
                     <p className="text-sm text-violet-300/40">{currentSubscription.plans?.name}</p>
                   </div>
                 </div>
-                
-                {usageData && (
+
+            {usageData && (
                   <div className="space-y-3 pt-4 border-t border-white/10">
                     <div>
                       <div className="flex justify-between text-xs mb-1">
@@ -447,17 +447,17 @@ export default function BillingPage() {
                           <span className="text-violet-300/60">Procesos</span>
                           <span className="text-white/80">
                             {usageData.processes_used} / {usageData.processes_limit}
-                          </span>
-                        </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full rounded-full bg-emerald-500"
-                            style={{ 
-                              width: `${Math.min((usageData.processes_used / usageData.processes_limit) * 100, 100)}%` 
-                            }}
-                          />
-                        </div>
+                        </span>
                       </div>
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full rounded-full bg-emerald-500"
+                          style={{ 
+                              width: `${Math.min((usageData.processes_used / usageData.processes_limit) * 100, 100)}%` 
+                          }}
+                        />
+                      </div>
+                    </div>
                     )}
 
                     {usageData.transcription_limit > 0 && (
@@ -466,23 +466,23 @@ export default function BillingPage() {
                           <span className="text-violet-300/60">Transcripción</span>
                           <span className="text-white/80">
                             {(usageData.transcription_seconds_used / 3600).toFixed(1)}h / {usageData.transcription_limit}h
-                          </span>
-                        </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full rounded-full bg-pink-500"
-                            style={{ 
-                              width: `${Math.min((usageData.transcription_seconds_used / (usageData.transcription_limit * 3600)) * 100, 100)}%` 
-                            }}
-                          />
-                        </div>
+                        </span>
                       </div>
+                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full rounded-full bg-pink-500"
+                          style={{ 
+                              width: `${Math.min((usageData.transcription_seconds_used / (usageData.transcription_limit * 3600)) * 100, 100)}%` 
+                          }}
+                        />
+                      </div>
+                    </div>
                     )}
                   </div>
                 )}
               </GlassCard>
             </motion.div>
-          )}
+        )}
 
           {/* Billing Period Toggle */}
           <motion.div 
@@ -494,11 +494,11 @@ export default function BillingPage() {
             <span className={`text-sm font-light transition-colors ${!isYearly ? 'text-white' : 'text-white/40'}`}>
               Mensual
             </span>
-            <Switch
-              checked={isYearly}
-              onCheckedChange={setIsYearly}
+              <Switch
+                checked={isYearly}
+                onCheckedChange={setIsYearly}
               className="data-[state=checked]:bg-violet-600"
-            />
+              />
             <span className={`text-sm font-light transition-colors flex items-center gap-2 ${isYearly ? 'text-white' : 'text-white/40'}`}>
               Anual
               <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs font-light">
@@ -506,7 +506,7 @@ export default function BillingPage() {
               </Badge>
             </span>
           </motion.div>
-
+          
           {/* Plans Grid */}
           <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
             {/* Professional Plan */}
@@ -558,7 +558,7 @@ export default function BillingPage() {
                         <p className="text-sm text-violet-300/50 font-light">{professionalPlan.description}</p>
                       </div>
                     </div>
-
+                    
                     {/* Price */}
                     <div className="mb-6">
                       {!isYearly && professionalOffer && currentPlanId !== professionalPlan.id ? (
@@ -588,35 +588,35 @@ export default function BillingPage() {
 
                     {/* Highlights Grid */}
                     <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] mb-6">
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="w-4 h-4 text-violet-400" />
-                        <div>
+                    <div className="flex items-center gap-2">
+                      <MessageSquare className="w-4 h-4 text-violet-400" />
+                      <div>
                           <p className="text-[10px] uppercase text-white/30 tracking-wider">Chat IA</p>
                           <p className="text-sm font-medium text-white">Ilimitado</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-violet-400" />
-                        <div>
-                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Workspaces</p>
-                          <p className="text-sm font-medium text-white">Múltiples</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FolderOpen className="w-4 h-4 text-violet-400" />
-                        <div>
-                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Procesos</p>
-                          <p className="text-sm font-medium text-white">7</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Mic className="w-4 h-4 text-violet-400" />
-                        <div>
-                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Transcripción</p>
-                          <p className="text-sm font-medium text-white">5 horas</p>
-                        </div>
                       </div>
                     </div>
+                    <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-violet-400" />
+                      <div>
+                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Workspaces</p>
+                          <p className="text-sm font-medium text-white">Múltiples</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <FolderOpen className="w-4 h-4 text-violet-400" />
+                      <div>
+                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Procesos</p>
+                          <p className="text-sm font-medium text-white">7</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Mic className="w-4 h-4 text-violet-400" />
+                      <div>
+                          <p className="text-[10px] uppercase text-white/30 tracking-wider">Transcripción</p>
+                          <p className="text-sm font-medium text-white">5 horas</p>
+                      </div>
+                    </div>
+                  </div>
 
                     {/* Features List */}
                     <ul className="space-y-3 mb-8">
@@ -631,7 +631,7 @@ export default function BillingPage() {
                         <li key={i} className="flex items-start gap-3">
                           <CheckCircle className="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" />
                           <span className="text-sm text-white/70 font-light">{feature}</span>
-                        </li>
+                      </li>
                       ))}
                     </ul>
 
@@ -651,7 +651,7 @@ export default function BillingPage() {
                       ) : (
                         <>
                           <Zap className="w-4 h-4 mr-2" />
-                          {currentPlanType === 'basic' ? 'Actualizar a Profesional' :
+                          {currentPlanType === 'basic' ? 'Actualizar a Profesional' : 
                            !isYearly && professionalOffer ? 'Comenzar por $0.99 USD' : 'Elegir Plan Profesional'}
                         </>
                       )}
@@ -678,7 +678,7 @@ export default function BillingPage() {
                       </Badge>
                     </div>
                   )}
-
+                  
                   <div className="p-8 pt-10">
                     {/* Icon & Title */}
                     <div className="flex items-center gap-4 mb-6">
@@ -707,35 +707,35 @@ export default function BillingPage() {
 
                     {/* Highlights Grid */}
                     <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] mb-6">
-                      <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2">
                         <MessageSquare className="w-4 h-4 text-white/40" />
-                        <div>
+                      <div>
                           <p className="text-[10px] uppercase text-white/20 tracking-wider">Chat IA</p>
                           <p className="text-sm font-medium text-white/70">3M tokens</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-white/20" />
-                        <div>
-                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Workspace</p>
-                          <p className="text-sm font-medium text-white/70">1</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <FolderOpen className="w-4 h-4 text-white/20" />
-                        <div>
-                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Procesos</p>
-                          <p className="text-sm font-medium text-white/30">—</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Mic className="w-4 h-4 text-white/20" />
-                        <div>
-                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Transcripción</p>
-                          <p className="text-sm font-medium text-white/30">—</p>
-                        </div>
                       </div>
                     </div>
+                    <div className="flex items-center gap-2">
+                        <Building2 className="w-4 h-4 text-white/20" />
+                      <div>
+                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Workspace</p>
+                          <p className="text-sm font-medium text-white/70">1</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <FolderOpen className="w-4 h-4 text-white/20" />
+                      <div>
+                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Procesos</p>
+                          <p className="text-sm font-medium text-white/30">—</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Mic className="w-4 h-4 text-white/20" />
+                      <div>
+                          <p className="text-[10px] uppercase text-white/20 tracking-wider">Transcripción</p>
+                          <p className="text-sm font-medium text-white/30">—</p>
+                      </div>
+                    </div>
+                  </div>
 
                     {/* Features List */}
                     <ul className="space-y-3 mb-8">
@@ -756,7 +756,7 @@ export default function BillingPage() {
                           <span className={`text-sm font-light ${feature.included ? 'text-white/60' : 'text-white/30 line-through'}`}>
                             {feature.text}
                           </span>
-                        </li>
+                      </li>
                       ))}
                     </ul>
 
@@ -784,7 +784,7 @@ export default function BillingPage() {
                 </GlassCard>
               </motion.div>
             )}
-          </div>
+        </div>
 
           {/* Trust badges */}
           <motion.div 

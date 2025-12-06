@@ -178,7 +178,7 @@ export const ModelSelectorToggle = () => {
                     {!modelCanUse ? (
                       <IconLock size={18} className="text-muted-foreground" />
                     ) : (
-                      <Icon size={18} className={model.iconColor} />
+                    <Icon size={18} className={model.iconColor} />
                     )}
                   </div>
                   <div className="flex flex-col flex-1 min-w-0 text-left">
@@ -189,9 +189,9 @@ export const ModelSelectorToggle = () => {
                       )}>
                         {model.name}
                       </span>
-                      <span className="text-[11px] text-muted-foreground whitespace-nowrap">
-                        {model.description}
-                      </span>
+                    <span className="text-[11px] text-muted-foreground whitespace-nowrap">
+                      {model.description}
+                    </span>
                     </div>
                     {/* Usage info for student plan */}
                     {isStudentPlan && (

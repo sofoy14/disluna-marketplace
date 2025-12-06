@@ -168,32 +168,32 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
       hidden: boolean
       upgradeFeature?: 'processes' | 'transcriptions'
     }> = [
-      { 
-        key: 'chats', 
-        label: 'Chats', 
-        count: chats.length, 
-        icon: MessageSquare,
+    { 
+      key: 'chats', 
+      label: 'Chats', 
+      count: chats.length, 
+      icon: MessageSquare,
         locked: false,
         hidden: false
-      },
-      { 
-        key: 'collections', 
-        label: 'Procesos', 
-        count: collections.length, 
-        icon: FolderOpen,
+    },
+    { 
+      key: 'collections', 
+      label: 'Procesos', 
+      count: collections.length, 
+      icon: FolderOpen,
         locked: false, // No longer showing locked state, just hidden
         hidden: !canShowProcesses, // Hide for student plan
-        upgradeFeature: 'processes' as const
-      },
-      { 
-        key: 'transcriptions', 
-        label: 'Transcripciones', 
-        count: (transcriptions || []).length, 
-        icon: Mic,
+      upgradeFeature: 'processes' as const
+    },
+    { 
+      key: 'transcriptions', 
+      label: 'Transcripciones', 
+      count: (transcriptions || []).length, 
+      icon: Mic,
         locked: false, // No longer showing locked state, just hidden
         hidden: !canShowTranscriptions, // Hide for student plan
-        upgradeFeature: 'transcriptions' as const
-      }
+      upgradeFeature: 'transcriptions' as const
+    }
     ];
     
     return items;
@@ -287,12 +287,12 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
               </div>
               {/* WorkspaceSwitcher - Only show for plans that support multiple workspaces */}
               {canShowWorkspaceSwitcher && (
-                <motion.div 
-                  className="w-full"
-                  variants={itemVariants}
-                >
-                  <WorkspaceSwitcher showSettingsButton={false} />
-                </motion.div>
+              <motion.div 
+                className="w-full"
+                variants={itemVariants}
+              >
+                <WorkspaceSwitcher showSettingsButton={false} />
+              </motion.div>
               )}
             </div>
           </motion.div>

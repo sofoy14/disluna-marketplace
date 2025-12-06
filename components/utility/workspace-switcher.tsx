@@ -148,14 +148,14 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             {canShowWorkspaceSwitcher ? (
-              <Button
-                className="flex items-center space-x-2"
-                size="sm"
-                onClick={handleCreateWorkspace}
-              >
-                <IconPlus />
-                <div className="ml-2">Nuevo espacio</div>
-              </Button>
+            <Button
+              className="flex items-center space-x-2"
+              size="sm"
+              onClick={handleCreateWorkspace}
+            >
+              <IconPlus />
+              <div className="ml-2">Nuevo espacio</div>
+            </Button>
             ) : (
               <WithTooltip
                 display={
