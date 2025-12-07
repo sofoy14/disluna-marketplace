@@ -251,7 +251,7 @@ export default function TranscriptionsPage() {
             
             <div className="flex flex-col gap-3">
               <Link
-                href="/billing"
+                href="/precios"
                 className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/25"
               >
                 Actualizar a Profesional

@@ -7,7 +7,7 @@ import { isAdmin } from "@/lib/admin/check-admin"
 // Rutas que requieren suscripción activa para acceder
 const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
 
-// Rutas de autenticación que NO deben pasar por i18n (están en route group (auth))
+// Rutas de autenticación que NO deben pasar por i18n
 const AUTH_ROUTES = ['/onboarding', '/login', '/setup', '/auth/verify-email', '/auth/callback']
 
 // Verificar si billing está habilitado
@@ -16,7 +16,7 @@ const isBillingEnabled = () => process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   
-  // Skip i18n processing for auth routes - they have their own route group
+  // Skip i18n processing for auth routes
   const isAuthRoute = AUTH_ROUTES.some(route => pathname === route || pathname.startsWith(`${route}/`))
   
   if (!isAuthRoute) {
@@ -27,15 +27,16 @@ export async function middleware(request: NextRequest) {
   try {
     const { supabase, response } = createClient(request)
     
-    // Rutas públicas (con o sin prefijo de locale) - check first to avoid unnecessary auth calls
-    const publicSegments = ['login', 'auth/verify-email', 'auth/callback', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'billing', 'landing']
+    // Rutas públicas - PERMITIR ACCESO LIBRE (incluyendo /onboarding y /precios)
+    const publicSegments = ['login', 'auth/verify-email', 'auth/callback', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'precios', 'landing', 'billing/success']
     const isPublicRoute = publicSegments.some(seg => pathname === `/${seg}` || pathname.includes(`/${seg}`))
 
+    // Las rutas públicas siempre permiten acceso libre
     if (isPublicRoute) {
       return response
     }
 
-    // Use getUser() for secure authentication
+    // Verificar autenticación para rutas protegidas
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     // Redirigir a login si no hay sesión
@@ -48,6 +49,7 @@ export async function middleware(request: NextRequest) {
       if (!isAdmin(user.email)) {
         return NextResponse.redirect(new URL('/', request.url))
       }
+      return response
     }
 
     // Verificar confirmación de email
@@ -55,7 +57,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/verify-email', request.url))
     }
 
-    // Verificar onboarding/suscripción para rutas protegidas
+    // Verificar suscripción activa SOLO para rutas protegidas
     const protectedRoutes = ['/chat', '/settings']
     const isProtectedRoute = protectedRoutes.some(route => 
       request.nextUrl.pathname.includes(route)
@@ -64,53 +66,43 @@ export async function middleware(request: NextRequest) {
     if (isProtectedRoute) {
       const isUserAdmin = isAdmin(user.email)
       
-      if (!isUserAdmin) {
-        // Si billing está habilitado, verificar suscripción activa primero
-        // Si tiene suscripción activa, permitir acceso (no importa el estado de onboarding)
-        if (isBillingEnabled()) {
-          const subscriptionStatus = await checkSubscriptionInMiddleware(supabase, user.id)
-          
-          // Si tiene suscripción activa, permitir acceso
-          if (subscriptionStatus.hasAccess) {
-            // Acceso permitido, continuar
-          } else {
-            // No tiene suscripción activa - verificar si requiere suscripción para esta ruta
-            const requiresSubscription = SUBSCRIPTION_REQUIRED_ROUTES.some(route =>
-              request.nextUrl.pathname.includes(route)
-            )
+      // Admins siempre tienen acceso
+      if (isUserAdmin) {
+        return response
+      }
 
-            if (requiresSubscription) {
-              // Redirigir a billing con mensaje apropiado
-              const billingUrl = new URL('/billing', request.url)
-              if (subscriptionStatus.reason === 'expired') {
-                billingUrl.searchParams.set('alert', 'subscription_expired')
-              } else if (subscriptionStatus.reason === 'past_due') {
-                billingUrl.searchParams.set('alert', 'payment_required')
-              } else {
-                billingUrl.searchParams.set('alert', 'subscription_required')
-              }
-              return NextResponse.redirect(billingUrl)
+      // Si billing está habilitado, verificar suscripción activa
+      if (isBillingEnabled()) {
+        const subscriptionStatus = await checkSubscriptionInMiddleware(supabase, user.id)
+        
+        if (!subscriptionStatus.hasAccess) {
+          // No tiene suscripción activa - redirigir según la ruta
+          const requiresSubscription = SUBSCRIPTION_REQUIRED_ROUTES.some(route =>
+            request.nextUrl.pathname.includes(route)
+          )
+
+          if (requiresSubscription) {
+            // Para /chat, redirigir a precios
+            const preciosUrl = new URL('/precios', request.url)
+            if (subscriptionStatus.reason === 'expired') {
+              preciosUrl.searchParams.set('alert', 'subscription_expired')
+            } else if (subscriptionStatus.reason === 'past_due') {
+              preciosUrl.searchParams.set('alert', 'payment_required')
             } else {
-              // Para otras rutas protegidas, redirigir a onboarding solo si no tiene suscripción
-              return NextResponse.redirect(new URL('/onboarding', request.url))
+              preciosUrl.searchParams.set('alert', 'subscription_required')
             }
-          }
-        } else {
-          // Billing no habilitado - verificar onboarding_completed como antes
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('onboarding_completed')
-            .eq('user_id', user.id)
-            .maybeSingle()
-
-          if (!profile?.onboarding_completed) {
+            return NextResponse.redirect(preciosUrl)
+          } else {
+            // Para otras rutas protegidas, redirigir a onboarding
             return NextResponse.redirect(new URL('/onboarding', request.url))
           }
         }
+        // Si tiene suscripción activa, permitir acceso (continuar)
       }
+      // Si billing no está habilitado, permitir acceso
     }
 
-    // Redirigir al chat si está en la raíz (including locale paths like /es, /en)
+    // Redirigir al chat si está en la ruta raíz
     const isRootPath = request.nextUrl.pathname === "/" || 
                        request.nextUrl.pathname === "" ||
                        /^\/[a-z]{2}$/.test(request.nextUrl.pathname) // matches /es, /en, etc.
@@ -123,28 +115,40 @@ export async function middleware(request: NextRequest) {
         .eq("is_home", true)
         .maybeSingle()
 
+      // Si no tiene workspace y no es admin, verificar suscripción
       if (!homeWorkspace) {
-        // Sin workspace - ir a onboarding
-        return NextResponse.redirect(new URL('/onboarding', request.url))
+        if (isBillingEnabled() && !isAdmin(user.email)) {
+          const subscriptionStatus = await checkSubscriptionInMiddleware(supabase, user.id)
+          if (!subscriptionStatus.hasAccess) {
+            // Sin suscripción - redirigir a onboarding
+            return NextResponse.redirect(new URL('/onboarding', request.url))
+          }
+        }
+        // Si tiene suscripción activa o es admin, permitir acceso
+        return response
       }
 
-      // Verificar suscripción (excepto admins)
+      // Verificar suscripción activa antes de redirigir al chat (excepto admins)
       if (!isAdmin(user.email) && isBillingEnabled()) {
         const subscriptionStatus = await checkSubscriptionInMiddleware(supabase, user.id)
         
         if (!subscriptionStatus.hasAccess) {
-          // Sin suscripción - ir a onboarding para seleccionar plan
+          // Sin suscripción activa - redirigir a onboarding
           return NextResponse.redirect(new URL('/onboarding', request.url))
         }
       }
 
+      // Tiene suscripción activa o es admin - redirigir al chat
       return NextResponse.redirect(
         new URL(`/${homeWorkspace.id}/chat`, request.url)
       )
     }
 
+    // Para cualquier otra ruta, permitir acceso
     return response
   } catch (e) {
+    console.error('Middleware error:', e)
+    // En caso de error, permitir acceso para no bloquear
     return NextResponse.next({
       request: {
         headers: request.headers
@@ -198,8 +202,8 @@ async function checkSubscriptionInMiddleware(
 
   } catch (error) {
     console.error('Error checking subscription in middleware:', error)
-    // En caso de error, permitir acceso para no bloquear usuarios
-    return { hasAccess: true }
+    // En caso de error, denegar acceso para forzar verificación
+    return { hasAccess: false, reason: 'error' }
   }
 }
 

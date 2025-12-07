@@ -14,11 +14,11 @@ const supabase = createClient(
 );
 
 // Helper to get error redirect URL
-// Check referer to determine if we should redirect to billing or onboarding
+// Check referer to determine if we should redirect to precios or onboarding
 function getErrorRedirectUrl(req: NextRequest, error: string, details?: string): URL {
   const referer = req.headers.get('referer') || '';
-  const isFromBilling = referer.includes('/billing');
-  const redirectPath = isFromBilling ? '/billing' : '/onboarding';
+  const isFromPrecios = referer.includes('/precios') || referer.includes('/billing');
+  const redirectPath = isFromPrecios ? '/precios' : '/onboarding';
   
   const url = new URL(redirectPath, req.nextUrl.origin);
   url.searchParams.set('error', error);

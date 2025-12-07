@@ -1,18 +1,14 @@
-// app/[locale]/billing/page.tsx
+// app/[locale]/precios/page.tsx
 "use client";
 
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { 
   CheckCircle, 
-  Loader2,
-  ArrowRight,
-  Sparkles,
+  Loader2, 
   Star,
   Zap,
   X,
@@ -22,15 +18,11 @@ import {
   Building2,
   GraduationCap,
   Briefcase,
-  Percent,
-  Gift,
-  Shield,
-  Crown,
-  TrendingUp
+  Shield
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ShaderCanvas } from '@/components/shader-canvas';
 
 interface Plan {
@@ -66,15 +58,6 @@ interface Subscription {
   };
 }
 
-interface UsageData {
-  tokens_used: number;
-  tokens_limit: number;
-  processes_used: number;
-  processes_limit: number;
-  transcription_seconds_used: number;
-  transcription_limit: number;
-}
-
 interface SpecialOffer {
   id: string;
   name: string;
@@ -83,7 +66,7 @@ interface SpecialOffer {
   plan_id: string;
 }
 
-// Glass Card Component
+// Glass Card Component (idéntico a onboarding)
 function GlassCard({ 
   children, 
   className = "", 
@@ -117,7 +100,7 @@ function GlassCard({
   );
 }
 
-export default function BillingPage() {
+export default function PreciosPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
@@ -130,8 +113,7 @@ export default function BillingPage() {
   const [specialOffers, setSpecialOffers] = useState<SpecialOffer[]>([]);
   const [processingPlanId, setProcessingPlanId] = useState<string | null>(null);
   const [currentSubscription, setCurrentSubscription] = useState<Subscription | null>(null);
-  const [usageData, setUsageData] = useState<UsageData | null>(null);
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -162,15 +144,15 @@ export default function BillingPage() {
         // Clean URL
         const cleanUrl = window.location.pathname;
         window.history.replaceState({}, '', cleanUrl);
-    }
+      }
     }
   }, [searchParams]);
 
   useEffect(() => {
-    fetchBillingData();
+    fetchPricingData();
   }, []);
 
-  const fetchBillingData = async () => {
+  const fetchPricingData = async () => {
     try {
       setIsLoading(true);
       const supabase = createClient();
@@ -205,22 +187,9 @@ export default function BillingPage() {
             setCurrentSubscription(subscriptionData.data);
           }
         }
-
-        // Get usage data
-        try {
-          const usageResponse = await fetch(`/api/billing/usage?workspace_id=${workspace.id}`);
-          if (usageResponse.ok) {
-            const usageResult = await usageResponse.json();
-            if (usageResult.success) {
-              setUsageData(usageResult.data);
-            }
-          }
-        } catch (e) {
-          console.log('Usage data not available');
-        }
       }
     } catch (error) {
-      console.error('Error fetching billing data:', error);
+      console.error('Error fetching pricing data:', error);
     } finally {
       setIsLoading(false);
     }
@@ -236,7 +205,7 @@ export default function BillingPage() {
         setPlans(plansData.data);
       }
 
-      // Fetch special offers
+      // Fetch special offers (para verificar, pero NO los usaremos en /precios)
       const offersResponse = await fetch('/api/billing/offers');
       if (offersResponse.ok) {
         const offersData = await offersResponse.json();
@@ -253,12 +222,12 @@ export default function BillingPage() {
     setProcessingPlanId(planId);
     setMessage(null);
 
-    console.log('[Billing] handleSubscribe called with planId:', planId);
-    console.log('[Billing] Current workspaceId state:', workspaceId);
+    console.log('[Precios] handleSubscribe called with planId:', planId);
+    console.log('[Precios] Current workspaceId state:', workspaceId);
 
     // Verificar que tenemos workspace_id
     if (!workspaceId) {
-      console.error('[Billing] No workspace_id available!');
+      console.error('[Precios] No workspace_id available!');
       setMessage({ type: 'error', text: 'No se encontró tu workspace. Por favor recarga la página.' });
       setProcessingPlanId(null);
       return;
@@ -267,7 +236,7 @@ export default function BillingPage() {
     // Use direct navigation to checkout-redirect endpoint (same as onboarding)
     const checkoutUrl = `/api/billing/checkout-redirect?plan_id=${encodeURIComponent(planId)}&workspace_id=${encodeURIComponent(workspaceId)}`;
     
-    console.log('[Billing] Redirecting to checkout endpoint:', checkoutUrl);
+    console.log('[Precios] Redirecting to checkout endpoint:', checkoutUrl);
     
     // Direct navigation - browser will follow the HTTP redirect to Wompi
     window.location.href = checkoutUrl;
@@ -287,13 +256,8 @@ export default function BillingPage() {
     return plans.find(p => p.plan_type === type && p.billing_period === period);
   };
 
-  const getOfferForPlan = (planId: string) => {
-    return specialOffers.find(o => o.plan_id === planId);
-  };
-  
   const professionalPlan = getPlan('pro', currentBillingPeriod);
   const studentPlan = getPlan('basic', currentBillingPeriod);
-  const professionalOffer = professionalPlan ? getOfferForPlan(professionalPlan.id) : null;
 
   const getMonthlyEquivalent = (yearlyAmount: number) => {
     return Math.round(yearlyAmount / 12);
@@ -302,7 +266,7 @@ export default function BillingPage() {
   const currentPlanId = currentSubscription?.plan_id;
   const currentPlanType = currentSubscription?.plans?.plan_type;
 
-  // Loading state
+  // Loading state (idéntico a onboarding)
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center relative overflow-hidden">
@@ -334,13 +298,13 @@ export default function BillingPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
-      {/* Subtle ambient background */}
+      {/* Subtle ambient background (idéntico a onboarding) */}
       <div className="absolute inset-0">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-violet-900/10 rounded-full blur-[150px]" />
         <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-violet-800/5 rounded-full blur-[120px]" />
       </div>
-
-      {/* Grid pattern overlay */}
+      
+      {/* Grid pattern overlay (idéntico a onboarding) */}
       <div 
         className="absolute inset-0 opacity-[0.015]"
         style={{
@@ -355,20 +319,17 @@ export default function BillingPage() {
       <div className="relative z-10 min-h-screen flex flex-col">
         {/* Main Content */}
         <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-          {/* Orb */}
+          {/* Orb (mismo que landing/login) */}
           <motion.div 
             className="flex justify-center mb-6"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="relative">
-              <ShaderCanvas size={100} shaderId={1} />
-              <div className="absolute inset-0 bg-violet-500/20 blur-3xl rounded-full -z-10" />
-          </div>
+            <ShaderCanvas size={100} shaderId={1} />
           </motion.div>
 
-          {/* Welcome Text */}
+          {/* Welcome Text (idéntico a onboarding) */}
           <motion.div 
             className="text-center mb-10"
             initial={{ opacity: 0 }}
@@ -376,11 +337,14 @@ export default function BillingPage() {
             transition={{ delay: 0.2 }}
           >
             <h1 className="text-2xl md:text-3xl font-light text-white mb-3 tracking-tight">
-              {currentSubscription ? 'Cambiar tu Plan' : 'Elige tu Plan'}
-          </h1>
+              Bienvenido al <span className="text-violet-400 font-normal">Asistente Legal</span>
+            </h1>
             <p className="text-violet-300/50 font-light">
               Presente e inteligente
-          </p>
+            </p>
+            <p className="text-white/60 mt-4 font-light">
+              Selecciona el plan que mejor se ajuste a ti
+            </p>
           </motion.div>
 
           {message && (
@@ -388,103 +352,12 @@ export default function BillingPage() {
               message.type === 'success' 
                 ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400' 
                 : 'border-red-500/30 bg-red-500/10 text-red-400'
-          }`}>
+            }`}>
               <AlertDescription>{message.text}</AlertDescription>
             </Alert>
-        )}
+          )}
 
-          {/* Current Subscription Info */}
-        {currentSubscription && currentSubscription.status === 'active' && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full max-w-md mb-8"
-            >
-              <GlassCard className="p-6" hoverEffect={false}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                    <Crown className="w-5 h-5 text-emerald-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-medium text-white">Plan Actual</h3>
-                    <p className="text-sm text-violet-300/40">{currentSubscription.plans?.name}</p>
-                  </div>
-                </div>
-
-            {usageData && (
-                  <div className="space-y-3 pt-4 border-t border-white/10">
-                    <div>
-                      <div className="flex justify-between text-xs mb-1">
-                        <span className="text-violet-300/60">Tokens de chat</span>
-                        <span className="text-white/80">
-                          {usageData.tokens_limit === -1 
-                            ? `${(usageData.tokens_used / 1000000).toFixed(2)}M usados`
-                            : `${(usageData.tokens_used / 1000000).toFixed(2)}M / ${(usageData.tokens_limit / 1000000).toFixed(0)}M`
-                          }
-                        </span>
-                      </div>
-                      <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full ${
-                            usageData.tokens_limit === -1 
-                              ? 'bg-violet-500 w-1/4'
-                              : usageData.tokens_used / usageData.tokens_limit > 0.9 
-                                ? 'bg-red-500'
-                                : 'bg-violet-500'
-                          }`}
-                          style={{ 
-                            width: usageData.tokens_limit === -1 
-                              ? '25%' 
-                              : `${Math.min((usageData.tokens_used / usageData.tokens_limit) * 100, 100)}%` 
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    {usageData.processes_limit > 0 && (
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-violet-300/60">Procesos</span>
-                          <span className="text-white/80">
-                            {usageData.processes_used} / {usageData.processes_limit}
-                        </span>
-                      </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div 
-                            className="h-full rounded-full bg-emerald-500"
-                          style={{ 
-                              width: `${Math.min((usageData.processes_used / usageData.processes_limit) * 100, 100)}%` 
-                          }}
-                        />
-                      </div>
-                    </div>
-                    )}
-
-                    {usageData.transcription_limit > 0 && (
-                      <div>
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-violet-300/60">Transcripción</span>
-                          <span className="text-white/80">
-                            {(usageData.transcription_seconds_used / 3600).toFixed(1)}h / {usageData.transcription_limit}h
-                        </span>
-                      </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
-                        <div 
-                            className="h-full rounded-full bg-pink-500"
-                          style={{ 
-                              width: `${Math.min((usageData.transcription_seconds_used / (usageData.transcription_limit * 3600)) * 100, 100)}%` 
-                          }}
-                        />
-                      </div>
-                    </div>
-                    )}
-                  </div>
-                )}
-              </GlassCard>
-            </motion.div>
-        )}
-
-          {/* Billing Period Toggle */}
+          {/* Billing Period Toggle (idéntico a onboarding) */}
           <motion.div 
             className="flex items-center justify-center gap-4 mb-10"
             initial={{ opacity: 0 }}
@@ -494,11 +367,11 @@ export default function BillingPage() {
             <span className={`text-sm font-light transition-colors ${!isYearly ? 'text-white' : 'text-white/40'}`}>
               Mensual
             </span>
-              <Switch
-                checked={isYearly}
-                onCheckedChange={setIsYearly}
+            <Switch
+              checked={isYearly}
+              onCheckedChange={setIsYearly}
               className="data-[state=checked]:bg-violet-600"
-              />
+            />
             <span className={`text-sm font-light transition-colors flex items-center gap-2 ${isYearly ? 'text-white' : 'text-white/40'}`}>
               Anual
               <Badge className="bg-violet-500/20 text-violet-300 border-violet-500/30 text-xs font-light">
@@ -506,9 +379,9 @@ export default function BillingPage() {
               </Badge>
             </span>
           </motion.div>
-          
-          {/* Plans Grid */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
+
+          {/* Plans Grid (idéntico a onboarding) */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {/* Professional Plan */}
             {professionalPlan && (
               <motion.div
@@ -531,18 +404,7 @@ export default function BillingPage() {
                   {currentPlanId === professionalPlan.id && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                       <Badge className="bg-emerald-600 text-white px-4 py-1 text-xs font-light border-0 shadow-lg shadow-emerald-500/30">
-                        <Crown className="w-3 h-3 mr-1.5" />
                         Plan Actual
-                      </Badge>
-                    </div>
-                  )}
-
-                  {/* First Month Offer Badge */}
-                  {!isYearly && professionalOffer && currentPlanId !== professionalPlan.id && (
-                    <div className="absolute top-4 right-4 z-10">
-                      <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 px-3 py-1 text-xs font-light">
-                        <Gift className="w-3 h-3 mr-1" />
-                        1er mes $0.99 USD
                       </Badge>
                     </div>
                   )}
@@ -558,65 +420,54 @@ export default function BillingPage() {
                         <p className="text-sm text-violet-300/50 font-light">{professionalPlan.description}</p>
                       </div>
                     </div>
-                    
-                    {/* Price */}
+
+                    {/* Price - SIN DESCUENTOS en /precios */}
                     <div className="mb-6">
-                      {!isYearly && professionalOffer && currentPlanId !== professionalPlan.id ? (
-                        <div>
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-4xl font-light text-white">$3.960</span>
-                            <span className="text-lg text-white/30 line-through font-light">${formatPrice(professionalPlan.amount_in_cents)}</span>
-                          </div>
-                          <p className="text-sm text-emerald-400/80 font-light mt-1">COP primer mes</p>
-                          <p className="text-xs text-white/30 font-light">Luego ${formatPrice(professionalPlan.amount_in_cents)} COP/mes</p>
+                      <div>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-4xl font-light text-white">${formatPrice(professionalPlan.amount_in_cents)}</span>
+                          <span className="text-white/40 font-light">COP</span>
                         </div>
-                      ) : (
-                        <div>
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-4xl font-light text-white">${formatPrice(professionalPlan.amount_in_cents)}</span>
-                            <span className="text-white/40 font-light">COP</span>
-                          </div>
-                          <p className="text-sm text-white/40 font-light">/ {isYearly ? 'año' : 'mes'}</p>
-                          {isYearly && (
-                            <p className="text-xs text-violet-400/80 font-light mt-1">
-                              Equivale a ${formatPrice(getMonthlyEquivalent(professionalPlan.amount_in_cents))} COP/mes
-                            </p>
-                          )}
-                        </div>
-                      )}
+                        <p className="text-sm text-white/40 font-light">/ {isYearly ? 'año' : 'mes'}</p>
+                        {isYearly && (
+                          <p className="text-xs text-violet-400/80 font-light mt-1">
+                            Equivale a ${formatPrice(getMonthlyEquivalent(professionalPlan.amount_in_cents))} COP/mes
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     {/* Highlights Grid */}
                     <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] mb-6">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="w-4 h-4 text-violet-400" />
-                      <div>
+                      <div className="flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-violet-400" />
+                        <div>
                           <p className="text-[10px] uppercase text-white/30 tracking-wider">Chat IA</p>
                           <p className="text-sm font-medium text-white">Ilimitado</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <Building2 className="w-4 h-4 text-violet-400" />
-                      <div>
+                        <div>
                           <p className="text-[10px] uppercase text-white/30 tracking-wider">Workspaces</p>
                           <p className="text-sm font-medium text-white">Múltiples</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <FolderOpen className="w-4 h-4 text-violet-400" />
-                      <div>
+                        <div>
                           <p className="text-[10px] uppercase text-white/30 tracking-wider">Procesos</p>
                           <p className="text-sm font-medium text-white">7</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <Mic className="w-4 h-4 text-violet-400" />
-                      <div>
+                        <div>
                           <p className="text-[10px] uppercase text-white/30 tracking-wider">Transcripción</p>
                           <p className="text-sm font-medium text-white">5 horas</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
                     {/* Features List */}
                     <ul className="space-y-3 mb-8">
@@ -631,7 +482,7 @@ export default function BillingPage() {
                         <li key={i} className="flex items-start gap-3">
                           <CheckCircle className="w-4 h-4 text-violet-400 flex-shrink-0 mt-0.5" />
                           <span className="text-sm text-white/70 font-light">{feature}</span>
-                      </li>
+                        </li>
                       ))}
                     </ul>
 
@@ -651,8 +502,7 @@ export default function BillingPage() {
                       ) : (
                         <>
                           <Zap className="w-4 h-4 mr-2" />
-                          {currentPlanType === 'basic' ? 'Actualizar a Profesional' : 
-                           !isYearly && professionalOffer ? 'Comenzar por $0.99 USD' : 'Elegir Plan Profesional'}
+                          {currentPlanType === 'basic' ? 'Actualizar a Profesional' : 'Elegir Plan Profesional'}
                         </>
                       )}
                     </Button>
@@ -673,12 +523,11 @@ export default function BillingPage() {
                   {currentPlanId === studentPlan.id && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
                       <Badge className="bg-emerald-600 text-white px-4 py-1 text-xs font-light border-0 shadow-lg shadow-emerald-500/30">
-                        <Crown className="w-3 h-3 mr-1.5" />
                         Plan Actual
                       </Badge>
                     </div>
                   )}
-                  
+
                   <div className="p-8 pt-10">
                     {/* Icon & Title */}
                     <div className="flex items-center gap-4 mb-6">
@@ -707,35 +556,35 @@ export default function BillingPage() {
 
                     {/* Highlights Grid */}
                     <div className="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] mb-6">
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <MessageSquare className="w-4 h-4 text-white/40" />
-                      <div>
+                        <div>
                           <p className="text-[10px] uppercase text-white/20 tracking-wider">Chat IA</p>
                           <p className="text-sm font-medium text-white/70">3M tokens</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <Building2 className="w-4 h-4 text-white/20" />
-                      <div>
+                        <div>
                           <p className="text-[10px] uppercase text-white/20 tracking-wider">Workspace</p>
                           <p className="text-sm font-medium text-white/70">1</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <FolderOpen className="w-4 h-4 text-white/20" />
-                      <div>
+                        <div>
                           <p className="text-[10px] uppercase text-white/20 tracking-wider">Procesos</p>
                           <p className="text-sm font-medium text-white/30">—</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <Mic className="w-4 h-4 text-white/20" />
-                      <div>
+                        <div>
                           <p className="text-[10px] uppercase text-white/20 tracking-wider">Transcripción</p>
                           <p className="text-sm font-medium text-white/30">—</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
                     {/* Features List */}
                     <ul className="space-y-3 mb-8">
@@ -756,7 +605,7 @@ export default function BillingPage() {
                           <span className={`text-sm font-light ${feature.included ? 'text-white/60' : 'text-white/30 line-through'}`}>
                             {feature.text}
                           </span>
-                      </li>
+                        </li>
                       ))}
                     </ul>
 
@@ -784,9 +633,9 @@ export default function BillingPage() {
                 </GlassCard>
               </motion.div>
             )}
-        </div>
+          </div>
 
-          {/* Trust badges */}
+          {/* Trust badges (idéntico a onboarding) */}
           <motion.div 
             className="flex flex-wrap justify-center gap-6 text-xs text-white/30 mt-10"
             initial={{ opacity: 0 }}

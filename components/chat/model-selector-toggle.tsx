@@ -230,7 +230,7 @@ export const ModelSelectorToggle = () => {
             {isStudentPlan && (
               <div className="px-2.5 py-2 mt-1 border-t border-border/30">
                 <a 
-                  href="/billing" 
+                  href="/precios" 
                   className="text-[11px] text-amber-400 hover:text-amber-300 transition-colors flex items-center gap-1"
                   onClick={() => setIsOpen(false)}
                 >

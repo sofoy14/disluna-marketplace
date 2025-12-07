@@ -93,7 +93,7 @@ export function ModernProfileCard() {
         </div>
         {planConfig.showUpgrade ? (
           <Link 
-            href="/billing" 
+            href="/precios" 
             className="flex items-center gap-1 truncate text-xs text-amber-400 hover:text-amber-300 transition-colors"
             onClick={(e) => e.stopPropagation()}
           >

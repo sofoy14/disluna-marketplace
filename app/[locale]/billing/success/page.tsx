@@ -276,14 +276,14 @@ export default function BillingSuccessPage() {
               
               {data?.status === 'failed' && (
                 <Button asChild>
-                  <Link href="/billing">
+                  <Link href="/precios">
                     Intentar Nuevamente
                   </Link>
                 </Button>
               )}
               
               <Button asChild variant="outline">
-                <Link href="/billing">
+                <Link href="/precios">
                   <Home className="w-4 h-4 mr-2" />
                   Ver Mi Suscripción
                 </Link>

@@ -157,7 +157,7 @@ export async function requireActiveSubscription(userId: string): Promise<{
 
   return {
     allowed: false,
-    redirectTo: '/billing',
+    redirectTo: '/precios',
     message: status.message
   };
 }

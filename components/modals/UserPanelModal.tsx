@@ -625,7 +625,7 @@ export function UserPanelModal({ children }: UserPanelModalProps) {
                 {activeSection === 'contextos' && (
                   <div className="space-y-6">
                     {/* Gestión de Suscripción */}
-                    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/billing')}>
+                    <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => router.push('/precios')}>
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
                           <div className="text-green-500">

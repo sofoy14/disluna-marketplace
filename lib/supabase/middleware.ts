@@ -34,6 +34,24 @@ export const createClient = (request: NextRequest) => {
           cookiesToSet.forEach(({ name, value, options }) => {
             response.cookies.set(name, value, options)
           })
+        },
+        removeAll(cookiesToRemove) {
+          // Remove cookies from request
+          cookiesToRemove.forEach(({ name, options }) => {
+            request.cookies.set(name, '')
+          })
+          
+          // Create new response
+          response = NextResponse.next({
+            request: {
+              headers: request.headers
+            }
+          })
+          
+          // Remove cookies from response
+          cookiesToRemove.forEach(({ name, options }) => {
+            response.cookies.set(name, '', { ...options, maxAge: 0 })
+          })
         }
       }
     }

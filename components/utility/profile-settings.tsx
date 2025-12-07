@@ -252,7 +252,7 @@ export const ProfileSettings: FC<ProfileSettingsProps> = ({ trigger }) => {
                 className="border-blue-500 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
                 onClick={() => {
                   setIsOpen(false)
-                  router.push('/billing')
+                  router.push('/precios')
                 }}
               >
                 <IconCreditCard className="mr-1" size={16} />
