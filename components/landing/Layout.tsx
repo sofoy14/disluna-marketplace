@@ -15,7 +15,7 @@ export default function Layout({ children }: LayoutProps) {
       <Navbar />
       <main className="flex-1" data-landing>{children}</main>
       <Footer />
-      <WhatsAppButton phoneNumber="+57 323 2341127" />
+      <WhatsAppButton phoneNumber="+57 3208098523" />
     </div>
   )
 }
