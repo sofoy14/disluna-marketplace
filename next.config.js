@@ -1,4 +1,6 @@
 // Cargar variables de entorno desde .env explícitamente
+// Cargar primero .env.local si existe, luego .env
+require('dotenv').config({ path: '.env.local' })
 require('dotenv').config({ path: '.env' })
 
 const withPWA = require("next-pwa")({

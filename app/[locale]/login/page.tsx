@@ -16,10 +16,13 @@ export const metadata: Metadata = {
 }
 
 export default async function Login({
+  params,
   searchParams
 }: {
+  params: { locale: string }
   searchParams: { message: string }
 }) {
+  const { locale } = params
   const cookieStore = cookies()
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -64,7 +67,7 @@ export default async function Login({
 
     if (!homeWorkspace) {
       // No workspace - redirect to onboarding
-      return redirect('/onboarding')
+      return redirect(`/${locale}/onboarding`)
     }
 
     // Check for active subscription
@@ -77,7 +80,7 @@ export default async function Login({
 
     if (!subscription) {
       // No active subscription - redirect to onboarding for plan selection
-      return redirect('/onboarding')
+      return redirect(`/${locale}/onboarding`)
     }
 
     // CRITICAL: Ensure profile has onboarding_completed = true for middleware check
@@ -92,7 +95,7 @@ export default async function Login({
       .eq('user_id', user.id)
 
     // User has workspace and subscription - go to chat
-    return redirect(`/${homeWorkspace.id}/chat`)
+    return redirect(`/${locale}/${homeWorkspace.id}/chat`)
   }
 
   const signIn = async (formData: FormData) => {
@@ -112,10 +115,15 @@ export default async function Login({
 
     if (error) {
       console.log('[Login] Auth error:', error.message)
-      return redirect(`/login?message=${error.message}`)
+      // Get locale from cookie or default to 'es'
+      const localeCookie = cookieStore.get('NEXT_LOCALE')?.value || 'es'
+      return redirect(`/${localeCookie}/login?message=${error.message}`)
     }
 
     console.log('[Login] Auth successful for user:', data.user.id)
+
+    // Get locale from cookie or default to 'es'
+    const localeCookie = cookieStore.get('NEXT_LOCALE')?.value || 'es'
 
     // Get workspace
     const { data: homeWorkspace, error: workspaceError } = await supabase
@@ -130,7 +138,7 @@ export default async function Login({
     if (!homeWorkspace) {
       // No workspace - go to onboarding
       console.log('[Login] No workspace, redirecting to /onboarding')
-      return redirect('/onboarding')
+      return redirect(`/${localeCookie}/onboarding`)
     }
 
     // Check for active subscription
@@ -146,7 +154,7 @@ export default async function Login({
     if (!subscription) {
       // No subscription - go to onboarding for plan selection
       console.log('[Login] No subscription, redirecting to /onboarding')
-      return redirect('/onboarding')
+      return redirect(`/${localeCookie}/onboarding`)
     }
 
     // CRITICAL: Ensure profile has onboarding_completed = true for middleware check
@@ -161,7 +169,7 @@ export default async function Login({
 
     // All good - go to chat
     console.log('[Login] All good, redirecting to chat:', homeWorkspace.id)
-    return redirect(`/${homeWorkspace.id}/chat`)
+    return redirect(`/${localeCookie}/${homeWorkspace.id}/chat`)
   }
 
   const getEnvVarOrEdgeConfigValue = async (name: string) => {
