@@ -1,7 +1,41 @@
 // Cargar variables de entorno desde .env explícitamente
 // Cargar primero .env.local si existe, luego .env
-require('dotenv').config({ path: '.env.local' })
-require('dotenv').config({ path: '.env' })
+const fs = require('fs');
+const path = require('path');
+const logPath = path.join(__dirname, '.cursor', 'debug.log');
+
+// #region agent log
+try {
+  const hasEnvLocal = fs.existsSync('.env.local');
+  const hasEnv = fs.existsSync('.env');
+  const urlBefore = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKeyBefore = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  require('dotenv').config({ path: '.env.local' });
+  require('dotenv').config({ path: '.env' });
+  const urlAfter = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKeyAfter = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const logEntry = JSON.stringify({
+    location: 'next.config.js:dotenv-load',
+    message: 'Environment variable loading',
+    data: {
+      hasEnvLocal,
+      hasEnv,
+      urlBefore: !!urlBefore,
+      urlAfter: !!urlAfter,
+      anonKeyBefore: !!anonKeyBefore,
+      anonKeyAfter: !!anonKeyAfter,
+      nodeEnv: process.env.NODE_ENV
+    },
+    timestamp: Date.now(),
+    sessionId: 'debug-session',
+    runId: 'run1',
+    hypothesisId: 'B'
+  }) + '\n';
+  fs.appendFileSync(logPath, logEntry);
+} catch (e) {
+  // Ignore if log file doesn't exist yet
+}
+// #endregion
 
 const withPWA = require("next-pwa")({
   dest: "public",
@@ -39,7 +73,10 @@ module.exports = withPWA({
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Exponer variables de entorno al cliente desde .env
+  // Exponer variables de entorno al cliente
+  // IMPORTANTE: En producción (Dockploy/Vercel/etc.), estas variables deben estar
+  // configuradas como variables de entorno del sistema ANTES del build.
+  // NEXT_PUBLIC_* variables se incrustan en el bundle en tiempo de build.
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,

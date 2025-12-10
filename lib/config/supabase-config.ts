@@ -96,9 +96,29 @@ export function createSupabaseServerClient() {
   }
 }
 
-// Instancias singleton
-export const supabaseBrowser = createSupabaseBrowserClient()
-export const supabaseServer = createSupabaseServerClient()
+// Instancias singleton - Usar lazy initialization para evitar errores si las variables no están disponibles
+let _supabaseBrowser: ReturnType<typeof createSupabaseBrowserClient> | null = null
+let _supabaseServer: ReturnType<typeof createSupabaseServerClient> | null = null
+
+export const supabaseBrowser = new Proxy({} as ReturnType<typeof createSupabaseBrowserClient>, {
+  get(target, prop) {
+    if (!_supabaseBrowser) {
+      _supabaseBrowser = createSupabaseBrowserClient()
+    }
+    const value = (_supabaseBrowser as any)[prop]
+    return typeof value === 'function' ? value.bind(_supabaseBrowser) : value
+  }
+})
+
+export const supabaseServer = new Proxy({} as ReturnType<typeof createSupabaseServerClient>, {
+  get(target, prop) {
+    if (!_supabaseServer) {
+      _supabaseServer = createSupabaseServerClient()
+    }
+    const value = (_supabaseServer as any)[prop]
+    return typeof value === 'function' ? value.bind(_supabaseServer) : value
+  }
+})
 
 // Función de verificación de conexión
 export async function verifySupabaseConnection() {

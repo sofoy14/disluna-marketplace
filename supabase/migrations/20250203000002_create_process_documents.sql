@@ -50,3 +50,5 @@ COMMENT ON COLUMN process_documents.status IS 'Estado de indexación del documen
 
 
 
+
+

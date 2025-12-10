@@ -44,3 +44,5 @@ COMMENT ON COLUMN process_document_sections.metadata IS 'Metadatos del chunk: n√
 
 
 
+
+
