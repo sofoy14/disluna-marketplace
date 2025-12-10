@@ -1,3 +1,6 @@
+// Cargar variables de entorno desde .env explícitamente
+require('dotenv').config({ path: '.env' })
+
 const withPWA = require("next-pwa")({
   dest: "public",
   disable: process.env.NODE_ENV === 'development',
@@ -33,6 +36,16 @@ module.exports = withPWA({
   },
   typescript: {
     ignoreBuildErrors: true,
+  },
+  // Exponer variables de entorno al cliente desde .env
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_BILLING_ENABLED: process.env.NEXT_PUBLIC_BILLING_ENABLED,
+    NEXT_PUBLIC_WOMPI_PUBLIC_KEY: process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY,
+    NEXT_PUBLIC_WOMPI_BASE_URL: process.env.NEXT_PUBLIC_WOMPI_BASE_URL,
   },
   images: {
     remotePatterns: [
