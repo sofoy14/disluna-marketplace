@@ -35,6 +35,15 @@ async function getAuthenticatedUser(req: NextRequest) {
           } catch {
             // Called from API route - may not be able to set cookies
           }
+        },
+        removeAll(cookiesToRemove) {
+          try {
+            cookiesToRemove.forEach(({ name, options }) => {
+              cookieStore.set(name, '', { ...options, maxAge: 0 });
+            });
+          } catch {
+            // Called from API route - may not be able to remove cookies
+          }
         }
       }
     }
@@ -110,6 +119,15 @@ export async function POST(req: NextRequest) {
               });
             } catch {
               // Called from API route - may not be able to set cookies
+            }
+          },
+          removeAll(cookiesToRemove) {
+            try {
+              cookiesToRemove.forEach(({ name, options }) => {
+                cookieStore.set(name, '', { ...options, maxAge: 0 });
+              });
+            } catch {
+              // Called from API route - may not be able to remove cookies
             }
           }
         }
