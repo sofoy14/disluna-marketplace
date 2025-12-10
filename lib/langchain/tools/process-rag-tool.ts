@@ -175,10 +175,3 @@ export function createProcessRagTool(processId: string): StructuredTool {
   })
 }
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// EXPORTACIONES
-// ═══════════════════════════════════════════════════════════════════════════════
-
-// Exportar función factory y herramienta base (sin process_id)
-export { createProcessRagTool }
-
