@@ -13,10 +13,10 @@ import { ReactNode } from "react"
 import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] })
-const APP_NAME = "Asistente Legal Inteligente"
-const APP_DEFAULT_TITLE = "Asistente Legal Inteligente"
-const APP_TITLE_TEMPLATE = "%s - ALI"
-const APP_DESCRIPTION = "ALI - Inteligencia artificial con todas las de la ley"
+const APP_NAME = "ALI"
+const APP_DEFAULT_TITLE = "Inteligencia artificial con todas las de la ley"
+const APP_TITLE_TEMPLATE = "%s | ALI"
+const APP_DESCRIPTION = "Tu asistente legal inteligente potenciado con IA. Consultas legales, redacción de documentos y seguimiento de procesos judiciales en Colombia."
 
 interface RootLayoutProps {
   children: ReactNode
@@ -34,11 +34,20 @@ export const metadata: Metadata = {
   },
   description: APP_DESCRIPTION,
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/favicon-ali.svg", type: "image/svg+xml" },
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/icon-192x192.png", sizes: "192x192" },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black",
     title: "ALI"
-    // startUpImage: [],
   },
   formatDetection: {
     telephone: false
@@ -53,7 +62,7 @@ export const metadata: Metadata = {
     description: APP_DESCRIPTION,
     images: [
       {
-        url: "/ali-og-image.svg",
+        url: "/ali-og-image.png",
         width: 1200,
         height: 630,
         alt: "ALI - Inteligencia artificial con todas las de la ley"
@@ -67,7 +76,7 @@ export const metadata: Metadata = {
       template: APP_TITLE_TEMPLATE
     },
     description: APP_DESCRIPTION,
-    images: ["/ali-og-image.svg"]
+    images: ["/ali-og-image.png"]
   }
 }
 
@@ -81,9 +90,6 @@ export default async function RootLayout({
   children,
   params: { locale }
 }: RootLayoutProps) {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/1d59dc66-8b75-476c-bd1d-2b247f5ce997',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/layout.tsx:RootLayout',message:'Server-side env check',data:{hasUrl:!!process.env.NEXT_PUBLIC_SUPABASE_URL,hasAnonKey:!!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,urlLength:process.env.NEXT_PUBLIC_SUPABASE_URL?.length||0,anonKeyLength:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length||0,nodeEnv:process.env.NODE_ENV},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
   const cookieStore = cookies()
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

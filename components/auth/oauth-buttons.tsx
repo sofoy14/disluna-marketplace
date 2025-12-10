@@ -11,49 +11,20 @@ export function OAuthButtons() {
   const handleOAuth = async (provider: 'google' | 'facebook') => {
     try {
       setLoading(provider)
-      
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/1d59dc66-8b75-476c-bd1d-2b247f5ce997',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/auth/oauth-buttons.tsx:handleOAuth',message:'OAuth button clicked',data:{provider,hasSupabaseUrl:!!process.env.NEXT_PUBLIC_SUPABASE_URL,hasSupabaseAnonKey:!!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,urlLength:process.env.NEXT_PUBLIC_SUPABASE_URL?.length||0,anonKeyLength:process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-      // #endregion
-      
-      // Check if environment variables are available
-      if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-        console.error('[OAuth] Missing Supabase environment variables:', {
-          hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-          hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        })
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/1d59dc66-8b75-476c-bd1d-2b247f5ce997',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/auth/oauth-buttons.tsx:handleOAuth',message:'Missing env vars error',data:{provider,hasUrl:!!process.env.NEXT_PUBLIC_SUPABASE_URL,hasAnonKey:!!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-        // #endregion
-        setLoading(null)
-        router.push(`/login?message=${encodeURIComponent('Error de configuración. Las variables de entorno no están disponibles.')}`)
-        return
-      }
-      
+
       const supabase = createClient()
-      
-      // Get app URL from environment or use production default
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || 
-                    process.env.NEXT_PUBLIC_SITE_URL || 
+
+      // Get app URL from environment or use window.location.origin
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL ||
+                    process.env.NEXT_PUBLIC_SITE_URL ||
                     (typeof window !== 'undefined' ? window.location.origin : 'https://aliado.pro')
-      
-      console.log(`[OAuth] Starting ${provider} OAuth flow, redirectTo:`, `${appUrl}/auth/callback`)
-      
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/1d59dc66-8b75-476c-bd1d-2b247f5ce997',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/auth/oauth-buttons.tsx:handleOAuth',message:'Calling signInWithOAuth',data:{provider,appUrl,redirectTo:`${appUrl}/auth/callback`},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-      // #endregion
-      
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${appUrl}/auth/callback`,
-          // PKCE is enabled by default in Supabase, which stores code_verifier in browser cookies
         }
       })
-
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/1d59dc66-8b75-476c-bd1d-2b247f5ce997',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/auth/oauth-buttons.tsx:handleOAuth',message:'signInWithOAuth response',data:{provider,hasError:!!error,hasData:!!data,hasUrl:!!data?.url,errorMessage:error?.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-      // #endregion
 
       if (error) {
         console.error(`[OAuth] ${provider} error:`, error)
@@ -62,24 +33,14 @@ export function OAuthButtons() {
       }
 
       if (data.url) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/1d59dc66-8b75-476c-bd1d-2b247f5ce997',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/auth/oauth-buttons.tsx:handleOAuth',message:'Redirecting to OAuth provider',data:{provider,oauthUrl:data.url.substring(0,50)+'...'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-        // #endregion
-        // Redirect to OAuth provider - this will preserve cookies in the browser
         window.location.href = data.url
       } else {
         console.error(`[OAuth] ${provider} - No URL returned from signInWithOAuth`)
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/1d59dc66-8b75-476c-bd1d-2b247f5ce997',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/auth/oauth-buttons.tsx:handleOAuth',message:'No URL returned from OAuth',data:{provider,dataKeys:data?Object.keys(data):[]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-        // #endregion
         setLoading(null)
         router.push(`/login?message=${encodeURIComponent('Error al iniciar sesión. Por favor intenta nuevamente.')}`)
       }
     } catch (error) {
       console.error(`[OAuth] ${provider} exception:`, error)
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/1d59dc66-8b75-476c-bd1d-2b247f5ce997',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/auth/oauth-buttons.tsx:handleOAuth',message:'Exception in OAuth flow',data:{provider,errorMessage:error instanceof Error?error.message:'unknown',errorStack:error instanceof Error?error.stack:'no stack'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-      // #endregion
       setLoading(null)
       router.push(`/login?message=${encodeURIComponent('Error al iniciar sesión. Por favor intenta nuevamente.')}`)
     }
