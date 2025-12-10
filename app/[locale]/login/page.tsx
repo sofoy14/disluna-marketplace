@@ -2,14 +2,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { createClient } from "@/lib/supabase/server"
-import { Database } from "@/supabase/types"
-import { createServerClient } from "@supabase/ssr"
 import { get } from "@vercel/edge-config"
 import { Metadata } from "next"
 import { ShaderCanvas } from "@/components/shader-canvas"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { OAuthButtons } from "@/components/auth/oauth-buttons"
+
+// Force dynamic rendering - required for Supabase auth
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: "Iniciar Sesión"
@@ -24,35 +25,8 @@ export default async function Login({
 }) {
   const { locale } = params
   const cookieStore = cookies()
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options)
-            })
-          } catch {
-            // Called from Server Component - ignore
-          }
-        },
-        removeAll(cookiesToRemove) {
-          try {
-            cookiesToRemove.forEach(({ name, options }) => {
-              cookieStore.set(name, '', { ...options, maxAge: 0 })
-            })
-          } catch {
-            // Called from Server Component - ignore
-          }
-        }
-      }
-    }
-  )
+  const supabase = createClient(cookieStore)
+
   // Use getUser() for secure authentication
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 

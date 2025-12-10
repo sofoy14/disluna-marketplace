@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     const { supabase, response } = createClient(request)
-    
+
     // Rutas públicas - PERMITIR ACCESO LIBRE (incluyendo /onboarding y /precios)
     const publicSegments = ['login', 'auth/verify-email', 'auth/callback', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'precios', 'landing', 'billing/success']
     const isPublicRoute = publicSegments.some(seg => pathname === `/${seg}` || pathname.includes(`/${seg}`))
@@ -34,6 +34,11 @@ export async function middleware(request: NextRequest) {
     // Las rutas públicas siempre permiten acceso libre
     if (isPublicRoute) {
       return response
+    }
+
+    // If Supabase is not configured, redirect to login
+    if (!supabase) {
+      return NextResponse.redirect(new URL('/login', request.url))
     }
 
     // Verificar autenticación para rutas protegidas

@@ -3,6 +3,9 @@ import { cookies } from "next/headers"
 import { redirect, notFound } from "next/navigation"
 import i18nConfig from "@/i18nConfig"
 
+// Force dynamic rendering - required for Supabase auth
+export const dynamic = 'force-dynamic'
+
 // Valid locales from i18n config
 const VALID_LOCALES = i18nConfig.locales as string[]
 

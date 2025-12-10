@@ -9,10 +9,18 @@ export const createClient = (request: NextRequest) => {
     }
   })
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  // During build, return a minimal response if env vars are not available
+  if (!url || !anonKey) {
+    return {
+      supabase: null as any,
+      response
+    }
+  }
+
+  const supabase = createServerClient(url, anonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll()
