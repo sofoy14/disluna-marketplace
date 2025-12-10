@@ -41,6 +41,19 @@ export async function GET(request: Request) {
 
   const cookieStore = cookies()
   
+  // Log available cookies for debugging PKCE issues
+  const allCookies = cookieStore.getAll()
+  const pkceCookies = allCookies.filter(cookie => 
+    cookie.name.includes('code-verifier') || 
+    cookie.name.includes('pkce') ||
+    cookie.name.includes('sb-')
+  )
+  console.log('[Auth Callback] Available cookies:', {
+    total: allCookies.length,
+    pkceRelated: pkceCookies.length,
+    cookieNames: allCookies.map(c => c.name).slice(0, 10) // Limit to first 10 for logging
+  })
+  
   // Create Supabase client with proper cookie handling using getAll/setAll/removeAll
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -58,6 +71,7 @@ export async function GET(request: Request) {
           } catch (error) {
             // The `setAll` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing user sessions.
+            console.warn('[Auth Callback] Error setting cookies:', error)
           }
         },
         removeAll(cookiesToRemove) {
@@ -68,6 +82,7 @@ export async function GET(request: Request) {
           } catch (error) {
             // The `removeAll` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing user sessions.
+            console.warn('[Auth Callback] Error removing cookies:', error)
           }
         }
       }
@@ -76,33 +91,54 @@ export async function GET(request: Request) {
 
   if (code) {
     // Exchange the code for a session
+    // Note: PKCE code verifier should be in cookies from the initial OAuth request
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (error) {
-      console.error('[Auth Callback] Error exchanging code:', error)
+      console.error('[Auth Callback] Error exchanging code:', {
+        message: error.message,
+        code: error.code,
+        status: error.status
+      })
       
-      // PKCE error typically happens when code verifier is missing (different device login)
-      // Try to check if user already has an active session
-      if (error.message?.includes('code verifier') || error.code === 'validation_failed') {
-        console.log('[Auth Callback] PKCE error - attempting to get existing session')
+      // PKCE error typically happens when code verifier is missing
+      // This can occur if:
+      // 1. Cookies were cleared between OAuth start and callback
+      // 2. User is on a different device/browser
+      // 3. Cookies are not being read correctly
+      if (error.message?.includes('code verifier') || 
+          error.message?.includes('code_verifier') ||
+          error.code === 'validation_failed' ||
+          error.status === 400) {
+        console.log('[Auth Callback] PKCE error detected - checking for existing session')
         
-        // Try to get existing session from cookies
-        const { data: sessionData } = await supabase.auth.getSession()
+        // Try to get existing session from cookies (user might already be logged in)
+        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+        
+        if (sessionError) {
+          console.error('[Auth Callback] Error getting session:', sessionError)
+        }
         
         if (sessionData?.session?.user) {
           console.log('[Auth Callback] Found existing session for:', sessionData.session.user.email)
+          // User already has a valid session, proceed with that
           return await handleAuthenticatedUser(supabase, sessionData.session.user, next, appUrl)
         }
         
-        // No existing session, redirect to login with helpful message
-        console.log('[Auth Callback] No session found, redirecting to login')
+        // No existing session - PKCE flow failed
+        // This usually means the code verifier cookie was lost
+        // Redirect to login with a helpful message
+        console.log('[Auth Callback] No session found - PKCE flow incomplete')
         return NextResponse.redirect(
-          new URL('/login?message=Tu sesión expiró. Por favor inicia sesión nuevamente.', appUrl)
+          new URL('/login?message=La sesión expiró durante la autenticación. Por favor intenta iniciar sesión nuevamente.', appUrl)
         )
       }
       
       // Generic auth error
-      return NextResponse.redirect(new URL('/login?message=Error de autenticación. Por favor intenta nuevamente.', appUrl))
+      console.error('[Auth Callback] Unexpected auth error:', error)
+      return NextResponse.redirect(
+        new URL(`/login?message=${encodeURIComponent(error.message || 'Error de autenticación. Por favor intenta nuevamente.')}`, appUrl)
+      )
     }
 
     if (!data.user) {
@@ -110,7 +146,7 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL('/login?message=No se pudo obtener usuario', appUrl))
     }
 
-    console.log('[Auth Callback] User authenticated:', data.user.email)
+    console.log('[Auth Callback] User authenticated successfully:', data.user.email)
     return await handleAuthenticatedUser(supabase, data.user, next, appUrl)
   }
 
