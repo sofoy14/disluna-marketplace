@@ -54,10 +54,48 @@ export async function GET(request: Request) {
     cookieNames: allCookies.map(c => c.name).slice(0, 10) // Limit to first 10 for logging
   })
   
+  // #region agent log
+  const fs = require('fs');
+  const path = require('path');
+  try {
+    const logPath = path.join(process.cwd(), '.cursor', 'debug.log');
+    const logEntry = JSON.stringify({
+      location: 'app/auth/callback/route.ts:GET',
+      message: 'Creating Supabase client for callback',
+      data: {
+        hasCode: !!code,
+        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasSupabaseAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        urlLength: process.env.NEXT_PUBLIC_SUPABASE_URL?.length || 0,
+        anonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0,
+        appUrl,
+        nodeEnv: process.env.NODE_ENV
+      },
+      timestamp: Date.now(),
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'G'
+    }) + '\n';
+    fs.appendFileSync(logPath, logEntry);
+  } catch (e) {
+    // Ignore if log file doesn't exist
+  }
+  // #endregion
+
   // Create Supabase client with proper cookie handling using getAll/setAll/removeAll
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.error('[Auth Callback] Missing Supabase environment variables:', {
+      hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+      hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    })
+    return NextResponse.redirect(
+      new URL('/login?message=Error de configuración del servidor. Por favor contacta al administrador.', appUrl)
+    )
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
