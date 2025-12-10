@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
-const GOOGLE_GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY
-const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY
-const GROQ_API_KEY = process.env.GROQ_API_KEY
-const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY
-const AZURE_OPENAI_API_KEY = process.env.AZURE_OPENAI_API_KEY
-const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET() {
+  // Read environment variables inside the handler
+  const OPENAI_API_KEY = process.env.OPENAI_API_KEY
+  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY
+  const GOOGLE_GEMINI_API_KEY = process.env.GOOGLE_GEMINI_API_KEY
+  const MISTRAL_API_KEY = process.env.MISTRAL_API_KEY
+  const GROQ_API_KEY = process.env.GROQ_API_KEY
+  const PERPLEXITY_API_KEY = process.env.PERPLEXITY_API_KEY
+  const AZURE_OPENAI_API_KEY = process.env.AZURE_OPENAI_API_KEY
+  const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
   try {
     const isUsingEnvKeyMap: Record<string, boolean> = {
       openai: !!OPENAI_API_KEY,

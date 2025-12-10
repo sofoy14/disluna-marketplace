@@ -2,6 +2,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export type BillingPeriod = 'monthly' | 'yearly';
 export type PlanType = 'basic' | 'pro' | 'enterprise';
 

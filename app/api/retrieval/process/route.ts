@@ -15,11 +15,14 @@ import { CHUNK_SIZE, CHUNK_OVERLAP } from "@/lib/retrieval/processing"
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { FileItemChunk } from "@/types"
-import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
 
 // Dynamic import function for local embeddings (only loaded when needed)
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 async function getLocalEmbedding(text: string) {
   const { generateLocalEmbedding } = await import("@/lib/generate-local-embedding")
   return generateLocalEmbedding(text)
@@ -27,10 +30,8 @@ async function getLocalEmbedding(text: string) {
 
 export async function POST(req: Request) {
   try {
-    const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    const { getSupabaseServer } = await import("@/lib/supabase/server-client");
+    const supabaseAdmin = getSupabaseServer();
 
     const profile = await getServerProfile()
 

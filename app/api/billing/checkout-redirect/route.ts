@@ -7,6 +7,10 @@ import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig, getWompiConfigStatus } from '@/lib/wompi/config';
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // Helper to get error redirect URL
 // Check referer to determine if we should redirect to precios or onboarding
 function getErrorRedirectUrl(req: NextRequest, error: string, details?: string): URL {

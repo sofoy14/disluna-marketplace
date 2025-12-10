@@ -7,16 +7,8 @@
 
 import { StructuredTool } from "@langchain/core/tools"
 import { z } from "zod"
-import { createClient } from "@supabase/supabase-js"
 import { Database } from "@/supabase/types"
 import OpenAI from "openai"
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// CONFIGURACIÓN
-// ═══════════════════════════════════════════════════════════════════════════════
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // HERRAMIENTA DE BÚSQUEDA EN PROCESOS
@@ -64,8 +56,9 @@ export function createProcessRagTool(processId: string): StructuredTool {
         // Validar match_count
         const validMatchCount = Math.min(Math.max(1, match_count), 20)
 
-        // Inicializar cliente Supabase
-        const supabase = createClient<Database>(supabaseUrl, supabaseServiceKey)
+        // Inicializar cliente Supabase (lazy initialization)
+        const { getSupabaseServer } = await import("@/lib/supabase/server-client");
+        const supabase = getSupabaseServer();
 
         // Verificar que el proceso existe y está listo
         const { data: process, error: processError } = await supabase

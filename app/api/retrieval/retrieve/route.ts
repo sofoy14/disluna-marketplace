@@ -3,8 +3,11 @@
 import { generateOpenRouterEmbedding } from "@/lib/generate-openrouter-embedding"
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
-import { createClient } from "@supabase/supabase-js"
 import OpenAI from "openai"
+
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // Dynamic import function for local embeddings (only loaded when needed)
 async function getLocalEmbedding(text: string) {
@@ -31,10 +34,8 @@ export async function POST(request: Request) {
   const uniqueFileIds = [...new Set(fileIds)]
 
   try {
-    const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    )
+    const { getSupabaseServer } = await import("@/lib/supabase/server-client");
+    const supabaseAdmin = getSupabaseServer();
 
     const profile = await getServerProfile()
 

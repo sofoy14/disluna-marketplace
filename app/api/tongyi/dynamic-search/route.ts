@@ -2,11 +2,26 @@ import { NextRequest, NextResponse } from "next/server"
 import OpenAI from "openai"
 import { runDynamicSearchWorkflow } from "@/lib/tools/dynamic-search-orchestrator"
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
+  // Initialize OpenAI client inside the handler
+  const apiKey = process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json(
+      { error: "OPENAI_API_KEY or OPENROUTER_API_KEY environment variable is required" },
+      { status: 500 }
+    );
+  }
+
+  const openai = new OpenAI({
+    apiKey,
+    baseURL: process.env.OPENROUTER_API_KEY 
+      ? "https://openrouter.ai/api/v1"
+      : undefined
+  });
   try {
     const { query, model = "gpt-4o", options = {} } = await request.json()
 

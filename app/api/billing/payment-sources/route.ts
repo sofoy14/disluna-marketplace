@@ -8,6 +8,10 @@ import {
 } from '@/db/payment-sources';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);

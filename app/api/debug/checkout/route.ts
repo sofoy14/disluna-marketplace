@@ -4,6 +4,10 @@ import { getPlanById } from '@/db/plans';
 import { getWorkspaceById } from '@/db/workspaces';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(req: NextRequest) {
   const supabase = getSupabaseServer();
   try {

@@ -7,6 +7,10 @@ import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig } from '@/lib/wompi/config';
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 // Calcular fecha de fin del período
 function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date()): Date {
   const endDate = new Date(startDate);
