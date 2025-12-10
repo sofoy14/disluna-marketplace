@@ -53,7 +53,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // Verificar confirmación de email
-    if (!user.email_confirmed_at) {
+    // Para usuarios OAuth (Google/Facebook), el email ya está verificado por el proveedor
+    // Solo verificar email_confirmed_at para usuarios que se registraron con email/password
+    const isOAuthUser = user.app_metadata?.provider && user.app_metadata.provider !== 'email'
+    if (!isOAuthUser && !user.email_confirmed_at) {
       return NextResponse.redirect(new URL('/auth/verify-email', request.url))
     }
 

@@ -143,31 +143,52 @@ async function handleAuthenticatedUser(
   }
 
   // Check for active subscription
-  const { data: subscription } = await supabase
+  const { data: subscription, error: subError } = await supabase
     .from('subscriptions')
     .select('id, status')
     .eq('user_id', user.id)
     .in('status', ['active', 'trialing'])
     .maybeSingle()
 
+  if (subError) {
+    console.error('[Auth Callback] Error checking subscription:', subError)
+  }
+
   // Get home workspace
-  const { data: homeWorkspace } = await supabase
+  const { data: homeWorkspace, error: workspaceError } = await supabase
     .from('workspaces')
     .select('id')
     .eq('user_id', user.id)
     .eq('is_home', true)
     .maybeSingle()
 
+  if (workspaceError) {
+    console.error('[Auth Callback] Error checking workspace:', workspaceError)
+  }
+
   // Update profile for OAuth users - CRITICAL: set onboarding_completed for middleware check
-  await supabase
+  // Also ensure email_confirmed_at is set for OAuth users
+  const profileUpdate = {
+    email_verified: true,
+    onboarding_completed: subscription ? true : false,
+    onboarding_step: subscription ? 'completed' : 'plan_selection',
+    has_onboarded: true
+  }
+  
+  const { error: profileError } = await supabase
     .from('profiles')
-    .update({ 
-      email_verified: true,
-      onboarding_completed: subscription ? true : false,
-      onboarding_step: subscription ? 'completed' : 'plan_selection',
-      has_onboarded: true
-    })
+    .update(profileUpdate)
     .eq('user_id', user.id)
+  
+  if (profileError) {
+    console.error('[Auth Callback] Error updating profile:', profileError)
+  }
+  
+  // For OAuth users, ensure email_confirmed_at is set in auth.users
+  // This is handled automatically by Supabase, but we log it for debugging
+  if (!user.email_confirmed_at && user.app_metadata?.provider && user.app_metadata.provider !== 'email') {
+    console.log('[Auth Callback] OAuth user without email_confirmed_at - this should be set by Supabase')
+  }
 
   // Redirect based on subscription status
   if (subscription && homeWorkspace) {
