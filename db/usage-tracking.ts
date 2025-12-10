@@ -1,7 +1,7 @@
 // db/usage-tracking.ts
 // Tracking de consumo de recursos por usuario
 
-import { supabase } from "@/lib/supabase/robust-client"
+import { getSupabaseServer } from "@/lib/supabase/server-client"
 
 export interface UsageTracking {
   id: string;
@@ -35,6 +35,7 @@ export interface UsageLimits {
  * Get current usage for a user
  */
 export const getCurrentUsage = async (userId: string): Promise<UsageTracking | null> => {
+  const supabase = getSupabaseServer();
   const { data, error } = await supabase
     .rpc('get_or_create_current_usage', { p_user_id: userId })
 
@@ -54,6 +55,7 @@ export const incrementTokenUsage = async (
   outputTokens: number = 0,
   inputTokens: number = 0
 ): Promise<UsageTracking | null> => {
+  const supabase = getSupabaseServer();
   const { data, error } = await supabase
     .rpc('increment_token_usage', {
       p_user_id: userId,
@@ -73,6 +75,7 @@ export const incrementTokenUsage = async (
  * Check if user is within their plan limits
  */
 export const checkUsageLimits = async (userId: string): Promise<UsageLimits | null> => {
+  const supabase = getSupabaseServer();
   const { data, error } = await supabase
     .rpc('check_usage_limits', { p_user_id: userId });
 
@@ -89,6 +92,7 @@ export const checkUsageLimits = async (userId: string): Promise<UsageLimits | nu
  * Increment process count for a user
  */
 export const incrementProcessCount = async (userId: string): Promise<boolean> => {
+  const supabase = getSupabaseServer();
   const usage = await getCurrentUsage(userId);
   if (!usage) return false;
 
@@ -110,6 +114,7 @@ export const incrementTranscriptionUsage = async (
   userId: string,
   durationSeconds: number
 ): Promise<boolean> => {
+  const supabase = getSupabaseServer();
   const usage = await getCurrentUsage(userId);
   if (!usage) return false;
 
@@ -131,6 +136,7 @@ export const getUsageHistory = async (
   userId: string,
   limit: number = 12
 ): Promise<UsageTracking[]> => {
+  const supabase = getSupabaseServer();
   const { data, error } = await supabase
     .from('usage_tracking')
     .select('*')

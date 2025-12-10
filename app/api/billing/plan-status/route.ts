@@ -6,6 +6,10 @@ import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { getUserPlanStatus, getFeatureAccessMap } from '@/lib/billing/plan-access';
 import { formatUsageDisplay } from '@/db/usage-tracking';
 
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET(req: NextRequest) {
   const supabase = getSupabaseServer();
   try {

@@ -1,14 +1,9 @@
 // lib/billing/plan-access.ts
 // Utilities for checking plan-based feature access
 
-import { createClient } from '@supabase/supabase-js';
 import { Plan, PlanType } from '@/db/plans';
 import { checkUsageLimits, UsageLimits } from '@/db/usage-tracking';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 
 export interface PlanFeatures {
   planType: PlanType;
@@ -80,6 +75,7 @@ const PRO_FEATURES: PlanFeatures = {
  */
 export const getPlanFeatures = async (planId: string): Promise<PlanFeatures> => {
   try {
+    const supabase = getSupabaseServer();
     const { data: plan, error } = await supabase
       .from('plans')
       .select('*')
@@ -113,6 +109,7 @@ export const getPlanFeatures = async (planId: string): Promise<PlanFeatures> => 
  */
 export const getUserPlanStatus = async (userId: string): Promise<UserPlanStatus> => {
   try {
+    const supabase = getSupabaseServer();
     // Get active subscription with plan
     const { data: subscription, error: subError } = await supabase
       .from('subscriptions')
@@ -285,6 +282,7 @@ export const canCreateWorkspace = async (userId: string): Promise<{ allowed: boo
   
   if (!status.features.hasMultipleWorkspaces) {
     // Check if user already has a workspace
+    const supabase = getSupabaseServer();
     const { count } = await supabase
       .from('workspaces')
       .select('*', { count: 'exact', head: true })
@@ -346,6 +344,7 @@ export const canUseModel = async (
   modelId: string
 ): Promise<{ allowed: boolean; reason?: string; usage?: ModelUsageStatus }> => {
   try {
+    const supabase = getSupabaseServer();
     const { data, error } = await supabase.rpc('get_model_usage_status', {
       p_user_id: userId,
       p_model_id: modelId
@@ -388,6 +387,7 @@ export const incrementModelUsage = async (
   modelId: string
 ): Promise<{ success: boolean; error?: string; usage?: ModelUsageStatus }> => {
   try {
+    const supabase = getSupabaseServer();
     const { data, error } = await supabase.rpc('increment_model_usage', {
       p_user_id: userId,
       p_model_id: modelId
@@ -439,6 +439,7 @@ export const incrementModelUsage = async (
  */
 export const getAllModelUsage = async (userId: string): Promise<ModelUsageStatus[]> => {
   try {
+    const supabase = getSupabaseServer();
     const { data, error } = await supabase.rpc('get_all_model_usage', {
       p_user_id: userId
     });

@@ -2,12 +2,7 @@
 // React hook for checking user plan access and features
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { supabase } from '@/lib/supabase/robust-client';
 
 export type PlanType = 'basic' | 'pro' | 'enterprise';
 

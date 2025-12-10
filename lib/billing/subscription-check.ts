@@ -1,12 +1,7 @@
 // lib/billing/subscription-check.ts
 // Utilidades para verificar el estado de suscripción de usuarios
 
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 
 export interface SubscriptionStatus {
   hasAccess: boolean;
@@ -25,6 +20,7 @@ export interface SubscriptionStatus {
  */
 export async function checkSubscriptionAccess(userId: string): Promise<SubscriptionStatus> {
   try {
+    const supabase = getSupabaseServer();
     // Consultar suscripción activa del usuario
     const { data: subscription, error } = await supabase
       .from('subscriptions')
