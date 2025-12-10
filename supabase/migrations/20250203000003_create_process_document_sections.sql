@@ -43,3 +43,4 @@ COMMENT ON COLUMN process_document_sections.openai_embedding IS 'Embedding vecto
 COMMENT ON COLUMN process_document_sections.metadata IS 'Metadatos del chunk: número de página, posición, tipo de sección, etc.';
 
 
+

@@ -24,3 +24,4 @@ COMMENT ON COLUMN processes.last_indexed_at IS
   'Última vez que se completó la indexación de todos los documentos del proceso';
 
 
+

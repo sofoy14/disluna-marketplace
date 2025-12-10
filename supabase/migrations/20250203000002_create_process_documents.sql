@@ -49,3 +49,4 @@ COMMENT ON TABLE process_documents IS 'Documentos subidos a procesos legales con
 COMMENT ON COLUMN process_documents.status IS 'Estado de indexación del documento: pending, processing, indexed, error';
 
 
+

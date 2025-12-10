@@ -36,6 +36,15 @@ export default async function Login({
           } catch {
             // Called from Server Component - ignore
           }
+        },
+        removeAll(cookiesToRemove) {
+          try {
+            cookiesToRemove.forEach(({ name, options }) => {
+              cookieStore.set(name, '', { ...options, maxAge: 0 })
+            })
+          } catch {
+            // Called from Server Component - ignore
+          }
         }
       }
     }

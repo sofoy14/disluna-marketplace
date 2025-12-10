@@ -41,7 +41,7 @@ export async function GET(request: Request) {
 
   const cookieStore = cookies()
   
-  // Create Supabase client with proper cookie handling using getAll/setAll
+  // Create Supabase client with proper cookie handling using getAll/setAll/removeAll
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -57,6 +57,16 @@ export async function GET(request: Request) {
             })
           } catch (error) {
             // The `setAll` method was called from a Server Component.
+            // This can be ignored if you have middleware refreshing user sessions.
+          }
+        },
+        removeAll(cookiesToRemove) {
+          try {
+            cookiesToRemove.forEach(({ name, options }) => {
+              cookieStore.set(name, '', { ...options, maxAge: 0 })
+            })
+          } catch (error) {
+            // The `removeAll` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing user sessions.
           }
         }

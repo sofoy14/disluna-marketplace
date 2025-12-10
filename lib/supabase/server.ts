@@ -20,6 +20,17 @@ export const createClient = (cookieStore: ReturnType<typeof cookies>) => {
           // This can be ignored if you have middleware refreshing
           // user sessions.
         }
+      },
+      removeAll(cookiesToRemove) {
+        try {
+          cookiesToRemove.forEach(({ name, options }) => {
+            cookieStore.set(name, '', { ...options, maxAge: 0 })
+          })
+        } catch (error) {
+          // The `removeAll` method was called from a Server Component.
+          // This can be ignored if you have middleware refreshing
+          // user sessions.
+        }
       }
     }
   })
