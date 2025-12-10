@@ -32,6 +32,9 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
     if (pathname?.includes("/transcriptions")) {
       return "transcriptions"
     }
+    if (pathname?.includes("/processes")) {
+      return "collections" // Procesos se mapean a collections en el contexto
+    }
     if (pathname?.includes("/chat")) {
       return "chats"
     }
@@ -49,6 +52,8 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
   useEffect(() => {
     if (pathname?.includes("/transcriptions")) {
       setContentType("transcriptions")
+    } else if (pathname?.includes("/processes")) {
+      setContentType("collections") // Procesos se mapean a collections
     } else if (pathname?.includes("/chat")) {
       setContentType("chats")
     } else {
@@ -164,6 +169,10 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
               } else if (type === "chats") {
                 const basePath = pathname.split('/').slice(0, -1).join('/')
                 router.push(`${basePath}/chat`)
+              } else if (type === "collections") {
+                // Para procesos (mapeados como collections), navegar a /processes
+                const basePath = pathname.split('/').slice(0, -1).join('/')
+                router.push(`${basePath}/processes`)
               } else {
                 router.replace(`${pathname}?tab=${tabValue}`)
               }
@@ -187,8 +196,12 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
                   // Para chats, navegar a /chat en lugar de usar query params
                   const basePath = pathname.split('/').slice(0, -1).join('/')
                   router.push(`${basePath}/chat`)
+                } else if (type === "collections") {
+                  // Para procesos (mapeados como collections), navegar a /processes
+                  const basePath = pathname.split('/').slice(0, -1).join('/')
+                  router.push(`${basePath}/processes`)
                 } else {
-                  // Para otros tipos (collections, etc.), usar query params
+                  // Para otros tipos, usar query params
                   const currentPath = pathname?.split('/').slice(0, -1).join('/') || pathname
                   router.replace(`${currentPath}?tab=${type}`)
                 }

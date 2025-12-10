@@ -26,15 +26,9 @@ import { NextRequest, NextResponse } from "next/server"
 import { HumanMessage, AIMessage, BaseMessage } from "@langchain/core/messages"
 import { LegalAgent, getModelConfig, RESEARCH_MODELS } from "@/lib/langchain"
 import { BaseCallbackHandler } from "@langchain/core/callbacks/base"
-import { createClient } from '@supabase/supabase-js'
+import { getSupabaseServer } from '@/lib/supabase/server-client'
 import { canContinueChat, getUserPlanStatus, canUseModel, incrementModelUsage } from '@/lib/billing/plan-access'
 import { incrementTokenUsage } from '@/db/usage-tracking'
-
-// Supabase client for auth and billing
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
 
 export const runtime = "nodejs"
 export const maxDuration = 180 // 3 minutos para investigación completa
@@ -240,6 +234,7 @@ export async function POST(request: NextRequest) {
       const authHeader = request.headers.get('Authorization')
       if (authHeader?.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1]
+        const supabase = getSupabaseServer()
         const { data: { user } } = await supabase.auth.getUser(token)
         effectiveUserId = user?.id
       }

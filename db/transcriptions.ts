@@ -87,6 +87,47 @@ export async function getTranscriptionsByWorkspace(workspaceId: string): Promise
   return data || []
 }
 
+export async function linkTranscriptionToProcess(
+  transcriptionId: string,
+  processId: string,
+  userId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("process_transcriptions")
+    .upsert({
+      transcription_id: transcriptionId,
+      process_id: processId,
+      user_id: userId,
+      updated_at: new Date().toISOString()
+    })
+
+  if (error) throw error
+}
+
+export async function unlinkTranscriptionFromProcess(
+  transcriptionId: string,
+  processId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("process_transcriptions")
+    .delete()
+    .eq("transcription_id", transcriptionId)
+    .eq("process_id", processId)
+
+  if (error) throw error
+}
+
+export async function getProcessTranscriptions(processId: string): Promise<Transcription[]> {
+  const { data, error } = await supabase
+    .from("process_transcriptions")
+    .select("transcription_id, transcriptions(*)")
+    .eq("process_id", processId)
+
+  if (error) throw error
+  
+  return (data || []).map((item: any) => item.transcriptions).filter(Boolean)
+}
+
 
 
 

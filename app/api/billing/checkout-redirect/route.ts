@@ -3,15 +3,9 @@
 // Usa HTTP redirect en lugar de JSON response para evitar problemas de fetch
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig, getWompiConfigStatus } from '@/lib/wompi/config';
-
-// Client for server-side API routes
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 // Helper to get error redirect URL
 // Check referer to determine if we should redirect to precios or onboarding
@@ -40,6 +34,7 @@ function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date())
 
 // Get applicable special offer for a plan (first month discount)
 async function getSpecialOffer(planId: string, workspaceId: string) {
+  const supabase = getSupabaseServer();
   console.log('[Checkout Redirect] Checking special offer for plan:', planId, 'workspace:', workspaceId);
   
   // Check if user has had any previous subscriptions (active, canceled, or expired)
@@ -93,6 +88,7 @@ async function getSpecialOffer(planId: string, workspaceId: string) {
 }
 
 export async function GET(req: NextRequest) {
+  const supabase = getSupabaseServer();
   console.log('[Checkout Redirect] ========== START ==========');
   
   // Get base URL for redirects

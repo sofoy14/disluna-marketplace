@@ -3,15 +3,9 @@
 // Crea subscription + invoice + genera datos de checkout ANTES de enviar a Wompi
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig } from '@/lib/wompi/config';
-
-// Cliente de servidor para API routes
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 // Calcular fecha de fin del período
 function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date()): Date {
@@ -26,6 +20,7 @@ function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date())
 
 // Get applicable special offer for a plan
 async function getSpecialOffer(planId: string, workspaceId: string) {
+  const supabase = getSupabaseServer();
   // Check if user has had any previous subscriptions
   const { count: prevSubCount } = await supabase
     .from('subscriptions')
@@ -53,6 +48,7 @@ async function getSpecialOffer(planId: string, workspaceId: string) {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = getSupabaseServer();
   console.log('[Subscribe API] ========== START ==========');
   
   try {

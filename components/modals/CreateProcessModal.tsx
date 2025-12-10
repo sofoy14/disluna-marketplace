@@ -1,7 +1,9 @@
 // components/modals/CreateProcessModal.tsx
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { useParams } from 'next/navigation';
+import { ALIContext } from '@/context/context';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -107,6 +109,9 @@ interface CreateProcessModalProps {
 }
 
 export function CreateProcessModal({ children, onProcessCreated }: CreateProcessModalProps) {
+  const { selectedWorkspace } = useContext(ALIContext);
+  const params = useParams();
+  const workspaceIdFromUrl = params.workspaceid as string | undefined;
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<ProcessTemplate | null>(null);
   const [processName, setProcessName] = useState('');
@@ -172,6 +177,23 @@ export function CreateProcessModal({ children, onProcessCreated }: CreateProcess
       formData.append('description', processDescription || '');
       formData.append('context', processContext);
       
+      // Agregar workspace_id del workspace actual
+      // Prioridad: selectedWorkspace del contexto > workspaceId de la URL
+      const workspaceId = selectedWorkspace?.id || workspaceIdFromUrl;
+      
+      if (workspaceId) {
+        formData.append('workspace_id', workspaceId);
+        console.log('📌 Creating process with workspace_id:', workspaceId);
+        console.log('📌 Workspace source:', selectedWorkspace?.id ? 'context' : 'URL');
+        console.log('📌 Selected workspace name:', selectedWorkspace?.name || 'N/A');
+      } else {
+        console.error('❌ No workspace_id found in context or URL!');
+        console.error('Context workspace:', selectedWorkspace);
+        console.error('URL workspace:', workspaceIdFromUrl);
+        alert('Error: No se pudo determinar el workspace actual. Por favor, recarga la página.');
+        throw new Error('No workspace_id available');
+      }
+      
       // Agregar archivos al FormData
       selectedFiles.forEach((file, index) => {
         formData.append(`file_${index}`, file);
@@ -189,15 +211,52 @@ export function CreateProcessModal({ children, onProcessCreated }: CreateProcess
         throw new Error(data.error || 'Error al crear el proceso');
       }
 
-      console.log('Proceso creado exitosamente:', data);
+      console.log('✅ Proceso creado exitosamente:', data);
+      console.log('📌 Proceso creado en workspace:', data.process?.workspace_id);
+      console.log('📌 Workspace actual (contexto):', selectedWorkspace?.id);
+      console.log('📌 Workspace actual (URL):', workspaceIdFromUrl);
       
-      onProcessCreated?.(data.process);
+      // Cerrar el modal primero
       setIsOpen(false);
       
-      // Forzar recarga de la página para actualizar el sidebar después de 500ms
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
+      // Reset form
+      setSelectedTemplate(null);
+      setProcessName('');
+      setProcessDescription('');
+      setProcessContext('');
+      setSelectedFiles([]);
+      
+      // Llamar callback si existe
+      onProcessCreated?.(data.process);
+      
+      // Verificar si el proceso se creó en el workspace actual
+      const currentWorkspaceId = selectedWorkspace?.id || workspaceIdFromUrl;
+      const createdInCurrentWorkspace = data.process?.workspace_id === currentWorkspaceId;
+      
+      if (createdInCurrentWorkspace) {
+        // Si se creó en el workspace actual, intentar recargar solo los procesos
+        console.log('✅ Proceso creado en workspace actual, recargando procesos...');
+        
+        // Intentar usar la función de recarga si está disponible
+        if (typeof window !== 'undefined' && (window as any).reloadProcesses) {
+          setTimeout(() => {
+            (window as any).reloadProcesses();
+          }, 300);
+        } else {
+          // Fallback: recargar toda la página
+          setTimeout(() => {
+            window.location.reload();
+          }, 300);
+        }
+      } else {
+        // Si se creó en otro workspace, mostrar mensaje
+        console.warn('⚠️ Proceso creado en workspace diferente:', {
+          creadoEn: data.process?.workspace_id,
+          workspaceActual: currentWorkspaceId
+        });
+        alert(`Proceso creado exitosamente en otro workspace. Por favor, cambia al workspace "${data.process?.workspace_id}" para verlo.`);
+        // No recargar si se creó en otro workspace
+      }
       
       // onProcessCreated?.(data.process);
       // setIsOpen(false);

@@ -8,6 +8,10 @@ import {
   processPdf,
   processTxt
 } from "@/lib/retrieval/processing"
+import mammoth from "mammoth"
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter"
+import { encode } from "gpt-tokenizer"
+import { CHUNK_SIZE, CHUNK_OVERLAP } from "@/lib/retrieval/processing"
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { FileItemChunk } from "@/types"
@@ -119,6 +123,25 @@ export async function POST(req: Request) {
         break
       case "txt":
         chunks = await processTxt(blob)
+        break
+      case "docx":
+      case "doc":
+        // Process DOCX using mammoth
+        const arrayBuffer = await blob.arrayBuffer()
+        const buffer = Buffer.from(arrayBuffer)
+        const result = await mammoth.extractRawText({ buffer })
+        const textContent = result.value
+        
+        // Use the same chunking approach as other text files
+        const splitter = new RecursiveCharacterTextSplitter({
+          chunkSize: CHUNK_SIZE,
+          chunkOverlap: CHUNK_OVERLAP
+        })
+        const splitDocs = await splitter.createDocuments([textContent])
+        chunks = splitDocs.map(doc => ({
+          content: doc.pageContent,
+          tokens: encode(doc.pageContent).length
+        }))
         break
       default:
         return new NextResponse("Unsupported file type", {

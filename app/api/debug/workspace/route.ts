@@ -1,14 +1,10 @@
 // app/api/debug/workspace/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getWorkspaceById } from '@/db/workspaces';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 
 export async function GET(req: NextRequest) {
+  const supabase = getSupabaseServer();
   try {
     const url = new URL(req.url);
     const workspaceId = url.searchParams.get('workspace_id');

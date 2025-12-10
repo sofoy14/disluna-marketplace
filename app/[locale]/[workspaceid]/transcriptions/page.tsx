@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useContext } from "react"
 import { toast } from "sonner"
 import { Icon } from "@/components/ui/icon"
 import { ShaderCanvas } from "@/components/shader-canvas"
@@ -8,6 +8,7 @@ import { useParams, useRouter } from "next/navigation"
 import { useProfilePlan } from "@/lib/hooks/use-profile-plan"
 import { Crown, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { ALIContext } from "@/context/context"
 
 interface Transcription {
   id: string
@@ -26,6 +27,7 @@ export default function TranscriptionsPage() {
   const params = useParams()
   const router = useRouter()
   const workspaceId = params.workspaceid as string
+  const { transcriptions: contextTranscriptions, setTranscriptions } = useContext(ALIContext)
   
   // Plan access control - simplified using profile
   const { 
@@ -34,7 +36,7 @@ export default function TranscriptionsPage() {
     hasActivePlan
   } = useProfilePlan()
 
-  const [transcriptions, setTranscriptions] = useState<Transcription[]>([])
+  const [transcriptions, setLocalTranscriptions] = useState<Transcription[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -42,7 +44,12 @@ export default function TranscriptionsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    fetchTranscriptions()
+    // Use context transcriptions if available, otherwise fetch
+    if (contextTranscriptions && contextTranscriptions.length > 0) {
+      setLocalTranscriptions(contextTranscriptions as any)
+    } else {
+      fetchTranscriptions()
+    }
     
     // Cargar shader guardado
     if (typeof window !== 'undefined') {
@@ -73,7 +80,10 @@ export default function TranscriptionsPage() {
       }
 
       const data = await response.json()
-      setTranscriptions(data.transcriptions || [])
+      const fetchedTranscriptions = data.transcriptions || []
+      setLocalTranscriptions(fetchedTranscriptions)
+      // Update context as well
+      setTranscriptions(fetchedTranscriptions as any)
     } catch (error) {
       console.error("Error fetching transcriptions:", error)
       toast.error("Error al cargar transcripciones")
@@ -125,10 +135,37 @@ export default function TranscriptionsPage() {
         })
       }
       
+      const transcriptionId = data.transcription?.id
+      
       // Recargar lista después de un breve delay
       setTimeout(() => {
         fetchTranscriptions()
-      }, 2000)
+      }, 3000)
+      
+      // Poll for completion if we have a transcription ID
+      if (transcriptionId) {
+        const pollInterval = setInterval(async () => {
+          const response = await fetch("/api/transcriptions")
+          if (response.ok) {
+            const pollData = await response.json()
+            const updated = pollData.transcriptions || []
+            setLocalTranscriptions(updated)
+            setTranscriptions(updated as any)
+            
+            const transcription = updated.find((t: Transcription) => t.id === transcriptionId)
+            if (transcription && transcription.status === "completed") {
+              clearInterval(pollInterval)
+              toast.success("Transcripción completada")
+            } else if (transcription && transcription.status === "failed") {
+              clearInterval(pollInterval)
+              toast.error("Error en la transcripción")
+            }
+          }
+        }, 2000)
+        
+        // Stop polling after 5 minutes
+        setTimeout(() => clearInterval(pollInterval), 300000)
+      }
 
     } catch (error: any) {
       console.error("Error uploading audio:", error)

@@ -137,12 +137,23 @@ export const createFile = async (
   })
 
   if (!response.ok) {
-    const jsonText = await response.text()
-    const json = JSON.parse(jsonText)
+    const responseText = await response.text()
+    let errorMessage = "Error desconocido al procesar el archivo"
+    
+    try {
+      // Try to parse as JSON
+      const json = JSON.parse(responseText)
+      errorMessage = json.message || json.error || errorMessage
+    } catch (e) {
+      // If it's not JSON (e.g., HTML error page), use the status text
+      errorMessage = `Error ${response.status}: ${response.statusText}`
+      console.error("Response was not JSON:", responseText.substring(0, 200))
+    }
+    
     console.error(
-      `Error processing file:${createdFile.id}, status:${response.status}, response:${json.message}`
+      `Error processing file:${createdFile.id}, status:${response.status}, response:${errorMessage}`
     )
-    toast.error("Failed to process file. Reason:" + json.message, {
+    toast.error("Failed to process file. Reason: " + errorMessage, {
       duration: 10000
     })
     await deleteFile(createdFile.id)
@@ -187,26 +198,35 @@ export const createDocXFile = async (
     file_path: filePath
   })
 
-  const response = await fetch("/api/retrieval/process/docx", {
+  // Use the general process endpoint with FormData (same as other file types)
+  // The endpoint will download the file from storage and process it
+  const formData = new FormData()
+  formData.append("file_id", createdFile.id)
+  formData.append("embeddingsProvider", embeddingsProvider)
+
+  const response = await fetch("/api/retrieval/process", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      text: text,
-      fileId: createdFile.id,
-      embeddingsProvider,
-      fileExtension: "docx"
-    })
+    body: formData
   })
 
   if (!response.ok) {
-    const jsonText = await response.text()
-    const json = JSON.parse(jsonText)
+    const responseText = await response.text()
+    let errorMessage = "Error desconocido al procesar el archivo"
+    
+    try {
+      // Try to parse as JSON
+      const json = JSON.parse(responseText)
+      errorMessage = json.message || json.error || errorMessage
+    } catch (e) {
+      // If it's not JSON (e.g., HTML error page), use the status text
+      errorMessage = `Error ${response.status}: ${response.statusText}`
+      console.error("Response was not JSON:", responseText.substring(0, 200))
+    }
+    
     console.error(
-      `Error processing file:${createdFile.id}, status:${response.status}, response:${json.message}`
+      `Error processing file:${createdFile.id}, status:${response.status}, response:${errorMessage}`
     )
-    toast.error("Failed to process file. Reason:" + json.message, {
+    toast.error("Failed to process file. Reason: " + errorMessage, {
       duration: 10000
     })
     await deleteFile(createdFile.id)

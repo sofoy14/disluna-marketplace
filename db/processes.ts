@@ -18,52 +18,78 @@ export const getProcessById = async (processId: string) => {
 export const getProcessWorkspacesByWorkspaceId = async (
   workspaceId: string
 ) => {
-  console.log('getProcessWorkspacesByWorkspaceId called with workspaceId:', workspaceId)
+  console.log('🔍 getProcessWorkspacesByWorkspaceId called with workspaceId:', workspaceId)
   
-  // Obtener los procesos directamente usando el workspace_id
-  const { data: processes, error } = await supabase
-    .from("processes")
-    .select("*")
-    .eq("workspace_id", workspaceId)
-
-  console.log('Direct query results:', { processes, error })
-
-  if (error) {
-    console.error("Error fetching processes by workspace_id:", error)
-    // Si falla, intentar obtener procesos a través de process_workspaces
-    const { data: processWorkspaces, error: pwError } = await supabase
-      .from("process_workspaces")
-      .select(`
-        process_id,
-        processes (*)
-      `)
+  try {
+    // Verificar autenticación primero
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      console.error('❌ Auth error in getProcessWorkspacesByWorkspaceId:', authError)
+      throw new Error('Usuario no autenticado')
+    }
+    
+    console.log('✅ User authenticated:', user.id)
+    
+    // Obtener los procesos directamente usando el workspace_id
+    const { data: processes, error } = await supabase
+      .from("processes")
+      .select("*")
       .eq("workspace_id", workspaceId)
+      .order("created_at", { ascending: false })
 
-    console.log('Fallback query results:', { processWorkspaces, pwError })
+    console.log('📊 Direct query results:', { 
+      processesCount: processes?.length || 0, 
+      error: error?.message,
+      processes: processes?.map(p => ({ id: p.id, name: p.name, indexing_status: p.indexing_status }))
+    })
 
-    if (pwError) {
-      throw new Error(pwError.message)
+    if (error) {
+      console.error("❌ Error fetching processes by workspace_id:", error)
+      console.error("Error details:", JSON.stringify(error, null, 2))
+      
+      // Si falla, intentar obtener procesos a través de process_workspaces
+      const { data: processWorkspaces, error: pwError } = await supabase
+        .from("process_workspaces")
+        .select(`
+          process_id,
+          processes (*)
+        `)
+        .eq("workspace_id", workspaceId)
+
+      console.log('🔄 Fallback query results:', { 
+        processWorkspacesCount: processWorkspaces?.length || 0,
+        pwError: pwError?.message 
+      })
+
+      if (pwError) {
+        throw new Error(pwError.message)
+      }
+
+      // Extraer los procesos del resultado
+      const extractedProcesses = (processWorkspaces || [])
+        .map((pw: any) => pw.processes)
+        .filter(Boolean)
+
+      console.log('✅ Returning processes from fallback:', extractedProcesses.length)
+      
+      return {
+        id: workspaceId,
+        name: "",
+        processes: extractedProcesses
+      }
     }
 
-    // Extraer los procesos del resultado
-    const extractedProcesses = (processWorkspaces || [])
-      .map((pw: any) => pw.processes)
-      .filter(Boolean)
-
+    console.log('✅ Returning processes:', processes?.length || 0)
+    
+    // Retornar en el mismo formato que antes
     return {
       id: workspaceId,
       name: "",
-      processes: extractedProcesses
+      processes: processes || []
     }
-  }
-
-  console.log('Returning processes:', processes?.length || 0)
-  
-  // Retornar en el mismo formato que antes
-  return {
-    id: workspaceId,
-    name: "",
-    processes: processes || []
+  } catch (error: any) {
+    console.error('❌ Exception in getProcessWorkspacesByWorkspaceId:', error)
+    throw error
   }
 }
 

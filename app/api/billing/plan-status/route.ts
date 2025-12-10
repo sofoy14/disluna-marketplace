@@ -2,16 +2,12 @@
 // API endpoint for checking user plan status and feature access
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { getUserPlanStatus, getFeatureAccessMap } from '@/lib/billing/plan-access';
 import { formatUsageDisplay } from '@/db/usage-tracking';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
 export async function GET(req: NextRequest) {
+  const supabase = getSupabaseServer();
   try {
     // Get user from authorization header
     const authHeader = req.headers.get('Authorization');
@@ -80,6 +76,8 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+
 
 
 

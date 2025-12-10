@@ -40,31 +40,69 @@ export async function POST(request: Request) {
     const formData = await request.formData()
     const name = formData.get('name') as string
     const description = formData.get('description') as string || ''
-    const context = formData.get('context') as string
+    const context = formData.get('context') as string || description || ''
     
     // Validar campos requeridos
-    if (!name || !context) {
+    if (!name || !name.trim()) {
       return NextResponse.json(
-        { error: "Nombre y contexto del proceso son requeridos" },
+        { error: "El nombre del proceso es requerido" },
         { status: 400 }
       )
     }
+    
+    // Usar description o context, pero asegurar que no esté vacío (description es NOT NULL en la BD)
+    const processDescription = description.trim() || context.trim() || 'Sin descripción'
 
-    // Obtener workspace actual
-    const { data: workspaces, error: workspaceError } = await supabase
-      .from("workspaces")
-      .select("id")
-      .eq("user_id", user.id)
+    // Obtener workspace_id del body o del query string
+    const workspaceId = formData.get("workspace_id") as string | null
+    
+    console.log("📋 Creating process - workspace_id from formData:", workspaceId)
+    console.log("📋 User ID:", user.id)
+    
+    let workspace
+    
+    if (workspaceId) {
+      // Verificar que el workspace pertenezca al usuario
+      const { data: workspaceData, error: workspaceError } = await supabase
+        .from("workspaces")
+        .select("id, name")
+        .eq("id", workspaceId)
+        .eq("user_id", user.id)
+        .single()
 
-    if (workspaceError || !workspaces || workspaces.length === 0) {
-      return NextResponse.json(
-        { error: "No se encontró workspace" },
-        { status: 404 }
-      )
+      if (workspaceError || !workspaceData) {
+        console.error("❌ Workspace validation error:", workspaceError)
+        return NextResponse.json(
+          { error: "Workspace no encontrado o no tienes acceso" },
+          { status: 404 }
+        )
+      }
+      
+      workspace = workspaceData
+      console.log("✅ Using provided workspace:", { id: workspace.id, name: workspaceData.name })
+    } else {
+      // Fallback: obtener el primer workspace disponible
+      const { data: workspaces, error: workspaceError } = await supabase
+        .from("workspaces")
+        .select("id, name")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true })
+
+      if (workspaceError || !workspaces || workspaces.length === 0) {
+        console.error("❌ No workspaces found for user")
+        return NextResponse.json(
+          { error: "No se encontró workspace" },
+          { status: 404 }
+        )
+      }
+
+      workspace = workspaces[0]
+      console.warn("⚠️ No se proporcionó workspace_id, usando el primer workspace disponible:", {
+        id: workspace.id,
+        name: workspace.name,
+        totalWorkspaces: workspaces.length
+      })
     }
-
-    // Usar el primer workspace disponible
-    const workspace = workspaces[0]
 
     // Crear el proceso usando la tabla processes
     console.log("Creating process with data:", {
@@ -74,15 +112,19 @@ export async function POST(request: Request) {
       workspace_id: workspace.id
     })
 
+    // Preparar datos del proceso
+    const processData: any = {
+      user_id: user.id,
+      name: name.trim(),
+      description: processDescription,
+      status: 'activo',
+      workspace_id: workspace.id,
+      indexing_status: 'pending' // Estado inicial de indexación
+    }
+
     const newProcess = await supabase
       .from("processes")
-      .insert([{
-        user_id: user.id,
-        name,
-        description: context, // Guardamos el contexto en description
-        status: 'activo', // Estado por defecto
-        workspace_id: workspace.id // Asociar al workspace desde el inicio
-      }])
+      .insert([processData])
       .select()
       .single()
 

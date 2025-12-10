@@ -26,13 +26,10 @@ import {
   createPaymentSource 
 } from '@/db/payment-sources';
 import { sendEmail, emailTemplates } from '@/lib/billing/email-notifications';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 
 export async function POST(req: NextRequest) {
+  const supabase = getSupabaseServer();
   try {
     const body = await req.text();
     

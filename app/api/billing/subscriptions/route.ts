@@ -2,12 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSubscriptionByWorkspaceId, createSubscription, cancelSubscription } from '@/db/subscriptions';
 import { getPlanById } from '@/db/plans';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 
 export async function GET(req: NextRequest) {
   try {
@@ -45,6 +40,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = getSupabaseServer();
   try {
     const { plan_id, workspace_id, payment_source_id, transaction_id } = await req.json();
 

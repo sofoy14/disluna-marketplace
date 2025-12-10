@@ -36,6 +36,9 @@ import {
   googleSearchDirectTool
 } from "./article-search-tool"
 
+// Importar herramienta de RAG para procesos (se crea dinámicamente con process_id)
+import { createProcessRagTool } from "./process-rag-tool"
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // TODAS LAS HERRAMIENTAS
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -45,10 +48,11 @@ import {
  * 
  * ORDEN DE PRIORIDAD:
  * 1. buscar_articulo_ley - Para consultas de artículos específicos
- * 2. google_search_directo - Para búsquedas con extracción automática
- * 3. search_legal_official - Para búsquedas generales en fuentes oficiales
- * 4. extract_web_content - Para extraer contenido de URLs
- * 5. Otras herramientas
+ * 2. buscar_en_documentos_proceso - Para buscar en documentos del proceso (RAG) - se crea dinámicamente
+ * 3. google_search_directo - Para búsquedas con extracción automática
+ * 4. search_legal_official - Para búsquedas generales en fuentes oficiales
+ * 5. extract_web_content - Para extraer contenido de URLs
+ * 6. Otras herramientas
  */
 export const ALL_TOOLS: StructuredTool[] = [
   // 🔴 PRIORITARIAS: Herramientas de búsqueda de artículos
@@ -106,6 +110,8 @@ export {
   articleSearchTools,
   searchArticleTool,
   googleSearchDirectTool,
+  // Process RAG tools (factory function)
+  createProcessRagTool,
   // Search tools
   searchTools,
   searchLegalOfficialTool,

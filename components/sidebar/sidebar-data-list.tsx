@@ -7,6 +7,7 @@ import { updateModel } from "@/db/models"
 import { updatePreset } from "@/db/presets"
 import { updatePrompt } from "@/db/prompts"
 import { updateTool } from "@/db/tools"
+import { updateTranscription } from "@/db/transcriptions"
 import { cn } from "@/lib/utils"
 import { Tables } from "@/supabase/types"
 import { ContentType, DataItemType, DataListType } from "@/types"
@@ -19,6 +20,7 @@ import { ModelItem } from "./items/models/model-item"
 import { PresetItem } from "./items/presets/preset-item"
 import { PromptItem } from "./items/prompts/prompt-item"
 import { ToolItem } from "./items/tools/tool-item"
+import { TranscriptionItem } from "./items/transcriptions/transcription-item"
 import { IconCalendar, IconCalendarEvent, IconCalendarWeek, IconHistory, IconMicrophone } from "@tabler/icons-react"
 
 interface SidebarDataListProps {
@@ -36,7 +38,8 @@ const getEmptyStateMessage = (contentType: ContentType): string => {
     collections: "No hay procesos.",
     assistants: "No hay agentes.",
     tools: "No hay herramientas.",
-    models: "No hay modelos."
+    models: "No hay modelos.",
+    transcriptions: "No hay transcripciones."
   }
   return messages[contentType] || `No hay ${contentType}.`
 }
@@ -54,7 +57,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
     setCollections,
     setAssistants,
     setTools,
-    setModels
+    setModels,
+    setTranscriptions
   } = useContext(ALIContext)
 
   const divRef = useRef<HTMLDivElement>(null)
@@ -98,6 +102,14 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
 
       case "models":
         return <ModelItem key={item.id} model={item as Tables<"models">} />
+
+      case "transcriptions":
+        return (
+          <TranscriptionItem
+            key={item.id}
+            transcription={item as Tables<"transcriptions">}
+          />
+        )
 
       default:
         return null
@@ -149,7 +161,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
     collections: updateCollection,
     assistants: updateAssistant,
     tools: updateTool,
-    models: updateModel
+    models: updateModel,
+    transcriptions: updateTranscription
   }
 
   const stateUpdateFunctions = {
@@ -160,7 +173,8 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
     collections: setCollections,
     assistants: setAssistants,
     tools: setTools,
-    models: setModels
+    models: setModels,
+    transcriptions: setTranscriptions
   }
 
   const updateFolder = async (itemId: string, folderId: string | null) => {

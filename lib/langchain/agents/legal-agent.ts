@@ -16,6 +16,7 @@ import { ChatPromptTemplate, MessagesPlaceholder } from "@langchain/core/prompts
 import { createModel, ModelId, getModelConfig } from "../config/models"
 import { LEGAL_AGENT_SYSTEM_PROMPT } from "../config/prompts"
 import { ALL_TOOLS, getToolsByNames } from "../tools"
+import { StructuredTool } from "@langchain/core/tools"
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TIPOS E INTERFACES
@@ -26,7 +27,7 @@ export interface AgentConfig {
   temperature?: number
   maxIterations?: number
   verbose?: boolean
-  tools?: string[] // Nombres de tools específicas a usar (opcional, usa todas por defecto)
+  tools?: string[] | StructuredTool[] // Nombres de tools o instancias de tools
 }
 
 export interface AgentInput {
@@ -96,7 +97,18 @@ export class LegalAgent {
     })
 
     // Seleccionar herramientas
-    const tools = toolNames ? getToolsByNames(toolNames) : ALL_TOOLS
+    let tools: StructuredTool[]
+    if (toolNames) {
+      if (Array.isArray(toolNames) && toolNames.length > 0 && typeof toolNames[0] === 'string') {
+        // Si son nombres de herramientas, obtenerlas por nombre
+        tools = getToolsByNames(toolNames as string[])
+      } else {
+        // Si son instancias de herramientas, usarlas directamente
+        tools = toolNames as StructuredTool[]
+      }
+    } else {
+      tools = ALL_TOOLS
+    }
     console.log(`🔧 Herramientas cargadas: ${tools.map(t => t.name).join(', ')}`)
 
     // Crear el prompt del agente

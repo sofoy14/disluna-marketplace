@@ -1,12 +1,6 @@
 // app/api/billing/plans/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-// Usar cliente de servidor para API routes
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { getSupabaseServer } from '@/lib/supabase/server-client';
 
 export type BillingPeriod = 'monthly' | 'yearly';
 export type PlanType = 'basic' | 'pro' | 'enterprise';
@@ -91,6 +85,7 @@ const DEFAULT_PLANS: Plan[] = [
 
 export async function GET(req: NextRequest) {
   try {
+    const supabase = getSupabaseServer();
     const url = new URL(req.url);
     const period = url.searchParams.get('period') as BillingPeriod | null;
     const planType = url.searchParams.get('plan_type') as PlanType | null;

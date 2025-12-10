@@ -8,6 +8,7 @@ import { getModelWorkspacesByWorkspaceId } from "@/db/models"
 import { getPresetWorkspacesByWorkspaceId } from "@/db/presets"
 import { getPromptWorkspacesByWorkspaceId } from "@/db/prompts"
 import { getProcessWorkspacesByWorkspaceId } from "@/db/processes"
+import { getTranscriptionsByWorkspace } from "@/db/transcriptions"
 import { getWorkspaceById } from "@/db/workspaces"
 import { convertBlobToBase64 } from "@/lib/blob-to-b64"
 import { supabase } from "@/lib/supabase/browser-client"
@@ -36,6 +37,7 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setPresets,
     setPrompts,
     setModels,
+    setTranscriptions,
     selectedWorkspace,
     setSelectedWorkspace,
     setSelectedChat,
@@ -51,6 +53,42 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
   } = useContext(ALIContext)
 
   const [loading, setLoading] = useState(true)
+
+  // Función para recargar solo los procesos (sin recargar toda la página)
+  const reloadProcesses = async () => {
+    try {
+      console.log('🔄 Recargando procesos para workspace:', workspaceId)
+      const processData = await getProcessWorkspacesByWorkspaceId(workspaceId)
+      
+      const collectionsData = (processData?.processes || []).map(process => ({
+        id: process.id,
+        name: process.name,
+        description: process.description,
+        user_id: process.user_id,
+        workspace_id: process.workspace_id,
+        created_at: process.created_at,
+        updated_at: process.updated_at,
+        sharing: process.sharing || 'private'
+      }))
+      
+      console.log('✅ Procesos recargados:', collectionsData.length)
+      setCollections(collectionsData)
+    } catch (error) {
+      console.error('❌ Error recargando procesos:', error)
+    }
+  }
+
+  // Exponer la función de recarga globalmente para que el modal pueda usarla
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).reloadProcesses = reloadProcesses
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).reloadProcesses
+      }
+    }
+  }, [workspaceId])
 
   useEffect(() => {
     ;(async () => {
@@ -104,10 +142,15 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
         const processData =
           await getProcessWorkspacesByWorkspaceId(workspaceId)
         // processData returns { id, name, processes: [...] }
-        console.log('Process data loaded:', {
+        console.log('📊 Process data loaded:', {
           workspaceId,
           processesCount: processData?.processes?.length || 0,
-          processes: processData?.processes
+          processes: processData?.processes?.map(p => ({ 
+            id: p.id, 
+            name: p.name, 
+            workspace_id: p.workspace_id,
+            indexing_status: p.indexing_status 
+          }))
         })
         
         // Mapear procesos a formato collections para compatibilidad
@@ -122,10 +165,33 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
           sharing: process.sharing || 'private'
         }))
         
-        console.log('Collections data mapped:', collectionsData.length)
+        console.log('✅ Collections data mapped:', {
+          count: collectionsData.length,
+          currentWorkspaceId: workspaceId,
+          collections: collectionsData.map(c => ({ 
+            id: c.id, 
+            name: c.name, 
+            workspace_id: c.workspace_id,
+            matchesCurrentWorkspace: c.workspace_id === workspaceId
+          }))
+        })
+        
+        // Verificar si hay procesos en otros workspaces
+        if (collectionsData.length === 0 && processData?.processes && processData.processes.length > 0) {
+          console.warn('⚠️ Hay procesos pero no coinciden con el workspace actual:', {
+            currentWorkspace: workspaceId,
+            processesInOtherWorkspaces: processData.processes.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              workspace_id: p.workspace_id
+            }))
+          })
+        }
+        
         setCollections(collectionsData)
       } catch (processError) {
-        console.error('Error loading processes (stub tables may not exist yet):', processError)
+        console.error('❌ Error loading processes:', processError)
+        console.error('Error details:', processError instanceof Error ? processError.message : JSON.stringify(processError))
         setCollections([])
       }
 
@@ -140,6 +206,9 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
 
       const modelData = await getModelWorkspacesByWorkspaceId(workspaceId)
       setModels(modelData.models || [])
+
+      const transcriptions = await getTranscriptionsByWorkspace(workspaceId)
+      setTranscriptions(transcriptions || [])
 
       setChatSettings({
         model: (searchParams.get("model") ||

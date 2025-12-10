@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+import { getSupabaseServer } from '@/lib/supabase/server-client'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // GET: Obtener uso de modelos del usuario
 // ═══════════════════════════════════════════════════════════════════════════════
 export async function GET(request: NextRequest) {
+  const supabase = getSupabaseServer();
   try {
     // Get user from authorization header
     const authHeader = request.headers.get('Authorization')
@@ -79,6 +75,7 @@ export async function GET(request: NextRequest) {
 // POST: Verificar e incrementar uso de un modelo
 // ═══════════════════════════════════════════════════════════════════════════════
 export async function POST(request: NextRequest) {
+  const supabase = getSupabaseServer();
   try {
     // Get user from authorization header
     const authHeader = request.headers.get('Authorization')
