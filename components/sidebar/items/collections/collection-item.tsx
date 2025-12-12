@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 interface CollectionItemProps {
-  collection: Tables<"collections">
+  collection: Tables<"processes">
 }
 
 export const CollectionItem: FC<CollectionItemProps> = ({ collection }) => {

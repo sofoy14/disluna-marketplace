@@ -20,8 +20,8 @@ interface ALIContext {
   // ITEMS STORE
   assistants: Tables<"assistants">[]
   setAssistants: Dispatch<SetStateAction<Tables<"assistants">[]>>
-  collections: Tables<"collections">[]
-  setCollections: Dispatch<SetStateAction<Tables<"collections">[]>>
+  collections: Tables<"processes">[]
+  setCollections: Dispatch<SetStateAction<Tables<"processes">[]>>
   chats: Tables<"chats">[]
   setChats: Dispatch<SetStateAction<Tables<"chats">[]>>
   files: Tables<"files">[]

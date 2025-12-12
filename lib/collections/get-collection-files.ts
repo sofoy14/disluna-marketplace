@@ -15,7 +15,7 @@ export async function getCollectionFiles(collectionId: string): Promise<Collecti
   try {
     // Primero obtener la información de la colección
     const { data: collection, error: collectionError } = await supabase
-      .from("collections")
+      .from("processes")
       .select("*")
       .eq("id", collectionId)
       .single()
@@ -31,7 +31,7 @@ export async function getCollectionFiles(collectionId: string): Promise<Collecti
 
     // Obtener los archivos de la colección a través de collection_files
     const { data: collectionFiles, error: filesError } = await supabase
-      .from("collection_files")
+      .from("process_files")
       .select(`
         file_id,
         files (
@@ -47,7 +47,7 @@ export async function getCollectionFiles(collectionId: string): Promise<Collecti
           updated_at
         )
       `)
-      .eq("collection_id", collectionId)
+      .eq("process_id", collectionId)
 
     if (filesError) {
       console.error("Error obteniendo archivos de la colección:", filesError)
@@ -77,7 +77,7 @@ export async function getCollectionFiles(collectionId: string): Promise<Collecti
 export async function getAllCollectionsWithFiles(): Promise<CollectionWithFiles[]> {
   try {
     const { data: collections, error: collectionsError } = await supabase
-      .from("collections")
+      .from("processes")
       .select("*")
       .order("name")
 
@@ -116,9 +116,9 @@ export async function getAllCollectionsWithFiles(): Promise<CollectionWithFiles[
 export async function getCollectionFileIds(collectionId: string): Promise<string[]> {
   try {
     const { data: collectionFiles, error } = await supabase
-      .from("collection_files")
+      .from("process_files")
       .select("file_id")
-      .eq("collection_id", collectionId)
+      .eq("process_id", collectionId)
 
     if (error) {
       console.error("Error obteniendo IDs de archivos:", error)

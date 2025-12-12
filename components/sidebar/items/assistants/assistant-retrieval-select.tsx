@@ -16,9 +16,9 @@ import { FileIcon } from "lucide-react"
 import { FC, useContext, useEffect, useRef, useState } from "react"
 
 interface AssistantRetrievalSelectProps {
-  selectedAssistantRetrievalItems: Tables<"files">[] | Tables<"collections">[]
+  selectedAssistantRetrievalItems: Tables<"files">[] | Tables<"processes">[]
   onAssistantRetrievalItemsSelect: (
-    item: Tables<"files"> | Tables<"collections">
+    item: Tables<"files"> | Tables<"processes">
   ) => void
 }
 
@@ -42,7 +42,7 @@ export const AssistantRetrievalSelect: FC<AssistantRetrievalSelectProps> = ({
     }
   }, [isOpen])
 
-  const handleItemSelect = (item: Tables<"files"> | Tables<"collections">) => {
+  const handleItemSelect = (item: Tables<"files"> | Tables<"processes">) => {
     onAssistantRetrievalItemsSelect(item)
   }
 
@@ -98,7 +98,7 @@ export const AssistantRetrievalSelect: FC<AssistantRetrievalSelectProps> = ({
               contentType={
                 item.hasOwnProperty("type") ? "files" : "collections"
               }
-              item={item as Tables<"files"> | Tables<"collections">}
+              item={item as Tables<"files"> | Tables<"processes">}
               selected={selectedAssistantRetrievalItems.some(
                 selectedAssistantRetrieval =>
                   selectedAssistantRetrieval.id === item.id
@@ -155,9 +155,9 @@ export const AssistantRetrievalSelect: FC<AssistantRetrievalSelectProps> = ({
 
 interface AssistantRetrievalOptionItemProps {
   contentType: "files" | "collections"
-  item: Tables<"files"> | Tables<"collections">
+  item: Tables<"files"> | Tables<"processes">
   selected: boolean
-  onSelect: (item: Tables<"files"> | Tables<"collections">) => void
+  onSelect: (item: Tables<"files"> | Tables<"processes">) => void
 }
 
 const AssistantRetrievalItemOption: FC<AssistantRetrievalOptionItemProps> = ({

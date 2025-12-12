@@ -42,7 +42,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
 
   // ITEMS STORE
   const [assistants, setAssistants] = useState<Tables<"assistants">[]>([])
-  const [collections, setCollections] = useState<Tables<"collections">[]>([])
+  const [collections, setCollections] = useState<Tables<"processes">[]>([])
   const [chats, setChats] = useState<Tables<"chats">[]>([])
   const [files, setFiles] = useState<Tables<"files">[]>([])
   const [folders, setFolders] = useState<Tables<"folders">[]>([])

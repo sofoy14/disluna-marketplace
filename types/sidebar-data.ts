@@ -1,7 +1,7 @@
 import { Tables } from "@/supabase/types"
 
 export type DataListType =
-  | Tables<"collections">[]
+  | Tables<"processes">[]
   | Tables<"chats">[]
   | Tables<"presets">[]
   | Tables<"prompts">[]
@@ -11,7 +11,7 @@ export type DataListType =
   | Tables<"models">[]
 
 export type DataItemType =
-  | Tables<"collections">
+  | Tables<"processes">
   | Tables<"chats">
   | Tables<"presets">
   | Tables<"prompts">

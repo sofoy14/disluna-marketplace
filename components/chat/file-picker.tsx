@@ -11,7 +11,7 @@ interface FilePickerProps {
   selectedFileIds: string[]
   selectedCollectionIds: string[]
   onSelectFile: (file: Tables<"files">) => void
-  onSelectCollection: (collection: Tables<"collections">) => void
+  onSelectCollection: (collection: Tables<"processes">) => void
   isFocused: boolean
 }
 
@@ -57,7 +57,7 @@ export const FilePicker: FC<FilePickerProps> = ({
     handleOpenChange(false)
   }
 
-  const handleSelectCollection = (collection: Tables<"collections">) => {
+  const handleSelectCollection = (collection: Tables<"processes">) => {
     onSelectCollection(collection)
     handleOpenChange(false)
   }

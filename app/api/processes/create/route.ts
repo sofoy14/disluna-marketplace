@@ -148,26 +148,6 @@ export async function POST(request: Request) {
     
     console.log("Process created successfully:", newProcess.data)
 
-    // Crear la relación process_workspace (para compatibilidad con tabla de unión)
-    const { error: pwError } = await supabase
-      .from("process_workspaces")
-      .insert([{
-        user_id: user.id,
-        process_id: newProcess.data.id,
-        workspace_id: workspace.id
-      }])
-
-    console.log("Process workspace relation created:", { 
-      process_id: newProcess.data.id, 
-      workspace_id: workspace.id,
-      error: pwError 
-    })
-
-    if (pwError) {
-      console.error("Error creating process_workspace relation:", pwError)
-      // No fallar el proceso si solo falla la relación, pero registrar el error
-    }
-    
     // ═══════════════════════════════════════════════════════════════════════
     // USAGE TRACKING: Increment process count
     // ═══════════════════════════════════════════════════════════════════════

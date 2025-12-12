@@ -85,7 +85,7 @@ export const SidebarDataList: FC<SidebarDataListProps> = ({
         return (
           <CollectionItem
             key={item.id}
-            collection={item as Tables<"collections">}
+            collection={item as Tables<"processes">}
           />
         )
 

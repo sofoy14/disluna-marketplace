@@ -46,7 +46,7 @@ export const SidebarItem: FC<SidebarItemProps> = ({
     }
 
     if (contentType === "collections") {
-      const collection = item as Tables<"collections">
+      const collection = item as Tables<"processes">
       const collectionWithFiles = await getCollectionFilesByCollectionId(
         collection.id
       )

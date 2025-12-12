@@ -36,7 +36,7 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imageLink, setImageLink] = useState("")
   const [selectedAssistantRetrievalItems, setSelectedAssistantRetrievalItems] =
-    useState<Tables<"files">[] | Tables<"collections">[]>([])
+    useState<Tables<"files">[] | Tables<"processes">[]>([])
   const [selectedAssistantToolItems, setSelectedAssistantToolItems] = useState<
     Tables<"tools">[]
   >([])
@@ -56,7 +56,7 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
   }, [name])
 
   const handleRetrievalItemSelect = (
-    item: Tables<"files"> | Tables<"collections">
+    item: Tables<"files"> | Tables<"processes">
   ) => {
     setSelectedAssistantRetrievalItems(prevState => {
       const isItemAlreadySelected = prevState.find(
@@ -127,7 +127,7 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
           ) as Tables<"files">[],
           collections: selectedAssistantRetrievalItems.filter(
             item => !item.hasOwnProperty("type")
-          ) as Tables<"collections">[],
+          ) as Tables<"processes">[],
           tools: selectedAssistantToolItems
         } as TablesInsert<"assistants">
       }

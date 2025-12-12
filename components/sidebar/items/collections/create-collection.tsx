@@ -50,13 +50,13 @@ export const CreateCollection: FC<CreateCollectionProps> = ({
         {
           collectionFiles: selectedCollectionFiles.map(file => ({
             user_id: profile.user_id,
-            collection_id: "",
+            process_id: "",
             file_id: file.id
           })),
           user_id: profile.user_id,
           name,
           description
-        } as TablesInsert<"collections">
+        } as TablesInsert<"processes">
       }
       isOpen={isOpen}
       isTyping={isTyping}

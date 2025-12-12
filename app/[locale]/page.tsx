@@ -6,6 +6,8 @@ import i18nConfig from "@/i18nConfig"
 // Force dynamic rendering - required for Supabase auth
 export const dynamic = 'force-dynamic'
 
+let _warnedMissingSupabaseEnv = false
+
 // Valid locales from i18n config
 const VALID_LOCALES = i18nConfig.locales as string[]
 
@@ -30,6 +32,18 @@ export default async function HomePage({ params }: PageProps) {
   // If locale is not valid, redirect to default locale
   if (!VALID_LOCALES.includes(locale)) {
     redirect(`/${i18nConfig.defaultLocale}`)
+  }
+
+  // If Supabase isn't configured in this environment, don't crash the app shell.
+  // This avoids repeated server errors in misconfigured deployments.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (!_warnedMissingSupabaseEnv) {
+      _warnedMissingSupabaseEnv = true
+      console.error(
+        "Missing Supabase configuration in runtime env. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+      )
+    }
+    redirect(`/${locale}/landing`)
   }
 
   const cookieStore = cookies()

@@ -139,7 +139,7 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
     Tables<"files">[]
   >([])
   const [startingAssistantCollections, setStartingAssistantCollections] =
-    useState<Tables<"collections">[]>([])
+    useState<Tables<"processes">[]>([])
   const [startingAssistantTools, setStartingAssistantTools] = useState<
     Tables<"tools">[]
   >([])
@@ -147,7 +147,7 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
     Tables<"files">[]
   >([])
   const [selectedAssistantCollections, setSelectedAssistantCollections] =
-    useState<Tables<"collections">[]>([])
+    useState<Tables<"processes">[]>([])
   const [selectedAssistantTools, setSelectedAssistantTools] = useState<
     Tables<"tools">[]
   >([])
@@ -393,7 +393,7 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
       for (const file of filesToAdd) {
         await createCollectionFile({
           user_id: item.user_id,
-          collection_id: collectionId,
+          process_id: collectionId,
           file_id: file.id
         })
       }
@@ -410,7 +410,7 @@ export const SidebarUpdateItem: FC<SidebarUpdateItemProps> = ({
         collectionId,
         deleteCollectionWorkspace,
         createCollectionWorkspaces as any,
-        "collection_id"
+        "process_id"
       )
 
       return updatedCollection

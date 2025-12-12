@@ -61,9 +61,9 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
   }
 
   const handleCollectionSelect = (
-    collection: Tables<"collections">,
+    collection: Tables<"processes">,
     setSelectedAssistantCollections: React.Dispatch<
-      React.SetStateAction<Tables<"collections">[]>
+      React.SetStateAction<Tables<"processes">[]>
     >
   ) => {
     setSelectedAssistantCollections(prevState => {
@@ -148,13 +148,13 @@ export const AssistantItem: FC<AssistantItemProps> = ({ assistant }) => {
         setSelectedAssistantFiles: React.Dispatch<
           React.SetStateAction<Tables<"files">[]>
         >
-        startingAssistantCollections: Tables<"collections">[]
+        startingAssistantCollections: Tables<"processes">[]
         setStartingAssistantCollections: React.Dispatch<
-          React.SetStateAction<Tables<"collections">[]>
+          React.SetStateAction<Tables<"processes">[]>
         >
-        selectedAssistantCollections: Tables<"collections">[]
+        selectedAssistantCollections: Tables<"processes">[]
         setSelectedAssistantCollections: React.Dispatch<
-          React.SetStateAction<Tables<"collections">[]>
+          React.SetStateAction<Tables<"processes">[]>
         >
         startingAssistantTools: Tables<"tools">[]
         setStartingAssistantTools: React.Dispatch<

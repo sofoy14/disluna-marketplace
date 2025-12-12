@@ -87,8 +87,8 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
     collections: async (
       createState: {
         image: File
-        collectionFiles: TablesInsert<"collection_files">[]
-      } & Tables<"collections">,
+        collectionFiles: TablesInsert<"process_files">[]
+      } & Tables<"processes">,
       workspaceId: string
     ) => {
       const { collectionFiles, ...rest } = createState
@@ -97,7 +97,7 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
 
       const finalCollectionFiles = collectionFiles.map(collectionFile => ({
         ...collectionFile,
-        collection_id: createdCollection.id
+        process_id: createdCollection.id
       }))
 
       await createCollectionFiles(finalCollectionFiles)
@@ -108,7 +108,7 @@ export const SidebarCreateItem: FC<SidebarCreateItemProps> = ({
       createState: {
         image: File
         files: Tables<"files">[]
-        collections: Tables<"collections">[]
+        collections: Tables<"processes">[]
         tools: Tables<"tools">[]
       } & Tables<"assistants">,
       workspaceId: string

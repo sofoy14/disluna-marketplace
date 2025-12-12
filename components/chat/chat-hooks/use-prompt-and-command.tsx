@@ -98,7 +98,7 @@ export const usePromptAndCommand = () => {
   }
 
   const handleSelectUserCollection = async (
-    collection: Tables<"collections">
+    collection: Tables<"processes">
   ) => {
     setShowFilesDisplay(true)
     setIsFilePickerOpen(false)
