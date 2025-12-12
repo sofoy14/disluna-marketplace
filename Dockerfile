@@ -20,15 +20,17 @@ RUN rm -rf "Landing-Design" "Chatbot Design" "esfera 3d" || true
 
 # Accept build arguments for NEXT_PUBLIC_* variables
 # These MUST be passed during docker build for them to be available during Next.js build
-ARG NEXT_PUBLIC_SUPABASE_URL
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
-ARG NEXT_PUBLIC_APP_URL
-ARG NEXT_PUBLIC_SITE_URL
-ARG NEXT_PUBLIC_BILLING_ENABLED
-ARG NEXT_PUBLIC_WOMPI_PUBLIC_KEY
-ARG NEXT_PUBLIC_WOMPI_BASE_URL
+# If not provided, they will be empty and runtime env vars will be used instead
+ARG NEXT_PUBLIC_SUPABASE_URL=""
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=""
+ARG NEXT_PUBLIC_APP_URL=""
+ARG NEXT_PUBLIC_SITE_URL=""
+ARG NEXT_PUBLIC_BILLING_ENABLED=""
+ARG NEXT_PUBLIC_WOMPI_PUBLIC_KEY=""
+ARG NEXT_PUBLIC_WOMPI_BASE_URL=""
 
 # Set as environment variables for the build process
+# If ARG values are empty, ENV will be empty, but Next.js will use runtime env vars for Server Components
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
@@ -49,16 +51,21 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
 # Accept build arguments for NEXT_PUBLIC_* variables (runtime defaults)
-# NOTE: These can still be overridden by Dockploy runtime env vars.
-ARG NEXT_PUBLIC_SUPABASE_URL
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
-ARG NEXT_PUBLIC_APP_URL
-ARG NEXT_PUBLIC_SITE_URL
-ARG NEXT_PUBLIC_BILLING_ENABLED
-ARG NEXT_PUBLIC_WOMPI_PUBLIC_KEY
-ARG NEXT_PUBLIC_WOMPI_BASE_URL
+# NOTE: If these ARGs are not provided during build, they will be empty strings.
+# In that case, Dokploy runtime environment variables will be used instead.
+# For Server Components and API routes, process.env will read from runtime env vars.
+ARG NEXT_PUBLIC_SUPABASE_URL=""
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=""
+ARG NEXT_PUBLIC_APP_URL=""
+ARG NEXT_PUBLIC_SITE_URL=""
+ARG NEXT_PUBLIC_BILLING_ENABLED=""
+ARG NEXT_PUBLIC_WOMPI_PUBLIC_KEY=""
+ARG NEXT_PUBLIC_WOMPI_BASE_URL=""
 
-# Set as environment variables for runtime (Server Components / API routes can read process.env)
+# Set as environment variables for runtime
+# If ARG values are empty, these will be empty, allowing runtime env vars to take precedence
+# Note: For NEXT_PUBLIC_* variables to work in the client bundle, they MUST be available during build.
+# For Server Components/API routes, they can be read from runtime process.env
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL

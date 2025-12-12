@@ -1,0 +1,1 @@
+{"location":"app/api/debug/env-check/route.ts:GET","message":"Debug endpoint - env vars check","data":{"hasSupabaseUrl":true,"hasSupabaseAnonKey":true,"hasServiceKey":true,"supabaseUrlLength":40,"supabaseAnonKeyLength":208,"nodeEnv":"production"},"timestamp":1765511815122,"sessionId":"debug-session","runId":"run1","hypothesisId":"D"}
