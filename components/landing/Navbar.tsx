@@ -96,7 +96,7 @@ export default function Navbar() {
                 </Link>
               ))}
               <div className="flex flex-col gap-2 pt-4 border-t border-border/40">
-                <Button variant="ghost" asChild className="justify-start">
+                <Button variant="outline" asChild className="justify-center font-semibold text-base">
                   <Link href="/login">Iniciar Sesión</Link>
                 </Button>
                 <Button asChild>
