@@ -11,8 +11,8 @@ services:
         - NEXT_PUBLIC_BILLING_ENABLED=${NEXT_PUBLIC_BILLING_ENABLED:-}
         - NEXT_PUBLIC_WOMPI_PUBLIC_KEY=${NEXT_PUBLIC_WOMPI_PUBLIC_KEY:-}
         - NEXT_PUBLIC_WOMPI_BASE_URL=${NEXT_PUBLIC_WOMPI_BASE_URL:-}
-    ports:
-      - "${PORT:-3000}:3000"
+    # No mapeamos puertos - Dokploy maneja el enrutamiento a través de su proxy reverso
+    # El puerto 3000 está expuesto internamente en el contenedor (ver Dockerfile EXPOSE 3000)
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
