@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 export default function Navbar() {
   const [state, setState] = useState(false)
   const menuBtnEl = useRef<HTMLDivElement>(null)
+  const menuEl = useRef<HTMLDivElement>(null)
 
   const navigation = [
     { name: "Características", href: "/landing#features" },
@@ -22,14 +23,20 @@ export default function Navbar() {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Node
-      if (menuBtnEl.current && !menuBtnEl.current.contains(target)) {
+      const isClickInsideMenu = menuBtnEl.current?.contains(target) || menuEl.current?.contains(target)
+      if (!isClickInsideMenu && state) {
         setState(false)
       }
     }
 
-    document.addEventListener("click", handleClickOutside)
-    return () => document.removeEventListener("click", handleClickOutside)
-  }, [])
+    if (state) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [state])
 
   return (
     <motion.header 
@@ -73,8 +80,12 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setState(!state)}
+              onClick={(e) => {
+                e.stopPropagation()
+                setState(!state)
+              }}
               className="md:hidden"
+              type="button"
             >
               {state ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
@@ -83,7 +94,7 @@ export default function Navbar() {
 
         {/* Mobile Navigation */}
         {state && (
-          <div className="md:hidden border-t border-border/40 py-4">
+          <div ref={menuEl} className="md:hidden border-t border-border/40 py-4">
             <nav className="flex flex-col gap-4">
               {navigation.map((item, idx) => (
                 <Link

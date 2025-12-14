@@ -16,6 +16,35 @@ const isBillingEnabled = () => process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   
+  // Rutas públicas - verificar ANTES del i18n router para evitar redirecciones innecesarias
+  // Estas rutas son accesibles tanto para usuarios autenticados como no autenticados
+  const publicSegments = ['login', 'auth/verify-email', 'auth/callback', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'precios', 'landing', 'billing/success']
+  const isPublicRoute = publicSegments.some(seg => {
+    // Coincide con /seg, /seg/, /locale/seg, o cualquier variante
+    return pathname === `/${seg}` || 
+           pathname === `/${seg}/` ||
+           pathname.includes(`/${seg}/`) ||
+           pathname.endsWith(`/${seg}`)
+  })
+
+  // Si es una ruta pública, procesar i18n pero permitir acceso sin más verificaciones
+  if (isPublicRoute) {
+    // Skip i18n processing for auth routes
+    const isAuthRoute = AUTH_ROUTES.some(route => pathname === route || pathname.startsWith(`${route}/`))
+    
+    if (!isAuthRoute) {
+      const i18nResult = i18nRouter(request, i18nConfig)
+      if (i18nResult) {
+        // Para rutas públicas, permitir la redirección de i18n pero asegurar acceso
+        return i18nResult
+      }
+    }
+    
+    // Si no hay redirección de i18n, crear cliente y permitir acceso
+    const { response } = createClient(request)
+    return response
+  }
+  
   // Skip i18n processing for auth routes
   const isAuthRoute = AUTH_ROUTES.some(route => pathname === route || pathname.startsWith(`${route}/`))
   
@@ -26,15 +55,6 @@ export async function middleware(request: NextRequest) {
 
   try {
     const { supabase, response } = createClient(request)
-
-    // Rutas públicas - PERMITIR ACCESO LIBRE (incluyendo /onboarding y /precios)
-    const publicSegments = ['login', 'auth/verify-email', 'auth/callback', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'precios', 'landing', 'billing/success']
-    const isPublicRoute = publicSegments.some(seg => pathname === `/${seg}` || pathname.includes(`/${seg}`))
-
-    // Las rutas públicas siempre permiten acceso libre
-    if (isPublicRoute) {
-      return response
-    }
 
     // If Supabase is not configured, redirect to login
     if (!supabase) {

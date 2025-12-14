@@ -694,7 +694,7 @@ function HeroSection() {
             animate="visible"
             variants={staggerContainer}
           >
-            <div className="relative h-[180px] sm:h-[220px] md:h-[280px]">
+            <div className="relative h-[180px] sm:h-[220px] md:h-[280px] overflow-visible">
               {/* Phase 1: ALI Horizontal Word */}
               <motion.div
                 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight absolute top-0 left-0 lg:left-0 w-full lg:w-auto flex justify-center lg:justify-start"
@@ -716,16 +716,16 @@ function HeroSection() {
 
               {/* Phase 2 & 3: Letters split vertically then expand */}
               <motion.h1 
-                className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] text-white absolute top-0 left-0 w-full lg:w-auto"
+                className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-normal text-white absolute top-0 left-0 w-full lg:w-auto overflow-visible"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.8, duration: 0.3 }}
               >
-                <div className="flex flex-col items-center lg:items-start">
+                <div className="flex flex-col items-center lg:items-start overflow-visible">
                   {/* Line 1: A -> Asistente */}
-                  <div className="flex items-baseline">
+                  <div className="flex items-baseline overflow-visible">
                     <motion.span 
-                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block"
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block overflow-visible"
                       initial={{ 
                         x: "0.65em",
                         y: "1.1em"
@@ -746,16 +746,16 @@ function HeroSection() {
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: "auto" }}
                       transition={{ delay: 2.5, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-block overflow-hidden whitespace-nowrap"
+                      className="inline-block overflow-visible whitespace-nowrap"
                     >
                       sistente
                     </motion.span>
                   </div>
                   
                   {/* Line 2: L -> Legal */}
-                  <div className="flex items-baseline">
+                  <div className="flex items-baseline overflow-visible">
                     <motion.span 
-                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block"
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block overflow-visible"
                       initial={{ 
                         x: "0.15em",
                         y: 0
@@ -776,16 +776,16 @@ function HeroSection() {
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: "auto" }}
                       transition={{ delay: 2.7, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-block overflow-hidden whitespace-nowrap"
+                      className="inline-block overflow-visible whitespace-nowrap"
                     >
                       egal
                     </motion.span>
                   </div>
                   
                   {/* Line 3: I -> Inteligente */}
-                  <div className="flex items-baseline">
+                  <div className="flex items-baseline overflow-visible">
                     <motion.span 
-                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block"
+                      className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block overflow-visible"
                       initial={{ 
                         x: "-0.35em",
                         y: "-1.1em"
@@ -806,7 +806,7 @@ function HeroSection() {
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: "auto" }}
                       transition={{ delay: 2.9, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-block overflow-hidden whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400"
+                      className="inline-block overflow-visible whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400"
                     >
                       nteligente
                     </motion.span>
@@ -834,16 +834,16 @@ function HeroSection() {
 
             <motion.div variants={fadeIn} custom={4} className="grid grid-cols-3 gap-4 pt-8 border-t border-white/5">
                <div>
-                 <div className="text-2xl font-bold text-white">10k+</div>
-                 <div className="text-xs text-gray-500 uppercase tracking-wider">Docs Analizados</div>
+                 <div className="text-lg font-bold text-white mb-1">Ahorra tiempo</div>
+                 <div className="text-xs text-gray-500 leading-relaxed">Búsqueda y redacción más rápidas</div>
                </div>
                <div>
-                 <div className="text-2xl font-bold text-white">99%</div>
-                 <div className="text-xs text-gray-500 uppercase tracking-wider">Precisión</div>
+                 <div className="text-lg font-bold text-white mb-1">Reduce errores</div>
+                 <div className="text-xs text-gray-500 leading-relaxed">Control de procesos y vencimientos</div>
                </div>
                <div>
-                 <div className="text-2xl font-bold text-white">24/7</div>
-                 <div className="text-xs text-gray-500 uppercase tracking-wider">Disponibilidad</div>
+                 <div className="text-lg font-bold text-white mb-1">Hecho para Colombia</div>
+                 <div className="text-xs text-gray-500 leading-relaxed">Normativa y jurisprudencia aplicable</div>
                </div>
             </motion.div>
           </motion.div>
@@ -1109,32 +1109,32 @@ function FeaturesGrid() {
     {
       icon: FileText,
       title: "Análisis Profundo",
-      desc: "Motor NLP entrenado con millones de sentencias colombianas para extraer insights imposibles de ver a simple vista."
+      desc: "Analiza expedientes y documentos legales para identificar puntos clave, partes involucradas y argumentos relevantes. Ahorra horas de lectura manual."
     },
     {
       icon: Bot,
       title: "Redacción Generativa",
-      desc: "Crea borradores de contratos y tutelas en segundos, adaptados al contexto específico de tu cliente."
+      desc: "Genera borradores de contratos, tutelas y escritos legales basados en el contexto de tu caso. Revisa y ajusta según tu criterio profesional."
     },
     {
       icon: Search,
       title: "Búsqueda Semántica",
-      desc: "Encuentra precedentes por significado y hechos fácticos, no solo por palabras clave coincidentes."
+      desc: "Encuentra jurisprudencia y normativa relacionada con tu caso usando búsqueda por contexto, no solo palabras exactas. Más relevante y rápido."
     },
     {
       icon: Lock,
-      title: "Seguridad Militar",
-      desc: "Encriptación de extremo a extremo y procesamiento en silos aislados para máxima confidencialidad."
+      title: "Seguridad y Confidencialidad",
+      desc: "Tus documentos y conversaciones están protegidos con encriptación. Procesamiento seguro que cumple con estándares de protección de datos."
     },
     {
       icon: Activity,
       title: "Monitoreo de Casos",
-      desc: "Dashboard en tiempo real del estado de tus procesos con alertas predictivas de vencimientos."
+      desc: "Visualiza el estado de tus procesos legales en un solo lugar. Recibe alertas de vencimientos importantes para evitar prescripciones."
     },
     {
       icon: Globe,
-      title: "Acceso Global",
-      desc: "Tu firma digital disponible en cualquier dispositivo, sincronizada en la nube de forma segura."
+      title: "Acceso desde Cualquier Lugar",
+      desc: "Accede a tu información legal desde cualquier dispositivo. Sincronización automática para trabajar en oficina, casa o en movimiento."
     }
   ]
 
@@ -1144,7 +1144,7 @@ function FeaturesGrid() {
         <div className="text-center max-w-3xl mx-auto mb-20">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">Capacidades del Futuro</h2>
           <p className="text-gray-400 text-lg">
-            Herramientas de vanguardia diseñadas para la élite legal.
+            Funcionalidades prácticas que reducen el tiempo de trabajo y minimizan errores en tu práctica legal diaria.
           </p>
         </div>
 
@@ -1180,14 +1180,14 @@ function VisualDashboard() {
               <span className="text-blue-400">Legal Inteligente</span>
             </h2>
             <p className="text-gray-400 text-lg leading-relaxed">
-              Visualiza métricas clave, gestiona cargas de trabajo y toma decisiones basadas en datos reales. Una interfaz diseñada para la eficiencia y la claridad absoluta.
+              Gestiona todos tus casos, documentos y procesos desde un solo lugar. Visualiza el estado de tus expedientes, controla vencimientos y organiza tu carga de trabajo de manera eficiente.
             </p>
             
             <div className="space-y-4">
               {[
-                "Dashboard personalizable con widgets",
-                "Analíticas de rendimiento del equipo",
-                "Predicción de resultados basada en IA"
+                "Vista consolidada de todos tus procesos legales",
+                "Seguimiento de vencimientos y alertas importantes",
+                "Organización de documentos por caso o cliente"
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center border border-green-500/30">
@@ -1264,19 +1264,19 @@ function VisualDashboard() {
 function TestimonialsGrid() {
   const testimonials = [
     {
-      text: "La interfaz es simplemente futurista. Me hace sentir que estoy operando tecnología de la NASA, pero aplicada al derecho.",
+      text: "Antes pasaba horas buscando jurisprudencia relevante. Ahora encuentro precedentes en minutos y puedo enfocarme en la estrategia del caso. Ahorra tiempo real en mi práctica diaria.",
       author: "Carlos Ruiz",
-      role: "Socio Director"
+      role: "Socio Director, Bogotá"
     },
     {
-      text: "Increíblemente rápido y visual. La forma en que presenta la jurisprudencia como nodos de datos interconectados es brillante.",
+      text: "La función de análisis de documentos me ayuda a identificar rápidamente los puntos clave de expedientes largos. Es especialmente útil cuando tengo varios casos simultáneos.",
       author: "Ana María V.",
-      role: "Abogada Senior"
+      role: "Abogada Senior, Medellín"
     },
     {
-      text: "Lo mejor es el modo oscuro y lo descansada que es la vista para trabajar largas horas. Un 10 en UX/UI.",
+      text: "El monitoreo de procesos me ha salvado de perder vencimientos importantes. Las alertas son precisas y me permiten planificar mejor mi agenda de trabajo.",
       author: "David L.",
-      role: "Litigante"
+      role: "Litigante Independiente, Cali"
     }
   ]
 
@@ -1317,18 +1317,18 @@ function PricingDark() {
       name: "Plan Básico",
       price: "$29.000",
       period: "/mes",
-      description: "Ideal para abogados que buscan asistencia IA en sus consultas diarias",
+      description: "Para abogados que necesitan asistencia en consultas y búsquedas legales frecuentes",
       icon: FileText,
       popular: false,
       color: "blue",
       features: [
         { name: "Chat con asistente legal IA", included: true },
-        { name: "Hasta 2 millones de tokens/mes", included: true },
+        { name: "Hasta 2 millones de tokens/mes (aproximadamente 1.5 millones de palabras)", included: true },
         { name: "Análisis de normativa colombiana", included: true },
         { name: "Búsqueda inteligente de jurisprudencia", included: true },
         { name: "Soporte por email", included: true },
         { name: "1 espacio de trabajo", included: true },
-        { name: "Procesos legales (expedientes)", included: false },
+        { name: "Gestión de procesos legales (expedientes)", included: false },
         { name: "Transcripción de audiencias", included: false },
       ],
       highlights: [
@@ -1341,19 +1341,19 @@ function PricingDark() {
       name: "Plan PRO",
       price: "$68.000",
       period: "/mes",
-      description: "La solución completa para profesionales del derecho",
+      description: "Para despachos y profesionales que gestionan múltiples casos y necesitan herramientas completas",
       icon: Scale,
       popular: true,
       color: "purple",
       features: [
-        { name: "Chat con asistente legal IA ilimitado", included: true },
+        { name: "Chat con asistente legal IA sin límites de uso", included: true },
         { name: "Tokens de chat ilimitados", included: true },
         { name: "Análisis de normativa colombiana", included: true },
         { name: "Búsqueda inteligente de jurisprudencia", included: true },
-        { name: "Soporte prioritario 24/7", included: true },
-        { name: "Múltiples espacios de trabajo", included: true },
-        { name: "7 procesos legales incluidos", included: true },
-        { name: "5 horas de transcripción de audio", included: true },
+        { name: "Soporte prioritario por email y chat", included: true },
+        { name: "Múltiples espacios de trabajo (sin límite)", included: true },
+        { name: "Hasta 7 procesos legales activos simultáneos", included: true },
+        { name: "5 horas de transcripción de audio por mes", included: true },
       ],
       highlights: [
         { label: "Chat IA", value: "Ilimitado" },
@@ -1376,9 +1376,9 @@ function PricingDark() {
              <Sparkles className="w-4 h-4" />
              Precios simples y transparentes
            </span>
-           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Elige el plan perfecto para ti</h2>
+           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Elige el plan que se adapta a tu práctica</h2>
            <p className="text-gray-400 max-w-2xl mx-auto">
-             Dos planes diseñados para abogados colombianos. Sin costos ocultos, cancela cuando quieras.
+             Planes diseñados para diferentes necesidades profesionales. Sin costos ocultos ni permanencia. Cancela cuando quieras.
            </p>
          </div>
 
@@ -1515,8 +1515,8 @@ function PricingDark() {
          {/* Comparison note */}
          <div className="mt-8 text-center max-w-2xl mx-auto">
            <p className="text-gray-500 text-sm">
-             ¿No estás seguro? El <strong className="text-purple-400">Plan PRO</strong> incluye todo lo que necesitas para gestionar 
-             tus casos legales de manera integral, incluyendo procesos y transcripciones.
+             ¿Necesitas gestionar expedientes y procesos? El <strong className="text-purple-400">Plan PRO</strong> incluye herramientas 
+             para seguimiento de casos, alertas de vencimientos y transcripción de audiencias. Ideal para despachos y litigantes activos.
            </p>
          </div>
        </div>
@@ -1533,10 +1533,11 @@ function FinalCTADark() {
       <div className="container mx-auto px-4 relative z-10 text-center">
         <div className="max-w-3xl mx-auto space-y-8">
           <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
-            El futuro no espera.
+            Comienza a trabajar de manera más eficiente hoy
           </h2>
           <p className="text-xl text-gray-400">
-            Elige entre el Plan Básico desde <span className="text-blue-400 font-semibold">$29.000/mes</span> o el Plan PRO a <span className="text-purple-400 font-semibold">$68.000/mes</span> con todas las funciones incluidas.
+            Elige el <span className="text-blue-400 font-semibold">Plan Básico desde $29.000/mes</span> para consultas y búsquedas, 
+            o el <span className="text-purple-400 font-semibold">Plan PRO a $68.000/mes</span> con gestión completa de procesos y transcripciones.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
             <Button size="lg" className="h-16 px-10 rounded-full text-lg bg-white text-black hover:scale-105 transition-transform font-bold" asChild>

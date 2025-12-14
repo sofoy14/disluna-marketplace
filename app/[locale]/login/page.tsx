@@ -8,6 +8,7 @@ import { ShaderCanvas } from "@/components/shader-canvas"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 import { OAuthButtons } from "@/components/auth/oauth-buttons"
+import { AnimatedTitle } from "@/components/auth/animated-title"
 
 // Force dynamic rendering - required for Supabase auth
 export const dynamic = 'force-dynamic'
@@ -235,7 +236,7 @@ export default async function Login({
   return (
     <div className="grid min-h-screen w-full grid-cols-1 md:grid-cols-2">
       {/* Left side (visual) */}
-      <div className="relative hidden md:flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/20">
+      <div className="relative hidden md:flex items-center justify-center">
         <div className="flex flex-col items-center justify-center">
           <div className="relative" style={{ width: 480, height: 480 }}>
             <ShaderCanvas size={480} shaderId={2} />
@@ -243,9 +244,7 @@ export default async function Login({
               <span className="text-9xl font-extrabold tracking-wide bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">ALI</span>
             </div>
           </div>
-          <div className="mt-4 text-4xl font-semibold text-gray-600 dark:text-gray-300 text-center whitespace-nowrap">
-            Asistente Legal Inteligente
-          </div>
+          <AnimatedTitle />
         </div>
       </div>
 
@@ -258,9 +257,7 @@ export default async function Login({
               <span className="text-6xl font-extrabold tracking-wide bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent whitespace-nowrap">ALI</span>
             </div>
           </div>
-          <div className="mt-2 text-xl font-semibold text-gray-600 dark:text-gray-300 text-center whitespace-nowrap">
-            Asistente Legal Inteligente
-          </div>
+          <AnimatedTitle size="sm" />
         </div>
 
         <div className="relative w-full rounded-2xl border border-white/10 bg-gradient-to-b from-background/60 to-background/30 backdrop-blur-xl p-6 md:p-8 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_20px_60px_-20px_rgba(124,58,237,0.5)]">
@@ -294,7 +291,7 @@ export default async function Login({
 
             <SubmitButton
               formAction={signUp}
-              className="border-white/10 mb-2 rounded-xl border px-4 py-2 bg-white/5 hover:bg-white/10"
+              className="text-white border-white/10 mb-2 rounded-xl border px-4 py-2 bg-white/5 hover:bg-white/10"
             >
               Registrarse
             </SubmitButton>

@@ -17,10 +17,31 @@ export function getSupabaseServer(): ReturnType<typeof createClient<Database>> {
       throw new Error('Missing Supabase environment variables');
     }
 
-    _supabaseServer = createClient<Database>(supabaseUrl, supabaseServiceKey, {
+    // Ensure URL is properly formatted and doesn't contain internal hostnames
+    let cleanUrl = supabaseUrl.trim().replace(/\/$/, '');
+    
+    // Validate URL format - must be a valid HTTP/HTTPS URL
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      throw new Error(`Invalid Supabase URL format: ${cleanUrl}. Must start with http:// or https://`);
+    }
+    
+    // Ensure it's a cloud Supabase URL (not local/internal)
+    if (cleanUrl.includes('supabase_kong') || cleanUrl.includes('localhost') || cleanUrl.includes('127.0.0.1')) {
+      console.warn(`Warning: Supabase URL appears to be local/internal: ${cleanUrl}`);
+    }
+
+    _supabaseServer = createClient<Database>(cleanUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false
+      },
+      db: {
+        schema: 'public'
+      },
+      global: {
+        headers: {
+          'x-client-info': 'supabase-js-server'
+        }
       }
     });
   }
