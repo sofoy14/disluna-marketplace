@@ -13,17 +13,19 @@ services:
         - NEXT_PUBLIC_WOMPI_BASE_URL=${NEXT_PUBLIC_WOMPI_BASE_URL:-}
     # No mapeamos puertos - Dokploy maneja el enrutamiento a través de su proxy reverso
     # El puerto 3000 está expuesto internamente en el contenedor (ver Dockerfile EXPOSE 3000)
+    # Variables de entorno - Dokploy inyecta automáticamente las variables configuradas en la interfaz
+    # Las variables NEXT_PUBLIC_* deben estar configuradas en Dokploy Settings > Environment Variables
     environment:
       - NODE_ENV=production
       - NEXT_TELEMETRY_DISABLED=1
       - PORT=3000
       - HOSTNAME=0.0.0.0
-      # Variables de entorno en runtime (se pasan desde Dokploy)
-      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
-      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-}
-      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-}
-      - NEXT_PUBLIC_BILLING_ENABLED=${NEXT_PUBLIC_BILLING_ENABLED:-}
-      - NEXT_PUBLIC_WOMPI_PUBLIC_KEY=${NEXT_PUBLIC_WOMPI_PUBLIC_KEY:-}
-      - NEXT_PUBLIC_WOMPI_BASE_URL=${NEXT_PUBLIC_WOMPI_BASE_URL:-}
+      # Estas variables se inyectan automáticamente desde Dokploy si están configuradas en la interfaz
+      - NEXT_PUBLIC_SUPABASE_URL=${{NEXT_PUBLIC_SUPABASE_URL}}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${{NEXT_PUBLIC_SUPABASE_ANON_KEY}}
+      - NEXT_PUBLIC_APP_URL=${{NEXT_PUBLIC_APP_URL}}
+      - NEXT_PUBLIC_SITE_URL=${{NEXT_PUBLIC_SITE_URL}}
+      - NEXT_PUBLIC_BILLING_ENABLED=${{NEXT_PUBLIC_BILLING_ENABLED}}
+      - NEXT_PUBLIC_WOMPI_PUBLIC_KEY=${{NEXT_PUBLIC_WOMPI_PUBLIC_KEY}}
+      - NEXT_PUBLIC_WOMPI_BASE_URL=${{NEXT_PUBLIC_WOMPI_BASE_URL}}
     restart: unless-stopped

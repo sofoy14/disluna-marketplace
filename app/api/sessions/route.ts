@@ -19,9 +19,23 @@ import {
 async function getAuthenticatedUser(req: NextRequest) {
   const cookieStore = cookies();
   
+  // #region agent log
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/sessions/route.ts:22',message:'Checking Supabase env vars',data:{urlPresent:!!supabaseUrl,urlLength:supabaseUrl?.length||0,keyPresent:!!supabaseKey,keyLength:supabaseKey?.length||0,allEnvKeys:Object.keys(process.env).filter(k=>k.includes('SUPABASE')).join(',')},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
+  // #endregion
+  
+  if (!supabaseUrl || !supabaseKey) {
+    const missing = [];
+    if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
+    if (!supabaseKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+    console.error(`[Sessions API] Missing Supabase env vars: ${missing.join(', ')}`);
+    throw new Error(`Missing Supabase configuration: ${missing.join(', ')}`);
+  }
+  
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseKey,
     {
       cookies: {
         getAll() {
@@ -104,9 +118,26 @@ export async function POST(req: NextRequest) {
   try {
     const cookieStore = cookies();
     
+    // #region agent log
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/sessions/route.ts:107',message:'POST: Checking Supabase env vars',data:{urlPresent:!!supabaseUrl,keyPresent:!!supabaseKey},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
+    // #endregion
+    
+    if (!supabaseUrl || !supabaseKey) {
+      const missing = [];
+      if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
+      if (!supabaseKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+      console.error(`[Sessions API] Missing Supabase env vars: ${missing.join(', ')}`);
+      return NextResponse.json(
+        { error: `Missing Supabase configuration: ${missing.join(', ')}` },
+        { status: 500 }
+      );
+    }
+    
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseKey,
       {
         cookies: {
           getAll() {
