@@ -2,7 +2,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SubmitButton } from "@/components/ui/submit-button"
 import { createClient } from "@/lib/supabase/server"
-import { get } from "@vercel/edge-config"
 import { Metadata } from "next"
 import { ShaderCanvas } from "@/components/shader-canvas"
 import { cookies } from "next/headers"
@@ -73,163 +72,6 @@ export default async function Login({
     return redirect(`/${locale}/${homeWorkspace.id}/chat`)
   }
 
-  const signIn = async (formData: FormData) => {
-    "use server"
-
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
-
-    console.log('[Login] Attempting sign in for:', email)
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
-
-    if (error) {
-      console.log('[Login] Auth error:', error.message)
-      // Get locale from cookie or default to 'es'
-      const localeCookie = cookieStore.get('NEXT_LOCALE')?.value || 'es'
-      return redirect(`/${localeCookie}/login?message=${error.message}`)
-    }
-
-    console.log('[Login] Auth successful for user:', data.user.id)
-
-    // Get locale from cookie or default to 'es'
-    const localeCookie = cookieStore.get('NEXT_LOCALE')?.value || 'es'
-
-    // Get workspace
-    const { data: homeWorkspace, error: workspaceError } = await supabase
-      .from("workspaces")
-      .select("*")
-      .eq("user_id", data.user.id)
-      .eq("is_home", true)
-      .maybeSingle()
-
-    console.log('[Login] Workspace check:', { found: !!homeWorkspace, error: workspaceError?.message })
-
-    if (!homeWorkspace) {
-      // No workspace - go to onboarding
-      console.log('[Login] No workspace, redirecting to /onboarding')
-      return redirect(`/${localeCookie}/onboarding`)
-    }
-
-    // Check for active subscription
-    const { data: subscription, error: subError } = await supabase
-      .from("subscriptions")
-      .select("id, status")
-      .eq("user_id", data.user.id)
-      .in("status", ["active", "trialing"])
-      .maybeSingle()
-
-    console.log('[Login] Subscription check:', { found: !!subscription, error: subError?.message })
-
-    if (!subscription) {
-      // No subscription - go to onboarding for plan selection
-      console.log('[Login] No subscription, redirecting to /onboarding')
-      return redirect(`/${localeCookie}/onboarding`)
-    }
-
-    // CRITICAL: Ensure profile has onboarding_completed = true for middleware check
-    await supabase
-      .from('profiles')
-      .update({ 
-        onboarding_completed: true, 
-        onboarding_step: 'completed',
-        has_onboarded: true
-      })
-      .eq('user_id', data.user.id)
-
-    // All good - go to chat
-    console.log('[Login] All good, redirecting to chat:', homeWorkspace.id)
-    return redirect(`/${localeCookie}/${homeWorkspace.id}/chat`)
-  }
-
-  const getEnvVarOrEdgeConfigValue = async (name: string) => {
-    "use server"
-    if (process.env.EDGE_CONFIG) {
-      return await get<string>(name)
-    }
-
-    return process.env[name]
-  }
-
-  const signUp = async (formData: FormData) => {
-    "use server"
-
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
-
-    const emailDomainWhitelistPatternsString = await getEnvVarOrEdgeConfigValue(
-      "EMAIL_DOMAIN_WHITELIST"
-    )
-    const emailDomainWhitelist = emailDomainWhitelistPatternsString?.trim()
-      ? emailDomainWhitelistPatternsString?.split(",")
-      : []
-    const emailWhitelistPatternsString =
-      await getEnvVarOrEdgeConfigValue("EMAIL_WHITELIST")
-    const emailWhitelist = emailWhitelistPatternsString?.trim()
-      ? emailWhitelistPatternsString?.split(",")
-      : []
-
-    // If there are whitelist patterns, check if the email is allowed to sign up
-    if (emailDomainWhitelist.length > 0 || emailWhitelist.length > 0) {
-      const domainMatch = emailDomainWhitelist?.includes(email.split("@")[1])
-      const emailMatch = emailWhitelist?.includes(email)
-      if (!domainMatch && !emailMatch) {
-        return redirect(
-          `/login?message=Email ${email} is not allowed to sign up.`
-        )
-      }
-    }
-
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
-
-    // Get app URL from env or use production default
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro';
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${appUrl}/auth/callback?next=/auth/verify-email`
-      }
-    })
-
-    if (error) {
-      console.error('Signup error:', error)
-      return redirect(`/login?message=${error.message}`)
-    }
-
-    // Log the signup result for debugging
-    console.log('Signup successful, redirecting to verify-email')
-    return redirect("/auth/verify-email?message=Revisa tu correo para verificar tu cuenta")
-  }
-
-  const handleResetPassword = async (formData: FormData) => {
-    "use server"
-
-    const email = formData.get("email") as string
-    const cookieStore = cookies()
-    const supabase = createClient(cookieStore)
-    
-    // Always use the configured APP_URL
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro'
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${appUrl}/auth/callback?next=/login/password`
-    })
-
-    if (error) {
-      return redirect(`/login?message=${error.message}`)
-    }
-
-    return redirect("/login?message=Revisa tu correo para restablecer la contraseña")
-  }
-
   // OAuth buttons are now handled client-side to preserve PKCE code_verifier in browser cookies
   // See components/auth/oauth-buttons.tsx
 
@@ -263,8 +105,10 @@ export default async function Login({
         <div className="relative w-full rounded-2xl border border-white/10 bg-gradient-to-b from-background/60 to-background/30 backdrop-blur-xl p-6 md:p-8 shadow-[0_0_0_1px_rgba(255,255,255,0.08),0_20px_60px_-20px_rgba(124,58,237,0.5)]">
           <form
             className="animate-in text-foreground flex w-full flex-1 flex-col justify-center gap-2"
-            action={signIn}
+            action="/api/auth/password-signin"
+            method="post"
           >
+            <input type="hidden" name="locale" value={locale} />
             <Label className="text-md mt-2" htmlFor="email">
               Correo Electrónico
             </Label>
@@ -290,7 +134,7 @@ export default async function Login({
             </SubmitButton>
 
             <SubmitButton
-              formAction={signUp}
+              formAction="/api/auth/signup"
               className="text-white border-white/10 mb-2 rounded-xl border px-4 py-2 bg-white/5 hover:bg-white/10"
             >
               Registrarse
@@ -299,7 +143,7 @@ export default async function Login({
             <div className="text-muted-foreground mt-1 flex justify-center text-sm">
               <span className="mr-1">¿Olvidaste tu contraseña?</span>
               <button
-                formAction={handleResetPassword}
+                formAction="/api/auth/reset-password"
                 className="text-primary ml-1 underline hover:opacity-80"
               >
                 Restablecer
