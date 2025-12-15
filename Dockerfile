@@ -50,10 +50,27 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# NOTE: We do NOT set NEXT_PUBLIC_* ENV variables here in the runner stage.
-# This allows Dockploy's runtime environment variables to be used directly.
-# For Server Components and API routes, process.env will read from runtime env vars.
-# IMPORTANT: Make sure Dockploy has these variables configured in Settings > Environment Variables:
+# Accept build arguments for public NEXT_PUBLIC_* variables and set them in the runtime image.
+# This guarantees the server runtime can read them even if the orchestrator doesn't inject env vars.
+ARG NEXT_PUBLIC_SUPABASE_URL=""
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=""
+ARG NEXT_PUBLIC_APP_URL=""
+ARG NEXT_PUBLIC_SITE_URL=""
+ARG NEXT_PUBLIC_BILLING_ENABLED=""
+ARG NEXT_PUBLIC_WOMPI_PUBLIC_KEY=""
+ARG NEXT_PUBLIC_WOMPI_BASE_URL=""
+
+ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEXT_PUBLIC_BILLING_ENABLED=$NEXT_PUBLIC_BILLING_ENABLED
+ENV NEXT_PUBLIC_WOMPI_PUBLIC_KEY=$NEXT_PUBLIC_WOMPI_PUBLIC_KEY
+ENV NEXT_PUBLIC_WOMPI_BASE_URL=$NEXT_PUBLIC_WOMPI_BASE_URL
+
+# NOTE: We set NEXT_PUBLIC_* ENV variables in the runner stage from build args as a safe fallback.
+# Runtime env vars (e.g. from Dokploy) will override these values if provided at container start.
+# IMPORTANT: Make sure Dokploy has these variables configured in Settings > Environment Variables:
 # - NEXT_PUBLIC_SUPABASE_URL
 # - NEXT_PUBLIC_SUPABASE_ANON_KEY
 # - NEXT_PUBLIC_APP_URL
@@ -82,4 +99,3 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 CMD ["npm", "run", "start"]
-

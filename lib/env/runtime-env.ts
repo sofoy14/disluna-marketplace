@@ -17,12 +17,36 @@ type OptionalEnvKey =
 
 const runtimeEnv: NodeJS.ProcessEnv = process.env
 
+// Build-time fallbacks for NEXT_PUBLIC_* variables.
+// Next.js may inline these reads during build; bracket-access won't.
+const buildTimePublicEnv = {
+  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+  NEXT_PUBLIC_BILLING_ENABLED: process.env.NEXT_PUBLIC_BILLING_ENABLED,
+  NEXT_PUBLIC_WOMPI_PUBLIC_KEY: process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY,
+  NEXT_PUBLIC_WOMPI_BASE_URL: process.env.NEXT_PUBLIC_WOMPI_BASE_URL
+} as const
+
 export function getEnvVar(
   key: RequiredEnvKey | OptionalEnvKey,
   options: { required?: boolean; fallback?: string } = {}
 ): string {
-  const raw = runtimeEnv[key as keyof NodeJS.ProcessEnv]
-  const value = typeof raw === 'string' ? raw.trim() : raw
+  const rawRuntime = runtimeEnv[key as keyof NodeJS.ProcessEnv]
+  const runtimeValue = typeof rawRuntime === 'string' ? rawRuntime.trim() : rawRuntime
+
+  if (runtimeValue) {
+    return runtimeValue
+  }
+
+  // If runtime doesn't have the key, allow build-time inlined values for NEXT_PUBLIC_*.
+  const rawBuild =
+    key in buildTimePublicEnv
+      ? buildTimePublicEnv[key as keyof typeof buildTimePublicEnv]
+      : undefined
+  const buildValue = typeof rawBuild === 'string' ? rawBuild.trim() : rawBuild
+  const value = buildValue ?? ''
 
   if (!value && options.required) {
     throw new Error(`Missing required environment variable ${key}`)
