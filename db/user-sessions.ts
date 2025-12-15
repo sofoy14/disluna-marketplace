@@ -1,21 +1,13 @@
 // db/user-sessions.ts
 // Database operations for user session management (device limit enforcement)
 
+import { env } from '@/lib/env/runtime-env';
 import { createClient } from '@supabase/supabase-js';
 
 // Create admin client for session management
 const getAdminClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
-  
-  if (!supabaseUrl || !serviceRoleKey) {
-    const missing = [];
-    if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
-    if (!serviceRoleKey) missing.push('SUPABASE_SERVICE_ROLE_KEY');
-    const errorMsg = `Missing Supabase configuration in getAdminClient: ${missing.join(', ')}`;
-    console.error(`[user-sessions] ${errorMsg}`);
-    throw new Error(errorMsg);
-  }
+  const supabaseUrl = env.supabaseUrl();
+  const serviceRoleKey = env.supabaseServiceRole();
   
   return createClient(supabaseUrl, serviceRoleKey, {
     auth: {
@@ -536,4 +528,3 @@ export function parseDeviceInfo(userAgent: string): {
   
   return { deviceType, browser, deviceName };
 }
-

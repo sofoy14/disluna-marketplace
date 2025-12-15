@@ -1,3 +1,4 @@
+import { env } from "@/lib/env/runtime-env"
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
@@ -30,8 +31,8 @@ export async function POST(
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
     const supabaseAdmin = createSupabaseClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      env.supabaseUrl(),
+      env.supabaseServiceRole()
     )
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()

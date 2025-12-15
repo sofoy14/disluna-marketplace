@@ -1,4 +1,5 @@
 // lib/supabase/server-client.ts
+import { env } from '@/lib/env/runtime-env';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/supabase/types';
 
@@ -10,12 +11,8 @@ let _supabaseServer: ReturnType<typeof createClient<Database>> | null = null;
  */
 export function getSupabaseServer(): ReturnType<typeof createClient<Database>> {
   if (!_supabaseServer) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error('Missing Supabase environment variables');
-    }
+    const supabaseUrl = env.supabaseUrl();
+    const supabaseServiceKey = env.supabaseServiceRole();
 
     // Ensure URL is properly formatted and doesn't contain internal hostnames
     let cleanUrl = supabaseUrl.trim().replace(/\/$/, '');
@@ -57,7 +54,6 @@ export const supabaseServer = new Proxy({} as ReturnType<typeof createClient<Dat
     return typeof value === 'function' ? value.bind(client) : value;
   }
 });
-
 
 
 

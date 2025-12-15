@@ -1,3 +1,4 @@
+import { env } from "@/lib/env/runtime-env"
 import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
 
@@ -11,8 +12,8 @@ export async function POST(request: Request) {
 
   try {
     const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      env.supabaseUrl(),
+      env.supabaseServiceRole()
     )
 
     const { data: usernames, error } = await supabaseAdmin

@@ -1,3 +1,4 @@
+import { env } from "@/lib/env/runtime-env"
 import { Database } from "@/supabase/types"
 import { createBrowserClient } from "@supabase/ssr"
 
@@ -5,17 +6,8 @@ import { createBrowserClient } from "@supabase/ssr"
  * Get Supabase browser configuration
  */
 function getSupabaseConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-  if (!url || !anonKey) {
-    throw new Error(
-      'Missing Supabase configuration. Please check environment variables:\n' +
-      '- NEXT_PUBLIC_SUPABASE_URL\n' +
-      '- NEXT_PUBLIC_SUPABASE_ANON_KEY'
-    )
-  }
-
+  const url = env.supabaseUrl()
+  const anonKey = env.supabaseAnonKey()
   return { url, anonKey }
 }
 
@@ -54,17 +46,7 @@ export async function verifySupabaseConnection() {
  * Uses SERVICE_ROLE_KEY for privileged operations
  */
 export function getServerSupabaseConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!url || !serviceRoleKey) {
-    throw new Error(
-      'Missing Supabase server configuration. Please check environment variables:\n' +
-      '- NEXT_PUBLIC_SUPABASE_URL\n' +
-      '- SUPABASE_SERVICE_ROLE_KEY'
-    )
-  }
-
+  const url = env.supabaseUrl()
+  const serviceRoleKey = env.supabaseServiceRole()
   return { url, serviceRoleKey }
 }
-

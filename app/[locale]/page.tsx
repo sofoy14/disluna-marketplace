@@ -1,3 +1,4 @@
+import { getEnvVar } from "@/lib/env/runtime-env"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
 import { redirect, notFound } from "next/navigation"
@@ -36,7 +37,9 @@ export default async function HomePage({ params }: PageProps) {
 
   // If Supabase isn't configured in this environment, don't crash the app shell.
   // This avoids repeated server errors in misconfigured deployments.
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL')
+  const supabaseAnonKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY')
+  if (!supabaseUrl || !supabaseAnonKey) {
     if (!_warnedMissingSupabaseEnv) {
       _warnedMissingSupabaseEnv = true
       console.error(

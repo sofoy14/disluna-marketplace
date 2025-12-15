@@ -3,16 +3,21 @@
  * Centraliza toda la configuración para evitar problemas de conectividad
  */
 
+import { env, getEnvVar } from "@/lib/env/runtime-env"
 import { Database } from "@/supabase/types"
 import { createBrowserClient } from "@supabase/ssr"
 import { createClient } from "@supabase/supabase-js"
 
+const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL') || undefined
+const supabaseAnonKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY') || undefined
+const supabaseServiceRoleKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY') || undefined
+
 // Configuración centralizada
 export const SUPABASE_CONFIG = {
   // URLs y claves
-  url: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+  url: supabaseUrl,
+  anonKey: supabaseAnonKey,
+  serviceRoleKey: supabaseServiceRoleKey,
   
   // Configuración adicional
   options: {
@@ -65,8 +70,8 @@ export function createSupabaseBrowserClient() {
     })
     
     return createBrowserClient<Database>(
-      SUPABASE_CONFIG.url!,
-      SUPABASE_CONFIG.anonKey!,
+      env.supabaseUrl(),
+      env.supabaseAnonKey(),
       SUPABASE_CONFIG.options
     )
   } catch (error) {
@@ -86,8 +91,8 @@ export function createSupabaseServerClient() {
     })
     
     return createClient<Database>(
-      SUPABASE_CONFIG.url!,
-      SUPABASE_CONFIG.serviceRoleKey!,
+      env.supabaseUrl(),
+      env.supabaseServiceRole(),
       SUPABASE_CONFIG.options
     )
   } catch (error) {
@@ -152,7 +157,6 @@ export function getSupabaseDebugInfo() {
     serviceKeyPreview: SUPABASE_CONFIG.serviceRoleKey?.substring(0, 20) + '...'
   }
 }
-
 
 
 

@@ -1,4 +1,5 @@
 // app/api/debug/env-check/route.ts
+import { getEnvVar } from '@/lib/env/runtime-env';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
@@ -12,11 +13,11 @@ export async function GET(req: NextRequest) {
         location: 'app/api/debug/env-check/route.ts:GET',
         message: 'Debug endpoint - env vars check',
         data: {
-          hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-          hasSupabaseAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-          hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-          supabaseUrlLength: process.env.NEXT_PUBLIC_SUPABASE_URL?.length || 0,
-          supabaseAnonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0,
+          hasSupabaseUrl: !!getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
+          hasSupabaseAnonKey: !!getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+          hasServiceKey: !!getEnvVar('SUPABASE_SERVICE_ROLE_KEY'),
+          supabaseUrlLength: getEnvVar('NEXT_PUBLIC_SUPABASE_URL').length,
+          supabaseAnonKeyLength: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY').length,
           nodeEnv: process.env.NODE_ENV
         },
         timestamp: Date.now(),
@@ -30,27 +31,34 @@ export async function GET(req: NextRequest) {
     }
     // #endregion
 
+    const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL');
+    const supabaseAnonKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+    const supabaseServiceKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY');
+    const wompiPublicKey = getEnvVar('NEXT_PUBLIC_WOMPI_PUBLIC_KEY');
+    const wompiBaseUrl = getEnvVar('NEXT_PUBLIC_WOMPI_BASE_URL');
+    const publicAppUrl = getEnvVar('NEXT_PUBLIC_APP_URL');
+
     const envVars = {
       // Supabase
-      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Missing',
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Missing',
-      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set' : 'Missing',
+      NEXT_PUBLIC_SUPABASE_URL: supabaseUrl ? 'Set' : 'Missing',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: supabaseAnonKey ? 'Set' : 'Missing',
+      SUPABASE_SERVICE_ROLE_KEY: supabaseServiceKey ? 'Set' : 'Missing',
       // Wompi
       WOMPI_ENVIRONMENT: process.env.WOMPI_ENVIRONMENT,
-      NEXT_PUBLIC_WOMPI_PUBLIC_KEY: process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY ? 'Set' : 'Missing',
+      NEXT_PUBLIC_WOMPI_PUBLIC_KEY: wompiPublicKey ? 'Set' : 'Missing',
       WOMPI_PRIVATE_KEY: process.env.WOMPI_PRIVATE_KEY ? 'Set' : 'Missing',
       WOMPI_INTEGRITY_SECRET: process.env.WOMPI_INTEGRITY_SECRET ? 'Set' : 'Missing',
       WOMPI_WEBHOOK_SECRET: process.env.WOMPI_WEBHOOK_SECRET ? 'Set' : 'Missing',
-      NEXT_PUBLIC_WOMPI_BASE_URL: process.env.NEXT_PUBLIC_WOMPI_BASE_URL,
-      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+      NEXT_PUBLIC_WOMPI_BASE_URL: wompiBaseUrl,
+      NEXT_PUBLIC_APP_URL: publicAppUrl,
     };
 
     return NextResponse.json({
       success: true,
       environmentVariables: envVars,
-      supabaseUrlPrefix: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...',
-      supabaseAnonKeyPrefix: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.substring(0, 20) + '...',
-      publicKeyPrefix: process.env.NEXT_PUBLIC_WOMPI_PUBLIC_KEY?.substring(0, 15) + '...',
+      supabaseUrlPrefix: supabaseUrl?.substring(0, 30) + '...',
+      supabaseAnonKeyPrefix: supabaseAnonKey?.substring(0, 20) + '...',
+      publicKeyPrefix: wompiPublicKey?.substring(0, 15) + '...',
       privateKeyPrefix: process.env.WOMPI_PRIVATE_KEY?.substring(0, 15) + '...',
       integritySecretPrefix: process.env.WOMPI_INTEGRITY_SECRET?.substring(0, 15) + '...',
       nodeEnv: process.env.NODE_ENV,
@@ -68,7 +76,6 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
 
 
 

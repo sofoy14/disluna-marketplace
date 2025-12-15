@@ -1,3 +1,4 @@
+import { getEnvVar } from "@/lib/env/runtime-env"
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
@@ -33,11 +34,11 @@ export async function DELETE(
     // Check permissions using server client
     await log('Before getSupabaseServer', {})
     const supabaseServer = getSupabaseServer()
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL')
     await log('Got supabaseServer', {
       hasClient: !!supabaseServer,
       supabaseUrl: supabaseUrl?.substring(0, 50) + '...',
-      hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY
+      hasServiceKey: !!getEnvVar('SUPABASE_SERVICE_ROLE_KEY')
     })
     
     await log('Before canUserManageWorkspace', {workspaceId: params.workspaceId, userId: user.id})
@@ -78,7 +79,7 @@ export async function DELETE(
     // The trigger has been simplified to not attempt storage deletion
     await log('Before delete operation', {
       workspaceId: params.workspaceId,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 50) + '...'
+      supabaseUrl: supabaseUrl?.substring(0, 50) + '...'
     })
     
     const { error } = await supabaseServer
@@ -128,4 +129,3 @@ export async function DELETE(
     )
   }
 }
-

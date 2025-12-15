@@ -1,3 +1,4 @@
+import { getEnvVar } from "@/lib/env/runtime-env"
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
@@ -9,8 +10,8 @@ export const createClient = (request: NextRequest) => {
     }
   })
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const url = getEnvVar('NEXT_PUBLIC_SUPABASE_URL')
+  const anonKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY')
 
   // During build, return a minimal response if env vars are not available
   if (!url || !anonKey) {

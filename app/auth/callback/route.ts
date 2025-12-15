@@ -1,19 +1,11 @@
+import { env, getEnvVar } from "@/lib/env/runtime-env"
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 import { NextResponse } from "next/server"
 
 // Get the correct app URL for redirects
 function getAppUrl(): string {
-  // Always prioritize configured URL, fallback to production domain
-  // NEVER use localhost in production
-  const configuredUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL;
-  
-  if (configuredUrl) {
-    return configuredUrl;
-  }
-  
-  // Hardcoded production fallback - NEVER localhost
-  return 'https://aliado.pro';
+  return env.appUrl();
 }
 
 export async function GET(request: Request) {
@@ -29,7 +21,7 @@ export async function GET(request: Request) {
     hasCode: !!code, 
     next,
     appUrl,
-    envAppUrl: process.env.NEXT_PUBLIC_APP_URL || 'NOT SET',
+    envAppUrl: getEnvVar('NEXT_PUBLIC_APP_URL') || 'NOT SET',
     error_description: error_description || 'none'
   })
 
@@ -40,6 +32,8 @@ export async function GET(request: Request) {
   }
 
   const cookieStore = cookies()
+  const supabaseUrlEnv = getEnvVar('NEXT_PUBLIC_SUPABASE_URL')
+  const supabaseAnonKeyEnv = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY')
   
   // Log available cookies for debugging PKCE issues
   const allCookies = cookieStore.getAll()
@@ -64,10 +58,10 @@ export async function GET(request: Request) {
       message: 'Creating Supabase client for callback',
       data: {
         hasCode: !!code,
-        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-        hasSupabaseAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-        urlLength: process.env.NEXT_PUBLIC_SUPABASE_URL?.length || 0,
-        anonKeyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0,
+        hasSupabaseUrl: !!supabaseUrlEnv,
+        hasSupabaseAnonKey: !!supabaseAnonKeyEnv,
+        urlLength: supabaseUrlEnv.length,
+        anonKeyLength: supabaseAnonKeyEnv.length,
         appUrl,
         nodeEnv: process.env.NODE_ENV
       },
@@ -83,10 +77,10 @@ export async function GET(request: Request) {
   // #endregion
 
   // Create Supabase client with proper cookie handling using getAll/setAll/removeAll
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  if (!supabaseUrlEnv || !supabaseAnonKeyEnv) {
     console.error('[Auth Callback] Missing Supabase environment variables:', {
-      hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      hasUrl: !!supabaseUrlEnv,
+      hasAnonKey: !!supabaseAnonKeyEnv
     })
     return NextResponse.redirect(
       new URL('/login?message=Error de configuración del servidor. Por favor contacta al administrador.', appUrl)
@@ -94,8 +88,8 @@ export async function GET(request: Request) {
   }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    supabaseUrlEnv,
+    supabaseAnonKeyEnv,
     {
       cookies: {
         getAll() {

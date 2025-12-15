@@ -1,6 +1,7 @@
 // app/api/sessions/route.ts
 // API endpoint for user session management (device limit)
 
+import { env, getEnvVar } from '@/lib/env/runtime-env';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
@@ -18,34 +19,37 @@ import {
 // Helper to get authenticated user
 async function getAuthenticatedUser(req: NextRequest) {
   const cookieStore = cookies();
-  
-  // Get environment variables with better diagnostics
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+  const rawSupabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL');
+  const rawSupabaseKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  const allEnvKeys = Object.keys(process.env);
   
   // Enhanced logging for debugging
   const envDiagnostics = {
-    urlPresent: !!supabaseUrl,
-    urlLength: supabaseUrl?.length || 0,
-    urlValue: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'undefined',
-    keyPresent: !!supabaseKey,
-    keyLength: supabaseKey?.length || 0,
-    keyValue: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'undefined',
-    allSupabaseKeys: Object.keys(process.env).filter(k => k.includes('SUPABASE')).join(', '),
+    urlPresent: !!rawSupabaseUrl,
+    urlLength: rawSupabaseUrl.length,
+    urlValue: rawSupabaseUrl ? `${rawSupabaseUrl.substring(0, 20)}...` : 'undefined',
+    keyPresent: !!rawSupabaseKey,
+    keyLength: rawSupabaseKey.length,
+    keyValue: rawSupabaseKey ? `${rawSupabaseKey.substring(0, 20)}...` : 'undefined',
+    allSupabaseKeys: allEnvKeys.filter(k => k.includes('SUPABASE')).join(', '),
     nodeEnv: process.env.NODE_ENV,
-    allEnvKeys: Object.keys(process.env).length
+    allEnvKeys: allEnvKeys.length
   };
   
   console.log('[Sessions API] Environment diagnostics:', JSON.stringify(envDiagnostics, null, 2));
   
-  if (!supabaseUrl || !supabaseKey) {
+  if (!rawSupabaseUrl || !rawSupabaseKey) {
     const missing = [];
-    if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
-    if (!supabaseKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+    if (!rawSupabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
+    if (!rawSupabaseKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
     const errorMsg = `Missing Supabase configuration: ${missing.join(', ')}. Diagnostics: ${JSON.stringify(envDiagnostics)}`;
     console.error(`[Sessions API] ${errorMsg}`);
     throw new Error(errorMsg);
   }
+  
+  const supabaseUrl = rawSupabaseUrl;
+  const supabaseKey = rawSupabaseKey;
   
   const supabase = createServerClient(
     supabaseUrl,
@@ -133,8 +137,8 @@ export async function POST(req: NextRequest) {
     const cookieStore = cookies();
     
     // Get environment variables with trimming and validation
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+    const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL');
+    const supabaseKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY');
     
     // Enhanced logging for debugging
     if (!supabaseUrl || !supabaseKey) {
@@ -370,4 +374,3 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
-

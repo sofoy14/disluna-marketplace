@@ -1,3 +1,4 @@
+import { env } from "@/lib/env/runtime-env"
 import { NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
@@ -30,14 +31,9 @@ export async function POST(
     console.log("📋 Process ID:", processId)
 
     // Create admin client for storage operations
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      console.error("❌ Missing Supabase environment variables")
-      throw new Error("Missing Supabase configuration")
-    }
-
     const supabaseAdmin = createSupabaseClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+      env.supabaseUrl(),
+      env.supabaseServiceRole()
     )
 
     // Verify user has access to the process using admin client
@@ -195,4 +191,3 @@ export async function POST(
     )
   }
 }
-

@@ -1,3 +1,4 @@
+import { env } from "@/lib/env/runtime-env"
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
@@ -10,8 +11,8 @@ export async function POST(request: Request) {
   try {
     const profile = await getServerProfile()
     const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      env.supabaseUrl(),
+      env.supabaseServiceRole()
     )
 
     const formData = await request.formData()
@@ -30,7 +31,7 @@ export async function POST(request: Request) {
     // ═══════════════════════════════════════════════════════════════════════
     // BILLING CHECK: Verify user can use transcriptions
     // ═══════════════════════════════════════════════════════════════════════
-    if (process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true') {
+    if (env.billingEnabled() === 'true') {
       const canTranscribe = await canUseTranscription(profile.user_id)
       
       if (!canTranscribe.allowed) {
@@ -117,4 +118,3 @@ export async function POST(request: Request) {
     )
   }
 }
-

@@ -1,17 +1,22 @@
+import { getEnvVar } from '@/lib/env/runtime-env';
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL');
+  const supabaseAnonKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  const serviceRoleKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY');
+
   return NextResponse.json({
     success: true,
     supabase: {
-      hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      hasServiceKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      hasUrl: !!supabaseUrl,
+      hasAnonKey: !!supabaseAnonKey,
+      hasServiceKey: !!serviceRoleKey,
     },
     nodeEnv: process.env.NODE_ENV,
-    message: process.env.NEXT_PUBLIC_SUPABASE_URL
+    message: supabaseUrl
       ? 'Supabase variables configured'
       : 'ERROR: NEXT_PUBLIC_SUPABASE_URL not configured'
   });

@@ -1,3 +1,4 @@
+import { env } from "@/lib/env/runtime-env"
 import { Database, Tables } from "@/supabase/types"
 import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { createServerClient } from "@supabase/ssr"
@@ -6,8 +7,8 @@ import { cookies } from "next/headers"
 export async function getServerProfile() {
   const cookieStore = cookies()
   const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    env.supabaseUrl(),
+    env.supabaseAnonKey(),
     {
       cookies: {
         get(name: string) {

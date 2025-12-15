@@ -1,3 +1,4 @@
+import { env } from "@/lib/env/runtime-env"
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
@@ -14,8 +15,8 @@ export async function POST(request: Request) {
   try {
     const profile = await getServerProfile()
     const supabaseAdmin = createClient<Database>(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      env.supabaseUrl(),
+      env.supabaseServiceRole()
     )
 
     const body = await request.json()
@@ -141,8 +142,8 @@ export async function POST(request: Request) {
     if (transcription_id) {
       try {
         const supabaseAdmin = createClient<Database>(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!
+          env.supabaseUrl(),
+          env.supabaseServiceRole()
         )
         await supabaseAdmin
           .from("transcriptions")
@@ -207,4 +208,3 @@ function splitTranscriptionIntoChunks(text: string): FileItemChunk[] {
   
   return chunks
 }
-
