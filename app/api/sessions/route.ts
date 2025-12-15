@@ -19,18 +19,32 @@ import {
 async function getAuthenticatedUser(req: NextRequest) {
   const cookieStore = cookies();
   
-  // #region agent log
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/sessions/route.ts:22',message:'Checking Supabase env vars',data:{urlPresent:!!supabaseUrl,urlLength:supabaseUrl?.length||0,keyPresent:!!supabaseKey,keyLength:supabaseKey?.length||0,allEnvKeys:Object.keys(process.env).filter(k=>k.includes('SUPABASE')).join(',')},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
+  // Get environment variables with better diagnostics
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  
+  // Enhanced logging for debugging
+  const envDiagnostics = {
+    urlPresent: !!supabaseUrl,
+    urlLength: supabaseUrl?.length || 0,
+    urlValue: supabaseUrl ? `${supabaseUrl.substring(0, 20)}...` : 'undefined',
+    keyPresent: !!supabaseKey,
+    keyLength: supabaseKey?.length || 0,
+    keyValue: supabaseKey ? `${supabaseKey.substring(0, 20)}...` : 'undefined',
+    allSupabaseKeys: Object.keys(process.env).filter(k => k.includes('SUPABASE')).join(', '),
+    nodeEnv: process.env.NODE_ENV,
+    allEnvKeys: Object.keys(process.env).length
+  };
+  
+  console.log('[Sessions API] Environment diagnostics:', JSON.stringify(envDiagnostics, null, 2));
   
   if (!supabaseUrl || !supabaseKey) {
     const missing = [];
     if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
     if (!supabaseKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
-    console.error(`[Sessions API] Missing Supabase env vars: ${missing.join(', ')}`);
-    throw new Error(`Missing Supabase configuration: ${missing.join(', ')}`);
+    const errorMsg = `Missing Supabase configuration: ${missing.join(', ')}. Diagnostics: ${JSON.stringify(envDiagnostics)}`;
+    console.error(`[Sessions API] ${errorMsg}`);
+    throw new Error(errorMsg);
   }
   
   const supabase = createServerClient(
@@ -118,19 +132,29 @@ export async function POST(req: NextRequest) {
   try {
     const cookieStore = cookies();
     
-    // #region agent log
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/api/sessions/route.ts:107',message:'POST: Checking Supabase env vars',data:{urlPresent:!!supabaseUrl,keyPresent:!!supabaseKey},timestamp:Date.now(),sessionId:'debug-session',runId:'initial',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
+    // Get environment variables with trimming and validation
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
     
+    // Enhanced logging for debugging
     if (!supabaseUrl || !supabaseKey) {
+      const envDiagnostics = {
+        urlPresent: !!supabaseUrl,
+        urlLength: supabaseUrl?.length || 0,
+        keyPresent: !!supabaseKey,
+        keyLength: supabaseKey?.length || 0,
+        allSupabaseKeys: Object.keys(process.env).filter(k => k.includes('SUPABASE')).join(', '),
+        nodeEnv: process.env.NODE_ENV
+      };
       const missing = [];
       if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
       if (!supabaseKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
-      console.error(`[Sessions API] Missing Supabase env vars: ${missing.join(', ')}`);
+      console.error(`[Sessions API] Missing Supabase env vars: ${missing.join(', ')}. Diagnostics:`, envDiagnostics);
       return NextResponse.json(
-        { error: `Missing Supabase configuration: ${missing.join(', ')}` },
+        { 
+          error: `Missing Supabase configuration: ${missing.join(', ')}`,
+          diagnostics: envDiagnostics
+        },
         { status: 500 }
       );
     }

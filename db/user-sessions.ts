@@ -5,8 +5,17 @@ import { createClient } from '@supabase/supabase-js';
 
 // Create admin client for session management
 const getAdminClient = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  
+  if (!supabaseUrl || !serviceRoleKey) {
+    const missing = [];
+    if (!supabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
+    if (!serviceRoleKey) missing.push('SUPABASE_SERVICE_ROLE_KEY');
+    const errorMsg = `Missing Supabase configuration in getAdminClient: ${missing.join(', ')}`;
+    console.error(`[user-sessions] ${errorMsg}`);
+    throw new Error(errorMsg);
+  }
   
   return createClient(supabaseUrl, serviceRoleKey, {
     auth: {
