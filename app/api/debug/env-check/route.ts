@@ -56,11 +56,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       environmentVariables: envVars,
-      supabaseUrlPrefix: supabaseUrl?.substring(0, 30) + '...',
-      supabaseAnonKeyPrefix: supabaseAnonKey?.substring(0, 20) + '...',
-      publicKeyPrefix: wompiPublicKey?.substring(0, 15) + '...',
-      privateKeyPrefix: process.env.WOMPI_PRIVATE_KEY?.substring(0, 15) + '...',
-      integritySecretPrefix: process.env.WOMPI_INTEGRITY_SECRET?.substring(0, 15) + '...',
+      lengths: {
+        supabaseUrl: supabaseUrl?.length || 0,
+        supabaseAnonKey: supabaseAnonKey?.length || 0,
+        wompiPublicKey: wompiPublicKey?.length || 0,
+        wompiPrivateKey: process.env.WOMPI_PRIVATE_KEY?.length || 0,
+        wompiIntegritySecret: process.env.WOMPI_INTEGRITY_SECRET?.length || 0,
+        wompiWebhookSecret: process.env.WOMPI_WEBHOOK_SECRET?.length || 0,
+      },
       nodeEnv: process.env.NODE_ENV,
     });
 
@@ -76,6 +79,5 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
 
 

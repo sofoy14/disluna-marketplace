@@ -28,10 +28,8 @@ async function getAuthenticatedUser(req: NextRequest) {
   const envDiagnostics = {
     urlPresent: !!rawSupabaseUrl,
     urlLength: rawSupabaseUrl.length,
-    urlValue: rawSupabaseUrl ? `${rawSupabaseUrl.substring(0, 20)}...` : 'undefined',
     keyPresent: !!rawSupabaseKey,
     keyLength: rawSupabaseKey.length,
-    keyValue: rawSupabaseKey ? `${rawSupabaseKey.substring(0, 20)}...` : 'undefined',
     allSupabaseKeys: allEnvKeys.filter(k => k.includes('SUPABASE')).join(', '),
     nodeEnv: process.env.NODE_ENV,
     allEnvKeys: allEnvKeys.length
@@ -43,7 +41,7 @@ async function getAuthenticatedUser(req: NextRequest) {
     const missing = [];
     if (!rawSupabaseUrl) missing.push('NEXT_PUBLIC_SUPABASE_URL');
     if (!rawSupabaseKey) missing.push('NEXT_PUBLIC_SUPABASE_ANON_KEY');
-    const errorMsg = `Missing Supabase configuration: ${missing.join(', ')}. Diagnostics: ${JSON.stringify(envDiagnostics)}`;
+    const errorMsg = `Missing Supabase configuration: ${missing.join(', ')}.`;
     console.error(`[Sessions API] ${errorMsg}`);
     throw new Error(errorMsg);
   }

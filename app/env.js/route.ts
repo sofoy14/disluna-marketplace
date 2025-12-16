@@ -1,0 +1,26 @@
+import { NextResponse } from 'next/server'
+import { getEnvVar } from '@/lib/env/runtime-env'
+
+function toJs(obj: unknown) {
+  return `window.__ENV=${JSON.stringify(obj)};`
+}
+
+export function GET() {
+  const payload = {
+    NEXT_PUBLIC_SUPABASE_URL: getEnvVar('NEXT_PUBLIC_SUPABASE_URL'),
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY'),
+    NEXT_PUBLIC_APP_URL: getEnvVar('NEXT_PUBLIC_APP_URL'),
+    NEXT_PUBLIC_SITE_URL: getEnvVar('NEXT_PUBLIC_SITE_URL'),
+    NEXT_PUBLIC_BILLING_ENABLED: getEnvVar('NEXT_PUBLIC_BILLING_ENABLED'),
+    NEXT_PUBLIC_WOMPI_PUBLIC_KEY: getEnvVar('NEXT_PUBLIC_WOMPI_PUBLIC_KEY'),
+    NEXT_PUBLIC_WOMPI_BASE_URL: getEnvVar('NEXT_PUBLIC_WOMPI_BASE_URL')
+  }
+
+  return new NextResponse(toJs(payload), {
+    headers: {
+      'content-type': 'application/javascript; charset=utf-8',
+      'cache-control': 'no-store, max-age=0'
+    }
+  })
+}
+

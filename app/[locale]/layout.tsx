@@ -3,11 +3,13 @@ import { GlobalState } from "@/components/utility/global-state"
 import { Providers } from "@/components/utility/providers"
 import { ThemeFix } from "@/components/utility/theme-fix"
 import TranslationsProvider from "@/components/utility/translations-provider"
+import { getEnvVar } from "@/lib/env/runtime-env"
 import initTranslations from "@/lib/i18n"
 import { createClient } from "@/lib/supabase/server"
 import { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
 import { cookies } from "next/headers"
+import Script from "next/script"
 import { ReactNode } from "react"
 import "./globals.css"
 
@@ -25,7 +27,7 @@ interface RootLayoutProps {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://aliado.pro'),
+  metadataBase: new URL(getEnvVar('NEXT_PUBLIC_APP_URL', { fallback: 'https://aliado.pro' })),
   applicationName: APP_NAME,
   title: {
     default: APP_DEFAULT_TITLE,
@@ -105,6 +107,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning className="dark" style={{ colorScheme: 'dark' }}>
       <head>
+        <Script src="/env.js" strategy="beforeInteractive" />
         <link rel="icon" href="/favicon-ali.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icon-192x192.svg" />
         <link rel="shortcut icon" href="/favicon-ali.svg" />

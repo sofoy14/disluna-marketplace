@@ -3,6 +3,7 @@ import { i18nRouter } from "next-i18n-router"
 import { NextResponse, type NextRequest } from "next/server"
 import i18nConfig from "./i18nConfig"
 import { isAdmin } from "@/lib/admin/check-admin"
+import { getEnvVar } from "@/lib/env/runtime-env"
 
 // Rutas que requieren suscripción activa para acceder
 const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
@@ -11,10 +12,25 @@ const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
 const AUTH_ROUTES = ['/onboarding', '/login', '/setup', '/auth/verify-email', '/auth/callback']
 
 // Verificar si billing está habilitado
-const isBillingEnabled = () => process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true';
+const isBillingEnabled = () => getEnvVar('NEXT_PUBLIC_BILLING_ENABLED') === 'true';
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
+  
+  // If a stale client is still attempting to call a Server Action from an older build,
+  // short-circuit the request with a controlled response to avoid noisy "Failed to find Server Action" logs.
+  if (request.method === 'POST' && request.headers.get('next-action')) {
+    return new NextResponse(
+      'Client is out of date. Please refresh the page and try again.',
+      {
+        status: 409,
+        headers: {
+          'content-type': 'text/plain; charset=utf-8',
+          'cache-control': 'no-store, max-age=0'
+        }
+      }
+    )
+  }
   
   // Rutas públicas - verificar ANTES del i18n router para evitar redirecciones innecesarias
   // Estas rutas son accesibles tanto para usuarios autenticados como no autenticados

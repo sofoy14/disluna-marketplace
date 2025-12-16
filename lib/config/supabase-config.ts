@@ -1,6 +1,6 @@
 /**
- * Configuración robusta de Supabase
- * Centraliza toda la configuración para evitar problemas de conectividad
+ * Centralized Supabase configuration helpers.
+ * Keep this file free of logs and secret previews.
  */
 
 import { env, getEnvVar } from "@/lib/env/runtime-env"
@@ -8,166 +8,84 @@ import { Database } from "@/supabase/types"
 import { createBrowserClient } from "@supabase/ssr"
 import { createClient } from "@supabase/supabase-js"
 
-const supabaseUrl = getEnvVar('NEXT_PUBLIC_SUPABASE_URL') || undefined
-const supabaseAnonKey = getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY') || undefined
-const supabaseServiceRoleKey = getEnvVar('SUPABASE_SERVICE_ROLE_KEY') || undefined
+export type SupabasePublicConfig = {
+  url: string
+  anonKey: string
+}
 
-// Configuración centralizada
+export type SupabaseAdminConfig = SupabasePublicConfig & {
+  serviceRoleKey: string
+}
+
+export function getSupabasePublicConfig(): SupabasePublicConfig {
+  return {
+    url: getEnvVar("NEXT_PUBLIC_SUPABASE_URL", { required: true }),
+    anonKey: getEnvVar("NEXT_PUBLIC_SUPABASE_ANON_KEY", { required: true })
+  }
+}
+
+export function getSupabaseAdminConfig(): SupabaseAdminConfig {
+  return {
+    ...getSupabasePublicConfig(),
+    serviceRoleKey: getEnvVar("SUPABASE_SERVICE_ROLE_KEY", { required: true })
+  }
+}
+
 export const SUPABASE_CONFIG = {
-  // URLs y claves
-  url: supabaseUrl,
-  anonKey: supabaseAnonKey,
-  serviceRoleKey: supabaseServiceRoleKey,
-  
-  // Configuración adicional
-  options: {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    },
-    realtime: {
-      params: {
-        eventsPerSecond: 10
-      }
-    }
+  get url() {
+    return getEnvVar("NEXT_PUBLIC_SUPABASE_URL") || undefined
+  },
+  get anonKey() {
+    return getEnvVar("NEXT_PUBLIC_SUPABASE_ANON_KEY") || undefined
+  },
+  get serviceRoleKey() {
+    return getEnvVar("SUPABASE_SERVICE_ROLE_KEY") || undefined
   }
-}
+} as const
 
-// Validación de configuración
-export function validateSupabaseConfig() {
-  const errors: string[] = []
-  
-  if (!SUPABASE_CONFIG.url) {
-    errors.push('NEXT_PUBLIC_SUPABASE_URL is required')
-  } else if (!SUPABASE_CONFIG.url.startsWith('https://') || !SUPABASE_CONFIG.url.includes('.supabase.co')) {
-    errors.push('NEXT_PUBLIC_SUPABASE_URL must be a valid Supabase Cloud URL')
-  }
-  
-  if (!SUPABASE_CONFIG.anonKey) {
-    errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY is required')
-  }
-  
-  if (!SUPABASE_CONFIG.serviceRoleKey) {
-    errors.push('SUPABASE_SERVICE_ROLE_KEY is required')
-  }
-  
-  if (errors.length > 0) {
-    throw new Error(`Supabase configuration errors:\n${errors.join('\n')}`)
-  }
-  
-  return true
-}
-
-// Cliente de navegador robusto
 export function createSupabaseBrowserClient() {
-  try {
-    validateSupabaseConfig()
-    
-    console.log('🔧 Creando cliente de navegador de Supabase:', {
-      url: SUPABASE_CONFIG.url?.substring(0, 30) + '...',
-      hasAnonKey: !!SUPABASE_CONFIG.anonKey
-    })
-    
-    return createBrowserClient<Database>(
-      env.supabaseUrl(),
-      env.supabaseAnonKey(),
-      SUPABASE_CONFIG.options
-    )
-  } catch (error) {
-    console.error('❌ Error creando cliente de navegador:', error)
-    throw error
-  }
+  const { url, anonKey } = getSupabasePublicConfig()
+  return createBrowserClient<Database>(url, anonKey)
 }
 
-// Cliente de servidor robusto
 export function createSupabaseServerClient() {
-  try {
-    validateSupabaseConfig()
-    
-    console.log('🔧 Creando cliente de servidor de Supabase:', {
-      url: SUPABASE_CONFIG.url?.substring(0, 30) + '...',
-      hasServiceKey: !!SUPABASE_CONFIG.serviceRoleKey
-    })
-    
-    return createClient<Database>(
-      env.supabaseUrl(),
-      env.supabaseServiceRole(),
-      SUPABASE_CONFIG.options
-    )
-  } catch (error) {
-    console.error('❌ Error creando cliente de servidor:', error)
-    throw error
-  }
+  const { url, serviceRoleKey } = getSupabaseAdminConfig()
+  return createClient<Database>(url, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false }
+  })
 }
 
-// Instancias singleton - Usar lazy initialization para evitar errores si las variables no están disponibles
 let _supabaseBrowser: ReturnType<typeof createSupabaseBrowserClient> | null = null
 let _supabaseServer: ReturnType<typeof createSupabaseServerClient> | null = null
 
-export const supabaseBrowser = new Proxy({} as ReturnType<typeof createSupabaseBrowserClient>, {
-  get(target, prop) {
-    if (!_supabaseBrowser) {
-      _supabaseBrowser = createSupabaseBrowserClient()
+export const supabaseBrowser = new Proxy(
+  {} as ReturnType<typeof createSupabaseBrowserClient>,
+  {
+    get(_target, prop) {
+      if (!_supabaseBrowser) _supabaseBrowser = createSupabaseBrowserClient()
+      const value = (_supabaseBrowser as any)[prop]
+      return typeof value === "function" ? value.bind(_supabaseBrowser) : value
     }
-    const value = (_supabaseBrowser as any)[prop]
-    return typeof value === 'function' ? value.bind(_supabaseBrowser) : value
   }
-})
+)
 
-export const supabaseServer = new Proxy({} as ReturnType<typeof createSupabaseServerClient>, {
-  get(target, prop) {
-    if (!_supabaseServer) {
-      _supabaseServer = createSupabaseServerClient()
+export const supabaseServer = new Proxy(
+  {} as ReturnType<typeof createSupabaseServerClient>,
+  {
+    get(_target, prop) {
+      if (!_supabaseServer) _supabaseServer = createSupabaseServerClient()
+      const value = (_supabaseServer as any)[prop]
+      return typeof value === "function" ? value.bind(_supabaseServer) : value
     }
-    const value = (_supabaseServer as any)[prop]
-    return typeof value === 'function' ? value.bind(_supabaseServer) : value
   }
-})
+)
 
-// Función de verificación de conexión
-export async function verifySupabaseConnection() {
-  try {
-    console.log('🔄 Verificando conexión con Supabase...')
-    
-    const { data, error } = await supabaseServer
-      .from('profiles')
-      .select('count')
-      .limit(1)
-    
-    if (error) {
-      throw new Error(`Connection failed: ${error.message}`)
-    }
-    
-    console.log('✅ Conexión con Supabase verificada exitosamente')
-    return true
-  } catch (error) {
-    console.error('❌ Error verificando conexión:', error)
-    throw error
-  }
-}
-
-// Función para obtener configuración en formato de debug
 export function getSupabaseDebugInfo() {
   return {
-    url: SUPABASE_CONFIG.url,
+    hasUrl: !!SUPABASE_CONFIG.url,
     hasAnonKey: !!SUPABASE_CONFIG.anonKey,
     hasServiceKey: !!SUPABASE_CONFIG.serviceRoleKey,
-    anonKeyPreview: SUPABASE_CONFIG.anonKey?.substring(0, 20) + '...',
-    serviceKeyPreview: SUPABASE_CONFIG.serviceRoleKey?.substring(0, 20) + '...'
+    nodeEnv: process.env.NODE_ENV || "unknown",
+    appUrl: env.appUrl()
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

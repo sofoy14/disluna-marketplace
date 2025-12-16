@@ -323,7 +323,7 @@ export async function GET(req: NextRequest) {
     console.log('[Checkout Redirect] Amount to charge:', amountToCharge, 'centavos COP');
     console.log('[Checkout Redirect] Original plan price:', plan.amount_in_cents, 'centavos COP');
     console.log('[Checkout Redirect] Special offer applied:', isFirstMonth ? `YES - ${specialOffer?.name}` : 'NO');
-    console.log('[Checkout Redirect] Public Key:', wompiConfig.publicKey.substring(0, 20) + '...');
+    console.log('[Checkout Redirect] Public Key present:', !!wompiConfig.publicKey, 'length:', wompiConfig.publicKey?.length || 0);
     console.log('[Checkout Redirect] ========== END ==========');
 
     // HTTP Redirect to Wompi
@@ -336,4 +336,3 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(getErrorRedirectUrl(req, 'server_error', errorMessage.substring(0, 100)));
   }
 }
-
