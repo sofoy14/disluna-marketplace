@@ -2,13 +2,11 @@
 // Webhook principal para procesar eventos de Wompi
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import { validateWebhookSignature, isTransactionSuccessful, isTransactionFinal } from '@/lib/wompi/utils';
 import { wompiClient } from '@/lib/wompi/client';
 import { 
   getInvoiceByReference,
   markInvoiceAsPaid, 
-  markInvoiceAsFailed,
   updateInvoice
 } from '@/db/invoices';
 import { 

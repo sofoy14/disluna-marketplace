@@ -1,6 +1,13 @@
 // app/api/billing/invoices/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvoicesByWorkspaceId } from '@/db/invoices';
+import { getSupabaseServer } from '@/lib/supabase/server-client';
+import { getSessionUser } from '@/src/server/auth/session';
+import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
+
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,7 +26,25 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const invoices = await getInvoicesByWorkspaceId(workspaceId, limit, offset);
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const supabase = getSupabaseServer();
+    try {
+      await assertWorkspaceAccess(supabase, workspaceId, user.id);
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    const invoices = await getInvoicesByWorkspaceId(workspaceId, limit, offset, supabase);
     
     return NextResponse.json({
       success: true,
@@ -43,7 +68,6 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
 
 
 

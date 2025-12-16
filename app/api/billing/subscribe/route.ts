@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig } from '@/lib/wompi/config';
+import { getSessionUser } from '@/src/server/auth/session';
+import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -80,6 +82,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields: plan_id and workspace_id' },
         { status: 400 }
+      );
+    }
+
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const access = await assertWorkspaceAccess(supabase, workspace_id, user.id).catch(() => null);
+    if (!access) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    if (access.role !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, error: 'Only workspace admins can start checkout' },
+        { status: 403 }
       );
     }
 

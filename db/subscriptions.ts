@@ -3,6 +3,7 @@
 
 import { supabase } from "@/lib/supabase/robust-client"
 import { BillingPeriod, Plan, calculatePeriodEnd } from "./plans"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
 export type SubscriptionStatus = 'pending' | 'trialing' | 'active' | 'past_due' | 'canceled' | 'incomplete';
 
@@ -62,8 +63,16 @@ const SUBSCRIPTION_SELECT = `
   )
 `;
 
-export const getSubscriptionByWorkspaceId = async (workspaceId: string): Promise<Subscription | null> => {
-  const { data: subscription, error } = await supabase
+function getDbClient(client?: SupabaseClient<any>) {
+  return client || supabase
+}
+
+export const getSubscriptionByWorkspaceId = async (
+  workspaceId: string,
+  client?: SupabaseClient<any>
+): Promise<Subscription | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: subscription, error } = await supabaseClient
     .from("subscriptions")
     .select(SUBSCRIPTION_SELECT)
     .eq("workspace_id", workspaceId)
@@ -79,8 +88,12 @@ export const getSubscriptionByWorkspaceId = async (workspaceId: string): Promise
   return subscription;
 };
 
-export const getSubscriptionByUserId = async (userId: string): Promise<Subscription | null> => {
-  const { data: subscription, error } = await supabase
+export const getSubscriptionByUserId = async (
+  userId: string,
+  client?: SupabaseClient<any>
+): Promise<Subscription | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: subscription, error } = await supabaseClient
     .from("subscriptions")
     .select(SUBSCRIPTION_SELECT)
     .eq("user_id", userId)
@@ -96,8 +109,12 @@ export const getSubscriptionByUserId = async (userId: string): Promise<Subscript
   return subscription;
 };
 
-export const getSubscriptionByReference = async (reference: string): Promise<Subscription | null> => {
-  const { data: subscription, error } = await supabase
+export const getSubscriptionByReference = async (
+  reference: string,
+  client?: SupabaseClient<any>
+): Promise<Subscription | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: subscription, error } = await supabaseClient
     .from("subscriptions")
     .select(SUBSCRIPTION_SELECT)
     .eq("wompi_reference", reference)
@@ -110,8 +127,12 @@ export const getSubscriptionByReference = async (reference: string): Promise<Sub
   return subscription;
 };
 
-export const getPendingSubscription = async (workspaceId: string): Promise<Subscription | null> => {
-  const { data: subscription, error } = await supabase
+export const getPendingSubscription = async (
+  workspaceId: string,
+  client?: SupabaseClient<any>
+): Promise<Subscription | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: subscription, error } = await supabaseClient
     .from("subscriptions")
     .select(SUBSCRIPTION_SELECT)
     .eq("workspace_id", workspaceId)
@@ -127,12 +148,15 @@ export const getPendingSubscription = async (workspaceId: string): Promise<Subsc
   return subscription;
 };
 
-export const getSubscriptionsDueToday = async (): Promise<Subscription[]> => {
+export const getSubscriptionsDueToday = async (
+  client?: SupabaseClient<any>
+): Promise<Subscription[]> => {
+  const supabaseClient = getDbClient(client)
   const today = new Date();
   const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
 
-  const { data: subscriptions, error } = await supabase
+  const { data: subscriptions, error } = await supabaseClient
     .from("subscriptions")
     .select(SUBSCRIPTION_SELECT)
     .eq("status", "active")
@@ -147,8 +171,12 @@ export const getSubscriptionsDueToday = async (): Promise<Subscription[]> => {
   return subscriptions || [];
 };
 
-export const getSubscriptionById = async (subscriptionId: string): Promise<Subscription | null> => {
-  const { data: subscription, error } = await supabase
+export const getSubscriptionById = async (
+  subscriptionId: string,
+  client?: SupabaseClient<any>
+): Promise<Subscription | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: subscription, error } = await supabaseClient
     .from("subscriptions")
     .select(SUBSCRIPTION_SELECT)
     .eq("id", subscriptionId)
@@ -162,9 +190,11 @@ export const getSubscriptionById = async (subscriptionId: string): Promise<Subsc
 };
 
 export const createSubscription = async (
-  subscription: Partial<Subscription>
+  subscription: Partial<Subscription>,
+  client?: SupabaseClient<any>
 ): Promise<Subscription> => {
-  const { data: createdSubscription, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: createdSubscription, error } = await supabaseClient
     .from("subscriptions")
     .insert([subscription])
     .select(SUBSCRIPTION_SELECT)
@@ -179,9 +209,11 @@ export const createSubscription = async (
 
 export const updateSubscription = async (
   subscriptionId: string,
-  updates: Partial<Subscription>
+  updates: Partial<Subscription>,
+  client?: SupabaseClient<any>
 ): Promise<Subscription> => {
-  const { data: updatedSubscription, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: updatedSubscription, error } = await supabaseClient
     .from("subscriptions")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", subscriptionId)
@@ -197,34 +229,42 @@ export const updateSubscription = async (
 
 export const activateSubscription = async (
   subscriptionId: string,
-  paymentSourceId?: string
+  paymentSourceId?: string,
+  client?: SupabaseClient<any>
 ): Promise<Subscription> => {
   const updates: Partial<Subscription> = { status: 'active' };
   if (paymentSourceId) {
     updates.payment_source_id = paymentSourceId;
   }
-  return updateSubscription(subscriptionId, updates);
+  return updateSubscription(subscriptionId, updates, client);
 };
 
-export const cancelSubscription = async (subscriptionId: string): Promise<Subscription> => {
+export const cancelSubscription = async (
+  subscriptionId: string,
+  client?: SupabaseClient<any>
+): Promise<Subscription> => {
   return updateSubscription(subscriptionId, {
     cancel_at_period_end: true,
     canceled_at: new Date().toISOString()
-  });
+  }, client);
 };
 
-export const reactivateSubscription = async (subscriptionId: string): Promise<Subscription> => {
+export const reactivateSubscription = async (
+  subscriptionId: string,
+  client?: SupabaseClient<any>
+): Promise<Subscription> => {
   return updateSubscription(subscriptionId, {
     cancel_at_period_end: false,
     canceled_at: undefined
-  });
+  }, client);
 };
 
 export const extendSubscriptionPeriod = async (
   subscriptionId: string,
-  plan: Plan
+  plan: Plan,
+  client?: SupabaseClient<any>
 ): Promise<Subscription> => {
-  const subscription = await getSubscriptionById(subscriptionId);
+  const subscription = await getSubscriptionById(subscriptionId, client);
   if (!subscription) {
     throw new Error('Subscription not found');
   }
@@ -235,12 +275,15 @@ export const extendSubscriptionPeriod = async (
   return updateSubscription(subscriptionId, {
     current_period_start: newPeriodStart.toISOString(),
     current_period_end: newPeriodEnd.toISOString()
-  });
+  }, client);
 };
 
 // Verifica si un usuario tiene acceso al chatbot
-export const hasActiveSubscription = async (userId: string): Promise<boolean> => {
-  const subscription = await getSubscriptionByUserId(userId);
+export const hasActiveSubscription = async (
+  userId: string,
+  client?: SupabaseClient<any>
+): Promise<boolean> => {
+  const subscription = await getSubscriptionByUserId(userId, client);
   
   if (!subscription) return false;
   

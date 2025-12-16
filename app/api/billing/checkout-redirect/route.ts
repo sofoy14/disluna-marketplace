@@ -6,6 +6,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig, getWompiConfigStatus } from '@/lib/wompi/config';
+import { getSessionUser } from '@/src/server/auth/session';
+import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -118,6 +120,16 @@ export async function GET(req: NextRequest) {
     if (!validation.isValid) {
       console.error('[Checkout Redirect] Wompi config invalid:', validation.missingFields);
       return NextResponse.redirect(getErrorRedirectUrl(req, 'wompi_config', validation.missingFields.join(',')));
+    }
+
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', req.nextUrl.origin));
+    }
+
+    const access = await assertWorkspaceAccess(supabase, workspace_id, user.id).catch(() => null);
+    if (!access || access.role !== "ADMIN") {
+      return NextResponse.redirect(getErrorRedirectUrl(req, 'forbidden'));
     }
 
     // Get plan

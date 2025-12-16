@@ -1,9 +1,10 @@
 // app/api/billing/checkout/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getPlanById } from '@/db/plans';
 import { generateCheckoutData } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl } from '@/lib/wompi/config';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
+import { getSessionUser } from '@/src/server/auth/session';
+import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -38,8 +39,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const access = await assertWorkspaceAccess(supabase, workspace_id, user.id).catch(() => null);
+    if (!access) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    if (access.role !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, error: 'Only workspace admins can start checkout' },
+        { status: 403 }
+      );
+    }
+
     // Get plan details
-    const plan = await getPlanById(plan_id);
+    const { data: plan, error: planError } = await supabase
+      .from("plans")
+      .select("*")
+      .eq("id", plan_id)
+      .eq("is_active", true)
+      .single();
+
+    if (planError || !plan) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Plan not found',
+          message: planError?.message || 'Unknown error'
+        },
+        { status: 404 }
+      );
+    }
     
     // Get workspace details using service role client
     const { data: workspace, error: workspaceError } = await supabase
@@ -132,4 +172,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

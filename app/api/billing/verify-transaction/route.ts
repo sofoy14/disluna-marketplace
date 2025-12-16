@@ -6,9 +6,15 @@ import { wompiClient } from '@/lib/wompi/client';
 import { getInvoiceByReference } from '@/db/invoices';
 import { getSubscriptionById } from '@/db/subscriptions';
 import { formatCurrency } from '@/lib/wompi/utils';
+import { getSupabaseServer } from '@/lib/supabase/server-client';
+import { getSessionUser } from '@/src/server/auth/session';
+import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
 
 export async function GET(req: NextRequest) {
   try {
+    const supabase = getSupabaseServer();
+    const user = await getSessionUser();
+
     const url = new URL(req.url);
     const transactionId = url.searchParams.get('transaction_id');
     const reference = url.searchParams.get('reference');
@@ -36,10 +42,24 @@ export async function GET(req: NextRequest) {
     // Si tenemos reference, buscar en nuestra DB
     if (reference || transaction?.reference) {
       const ref = reference || transaction?.reference;
-      invoice = await getInvoiceByReference(ref);
-      
+      invoice = await getInvoiceByReference(ref, supabase);
+
+      const workspaceId = invoice?.workspace_id || invoice?.subscriptions?.workspace_id || null;
+
       if (invoice) {
-        subscription = await getSubscriptionById(invoice.subscription_id);
+        if (!user || !workspaceId) {
+          // Avoid leaking billing data without an authenticated session
+          invoice = null;
+        } else {
+          const access = await assertWorkspaceAccess(supabase, workspaceId, user.id).catch(() => null);
+          if (!access) {
+            invoice = null;
+          }
+        }
+      }
+
+      if (invoice?.subscription_id) {
+        subscription = await getSubscriptionById(invoice.subscription_id, supabase);
       }
     }
 
@@ -124,4 +144,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

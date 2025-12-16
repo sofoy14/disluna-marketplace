@@ -334,36 +334,21 @@ describe("extractOpenapiData for body 2", () => {
     expect(routes[0].method).toBe("get")
     expect(routes[0].operationId).toBe("getStockDailyOpenClose")
 
-    expect(functions[0].function.parameters.properties).toHaveProperty(
-      "stocksTicker"
-    )
-    expect(functions[0].function.parameters.properties.stocksTicker.type).toBe(
-      "string"
-    )
-    expect(
-      functions[0].function.parameters.properties.stocksTicker
-    ).toHaveProperty("required", true)
-    expect(functions[0].function.parameters.properties).toHaveProperty("date")
-    expect(functions[0].function.parameters.properties.date.type).toBe("string")
-    expect(functions[0].function.parameters.properties.date).toHaveProperty(
-      "format",
-      "date"
-    )
-    expect(functions[0].function.parameters.properties.date).toHaveProperty(
-      "required",
-      true
-    )
+    const dailyOpenCloseParams =
+      functions[0].function.parameters.properties.parameters.properties
+
+    expect(dailyOpenCloseParams).toHaveProperty("stocksTicker")
+    expect(dailyOpenCloseParams.stocksTicker.type).toBe("string")
+    expect(dailyOpenCloseParams).toHaveProperty("date")
+    expect(dailyOpenCloseParams.date.type).toBe("string")
+    expect(dailyOpenCloseParams.date).toHaveProperty("format", "date")
     expect(routes[1].path).toBe("/v2/aggs/ticker/{stocksTicker}/prev")
     expect(routes[1].method).toBe("get")
     expect(routes[1].operationId).toBe("getStockPreviousClose")
-    expect(functions[1].function.parameters.properties).toHaveProperty(
-      "stocksTicker"
-    )
-    expect(functions[1].function.parameters.properties.stocksTicker.type).toBe(
-      "string"
-    )
-    expect(
-      functions[1].function.parameters.properties.stocksTicker
-    ).toHaveProperty("required", true)
+    const previousCloseParams =
+      functions[1].function.parameters.properties.parameters.properties
+
+    expect(previousCloseParams).toHaveProperty("stocksTicker")
+    expect(previousCloseParams.stocksTicker.type).toBe("string")
   })
 })

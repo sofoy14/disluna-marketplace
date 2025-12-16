@@ -1,6 +1,7 @@
 // db/transactions.ts
 import { supabase } from "@/lib/supabase/robust-client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
 export interface Transaction {
   id: string;
@@ -17,12 +18,18 @@ export interface Transaction {
   updated_at: string;
 }
 
+function getDbClient(client?: SupabaseClient<any>) {
+  return client || supabase
+}
+
 export const getTransactionsByWorkspaceId = async (
   workspaceId: string,
   limit: number = 50,
-  offset: number = 0
+  offset: number = 0,
+  client?: SupabaseClient<any>
 ): Promise<Transaction[]> => {
-  const { data: transactions, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: transactions, error } = await supabaseClient
     .from("transactions")
     .select("*")
     .eq("workspace_id", workspaceId)
@@ -36,8 +43,12 @@ export const getTransactionsByWorkspaceId = async (
   return transactions || [];
 };
 
-export const getTransactionById = async (transactionId: string): Promise<Transaction> => {
-  const { data: transaction, error } = await supabase
+export const getTransactionById = async (
+  transactionId: string,
+  client?: SupabaseClient<any>
+): Promise<Transaction> => {
+  const supabaseClient = getDbClient(client)
+  const { data: transaction, error } = await supabaseClient
     .from("transactions")
     .select("*")
     .eq("id", transactionId)
@@ -50,8 +61,12 @@ export const getTransactionById = async (transactionId: string): Promise<Transac
   return transaction;
 };
 
-export const getTransactionByWompiId = async (wompiId: string): Promise<Transaction | null> => {
-  const { data: transaction, error } = await supabase
+export const getTransactionByWompiId = async (
+  wompiId: string,
+  client?: SupabaseClient<any>
+): Promise<Transaction | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: transaction, error } = await supabaseClient
     .from("transactions")
     .select("*")
     .eq("wompi_id", wompiId)
@@ -64,8 +79,12 @@ export const getTransactionByWompiId = async (wompiId: string): Promise<Transact
   return transaction;
 };
 
-export const getTransactionsByInvoiceId = async (invoiceId: string): Promise<Transaction[]> => {
-  const { data: transactions, error } = await supabase
+export const getTransactionsByInvoiceId = async (
+  invoiceId: string,
+  client?: SupabaseClient<any>
+): Promise<Transaction[]> => {
+  const supabaseClient = getDbClient(client)
+  const { data: transactions, error } = await supabaseClient
     .from("transactions")
     .select("*")
     .eq("invoice_id", invoiceId)
@@ -78,8 +97,12 @@ export const getTransactionsByInvoiceId = async (invoiceId: string): Promise<Tra
   return transactions || [];
 };
 
-export const createTransaction = async (transaction: TablesInsert<"transactions">): Promise<Transaction> => {
-  const { data: createdTransaction, error } = await supabase
+export const createTransaction = async (
+  transaction: TablesInsert<"transactions">,
+  client?: SupabaseClient<any>
+): Promise<Transaction> => {
+  const supabaseClient = getDbClient(client)
+  const { data: createdTransaction, error } = await supabaseClient
     .from("transactions")
     .insert([transaction])
     .select("*")
@@ -94,9 +117,11 @@ export const createTransaction = async (transaction: TablesInsert<"transactions"
 
 export const updateTransaction = async (
   transactionId: string,
-  transaction: TablesUpdate<"transactions">
+  transaction: TablesUpdate<"transactions">,
+  client?: SupabaseClient<any>
 ): Promise<Transaction> => {
-  const { data: updatedTransaction, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: updatedTransaction, error } = await supabaseClient
     .from("transactions")
     .update(transaction)
     .eq("id", transactionId)
@@ -112,9 +137,11 @@ export const updateTransaction = async (
 
 export const updateTransactionByWompiId = async (
   wompiId: string,
-  transaction: TablesUpdate<"transactions">
+  transaction: TablesUpdate<"transactions">,
+  client?: SupabaseClient<any>
 ): Promise<Transaction> => {
-  const { data: updatedTransaction, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: updatedTransaction, error } = await supabaseClient
     .from("transactions")
     .update(transaction)
     .eq("wompi_id", wompiId)
@@ -127,7 +154,6 @@ export const updateTransactionByWompiId = async (
 
   return updatedTransaction;
 };
-
 
 
 

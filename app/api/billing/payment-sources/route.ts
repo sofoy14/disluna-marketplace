@@ -7,6 +7,8 @@ import {
   setDefaultPaymentSource 
 } from '@/db/payment-sources';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
+import { getSessionUser } from '@/src/server/auth/session';
+import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -27,7 +29,31 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const paymentSources = await getPaymentSourcesByWorkspaceId(workspaceId);
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const supabase = getSupabaseServer();
+    const access = await assertWorkspaceAccess(supabase, workspaceId, user.id).catch(() => null);
+    if (!access) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    if (access.role !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, error: 'Only workspace admins can view payment methods' },
+        { status: 403 }
+      );
+    }
+
+    const paymentSources = await getPaymentSourcesByWorkspaceId(workspaceId, supabase);
     
     return NextResponse.json({
       success: true,
@@ -48,7 +74,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = getSupabaseServer();
   try {
     const { workspace_id, wompi_id, type, status, customer_email, last_four, expires_at } = await req.json();
 
@@ -59,6 +84,30 @@ export async function POST(req: NextRequest) {
           error: 'Missing required fields: workspace_id, wompi_id, type, and customer_email' 
         },
         { status: 400 }
+      );
+    }
+
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const supabase = getSupabaseServer();
+    const access = await assertWorkspaceAccess(supabase, workspace_id, user.id).catch(() => null);
+    if (!access) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    if (access.role !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, error: 'Only workspace admins can manage payment methods' },
+        { status: 403 }
       );
     }
 
@@ -90,7 +139,7 @@ export async function POST(req: NextRequest) {
       last_four,
       expires_at,
       is_default: false // Will be set to true by trigger if it's the first one
-    });
+    }, supabase);
 
     return NextResponse.json({
       success: true,
@@ -125,7 +174,37 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    await deletePaymentSource(paymentSourceId);
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const supabase = getSupabaseServer();
+    const { data: paymentSource, error: paymentSourceError } = await supabase
+      .from("payment_sources")
+      .select("workspace_id")
+      .eq("id", paymentSourceId)
+      .maybeSingle();
+
+    if (paymentSourceError || !paymentSource) {
+      return NextResponse.json(
+        { success: false, error: 'Payment source not found' },
+        { status: 404 }
+      );
+    }
+
+    const access = await assertWorkspaceAccess(supabase, paymentSource.workspace_id, user.id).catch(() => null);
+    if (!access || access.role !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, error: 'Only workspace admins can manage payment methods' },
+        { status: 403 }
+      );
+    }
+
+    await deletePaymentSource(paymentSourceId, supabase);
 
     return NextResponse.json({
       success: true,
@@ -159,11 +238,41 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const supabase = getSupabaseServer();
+    const { data: paymentSource, error: paymentSourceError } = await supabase
+      .from("payment_sources")
+      .select("workspace_id")
+      .eq("id", payment_source_id)
+      .maybeSingle();
+
+    if (paymentSourceError || !paymentSource) {
+      return NextResponse.json(
+        { success: false, error: 'Payment source not found' },
+        { status: 404 }
+      );
+    }
+
+    const access = await assertWorkspaceAccess(supabase, paymentSource.workspace_id, user.id).catch(() => null);
+    if (!access || access.role !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, error: 'Only workspace admins can manage payment methods' },
+        { status: 403 }
+      );
+    }
+
     let result;
 
     switch (action) {
       case 'set_default':
-        result = await setDefaultPaymentSource(payment_source_id);
+        result = await setDefaultPaymentSource(payment_source_id, supabase);
         break;
       default:
         return NextResponse.json(
@@ -192,7 +301,6 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
-
 
 
 

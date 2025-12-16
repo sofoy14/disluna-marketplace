@@ -1,5 +1,6 @@
 'use client'
 
+import { getPublicEnvVar } from "@/lib/env/public-env"
 import { createClient } from "@/lib/supabase/browser-client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -15,9 +16,10 @@ export function OAuthButtons() {
       const supabase = createClient()
 
       // Get app URL from environment or use window.location.origin
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL ||
-                    process.env.NEXT_PUBLIC_SITE_URL ||
-                    (typeof window !== 'undefined' ? window.location.origin : 'https://aliado.pro')
+      const appUrl =
+        getPublicEnvVar('NEXT_PUBLIC_APP_URL') ||
+        getPublicEnvVar('NEXT_PUBLIC_SITE_URL') ||
+        (typeof window !== 'undefined' ? window.location.origin : 'https://aliado.pro')
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
@@ -99,4 +101,3 @@ export function OAuthButtons() {
     </>
   )
 }
-

@@ -1,8 +1,15 @@
 // app/api/billing/subscriptions/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getSubscriptionByWorkspaceId, createSubscription, cancelSubscription } from '@/db/subscriptions';
-import { getPlanById } from '@/db/plans';
+import {
+  createSubscription,
+  cancelSubscription,
+  getSubscriptionById,
+  getSubscriptionByWorkspaceId,
+  reactivateSubscription
+} from '@/db/subscriptions';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
+import { getSessionUser } from '@/src/server/auth/session';
+import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -23,7 +30,25 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const subscription = await getSubscriptionByWorkspaceId(workspaceId);
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const supabase = getSupabaseServer();
+    try {
+      await assertWorkspaceAccess(supabase, workspaceId, user.id);
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    const subscription = await getSubscriptionByWorkspaceId(workspaceId, supabase);
     
     return NextResponse.json({
       success: true,
@@ -44,7 +69,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = getSupabaseServer();
   try {
     const { plan_id, workspace_id, payment_source_id, transaction_id } = await req.json();
 
@@ -58,8 +82,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Get plan details
-    const plan = await getPlanById(plan_id);
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const supabase = getSupabaseServer();
+    const access = await assertWorkspaceAccess(supabase, workspace_id, user.id).catch(() => null);
+    if (!access) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    if (access.role !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, error: 'Only workspace admins can manage subscriptions' },
+        { status: 403 }
+      );
+    }
     
     // Get workspace details
     const { data: workspace, error: workspaceError } = await supabase
@@ -79,7 +124,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Check if subscription already exists
-    const existingSubscription = await getSubscriptionByWorkspaceId(workspace_id);
+    const existingSubscription = await getSubscriptionByWorkspaceId(workspace_id, supabase);
     if (existingSubscription) {
       return NextResponse.json(
         { 
@@ -105,7 +150,7 @@ export async function POST(req: NextRequest) {
       current_period_start: now.toISOString(),
       current_period_end: periodEnd.toISOString(),
       cancel_at_period_end: false
-    });
+    }, supabase);
 
     return NextResponse.json({
       success: true,
@@ -139,14 +184,47 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    const user = await getSessionUser();
+    if (!user) {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const supabase = getSupabaseServer();
+
+    const existing = await getSubscriptionById(subscription_id, supabase);
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Subscription not found' },
+        { status: 404 }
+      );
+    }
+
+    const access = await assertWorkspaceAccess(supabase, existing.workspace_id, user.id).catch(() => null);
+    if (!access) {
+      return NextResponse.json(
+        { success: false, error: 'Forbidden' },
+        { status: 403 }
+      );
+    }
+
+    if (access.role !== "ADMIN") {
+      return NextResponse.json(
+        { success: false, error: 'Only workspace admins can manage subscriptions' },
+        { status: 403 }
+      );
+    }
+
     let updatedSubscription;
 
     switch (action) {
       case 'cancel':
-        updatedSubscription = await cancelSubscription(subscription_id);
+        updatedSubscription = await cancelSubscription(subscription_id, supabase);
         break;
       case 'reactivate':
-        updatedSubscription = await cancelSubscription(subscription_id); // This will unset cancel_at_period_end
+        updatedSubscription = await reactivateSubscription(subscription_id, supabase);
         break;
       default:
         return NextResponse.json(
@@ -175,7 +253,6 @@ export async function PATCH(req: NextRequest) {
     );
   }
 }
-
 
 
 

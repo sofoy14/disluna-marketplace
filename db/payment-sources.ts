@@ -1,6 +1,7 @@
 // db/payment-sources.ts
 import { supabase } from "@/lib/supabase/robust-client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
 export interface PaymentSource {
   id: string;
@@ -17,8 +18,16 @@ export interface PaymentSource {
   updated_at: string;
 }
 
-export const getPaymentSourcesByWorkspaceId = async (workspaceId: string): Promise<PaymentSource[]> => {
-  const { data: paymentSources, error } = await supabase
+function getDbClient(client?: SupabaseClient<any>) {
+  return client || supabase
+}
+
+export const getPaymentSourcesByWorkspaceId = async (
+  workspaceId: string,
+  client?: SupabaseClient<any>
+): Promise<PaymentSource[]> => {
+  const supabaseClient = getDbClient(client)
+  const { data: paymentSources, error } = await supabaseClient
     .from("payment_sources")
     .select("*")
     .eq("workspace_id", workspaceId)
@@ -32,8 +41,12 @@ export const getPaymentSourcesByWorkspaceId = async (workspaceId: string): Promi
   return paymentSources || [];
 };
 
-export const getPaymentSourcesByUserId = async (userId: string): Promise<PaymentSource[]> => {
-  const { data: paymentSources, error } = await supabase
+export const getPaymentSourcesByUserId = async (
+  userId: string,
+  client?: SupabaseClient<any>
+): Promise<PaymentSource[]> => {
+  const supabaseClient = getDbClient(client)
+  const { data: paymentSources, error } = await supabaseClient
     .from("payment_sources")
     .select("*")
     .eq("user_id", userId)
@@ -47,8 +60,12 @@ export const getPaymentSourcesByUserId = async (userId: string): Promise<Payment
   return paymentSources || [];
 };
 
-export const getDefaultPaymentSource = async (workspaceId: string): Promise<PaymentSource | null> => {
-  const { data: paymentSource, error } = await supabase
+export const getDefaultPaymentSource = async (
+  workspaceId: string,
+  client?: SupabaseClient<any>
+): Promise<PaymentSource | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: paymentSource, error } = await supabaseClient
     .from("payment_sources")
     .select("*")
     .eq("workspace_id", workspaceId)
@@ -62,8 +79,12 @@ export const getDefaultPaymentSource = async (workspaceId: string): Promise<Paym
   return paymentSource;
 };
 
-export const createPaymentSource = async (paymentSource: TablesInsert<"payment_sources">): Promise<PaymentSource> => {
-  const { data: createdPaymentSource, error } = await supabase
+export const createPaymentSource = async (
+  paymentSource: TablesInsert<"payment_sources">,
+  client?: SupabaseClient<any>
+): Promise<PaymentSource> => {
+  const supabaseClient = getDbClient(client)
+  const { data: createdPaymentSource, error } = await supabaseClient
     .from("payment_sources")
     .insert([paymentSource])
     .select("*")
@@ -78,9 +99,11 @@ export const createPaymentSource = async (paymentSource: TablesInsert<"payment_s
 
 export const updatePaymentSource = async (
   paymentSourceId: string,
-  paymentSource: TablesUpdate<"payment_sources">
+  paymentSource: TablesUpdate<"payment_sources">,
+  client?: SupabaseClient<any>
 ): Promise<PaymentSource> => {
-  const { data: updatedPaymentSource, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: updatedPaymentSource, error } = await supabaseClient
     .from("payment_sources")
     .update(paymentSource)
     .eq("id", paymentSourceId)
@@ -94,9 +117,13 @@ export const updatePaymentSource = async (
   return updatedPaymentSource;
 };
 
-export const setDefaultPaymentSource = async (paymentSourceId: string): Promise<PaymentSource> => {
+export const setDefaultPaymentSource = async (
+  paymentSourceId: string,
+  client?: SupabaseClient<any>
+): Promise<PaymentSource> => {
+  const supabaseClient = getDbClient(client)
   // First, get the payment source to get workspace_id
-  const { data: paymentSource, error: fetchError } = await supabase
+  const { data: paymentSource, error: fetchError } = await supabaseClient
     .from("payment_sources")
     .select("workspace_id")
     .eq("id", paymentSourceId)
@@ -107,7 +134,7 @@ export const setDefaultPaymentSource = async (paymentSourceId: string): Promise<
   }
 
   // Unset all other default payment sources for this workspace
-  const { error: unsetError } = await supabase
+  const { error: unsetError } = await supabaseClient
     .from("payment_sources")
     .update({ is_default: false })
     .eq("workspace_id", paymentSource.workspace_id)
@@ -118,11 +145,15 @@ export const setDefaultPaymentSource = async (paymentSourceId: string): Promise<
   }
 
   // Set this payment source as default
-  return updatePaymentSource(paymentSourceId, { is_default: true });
+  return updatePaymentSource(paymentSourceId, { is_default: true }, supabaseClient);
 };
 
-export const deletePaymentSource = async (paymentSourceId: string): Promise<boolean> => {
-  const { error } = await supabase
+export const deletePaymentSource = async (
+  paymentSourceId: string,
+  client?: SupabaseClient<any>
+): Promise<boolean> => {
+  const supabaseClient = getDbClient(client)
+  const { error } = await supabaseClient
     .from("payment_sources")
     .delete()
     .eq("id", paymentSourceId);
@@ -134,8 +165,12 @@ export const deletePaymentSource = async (paymentSourceId: string): Promise<bool
   return true;
 };
 
-export const getPaymentSourceByWompiId = async (wompiId: string): Promise<PaymentSource | null> => {
-  const { data: paymentSource, error } = await supabase
+export const getPaymentSourceByWompiId = async (
+  wompiId: string,
+  client?: SupabaseClient<any>
+): Promise<PaymentSource | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: paymentSource, error } = await supabaseClient
     .from("payment_sources")
     .select("*")
     .eq("wompi_id", wompiId)
@@ -147,8 +182,6 @@ export const getPaymentSourceByWompiId = async (wompiId: string): Promise<Paymen
 
   return paymentSource;
 };
-
-
 
 
 

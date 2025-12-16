@@ -2,6 +2,7 @@
 // Acceso a datos de facturas
 
 import { supabase } from "@/lib/supabase/robust-client"
+import type { SupabaseClient } from "@supabase/supabase-js"
 
 export type InvoiceStatus = 'draft' | 'pending' | 'paid' | 'failed' | 'void';
 
@@ -63,12 +64,18 @@ const INVOICE_SELECT = `
   )
 `;
 
+function getDbClient(client?: SupabaseClient<any>) {
+  return client || supabase
+}
+
 export const getInvoicesByWorkspaceId = async (
   workspaceId: string,
   limit: number = 50,
-  offset: number = 0
+  offset: number = 0,
+  client?: SupabaseClient<any>
 ): Promise<Invoice[]> => {
-  const { data: invoices, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: invoices, error } = await supabaseClient
     .from("invoices")
     .select(INVOICE_SELECT)
     .eq("workspace_id", workspaceId)
@@ -82,8 +89,12 @@ export const getInvoicesByWorkspaceId = async (
   return invoices || [];
 };
 
-export const getInvoiceById = async (invoiceId: string): Promise<Invoice | null> => {
-  const { data: invoice, error } = await supabase
+export const getInvoiceById = async (
+  invoiceId: string,
+  client?: SupabaseClient<any>
+): Promise<Invoice | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: invoice, error } = await supabaseClient
     .from("invoices")
     .select(INVOICE_SELECT)
     .eq("id", invoiceId)
@@ -96,8 +107,12 @@ export const getInvoiceById = async (invoiceId: string): Promise<Invoice | null>
   return invoice;
 };
 
-export const getInvoiceByReference = async (reference: string): Promise<Invoice | null> => {
-  const { data: invoice, error } = await supabase
+export const getInvoiceByReference = async (
+  reference: string,
+  client?: SupabaseClient<any>
+): Promise<Invoice | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: invoice, error } = await supabaseClient
     .from("invoices")
     .select(INVOICE_SELECT)
     .eq("reference", reference)
@@ -110,8 +125,11 @@ export const getInvoiceByReference = async (reference: string): Promise<Invoice 
   return invoice;
 };
 
-export const getFailedInvoicesForRetry = async (): Promise<Invoice[]> => {
-  const { data: invoices, error } = await supabase
+export const getFailedInvoicesForRetry = async (
+  client?: SupabaseClient<any>
+): Promise<Invoice[]> => {
+  const supabaseClient = getDbClient(client)
+  const { data: invoices, error } = await supabaseClient
     .from("invoices")
     .select(INVOICE_SELECT)
     .eq("status", "failed")
@@ -125,8 +143,11 @@ export const getFailedInvoicesForRetry = async (): Promise<Invoice[]> => {
   return invoices || [];
 };
 
-export const getSuspendedInvoices = async (): Promise<Invoice[]> => {
-  const { data: invoices, error } = await supabase
+export const getSuspendedInvoices = async (
+  client?: SupabaseClient<any>
+): Promise<Invoice[]> => {
+  const supabaseClient = getDbClient(client)
+  const { data: invoices, error } = await supabaseClient
     .from("invoices")
     .select(INVOICE_SELECT)
     .eq("status", "failed")
@@ -140,8 +161,12 @@ export const getSuspendedInvoices = async (): Promise<Invoice[]> => {
   return invoices || [];
 };
 
-export const getPendingInvoiceBySubscription = async (subscriptionId: string): Promise<Invoice | null> => {
-  const { data: invoice, error } = await supabase
+export const getPendingInvoiceBySubscription = async (
+  subscriptionId: string,
+  client?: SupabaseClient<any>
+): Promise<Invoice | null> => {
+  const supabaseClient = getDbClient(client)
+  const { data: invoice, error } = await supabaseClient
     .from("invoices")
     .select(INVOICE_SELECT)
     .eq("subscription_id", subscriptionId)
@@ -157,8 +182,12 @@ export const getPendingInvoiceBySubscription = async (subscriptionId: string): P
   return invoice;
 };
 
-export const createInvoice = async (invoice: Partial<Invoice>): Promise<Invoice> => {
-  const { data: createdInvoice, error } = await supabase
+export const createInvoice = async (
+  invoice: Partial<Invoice>,
+  client?: SupabaseClient<any>
+): Promise<Invoice> => {
+  const supabaseClient = getDbClient(client)
+  const { data: createdInvoice, error } = await supabaseClient
     .from("invoices")
     .insert([invoice])
     .select(INVOICE_SELECT)
@@ -173,9 +202,11 @@ export const createInvoice = async (invoice: Partial<Invoice>): Promise<Invoice>
 
 export const updateInvoice = async (
   invoiceId: string,
-  updates: Partial<Invoice>
+  updates: Partial<Invoice>,
+  client?: SupabaseClient<any>
 ): Promise<Invoice> => {
-  const { data: updatedInvoice, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: updatedInvoice, error } = await supabaseClient
     .from("invoices")
     .update({ ...updates, updated_at: new Date().toISOString() })
     .eq("id", invoiceId)
@@ -191,29 +222,37 @@ export const updateInvoice = async (
 
 export const markInvoiceAsPaid = async (
   invoiceId: string,
-  wompiTransactionId: string
+  wompiTransactionId: string,
+  client?: SupabaseClient<any>
 ): Promise<Invoice> => {
   return updateInvoice(invoiceId, {
     status: 'paid',
     paid_at: new Date().toISOString(),
     wompi_transaction_id: wompiTransactionId
-  });
+  }, client);
 };
 
 export const markInvoiceAsFailed = async (
   invoiceId: string,
-  attemptCount: number
+  attemptCount: number,
+  client?: SupabaseClient<any>
 ): Promise<Invoice> => {
   return updateInvoice(invoiceId, {
     status: 'failed',
     attempt_count: attemptCount
-  });
+  }, client);
 };
 
-export const markInvoiceAsPending = async (invoiceId: string): Promise<Invoice> => {
-  return updateInvoice(invoiceId, { status: 'pending' });
+export const markInvoiceAsPending = async (
+  invoiceId: string,
+  client?: SupabaseClient<any>
+): Promise<Invoice> => {
+  return updateInvoice(invoiceId, { status: 'pending' }, client);
 };
 
-export const voidInvoice = async (invoiceId: string): Promise<Invoice> => {
-  return updateInvoice(invoiceId, { status: 'void' });
+export const voidInvoice = async (
+  invoiceId: string,
+  client?: SupabaseClient<any>
+): Promise<Invoice> => {
+  return updateInvoice(invoiceId, { status: 'void' }, client);
 };

@@ -9,7 +9,8 @@ export type PublicEnvKey =
 
 function readProcessEnv(key: PublicEnvKey): string | undefined {
   try {
-    const value = (process.env as any)?.[key]
+    const proc = (globalThis as any)?.process
+    const value = proc?.env?.[key]
     return typeof value === 'string' && value.trim() ? value.trim() : undefined
   } catch {
     return undefined
@@ -32,4 +33,3 @@ export function getPublicEnvVar(
   }
   return value
 }
-
