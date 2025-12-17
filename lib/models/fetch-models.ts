@@ -1,5 +1,6 @@
 import { Tables } from "@/supabase/types"
 import { LLM, LLMID, OpenRouterLLM } from "@/types"
+import { getPublicEnvVar } from "@/lib/env/public-env"
 import { toast } from "sonner"
 import { LLM_LIST_MAP } from "./llm/llm-list"
 
@@ -54,8 +55,11 @@ export const fetchHostedModels = async (profile: Tables<"profiles">) => {
 
 export const fetchOllamaModels = async () => {
   try {
+    const baseUrl = getPublicEnvVar('NEXT_PUBLIC_OLLAMA_URL')
+    if (!baseUrl) return
+
     const response = await fetch(
-      process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/tags"
+      `${baseUrl.replace(/\/+$/, '')}/api/tags`
     )
 
     if (!response.ok) {

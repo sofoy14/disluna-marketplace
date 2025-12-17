@@ -6,6 +6,7 @@ export type PublicEnvKey =
   | 'NEXT_PUBLIC_BILLING_ENABLED'
   | 'NEXT_PUBLIC_WOMPI_PUBLIC_KEY'
   | 'NEXT_PUBLIC_WOMPI_BASE_URL'
+  | 'NEXT_PUBLIC_OLLAMA_URL'
 
 function readProcessEnv(key: PublicEnvKey): string | undefined {
   try {

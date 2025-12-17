@@ -13,7 +13,6 @@ import {
   Loader2,
   AlertCircle 
 } from 'lucide-react';
-import { formatCurrency } from '@/lib/wompi/utils';
 
 interface PaymentSource {
   id: string;

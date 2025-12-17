@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { getPublicEnvVar } from '@/lib/env/public-env';
 
 export default function DebugAuthPage() {
   const [email, setEmail] = useState('');
@@ -181,10 +182,10 @@ export default function DebugAuthPage() {
           <CardContent>
             <div className="space-y-2 text-sm">
               <div>
-                <strong>NEXT_PUBLIC_SITE_URL:</strong> {process.env.NEXT_PUBLIC_SITE_URL || 'No definida'}
+                <strong>NEXT_PUBLIC_SITE_URL:</strong> {getPublicEnvVar('NEXT_PUBLIC_SITE_URL') || 'No definida'}
               </div>
               <div>
-                <strong>URL de Redirección:</strong> {`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback?next=/auth/verify-email`}
+                <strong>URL de Redirección:</strong> {`${getPublicEnvVar('NEXT_PUBLIC_SITE_URL') || 'http://localhost:3000'}/auth/callback?next=/auth/verify-email`}
               </div>
             </div>
           </CardContent>

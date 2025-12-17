@@ -270,13 +270,11 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
           }
         }
 
-        if (process.env.NEXT_PUBLIC_OLLAMA_URL) {
-          const localModels = await fetchOllamaModels()
-          if (localModels) {
-            setAvailableLocalModels(localModels)
-          }
+        const localModels = await fetchOllamaModels()
+        if (localModels) {
+          setAvailableLocalModels(localModels)
         }
-        
+         
         // Los datos se cargan en segundo plano, no hay pantalla de carga
       } catch (error) {
         console.error("❌ Error cargando datos iniciales:", error)

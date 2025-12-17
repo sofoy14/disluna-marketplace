@@ -14,7 +14,7 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react';
-import { formatCurrency } from '@/lib/wompi/utils';
+import { formatCurrency } from '@/lib/wompi/format';
 
 interface Subscription {
   id: string;

@@ -13,7 +13,7 @@ import {
   Calendar,
   DollarSign
 } from 'lucide-react';
-import { formatCurrency } from '@/lib/wompi/utils';
+import { formatCurrency } from '@/lib/wompi/format';
 
 interface Invoice {
   id: string;

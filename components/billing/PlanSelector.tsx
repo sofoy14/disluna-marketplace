@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Star, Crown, Sparkles, MessageSquare, FolderOpen, Mic, Building2 } from 'lucide-react';
-import { formatCurrency } from '@/lib/wompi/utils';
+import { formatCurrency } from '@/lib/wompi/format';
 
 interface Plan {
   id: string;

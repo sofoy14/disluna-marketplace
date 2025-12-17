@@ -1,4 +1,5 @@
 const defaultRuntimeCaching = require("next-pwa/cache")
+const webpack = require("webpack")
 
 const withPWA = require("next-pwa")({
   dest: "public",
@@ -51,6 +52,16 @@ module.exports = withPWA({
         net: false,
         tls: false
       }
+
+      // Some client-side dependencies still reference the Node.js `process` global.
+      // Next.js does not guarantee a `process` polyfill in the browser, so provide one.
+      config.plugins = config.plugins || []
+      config.plugins.push(
+        new webpack.ProvidePlugin({
+          process: "next/dist/compiled/process/browser",
+          Buffer: ["next/dist/compiled/buffer", "Buffer"]
+        })
+      )
     }
     return config
   }

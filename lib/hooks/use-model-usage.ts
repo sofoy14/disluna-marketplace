@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useContext } from 'react'
 import { ALIContext } from '@/context/context'
 import { createClient } from '@/lib/supabase/client'
+import { getPublicEnvVar } from '@/lib/env/public-env'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -38,7 +39,7 @@ export function useModelUsage(): ModelUsageState {
   
   const fetchUsage = useCallback(async () => {
     // Skip if billing is disabled or user has pro/enterprise plan
-    const billingEnabled = process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true'
+    const billingEnabled = getPublicEnvVar('NEXT_PUBLIC_BILLING_ENABLED') === 'true'
     const planType = profile?.plan_type || 'none'
     
     // Pro and enterprise plans have unlimited usage

@@ -23,6 +23,7 @@ import { BibliographyItem } from "@/types/chat-message"
 import React from "react"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
+import { getPublicEnvVar } from "@/lib/env/public-env"
 
 export const validateChatSettings = (
   chatSettings: ChatSettings | null,
@@ -157,9 +158,15 @@ export const handleLocalChat = async (
 ) => {
   const formattedMessages = await buildFinalMessages(payload, profile, [])
 
+  const baseUrl = getPublicEnvVar('NEXT_PUBLIC_OLLAMA_URL')
+  if (!baseUrl) {
+    toast.error('Ollama no est\u00e1 configurado. Define NEXT_PUBLIC_OLLAMA_URL para usar modelos locales.')
+    throw new Error('Missing NEXT_PUBLIC_OLLAMA_URL')
+  }
+
   // Ollama API: https://github.com/jmorganca/ollama/blob/main/docs/api.md
   const response = await fetchChatResponse(
-    process.env.NEXT_PUBLIC_OLLAMA_URL + "/api/chat",
+    `${baseUrl.replace(/\/+$/, '')}/api/chat`,
     {
       model: chatSettings.model,
       messages: formattedMessages,
