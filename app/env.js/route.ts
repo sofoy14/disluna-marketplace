@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server'
 import { getEnvVar } from '@/lib/env/runtime-env'
 
+// This endpoint must be evaluated at request time so Dockploy/runtime env vars
+// are reflected without requiring rebuilds.
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const runtime = 'nodejs'
+
 function toJs(obj: unknown) {
   return `window.__ENV=${JSON.stringify(obj)};`
 }
@@ -23,4 +29,3 @@ export function GET() {
     }
   })
 }
-

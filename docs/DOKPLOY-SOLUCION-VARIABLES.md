@@ -10,6 +10,14 @@ Missing Supabase configuration. Please check environment variables:
 - NEXT_PUBLIC_SUPABASE_ANON_KEY
 ```
 
+## Diagnostico rapido (sin SSH)
+
+1. Abre `https://TU_DOMINIO/api/debug/env-check` y valida que:
+   - `NEXT_PUBLIC_SUPABASE_URL: Set`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY: Set`
+2. Abre `https://TU_DOMINIO/env.js` y valida que el contenido incluya `window.__ENV` con esos valores no vacios.
+3. Si `env.js` esta vacio o no cambia tras ajustar variables, haz un rebuild/redeploy completo en Dokploy y prueba un hard refresh (por PWA/Service Worker).
+
 ## 🔍 Causa Raíz
 
 El problema es que **Dokploy necesita configurar las variables de dos maneras**:

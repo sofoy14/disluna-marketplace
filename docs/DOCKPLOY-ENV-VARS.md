@@ -2,6 +2,14 @@
 
 ## Problema
 
+## Nota (Runtime fallback)
+
+Este proyecto expone `GET /env.js` que inyecta `window.__ENV` en el navegador (se carga en el layout con `next/script`). Esto permite resolver `NEXT_PUBLIC_*` en runtime incluso si Dockploy no las pasa como build-args.
+
+Checklist rapido en produccion:
+- `https://TU_DOMINIO/api/debug/env-check` debe reportar `NEXT_PUBLIC_SUPABASE_URL: Set`
+- `https://TU_DOMINIO/env.js` debe contener `window.__ENV` con `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY` no vacias
+
 Las variables `NEXT_PUBLIC_*` deben estar disponibles durante el **build time** de Next.js para que se incrusten en el bundle del cliente. Si no están disponibles durante el build, no estarán en el bundle del cliente y causarán errores.
 
 ## Solución
