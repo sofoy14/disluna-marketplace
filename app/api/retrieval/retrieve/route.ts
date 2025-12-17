@@ -4,6 +4,8 @@ import { generateOpenRouterEmbedding } from "@/lib/generate-openrouter-embedding
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import OpenAI from "openai"
+import { assertFilesAccess } from "@/src/server/access/files"
+import { ForbiddenError, NotFoundError } from "@/src/server/errors"
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -38,6 +40,8 @@ export async function POST(request: Request) {
     const supabaseAdmin = getSupabaseServer();
 
     const profile = await getServerProfile()
+
+    await assertFilesAccess(supabaseAdmin, uniqueFileIds, profile.user_id)
 
     if (embeddingsProvider === "openai") {
       if (profile.use_azure_openai) {
@@ -149,8 +153,9 @@ export async function POST(request: Request) {
       status: 200
     })
   } catch (error: any) {
-    const errorMessage = error.error?.message || "An unexpected error occurred"
-    const errorCode = error.status || 500
+    const errorMessage = error.error?.message || error?.message || "An unexpected error occurred"
+    const errorCode =
+      error instanceof NotFoundError ? 404 : error instanceof ForbiddenError ? 403 : error.status || 500
     return new Response(JSON.stringify({ message: errorMessage }), {
       status: errorCode
     })

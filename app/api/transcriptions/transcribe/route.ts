@@ -6,6 +6,7 @@ import { NextResponse } from "next/server"
 import OpenAI from "openai"
 import { FileItemChunk } from "@/types"
 import { encode } from "gpt-tokenizer"
+import { assertWorkspaceAccess } from "@/src/server/workspaces/access"
 
 export const maxDuration = 300 // 5 minutos para transcripción
 
@@ -21,7 +22,6 @@ export async function POST(request: Request) {
 
     const body = await request.json()
     transcription_id = body.transcription_id
-    const audio_path = body.audio_path
 
     if (!transcription_id) {
       return NextResponse.json(
@@ -30,11 +30,46 @@ export async function POST(request: Request) {
       )
     }
 
+    const { data: transcriptionRecord, error: transcriptionError } = await supabaseAdmin
+      .from("transcriptions")
+      .select("id,user_id,workspace_id,audio_path,status")
+      .eq("id", transcription_id)
+      .maybeSingle()
+
+    if (transcriptionError) {
+      throw new Error(`Failed to load transcription: ${transcriptionError.message}`)
+    }
+
+    if (!transcriptionRecord) {
+      return NextResponse.json({ error: "Transcription not found" }, { status: 404 })
+    }
+
+    if (transcriptionRecord.user_id !== profile.user_id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
+
+    if (transcriptionRecord.workspace_id) {
+      const access = await assertWorkspaceAccess(
+        supabaseAdmin,
+        transcriptionRecord.workspace_id,
+        profile.user_id
+      ).catch(() => null)
+      if (!access) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+      }
+    }
+
+    const audio_path = transcriptionRecord.audio_path
+    if (!audio_path) {
+      return NextResponse.json({ error: "audio_path missing on transcription" }, { status: 400 })
+    }
+
     // Actualizar estado a "processing" usando el cliente admin
     const { error: statusError } = await supabaseAdmin
       .from("transcriptions")
       .update({ status: "processing", updated_at: new Date().toISOString() })
       .eq("id", transcription_id)
+      .eq("user_id", profile.user_id)
 
     if (statusError) {
       throw new Error(`Failed to update transcription status: ${statusError.message}`)
@@ -97,6 +132,7 @@ export async function POST(request: Request) {
         updated_at: new Date().toISOString()
       })
       .eq("id", transcription_id)
+      .eq("user_id", profile.user_id)
 
     if (updateError) {
       throw new Error(`Failed to update transcription: ${updateError.message}`)
@@ -149,6 +185,7 @@ export async function POST(request: Request) {
           .from("transcriptions")
           .update({ status: "failed", updated_at: new Date().toISOString() })
           .eq("id", transcription_id)
+          .eq("user_id", profile.user_id)
       } catch (updateError) {
         console.error("Error updating transcription status to failed:", updateError)
       }

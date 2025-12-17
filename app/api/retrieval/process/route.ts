@@ -17,6 +17,8 @@ import { Database } from "@/supabase/types"
 import { FileItemChunk } from "@/types"
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
+import { assertFileAccess } from "@/src/server/access/files"
+import { ForbiddenError, NotFoundError } from "@/src/server/errors"
 
 // Dynamic import function for local embeddings (only loaded when needed)
 // Force dynamic rendering to prevent build-time execution
@@ -46,25 +48,7 @@ export async function POST(req: Request) {
     embeddingsProvider = "openai"
     console.log("🔥 FORZANDO embeddingsProvider a 'openai' (más confiable y económico)")
 
-    const { data: fileMetadata, error: metadataError } = await supabaseAdmin
-      .from("files")
-      .select("*")
-      .eq("id", file_id)
-      .single()
-
-    if (metadataError) {
-      throw new Error(
-        `Failed to retrieve file metadata: ${metadataError.message}`
-      )
-    }
-
-    if (!fileMetadata) {
-      throw new Error("File not found")
-    }
-
-    if (fileMetadata.user_id !== profile.user_id) {
-      throw new Error("Unauthorized")
-    }
+    const fileMetadata = await assertFileAccess(supabaseAdmin, file_id, profile.user_id)
 
     const { data: file, error: fileError } = await supabaseAdmin.storage
       .from("files")
@@ -232,7 +216,8 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.log(`Error in retrieval/process: ${error.stack}`)
     const errorMessage = error?.message || "An unexpected error occurred"
-    const errorCode = error.status || 500
+    const errorCode =
+      error instanceof NotFoundError ? 404 : error instanceof ForbiddenError ? 403 : error.status || 500
     return new Response(JSON.stringify({ message: errorMessage }), {
       status: errorCode
     })

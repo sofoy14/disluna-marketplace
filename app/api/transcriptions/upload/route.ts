@@ -4,6 +4,7 @@ import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import { canUseTranscription } from "@/lib/billing/plan-access"
+import { assertWorkspaceAccess } from "@/src/server/workspaces/access"
 
 export const maxDuration = 300 // 5 minutos para upload de archivos grandes
 
@@ -19,7 +20,11 @@ export async function POST(request: Request) {
     const file = formData.get("file") as File
     const name = formData.get("name") as string
     const description = formData.get("description") as string
-    const workspace_id = formData.get("workspace_id") as string
+    const rawWorkspaceId = formData.get("workspace_id")
+    const workspace_id =
+      typeof rawWorkspaceId === "string" && rawWorkspaceId.trim().length > 0
+        ? rawWorkspaceId
+        : null
 
     if (!file) {
       return NextResponse.json(
@@ -43,6 +48,15 @@ export async function POST(request: Request) {
           },
           { status: 402 } // Payment Required
         )
+      }
+    }
+
+    if (workspace_id) {
+      const access = await assertWorkspaceAccess(supabaseAdmin, workspace_id, profile.user_id).catch(
+        () => null
+      )
+      if (!access) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 })
       }
     }
 
@@ -85,7 +99,7 @@ export async function POST(request: Request) {
       .from("transcriptions")
       .insert({
         user_id: profile.user_id,
-        workspace_id: workspace_id || null,
+        workspace_id,
         name: name || file.name,
         audio_path: filePath,
         file_size: file.size,

@@ -2,10 +2,11 @@
 // Webhook principal para procesar eventos de Wompi
 
 import { NextRequest, NextResponse } from 'next/server';
-import { validateWebhookSignature, isTransactionSuccessful, isTransactionFinal } from '@/lib/wompi/utils';
+import { isTransactionSuccessful, isTransactionFinal } from '@/lib/wompi/utils';
 import { wompiClient } from '@/lib/wompi/client';
 import { 
   getInvoiceByReference,
+  markInvoiceAsFailed,
   markInvoiceAsPaid, 
   updateInvoice
 } from '@/db/invoices';
@@ -25,6 +26,13 @@ import {
 } from '@/db/payment-sources';
 import { sendEmail, emailTemplates } from '@/lib/billing/email-notifications';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
+import { getWompiIdempotencyKey, verifyWompiWebhookSignature } from '@/src/integrations/wompi/webhook';
+import {
+  getWompiWebhookEventByKey,
+  markWompiWebhookEventFailed,
+  markWompiWebhookEventProcessed,
+  upsertWompiWebhookEventProcessing
+} from '@/src/integrations/wompi/webhook-event-store';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -32,6 +40,7 @@ export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   const supabase = getSupabaseServer();
+  let idempotencyKey: string | null = null;
   try {
     const body = await req.text();
     
@@ -59,35 +68,94 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
     }
 
+    idempotencyKey = getWompiIdempotencyKey(event);
+    if (!idempotencyKey) {
+      return NextResponse.json({ error: 'Unsupported event payload' }, { status: 400 });
+    }
+
     // Validate signature if present
     // Temporarily skip strict validation to allow payments through
     // TODO: Fix signature validation with correct Wompi secret
     const isDev = process.env.NODE_ENV === 'development';
     const skipSignatureValidation = process.env.WOMPI_SKIP_SIGNATURE_VALIDATION === 'true';
     
-    if (!isDev && !skipSignatureValidation && signature) {
-      const isValid = validateWebhookSignature(body, signature);
-      if (!isValid) {
-        console.warn('⚠️ Webhook signature validation failed, but processing anyway for now');
-        console.log('📝 Signature received:', signature.substring(0, 40));
-        console.log('📝 Body preview:', body.substring(0, 200));
-        // Don't reject - just log the warning and continue processing
-        // This ensures payments are not lost while we debug signature issues
+    if (!isDev && !skipSignatureValidation) {
+      if (!process.env.WOMPI_WEBHOOK_SECRET) {
+        return NextResponse.json({ error: 'WOMPI_WEBHOOK_SECRET missing' }, { status: 500 });
       }
+
+      if (!signature) {
+        return NextResponse.json({ error: 'Missing webhook signature' }, { status: 401 });
+      }
+      const isValid = verifyWompiWebhookSignature({
+        payload: body,
+        signature,
+        secret: process.env.WOMPI_WEBHOOK_SECRET || ""
+      });
+      if (!isValid) {
+        return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 });
+      }
+    }
+
+    try {
+      const existing = await getWompiWebhookEventByKey(supabase, idempotencyKey);
+      if (existing?.status === 'processed') {
+        return NextResponse.json({ success: true, received: true, idempotent: true });
+      }
+    } catch (e) {
+      console.warn('Webhook idempotency lookup failed (continuing):', e);
     }
 
     console.log('📋 Webhook event:', event.event, event.data?.transaction?.id || event.data?.id);
 
     // Procesar eventos de transacción
-    if (event.event === 'transaction.updated') {
-      const transactionData = event.data?.transaction || event.data;
-      await processTransactionUpdate(transactionData);
+    const transactionData = event.data?.transaction || event.data || null;
+    const wompiTransactionId = typeof transactionData?.id === 'string' ? transactionData.id : null;
+    const reference = typeof transactionData?.reference === 'string' ? transactionData.reference : null;
+    const transactionStatus = typeof transactionData?.status === 'string' ? transactionData.status : null;
+
+    try {
+      await upsertWompiWebhookEventProcessing({
+        supabase,
+        idempotencyKey,
+        payload: event,
+        signature: signature || null,
+        eventType: typeof event?.event === 'string' ? event.event : null,
+        wompiTransactionId,
+        reference,
+        status: transactionStatus
+      });
+    } catch (e) {
+      console.warn('Webhook idempotency write failed (continuing):', e);
+    }
+
+    // Procesar eventos de transacciÇün
+    if (event.event === 'transaction.updated' && transactionData) {
+      await processTransactionUpdate(supabase, transactionData);
+    }
+
+    try {
+      await markWompiWebhookEventProcessed(supabase, idempotencyKey);
+    } catch (e) {
+      console.warn('Webhook idempotency mark processed failed:', e);
     }
 
     return NextResponse.json({ success: true, received: true });
 
   } catch (error) {
     console.error('❌ Webhook processing error:', error);
+
+    try {
+      if (idempotencyKey) {
+        await markWompiWebhookEventFailed({
+          supabase,
+          idempotencyKey,
+          errorMessage: error instanceof Error ? error.message : 'Unknown error'
+        });
+      }
+    } catch (e) {
+      console.warn('Webhook idempotency mark failed failed:', e);
+    }
     return NextResponse.json(
       { error: 'Webhook processing failed' },
       { status: 500 }
@@ -95,7 +163,10 @@ export async function POST(req: NextRequest) {
   }
 }
 
-async function processTransactionUpdate(transactionData: any) {
+async function processTransactionUpdate(
+  supabase: ReturnType<typeof getSupabaseServer>,
+  transactionData: any
+) {
   const wompiTransactionId = transactionData.id;
   const status = transactionData.status;
   const reference = transactionData.reference;
@@ -117,7 +188,7 @@ async function processTransactionUpdate(transactionData: any) {
 
   // Buscar invoice por referencia
   console.log(`🔍 Searching for invoice with reference: "${reference}"`);
-  const invoice = await getInvoiceByReference(reference);
+  const invoice = await getInvoiceByReference(reference, supabase);
   
   if (!invoice) {
     console.log(`⚠️ Invoice not found for reference: ${reference}`);
@@ -160,8 +231,19 @@ async function processTransactionUpdate(transactionData: any) {
 
   console.log(`📄 Found invoice: ${invoice.id}, current status: ${invoice.status}`);
 
+  // Idempotency: if our invoice is already in a final matching state, avoid repeating side-effects (emails, activation).
+  if (isTransactionSuccessful(status) && invoice.status === 'paid') {
+    console.log(`✅ Invoice already paid (${invoice.id}); skipping duplicate APPROVED webhook processing.`);
+    return;
+  }
+
+  if (!isTransactionSuccessful(status) && invoice.status === 'failed') {
+    console.log(`✅ Invoice already failed (${invoice.id}); skipping duplicate failed webhook processing.`);
+    return;
+  }
+
   // Verificar si ya tenemos esta transacción registrada
-  let transaction = await getTransactionByWompiId(wompiTransactionId);
+  let transaction = await getTransactionByWompiId(wompiTransactionId, supabase);
   
   if (!transaction) {
     // Crear registro de transacción
@@ -177,7 +259,7 @@ async function processTransactionUpdate(transactionData: any) {
         reference,
         status_message: transactionData.status_message,
         raw_payload: transactionData
-      });
+      }, supabase);
       console.log(`✅ Created transaction record: ${transaction.id}`);
     } catch (error) {
       console.error('Error creating transaction:', error);
@@ -188,28 +270,32 @@ async function processTransactionUpdate(transactionData: any) {
       status,
       status_message: transactionData.status_message,
       raw_payload: transactionData
-    });
+    }, supabase);
     console.log(`📝 Updated transaction: ${wompiTransactionId}`);
   }
 
   // Procesar según resultado
   if (isTransactionSuccessful(status)) {
-    await handleSuccessfulPayment(transactionData, invoice);
+    await handleSuccessfulPayment(supabase, transactionData, invoice);
   } else {
-    await handleFailedPayment(transactionData, invoice);
+    await handleFailedPayment(supabase, transactionData, invoice);
   }
 }
 
-async function handleSuccessfulPayment(transactionData: any, invoice: any) {
+async function handleSuccessfulPayment(
+  supabase: ReturnType<typeof getSupabaseServer>,
+  transactionData: any,
+  invoice: any
+) {
   console.log(`✅ Processing successful payment for invoice: ${invoice.id}`);
 
   try {
     // 1. Marcar invoice como pagado
-    await markInvoiceAsPaid(invoice.id, transactionData.id);
+    await markInvoiceAsPaid(invoice.id, transactionData.id, supabase);
 
     // 2. Obtener la suscripción si existe
     if (invoice.subscription_id) {
-      const subscription = await getSubscriptionById(invoice.subscription_id);
+      const subscription = await getSubscriptionById(invoice.subscription_id, supabase);
       
       if (subscription) {
         // 3. Crear/actualizar payment source si viene de tarjeta
@@ -217,7 +303,10 @@ async function handleSuccessfulPayment(transactionData: any, invoice: any) {
         
         if (transactionData.payment_source_id) {
           try {
-            const existingSource = await getPaymentSourceByWompiId(transactionData.payment_source_id);
+            const existingSource = await getPaymentSourceByWompiId(
+              transactionData.payment_source_id,
+              supabase
+            );
             
             if (!existingSource) {
               // Obtener detalles del payment source de Wompi
@@ -233,7 +322,7 @@ async function handleSuccessfulPayment(transactionData: any, invoice: any) {
                 last_four: wompiSource.last_four,
                 expires_at: wompiSource.expires_at,
                 is_default: true
-              });
+              }, supabase);
               
               paymentSourceId = newSource.id;
               console.log(`💳 Created payment source: ${newSource.id}`);
@@ -246,7 +335,7 @@ async function handleSuccessfulPayment(transactionData: any, invoice: any) {
         }
 
         // 4. Activar suscripción
-        await activateSubscription(invoice.subscription_id, paymentSourceId);
+        await activateSubscription(invoice.subscription_id, paymentSourceId, supabase);
         console.log(`🎉 Subscription activated: ${invoice.subscription_id}`);
 
         // 5. Marcar onboarding como completado
@@ -280,19 +369,23 @@ async function handleSuccessfulPayment(transactionData: any, invoice: any) {
   }
 }
 
-async function handleFailedPayment(transactionData: any, invoice: any) {
+async function handleFailedPayment(
+  supabase: ReturnType<typeof getSupabaseServer>,
+  transactionData: any,
+  invoice: any
+) {
   console.log(`❌ Processing failed payment for invoice: ${invoice.id}`);
 
   try {
     // Incrementar contador de intentos
     const newAttemptCount = (invoice.attempt_count || 0) + 1;
-    await markInvoiceAsFailed(invoice.id, newAttemptCount);
+    await markInvoiceAsFailed(invoice.id, newAttemptCount, supabase);
 
     // Si hay suscripción y es el primer pago, marcar como incomplete
     if (invoice.subscription_id) {
-      const subscription = await getSubscriptionById(invoice.subscription_id);
+      const subscription = await getSubscriptionById(invoice.subscription_id, supabase);
       if (subscription?.status === 'pending') {
-        await updateSubscription(invoice.subscription_id, { status: 'incomplete' });
+        await updateSubscription(invoice.subscription_id, { status: 'incomplete' }, supabase);
       }
     }
 

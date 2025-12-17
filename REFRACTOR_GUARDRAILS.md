@@ -57,6 +57,8 @@ Este documento define qué **no se puede romper** durante el refactor incrementa
   - `/billing/success` consulta `/api/billing/verify-transaction` sin romper UX.
 - Webhook:
   - `/api/wompi/webhook` no genera duplicados (idempotencia) y actualiza estado consistentemente.
+  - En producciÇün, la firma del webhook se valida con `WOMPI_WEBHOOK_SECRET` (rollback temporal: `WOMPI_SKIP_SIGNATURE_VALIDATION=true`).
+  - DB: migraciÇün `supabase/migrations/20251217000000_create_wompi_webhook_events.sql` aplicada (tabla `wompi_webhook_events`).
 - Entitlements:
   - middleware gating por suscripción no “bloquea” usuarios válidos.
 
@@ -73,4 +75,3 @@ Este documento define qué **no se puede romper** durante el refactor incrementa
 - No cambiar contratos de rutas (paths/payloads) sin documentar alternativa y migración.
 - No cambiar esquemas DB sin migración y plan de rollback.
 - Antes de tocar pagos o multi-tenant, agregar test/smoke de contrato.
-

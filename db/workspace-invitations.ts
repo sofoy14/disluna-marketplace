@@ -221,3 +221,4 @@ export const acceptInvitation = async (
 
   return member
 }
+

@@ -9,6 +9,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter"
 import OpenAI from "openai"
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { convertDocumentFromUrl } from "@/lib/docling"
+import { assertWorkspaceAccess } from "@/src/server/workspaces/access"
 
 // Process-specific chunking: 500-800 tokens (using 650 as middle ground)
 // Overlap: 100 tokens (~15%)
@@ -49,7 +50,7 @@ export async function POST(
     // Verify user has access to the process using admin client
     const { data: processRecord, error: processError } = await supabaseAdmin
       .from("processes")
-      .select("*")
+      .select("id,user_id,workspace_id,name,indexing_status")
       .eq("id", processId)
       .single()
 
@@ -60,7 +61,20 @@ export async function POST(
       )
     }
 
-    if (processRecord.user_id !== user.id) {
+    if (processRecord.workspace_id) {
+      const access = await assertWorkspaceAccess(
+        supabaseAdmin,
+        processRecord.workspace_id,
+        user.id
+      ).catch(() => null)
+
+      if (!access) {
+        return NextResponse.json(
+          { error: "No tienes acceso a este proceso" },
+          { status: 403 }
+        )
+      }
+    } else if (processRecord.user_id !== user.id) {
       return NextResponse.json(
         { error: "No tienes acceso a este proceso" },
         { status: 403 }
