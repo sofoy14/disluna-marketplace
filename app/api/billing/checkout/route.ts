@@ -118,9 +118,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user email from auth
-    const { data: user, error: userError } = await supabase.auth.admin.getUserById(workspace.user_id);
+    const { data: authUserData, error: userError } = await supabase.auth.admin.getUserById(workspace.user_id);
     
-    if (userError || !user.user?.email) {
+    if (userError || !authUserData.user?.email) {
       return NextResponse.json(
         { 
           success: false, 
@@ -140,7 +140,7 @@ export async function POST(req: NextRequest) {
       planName: plan.name,
       amountInCents: plan.amount_in_cents,
       workspaceId: workspace.id,
-      userEmail: user.user.email,
+      userEmail: authUserData.user.email,
       userName: profile.display_name || 'Usuario',
       redirectUrl: `${appUrl}/billing/success`
     });
