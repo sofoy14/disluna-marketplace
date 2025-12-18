@@ -6,12 +6,20 @@ const sharp = require("sharp")
 const ROOT = process.cwd()
 const PUBLIC_DIR = path.join(ROOT, "public")
 
-const SOURCE_PNG = path.join(PUBLIC_DIR, "icon-512x512.png")
+// Canonical brand asset (orbe con "ALI") used to generate all raster icons.
+// Keep this as SVG so it stays crisp and easy to update.
+const SOURCE_SVG = path.join(PUBLIC_DIR, "favicon-ali.svg")
 const OUT_FAVICON_ICO = path.join(PUBLIC_DIR, "favicon.ico")
 const OUT_PNGS = [
   { size: 16, file: path.join(PUBLIC_DIR, "favicon-16x16.png") },
   { size: 32, file: path.join(PUBLIC_DIR, "favicon-32x32.png") },
   { size: 48, file: path.join(PUBLIC_DIR, "favicon-48x48.png") }
+]
+
+const OUT_ICON_PNGS = [
+  { size: 192, file: path.join(PUBLIC_DIR, "icon-192x192.png") },
+  { size: 256, file: path.join(PUBLIC_DIR, "icon-256x256.png") },
+  { size: 512, file: path.join(PUBLIC_DIR, "icon-512x512.png") }
 ]
 
 function assertFileExists(filePath) {
@@ -48,12 +56,21 @@ function buildIcoFromPngBuffers(entries) {
 }
 
 async function main() {
-  assertFileExists(SOURCE_PNG)
+  assertFileExists(SOURCE_SVG)
   await fs.promises.mkdir(PUBLIC_DIR, { recursive: true })
 
   // Generate favicon PNGs for explicit size link tags.
   for (const { size, file } of OUT_PNGS) {
-    const buf = await sharp(SOURCE_PNG)
+    const buf = await sharp(SOURCE_SVG)
+      .resize(size, size, { fit: "cover" })
+      .png({ compressionLevel: 9 })
+      .toBuffer()
+    await fs.promises.writeFile(file, buf)
+  }
+
+  // Generate app icons used by manifest + metadata.
+  for (const { size, file } of OUT_ICON_PNGS) {
+    const buf = await sharp(SOURCE_SVG)
       .resize(size, size, { fit: "cover" })
       .png({ compressionLevel: 9 })
       .toBuffer()
@@ -64,7 +81,7 @@ async function main() {
   const icoSizes = [16, 32, 48, 256]
   const icoEntries = []
   for (const size of icoSizes) {
-    const data = await sharp(SOURCE_PNG)
+    const data = await sharp(SOURCE_SVG)
       .resize(size, size, { fit: "cover" })
       .png({ compressionLevel: 9 })
       .toBuffer()
@@ -77,10 +94,10 @@ async function main() {
   console.log("Generated favicons:")
   console.log("-", path.relative(ROOT, OUT_FAVICON_ICO))
   for (const { file } of OUT_PNGS) console.log("-", path.relative(ROOT, file))
+  for (const { file } of OUT_ICON_PNGS) console.log("-", path.relative(ROOT, file))
 }
 
 main().catch(err => {
   console.error(err)
   process.exit(1)
 })
-
