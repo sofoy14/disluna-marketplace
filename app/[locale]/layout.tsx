@@ -37,7 +37,11 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: [
+      { url: "/favicon.ico", sizes: "any", type: "image/x-icon" },
       { url: "/favicon-ali.svg", type: "image/svg+xml" },
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
       { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
@@ -108,7 +112,11 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning className="dark" style={{ colorScheme: 'dark' }}>
       <head>
         <Script src="/env.js" strategy="beforeInteractive" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon-ali.svg" type="image/svg+xml" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="apple-touch-icon" href="/icon-192x192.svg" />
         <link rel="shortcut icon" href="/favicon-ali.svg" />
         <style

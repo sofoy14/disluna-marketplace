@@ -22,6 +22,12 @@ export default function AuthLayout({
     <html lang="es">
       <head>
         <Script src="/env.js" strategy="beforeInteractive" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon-ali.svg" type="image/svg+xml" />
+        <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="shortcut icon" href="/favicon-ali.svg" />
       </head>
       <body className={`${inter.className} dark`}>
         {children}
