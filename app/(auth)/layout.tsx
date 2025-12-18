@@ -3,6 +3,7 @@
 // These routes do NOT use locale prefix
 
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import '../[locale]/globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -19,6 +20,9 @@ export default function AuthLayout({
 }) {
   return (
     <html lang="es">
+      <head>
+        <Script src="/env.js" strategy="beforeInteractive" />
+      </head>
       <body className={`${inter.className} dark`}>
         {children}
       </body>
