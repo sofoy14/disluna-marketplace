@@ -267,7 +267,7 @@ export default function HelpPage() {
       {/* Footer */}
       <div className="mt-12 text-center">
         <Link 
-          href="/setup"
+          href="/onboarding"
           className="text-primary hover:underline"
         >
           ← Volver al Asistente

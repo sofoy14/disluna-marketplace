@@ -21,9 +21,11 @@ export default async function Login({
   searchParams
 }: {
   params: { locale: string }
-  searchParams: { message: string }
+  searchParams: { message?: string; redirect?: string }
 }) {
   const { locale } = params
+  const redirectPath =
+    typeof searchParams.redirect === "string" ? searchParams.redirect : ""
   const cookieStore = cookies()
   const supabase = createClient(cookieStore)
 
@@ -31,6 +33,11 @@ export default async function Login({
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 
   if (!authError && user) {
+    // If user is coming from an invite link, let them proceed to accept it even without subscription/home workspace
+    if (redirectPath.startsWith("/invite/")) {
+      return redirect(redirectPath)
+    }
+
     // Get user's home workspace
     const { data: homeWorkspace } = await supabase
       .from("workspaces")
@@ -109,6 +116,7 @@ export default async function Login({
             method="post"
           >
             <input type="hidden" name="locale" value={locale} />
+            <input type="hidden" name="redirect" value={redirectPath} />
             <Label className="text-md mt-2" htmlFor="email">
               Correo Electrónico
             </Label>

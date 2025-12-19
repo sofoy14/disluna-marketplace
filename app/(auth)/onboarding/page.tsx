@@ -1,4 +1,4 @@
-// app/(auth)/onboarding/page.tsx
+﻿// app/(auth)/onboarding/page.tsx
 // This route handles /onboarding without locale prefix
 // Prevents confusion with [locale] dynamic route
 
@@ -23,6 +23,7 @@ import {
   FolderOpen,
   Mic,
   Building2,
+  UserPlus,
   GraduationCap,
   Briefcase,
   Gift,
@@ -33,7 +34,8 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShaderCanvas } from '@/components/shader-canvas';
 
-type OnboardingStep = 'loading' | 'profile_setup' | 'plan_selection';
+type OnboardingStep = 'loading' | 'profile_setup' | 'plan_selection' | 'workspace_setup';
+type InviteMode = 'email' | 'link';
 
 interface Plan {
   id: string;
@@ -106,9 +108,19 @@ export default function OnboardingPage() {
   
   // Profile form data
   const [profileData, setProfileData] = useState({
-    display_name: '',
-    username: ''
+    first_name: '',
+    last_name: '',
+    phone_number: ''
   });
+
+  // Professional workspace setup (post-payment)
+  const [organizationName, setOrganizationName] = useState('');
+  const [invitees, setInvitees] = useState<Array<{ mode: InviteMode; contact: string; role: 'ADMIN' | 'LAWYER' | 'ASSISTANT' | 'VIEWER' }>>([
+    { mode: 'email', contact: '', role: 'LAWYER' }
+  ]);
+  const [creatingOrganization, setCreatingOrganization] = useState(false);
+  const [createdWorkspace, setCreatedWorkspace] = useState<{ id: string; name: string } | null>(null);
+  const [createdInviteLinks, setCreatedInviteLinks] = useState<Array<{ label: string; role: 'ADMIN' | 'LAWYER' | 'ASSISTANT' | 'VIEWER'; url: string }>>([]);
 
   // Plans and offers
   const [plans, setPlans] = useState<Plan[]>([]);
@@ -231,38 +243,63 @@ export default function OnboardingPage() {
         // Get user profile
         const { data: profile } = await supabase
           .from('profiles')
-          .select('onboarding_step, email_verified, onboarding_completed, display_name, username, has_onboarded')
+          .select('onboarding_step, email_verified, onboarding_completed, display_name, first_name, last_name, phone_number, plan_type, has_onboarded')
           .eq('user_id', user.id)
           .maybeSingle();
 
         // Check if user has active subscription - if so, go to chat
         const { data: subscription } = await supabase
           .from('subscriptions')
-          .select('id, status')
+          .select('id, status, current_period_end')
           .eq('user_id', user.id)
           .in('status', ['active', 'trialing'])
           .maybeSingle();
 
-        if (subscription && workspace) {
-          // User has active subscription, go to chat
-          console.log('[Onboarding] User has subscription, redirecting to chat');
+        // Verify subscription isn't expired
+        let hasActiveSubscription = false;
+        if (subscription?.current_period_end) {
+          hasActiveSubscription = new Date(subscription.current_period_end) > new Date();
+        }
+
+        const planType = (profile?.plan_type || 'none') as string;
+        const isProfessionalPlan = planType === 'pro' || planType === 'enterprise';
+
+        if (hasActiveSubscription && workspace && isMounted) {
           await supabase
             .from('profiles')
-            .update({ onboarding_completed: true, onboarding_step: 'completed' })
+            .update({ onboarding_completed: true })
             .eq('user_id', user.id);
-          
-          if (isMounted) {
-            window.location.href = `/${workspace.id}/chat`;
+
+          if (isProfessionalPlan) {
+            const { data: nonHomeWorkspace } = await supabase
+              .from('workspaces')
+              .select('id')
+              .eq('user_id', user.id)
+              .eq('is_home', false)
+              .limit(1)
+              .maybeSingle();
+
+            if (!nonHomeWorkspace) {
+              setInitialized(true);
+              setCurrentStep('workspace_setup');
+              setPageLoading(false);
+              return;
+            }
+
+            window.location.href = `/${nonHomeWorkspace.id}/chat`;
+            return;
           }
+
+          window.location.href = `/${workspace.id}/chat`;
           return;
         }
 
-        // Pre-fill profile data if exists
-        if (profile?.display_name && isMounted) {
+        if (isMounted) {
           setProfileData(prev => ({
             ...prev,
-            display_name: profile.display_name || '',
-            username: profile.username || ''
+            first_name: (profile?.first_name as string | null) || '',
+            last_name: (profile?.last_name as string | null) || '',
+            phone_number: (profile?.phone_number as string | null) || ''
           }));
         }
 
@@ -275,8 +312,8 @@ export default function OnboardingPage() {
         setInitialized(true);
 
         // Determine which step to show
-        // If user has display_name (from OAuth or previous setup), go to plan selection
-        if (profile?.display_name || profile?.has_onboarded || profile?.onboarding_step === 'plan_selection') {
+        const hasProfileInfo = !!(profile?.first_name || profile?.last_name || profile?.phone_number || profile?.has_onboarded);
+        if (hasProfileInfo || profile?.onboarding_step === 'plan_selection') {
           setCurrentStep('plan_selection');
         } else {
           setCurrentStep('profile_setup');
@@ -337,12 +374,16 @@ export default function OnboardingPage() {
         throw new Error('Usuario no autenticado');
       }
 
+      const displayName = `${profileData.first_name} ${profileData.last_name}`.trim();
+
       // Update profile
       const { error } = await supabase
         .from('profiles')
         .update({
-          display_name: profileData.display_name,
-          username: profileData.username,
+          first_name: profileData.first_name,
+          last_name: profileData.last_name,
+          phone_number: profileData.phone_number,
+          display_name: displayName,
           onboarding_step: 'plan_selection',
           has_onboarded: true
         })
@@ -382,6 +423,163 @@ export default function OnboardingPage() {
     
     // Direct navigation - browser will follow the HTTP redirect to Wompi
     window.location.href = checkoutUrl;
+  };
+
+  const addInvitee = () => {
+    setInvitees(prev => [...prev, { mode: 'email', contact: '', role: 'VIEWER' }]);
+  };
+
+  const removeInvitee = (index: number) => {
+    setInvitees(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const updateInvitee = (
+    index: number,
+    patch: Partial<{ mode: InviteMode; contact: string; role: 'ADMIN' | 'LAWYER' | 'ASSISTANT' | 'VIEWER' }>
+  ) => {
+    setInvitees(prev => prev.map((invitee, i) => (i === index ? { ...invitee, ...patch } : invitee)));
+  };
+
+  const copyToClipboard = async (value: string) => {
+    if (typeof navigator === 'undefined') return false;
+
+    try {
+      await navigator.clipboard.writeText(value);
+      return true;
+    } catch {
+      try {
+        const el = document.createElement('textarea');
+        el.value = value;
+        el.setAttribute('readonly', 'true');
+        el.style.position = 'absolute';
+        el.style.left = '-9999px';
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  };
+
+  const handleCreateOrganization = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatingOrganization(true);
+    setMessage(null);
+
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('Usuario no autenticado');
+      }
+
+      const trimmedName = organizationName.trim();
+      if (!trimmedName) {
+        throw new Error('El nombre de la organización es requerido');
+      }
+
+      if (!workspaceId) {
+        throw new Error('No se encontró tu workspace base');
+      }
+
+      const { data: baseWorkspace, error: baseWorkspaceError } = await supabase
+        .from('workspaces')
+        .select('*')
+        .eq('id', workspaceId)
+        .single();
+
+      if (baseWorkspaceError || !baseWorkspace) {
+        throw new Error('No se pudo cargar la configuración del workspace');
+      }
+
+      const { data: newWorkspace, error: createError } = await supabase
+        .from('workspaces')
+        .insert({
+          user_id: user.id,
+          is_home: false,
+          name: trimmedName,
+          default_context_length: baseWorkspace.default_context_length,
+          default_model: baseWorkspace.default_model,
+          default_prompt: baseWorkspace.default_prompt,
+          default_temperature: baseWorkspace.default_temperature,
+          description: '',
+          embeddings_provider: baseWorkspace.embeddings_provider,
+          include_profile_context: baseWorkspace.include_profile_context,
+          include_workspace_instructions: baseWorkspace.include_workspace_instructions,
+          instructions: baseWorkspace.instructions
+        })
+        .select('*')
+        .single();
+
+      if (createError || !newWorkspace) {
+        throw new Error(createError?.message || 'Error creando la organización');
+      }
+
+      const normalizedInvitees = invitees.map(inv => ({
+        mode: inv.mode,
+        contact: inv.contact.trim(),
+        role: inv.role
+      }));
+
+      const inviteResults = await Promise.allSettled(
+        normalizedInvitees
+          .filter(inv => (inv.mode === 'link' ? true : inv.contact.length > 0))
+          .map(async inv => {
+            const response = await fetch(`/api/workspace/${newWorkspace.id}/invitations`, {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(
+                inv.mode === 'link'
+                  ? { mode: 'link', role: inv.role, label: inv.contact || undefined }
+                  : { contact: inv.contact, role: inv.role }
+              )
+            });
+
+            if (!response.ok) {
+              const error = await response.json().catch(() => ({} as any));
+              throw new Error(error?.error || 'Error creando invitaci¢n');
+            }
+
+            const data = await response.json();
+            const token = data?.token as string | undefined;
+            if (!token) {
+              throw new Error('Invitaci¢n creada sin token');
+            }
+
+            const inviteUrl = `${window.location.origin}/invite/${token}`;
+            return {
+              label: inv.mode === 'link' ? (inv.contact || 'Enlace') : inv.contact,
+              role: inv.role,
+              url: inviteUrl
+            };
+          })
+      );
+
+      const successfulInvites = inviteResults
+        .filter((r): r is PromiseFulfilledResult<{ label: string; role: 'ADMIN' | 'LAWYER' | 'ASSISTANT' | 'VIEWER'; url: string }> => r.status === 'fulfilled')
+        .map(r => r.value);
+
+      const failedCount = inviteResults.filter(r => r.status === 'rejected').length;
+      if (failedCount > 0) {
+        setMessage({ type: 'error', text: 'Algunas invitaciones no pudieron crearse. Puedes agregarlas luego en Configuraci¢n.' });
+      }
+
+      await supabase
+        .from('profiles')
+        .update({ onboarding_completed: true, onboarding_step: 'completed' })
+        .eq('user_id', user.id);
+
+      setCreatedWorkspace({ id: newWorkspace.id, name: newWorkspace.name });
+      setCreatedInviteLinks(successfulInvites);
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message || 'Error creando la organización' });
+    } finally {
+      setCreatingOrganization(false);
+    }
   };
 
   // Helper functions for plans
@@ -518,47 +716,60 @@ export default function OnboardingPage() {
                       <User className="w-5 h-5 text-violet-400" />
                     </div>
                     <div>
-                      <h2 className="text-lg font-medium text-white">Configura tu Perfil</h2>
+                      <h2 className="text-lg font-medium text-white">Crea tu perfil</h2>
                       <p className="text-sm text-violet-300/40">Información para personalizar tu experiencia</p>
                     </div>
                   </div>
 
                   <form onSubmit={handleProfileSubmit} className="space-y-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="first_name" className="text-violet-200/70 text-sm font-light">
+                          Nombres
+                        </Label>
+                        <Input
+                          id="first_name"
+                          value={profileData.first_name}
+                          onChange={(e) => setProfileData({ ...profileData, first_name: e.target.value })}
+                          placeholder="Nombres"
+                          required
+                          className="mt-2 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-violet-300/30 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12"
+                        />
+                      </div>
+                  
+                      <div>
+                        <Label htmlFor="last_name" className="text-violet-200/70 text-sm font-light">
+                          Apellidos
+                        </Label>
+                        <Input
+                          id="last_name"
+                          value={profileData.last_name}
+                          onChange={(e) => setProfileData({ ...profileData, last_name: e.target.value })}
+                          placeholder="Apellidos"
+                          required
+                          className="mt-2 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-violet-300/30 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12"
+                        />
+                      </div>
+                    </div>
+                  
                     <div>
-                      <Label htmlFor="display_name" className="text-violet-200/70 text-sm font-light">
-                        Nombre Completo
+                      <Label htmlFor="phone_number" className="text-violet-200/70 text-sm font-light">
+                        Número de teléfono
                       </Label>
                       <Input
-                        id="display_name"
-                        value={profileData.display_name}
-                        onChange={(e) => setProfileData({...profileData, display_name: e.target.value})}
-                        placeholder="Tu nombre completo"
+                        id="phone_number"
+                        value={profileData.phone_number}
+                        onChange={(e) => setProfileData({ ...profileData, phone_number: e.target.value })}
+                        placeholder="Teléfono"
                         required
                         className="mt-2 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-violet-300/30 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12"
                       />
                     </div>
-
-                    <div>
-                      <Label htmlFor="username" className="text-violet-200/70 text-sm font-light">
-                        Nombre de Usuario
-                      </Label>
-                      <Input
-                        id="username"
-                        value={profileData.username}
-                        onChange={(e) => setProfileData({...profileData, username: e.target.value.toLowerCase().replace(/\s/g, '_')})}
-                        placeholder="tu_usuario"
-                        required
-                        className="mt-2 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-violet-300/30 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12"
-                      />
-                      <p className="text-xs text-violet-300/30 mt-2">
-                        Este será tu identificador único
-                      </p>
-                    </div>
-
-                    <Button 
-                      type="submit" 
-                      className="w-full h-12 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 mt-2" 
-                      disabled={isLoading || !profileData.display_name || !profileData.username}
+                  
+                    <Button
+                      type="submit"
+                      className="w-full h-12 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30 mt-2"
+                      disabled={isLoading || !profileData.first_name || !profileData.last_name || !profileData.phone_number}
                     >
                       {isLoading ? (
                         <>
@@ -850,14 +1061,14 @@ export default function OnboardingPage() {
                               <FolderOpen className="w-4 h-4 text-white/20" />
                               <div>
                                 <p className="text-[10px] uppercase text-white/20 tracking-wider">Procesos</p>
-                                <p className="text-sm font-medium text-white/30">—</p>
+                                <p className="text-sm font-medium text-white/30">â€”</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
                               <Mic className="w-4 h-4 text-white/20" />
                               <div>
                                 <p className="text-[10px] uppercase text-white/20 tracking-wider">Transcripción</p>
-                                <p className="text-sm font-medium text-white/30">—</p>
+                                <p className="text-sm font-medium text-white/30">â€”</p>
                               </div>
                             </div>
                           </div>
@@ -935,9 +1146,263 @@ export default function OnboardingPage() {
                 </div>
               </motion.div>
             )}
+
+            {/* Step 3: Professional Workspace Setup (post-payment) */}
+            {currentStep === 'workspace_setup' && (
+              <motion.div
+                key="workspace"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="w-full max-w-2xl px-4"
+              >
+                {/* Orb */}
+                <motion.div
+                  className="flex justify-center mb-8"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  <div className="relative">
+                    <ShaderCanvas size={120} shaderId={1} />
+                    <div className="absolute inset-0 bg-violet-500/20 blur-3xl rounded-full -z-10" />
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="text-center mb-8"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <h1 className="text-2xl md:text-3xl font-light text-white mb-3 tracking-tight">
+                    Crea una nueva <span className="text-violet-400 font-normal">organización</span>
+                  </h1>
+                  <p className="text-white/60 font-light">
+                    Empieza con una nueva organización e invita a tus compañeros.
+                  </p>
+                </motion.div>
+
+                {message && (
+                  <Alert className={`mb-6 border ${
+                    message.type === 'success'
+                      ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                      : 'border-red-500/30 bg-red-500/10 text-red-400'
+                  }`}>
+                    <AlertDescription>{message.text}</AlertDescription>
+                  </Alert>
+                )}
+
+                <GlassCard className="p-8" hoverEffect={false}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 rounded-xl bg-violet-500/10 border border-violet-500/20">
+                      <Building2 className="w-5 h-5 text-violet-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-medium text-white">Crea una nueva organización</h2>
+                      <p className="text-sm text-violet-300/40">Nombre e invitaciones</p>
+                    </div>
+                  </div>
+
+                  {createdWorkspace ? (
+                    <div className="space-y-6">
+                      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4">
+                        <div className="text-sm text-white/80">
+                          Workspace creado:{" "}
+                          <span className="font-medium text-white">{createdWorkspace.name}</span>
+                        </div>
+                        <div className="text-xs text-white/40 mt-1">
+                          Comparte los enlaces de invitacion para que otros puedan unirse.
+                        </div>
+                      </div>
+
+                      {createdInviteLinks.length === 0 ? (
+                        <div className="text-sm text-white/60 font-light">
+                          No creaste invitaciones. Puedes agregarlas luego en Configuracion.
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          {createdInviteLinks.map((inv, idx) => (
+                            <div
+                              key={`${inv.url}-${idx}`}
+                              className="rounded-2xl border border-white/[0.08] bg-white/[0.03] p-4 space-y-2"
+                            >
+                              <div className="flex items-center justify-between gap-3">
+                                <div className="min-w-0">
+                                  <div className="text-sm text-white/80 truncate">
+                                    {inv.label} <span className="text-white/40">({inv.role})</span>
+                                  </div>
+                                </div>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  className="h-9 rounded-xl border-white/10 bg-transparent text-white/70 hover:bg-white/5 hover:border-white/20"
+                                  onClick={async () => {
+                                    const ok = await copyToClipboard(inv.url);
+                                    setMessage(ok
+                                      ? { type: 'success', text: 'Enlace copiado al portapapeles.' }
+                                      : { type: 'error', text: 'No se pudo copiar el enlace.' });
+                                  }}
+                                >
+                                  Copiar
+                                </Button>
+                              </div>
+                              <Input
+                                value={inv.url}
+                                readOnly
+                                className="bg-white/[0.02] border-white/[0.08] text-white/70 rounded-xl h-11"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="h-12 rounded-xl border-white/10 bg-transparent text-white/70 hover:bg-white/5 hover:border-white/20"
+                          disabled={createdInviteLinks.length === 0}
+                          onClick={async () => {
+                            const ok = await copyToClipboard(createdInviteLinks.map(i => i.url).join('\\n'));
+                            setMessage(ok
+                              ? { type: 'success', text: 'Todos los enlaces fueron copiados.' }
+                              : { type: 'error', text: 'No se pudieron copiar los enlaces.' });
+                          }}
+                        >
+                          Copiar todos
+                        </Button>
+                        <Button
+                          type="button"
+                          className="h-12 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30"
+                          onClick={() => {
+                            window.location.href = `/${createdWorkspace.id}/chat`;
+                          }}
+                        >
+                          Entrar al workspace
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleCreateOrganization} className="space-y-6">
+                    <div>
+                      <Label htmlFor="organization_name" className="text-violet-200/70 text-sm font-light">
+                        Organización
+                      </Label>
+                      <Input
+                        id="organization_name"
+                        value={organizationName}
+                        onChange={(e) => setOrganizationName(e.target.value)}
+                        placeholder="Oficina 1"
+                        required
+                        className="mt-2 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-violet-300/30 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12"
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm text-white/70 font-light">Invitar personas</div>
+                        <button
+                          type="button"
+                          onClick={addInvitee}
+                          className="inline-flex items-center gap-2 text-sm text-violet-300/80 hover:text-violet-200 transition"
+                        >
+                          <UserPlus className="w-4 h-4" />
+                          Añadir
+                        </button>
+                      </div>
+
+                      <div className="space-y-3">
+                        {invitees.map((inv, index) => (
+                          <div key={index} className="grid grid-cols-1 sm:grid-cols-[160px_1fr_160px_36px] gap-3 items-end">
+                            <div>
+                              <Label className="text-violet-200/70 text-xs font-light">
+                                Modo
+                              </Label>
+                              <select
+                                value={inv.mode}
+                                onChange={(e) => updateInvitee(index, { mode: e.target.value as InviteMode })}
+                                className="mt-2 w-full bg-white/[0.03] border border-white/[0.08] text-white focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12 px-3 text-sm"
+                              >
+                                <option value="email">Correo</option>
+                                <option value="link">Enlace</option>
+                              </select>
+                            </div>
+
+                            <div>
+                              <Label className="text-violet-200/70 text-xs font-light">
+                                Correo o teléfono
+                              </Label>
+                              <Input
+                                value={inv.contact}
+                                onChange={(e) => updateInvitee(index, { contact: e.target.value })}
+                                placeholder={inv.mode === 'link' ? 'Etiqueta (opcional)' : 'correo@ejemplo.com'}
+                                className="mt-2 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-violet-300/30 focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12"
+                              />
+                            </div>
+
+                            <div>
+                              <Label className="text-violet-200/70 text-xs font-light">
+                                Rol
+                              </Label>
+                              <select
+                                value={inv.role}
+                                onChange={(e) => updateInvitee(index, { role: e.target.value as any })}
+                                className="mt-2 w-full bg-white/[0.03] border border-white/[0.08] text-white focus:border-violet-500/50 focus:ring-violet-500/20 rounded-xl h-12 px-3 text-sm"
+                              >
+                                <option value="ADMIN">Administrador</option>
+                                <option value="LAWYER">Abogado</option>
+                                <option value="ASSISTANT">Asistente</option>
+                                <option value="VIEWER">Lector</option>
+                              </select>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => removeInvitee(index)}
+                              className="h-12 w-12 inline-flex items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.03] text-white/70 hover:text-white hover:bg-white/[0.06] transition"
+                              aria-label="Eliminar"
+                              disabled={invitees.length <= 1}
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <Button
+                      type="submit"
+                      className="w-full h-12 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-medium transition-all duration-300 shadow-lg shadow-violet-500/20 hover:shadow-violet-500/30"
+                      disabled={creatingOrganization || !organizationName.trim()}
+                    >
+                      {creatingOrganization ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creando...
+                        </>
+                      ) : (
+                        'Siguiente'
+                      )}
+                    </Button>
+                    </form>
+                  )}
+                </GlassCard>
+
+                {/* Step indicator */}
+                <div className="flex items-center justify-center gap-2 mt-8">
+                  <div className="w-8 h-1 rounded-full bg-violet-500/50" />
+                  <div className="w-8 h-1 rounded-full bg-violet-500/50" />
+                  <div className="w-8 h-1 rounded-full bg-violet-500" />
+                </div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>
     </div>
   );
 }
+
+

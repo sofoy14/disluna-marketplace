@@ -69,14 +69,31 @@ export const getWorkspaceById = async (
 }
 
 export const getWorkspacesByUserId = async (userId: string) => {
+  const { data: memberships, error: membershipsError } = await supabase
+    .from("workspace_members")
+    .select("workspace_id")
+    .eq("user_id", userId)
+
+  if (membershipsError) {
+    throw new Error(membershipsError.message)
+  }
+
+  const workspaceIds = Array.from(
+    new Set((memberships || []).map(m => m.workspace_id).filter(Boolean))
+  )
+
+  if (workspaceIds.length === 0) {
+    return []
+  }
+
   const { data: workspaces, error } = await supabase
     .from("workspaces")
     .select("*")
-    .eq("user_id", userId)
+    .in("id", workspaceIds)
     .order("created_at", { ascending: false })
 
   if (!workspaces) {
-    throw new Error(error.message)
+    throw new Error(error?.message || "Failed to load workspaces")
   }
 
   return workspaces

@@ -10,6 +10,7 @@ import {
 } from "@/db/workspace-invitations"
 import { logWorkspaceAction } from "@/db/workspace-audit-logs"
 import { getSupabaseServer } from "@/lib/supabase/server-client"
+import crypto from "crypto"
 
 export async function GET(
   request: NextRequest,
@@ -24,7 +25,8 @@ export async function GET(
       return NextResponse.json({ error: "No autorizado" }, { status: 401 })
     }
 
-    const canManage = await canUserManageWorkspace(params.workspaceId, user.id)
+    const supabaseServer = getSupabaseServer()
+    const canManage = await canUserManageWorkspace(params.workspaceId, user.id, supabaseServer)
 
     if (!canManage) {
       return NextResponse.json(
@@ -33,7 +35,7 @@ export async function GET(
       )
     }
 
-    const invitations = await getWorkspaceInvitations(params.workspaceId)
+    const invitations = await getWorkspaceInvitations(params.workspaceId, supabaseServer)
 
     return NextResponse.json({ invitations })
   } catch (error: any) {
@@ -69,11 +71,29 @@ export async function POST(
     }
 
     const body = await request.json()
-    const { email, role } = body
+    const { email, contact, role, mode, label } = body as {
+      email?: unknown
+      contact?: unknown
+      role?: unknown
+      mode?: unknown
+      label?: unknown
+    }
 
-    if (!email || !role) {
+    const invitationMode = mode === 'link' ? 'link' : 'email'
+
+    let invitee =
+      invitationMode === 'email'
+        ? (typeof contact === 'string' ? contact : typeof email === 'string' ? email : '').trim()
+        : ''
+
+    if (invitationMode === 'link') {
+      const normalizedLabel = typeof label === 'string' ? label.trim() : ''
+      invitee = normalizedLabel ? `link:${normalizedLabel}` : `link:${crypto.randomUUID()}`
+    }
+
+    if (!invitee || typeof role !== 'string') {
       return NextResponse.json(
-        { error: "email y role son requeridos" },
+        { error: "role es requerido" },
         { status: 400 }
       )
     }
@@ -81,9 +101,9 @@ export async function POST(
     const { invitation, token } = await createWorkspaceInvitation({
       workspace_id: params.workspaceId,
       invited_by: user.id,
-      email,
+      email: invitee,
       role
-    })
+    }, supabaseServer)
 
     // Log action
     await logWorkspaceAction(
@@ -93,7 +113,7 @@ export async function POST(
       'invitation',
       {
         resourceId: invitation.id,
-        details: { email, role },
+        details: { contact: invitee, role },
         ipAddress: request.headers.get('x-forwarded-for') || undefined,
         userAgent: request.headers.get('user-agent') || undefined
       }
@@ -147,7 +167,7 @@ export async function PATCH(
     }
 
     if (action === 'revoke') {
-      await revokeInvitation(invitationId)
+      await revokeInvitation(invitationId, supabaseServer)
 
       await logWorkspaceAction(
         params.workspaceId,
@@ -163,7 +183,7 @@ export async function PATCH(
 
       return NextResponse.json({ success: true })
     } else if (action === 'resend') {
-      const { invitation, token } = await resendInvitation(invitationId)
+      const { invitation, token } = await resendInvitation(invitationId, supabaseServer)
 
       await logWorkspaceAction(
         params.workspaceId,
@@ -196,5 +216,8 @@ export async function PATCH(
     )
   }
 }
+
+
+
 
 

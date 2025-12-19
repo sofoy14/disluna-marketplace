@@ -89,7 +89,8 @@ export default function BillingSuccessPage() {
       // Si fue exitoso, redirigir al chat después de 3 segundos
       if (result.data.status === 'success' && result.data.subscription) {
         setTimeout(() => {
-          router.push('/');
+          const locale = window.location.pathname.split('/')[1] || 'es'
+          router.push(`/${locale}/onboarding?post_payment=1`);
         }, 5000);
       }
 

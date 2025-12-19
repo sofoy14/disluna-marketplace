@@ -292,12 +292,13 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
       const profile = await getProfileByUserId(user.id)
       setProfile(profile)
 
-      if (!profile.has_onboarded) {
-        return router.push("/setup")
-      }
-
       const workspaces = await getWorkspacesByUserId(user.id)
       setWorkspaces(workspaces)
+
+      // Allow invited collaborators to continue if they already have at least one workspace
+      if (!profile.has_onboarded && workspaces.length === 0) {
+        return router.push("/onboarding")
+      }
 
       // Cargar herramientas por defecto para el usuario
       const { data: userTools, error: toolsError } = await supabase

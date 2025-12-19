@@ -9,6 +9,15 @@ function redirect303(path: string) {
   return NextResponse.redirect(new URL(path, env.appUrl()), 303)
 }
 
+function sanitizeRedirect(path: string | null): string | null {
+  const value = (path || "").trim()
+  if (!value) return null
+  if (!value.startsWith("/")) return null
+  if (value.startsWith("//")) return null
+  if (value.includes("\\")) return null
+  return value
+}
+
 export async function POST(req: NextRequest) {
   const cookieStore = cookies()
   const formData = await req.formData()
@@ -19,6 +28,7 @@ export async function POST(req: NextRequest) {
     'es'
   const email = (formData.get('email') as string | null)?.trim() || ''
   const password = (formData.get('password') as string | null) || ''
+  const redirectPath = sanitizeRedirect(formData.get('redirect') as string | null)
 
   if (!email || !password) {
     return redirect303(
@@ -40,6 +50,11 @@ export async function POST(req: NextRequest) {
   }
 
   const userId = data.user.id
+
+  // If user is coming from an invitation link, send them back to accept it (no subscription/home-workspace required)
+  if (redirectPath?.startsWith('/invite/')) {
+    return redirect303(redirectPath)
+  }
 
   const { data: homeWorkspace } = await supabase
     .from('workspaces')
@@ -71,6 +86,10 @@ export async function POST(req: NextRequest) {
       has_onboarded: true
     })
     .eq('user_id', userId)
+
+  if (redirectPath) {
+    return redirect303(redirectPath)
+  }
 
   return redirect303(`/${locale}/${homeWorkspace.id}/chat`)
 }

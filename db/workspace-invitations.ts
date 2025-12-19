@@ -1,6 +1,11 @@
 import { supabase } from "@/lib/supabase/robust-client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 import crypto from "crypto"
+import type { SupabaseClient } from "@supabase/supabase-js"
+
+function getDbClient(client?: SupabaseClient<any>) {
+  return (client || (supabase as any)) as SupabaseClient<any>
+}
 
 export type InvitationStatus = 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'REVOKED'
 export type WorkspaceRole = 'ADMIN' | 'LAWYER' | 'ASSISTANT' | 'VIEWER'
@@ -37,12 +42,15 @@ export const hashInvitationToken = (token: string): string => {
  * Create a new invitation
  */
 export const createWorkspaceInvitation = async (
-  invitation: Omit<TablesInsert<"workspace_invitations">, 'token_hash' | 'status'>
+  invitation: Omit<TablesInsert<"workspace_invitations">, 'token_hash' | 'status'>,
+  client?: SupabaseClient<any>
 ) => {
   const token = generateInvitationToken()
   const tokenHash = hashInvitationToken(token)
 
-  const { data: newInvitation, error } = await supabase
+  const supabaseClient = getDbClient(client)
+
+  const { data: newInvitation, error } = await supabaseClient
     .from("workspace_invitations")
     .insert([{
       ...invitation,
@@ -63,8 +71,12 @@ export const createWorkspaceInvitation = async (
 /**
  * Get all invitations for a workspace
  */
-export const getWorkspaceInvitations = async (workspaceId: string) => {
-  const { data: invitations, error } = await supabase
+export const getWorkspaceInvitations = async (
+  workspaceId: string,
+  client?: SupabaseClient<any>
+) => {
+  const supabaseClient = getDbClient(client)
+  const { data: invitations, error } = await supabaseClient
     .from("workspace_invitations")
     .select("*")
     .eq("workspace_id", workspaceId)
@@ -80,8 +92,12 @@ export const getWorkspaceInvitations = async (workspaceId: string) => {
 /**
  * Get invitation by token hash
  */
-export const getInvitationByTokenHash = async (tokenHash: string) => {
-  const { data: invitation, error } = await supabase
+export const getInvitationByTokenHash = async (
+  tokenHash: string,
+  client?: SupabaseClient<any>
+) => {
+  const supabaseClient = getDbClient(client)
+  const { data: invitation, error } = await supabaseClient
     .from("workspace_invitations")
     .select("*")
     .eq("token_hash", tokenHash)
@@ -97,9 +113,12 @@ export const getInvitationByTokenHash = async (tokenHash: string) => {
 /**
  * Verify invitation token
  */
-export const verifyInvitationToken = async (token: string) => {
+export const verifyInvitationToken = async (
+  token: string,
+  client?: SupabaseClient<any>
+) => {
   const tokenHash = hashInvitationToken(token)
-  const invitation = await getInvitationByTokenHash(tokenHash)
+  const invitation = await getInvitationByTokenHash(tokenHash, client)
 
   if (!invitation) {
     throw new Error("Invitación no encontrada")
@@ -111,7 +130,7 @@ export const verifyInvitationToken = async (token: string) => {
 
   if (new Date(invitation.expires_at) < new Date()) {
     // Auto-expire
-    await updateInvitationStatus(invitation.id, 'EXPIRED')
+    await updateInvitationStatus(invitation.id, 'EXPIRED', undefined, client)
     throw new Error("Invitación expirada")
   }
 
@@ -124,8 +143,10 @@ export const verifyInvitationToken = async (token: string) => {
 export const updateInvitationStatus = async (
   invitationId: string,
   status: InvitationStatus,
-  acceptedBy?: string
+  acceptedBy?: string,
+  client?: SupabaseClient<any>
 ) => {
+  const supabaseClient = getDbClient(client)
   const updateData: TablesUpdate<"workspace_invitations"> = {
     status,
     ...(status === 'ACCEPTED' && acceptedBy
@@ -133,7 +154,7 @@ export const updateInvitationStatus = async (
       : {})
   }
 
-  const { data: updatedInvitation, error } = await supabase
+  const { data: updatedInvitation, error } = await supabaseClient
     .from("workspace_invitations")
     .update(updateData)
     .eq("id", invitationId)
@@ -150,18 +171,25 @@ export const updateInvitationStatus = async (
 /**
  * Revoke an invitation
  */
-export const revokeInvitation = async (invitationId: string) => {
-  return await updateInvitationStatus(invitationId, 'REVOKED')
+export const revokeInvitation = async (
+  invitationId: string,
+  client?: SupabaseClient<any>
+) => {
+  return await updateInvitationStatus(invitationId, 'REVOKED', undefined, client)
 }
 
 /**
  * Resend invitation (create new token for existing invitation)
  */
-export const resendInvitation = async (invitationId: string) => {
+export const resendInvitation = async (
+  invitationId: string,
+  client?: SupabaseClient<any>
+) => {
   const token = generateInvitationToken()
   const tokenHash = hashInvitationToken(token)
 
-  const { data: invitation, error } = await supabase
+  const supabaseClient = getDbClient(client)
+  const { data: invitation, error } = await supabaseClient
     .from("workspace_invitations")
     .update({
       token_hash: tokenHash,
@@ -184,12 +212,14 @@ export const resendInvitation = async (invitationId: string) => {
  */
 export const acceptInvitation = async (
   token: string,
-  userId: string
+  userId: string,
+  client?: SupabaseClient<any>
 ) => {
-  const invitation = await verifyInvitationToken(token)
+  const supabaseClient = getDbClient(client)
+  const invitation = await verifyInvitationToken(token, client)
 
   // Check if user already is a member
-  const { data: existingMember } = await supabase
+  const { data: existingMember } = await supabaseClient
     .from("workspace_members")
     .select("*")
     .eq("workspace_id", invitation.workspace_id)
@@ -201,7 +231,7 @@ export const acceptInvitation = async (
   }
 
   // Create membership
-  const { data: member, error: memberError } = await supabase
+  const { data: member, error: memberError } = await supabaseClient
     .from("workspace_members")
     .insert([{
       workspace_id: invitation.workspace_id,
@@ -217,9 +247,12 @@ export const acceptInvitation = async (
   }
 
   // Mark invitation as accepted
-  await updateInvitationStatus(invitation.id, 'ACCEPTED', userId)
+  await updateInvitationStatus(invitation.id, 'ACCEPTED', userId, client)
 
   return member
 }
+
+
+
 
 

@@ -9,7 +9,7 @@ import { getEnvVar } from "@/lib/env/runtime-env"
 const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
 
 // Rutas de autenticación que NO deben pasar por i18n
-const AUTH_ROUTES = ['/onboarding', '/login', '/setup', '/auth/verify-email', '/auth/callback']
+const AUTH_ROUTES = ['/onboarding', '/login', '/setup', '/invite', '/auth/verify-email', '/auth/callback']
 
 // Verificar si billing está habilitado
 const isBillingEnabled = () => getEnvVar('NEXT_PUBLIC_BILLING_ENABLED') === 'true';
@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   
   // Rutas públicas - verificar ANTES del i18n router para evitar redirecciones innecesarias
   // Estas rutas son accesibles tanto para usuarios autenticados como no autenticados
-  const publicSegments = ['login', 'auth/verify-email', 'auth/callback', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'precios', 'landing', 'billing/success']
+  const publicSegments = ['login', 'invite', 'auth/verify-email', 'auth/callback', 'onboarding', 'setup', 'debug-auth', 'test-signup', 'precios', 'landing', 'billing/success']
   const isPublicRoute = publicSegments.some(seg => {
     // Coincide con /seg, /seg/, /locale/seg, o cualquier variante
     return pathname === `/${seg}` || 
@@ -126,6 +126,21 @@ export async function middleware(request: NextRequest) {
           )
 
           if (requiresSubscription) {
+            // Allow chat access for users who are members of the workspace (collaboration)
+            const workspaceId = extractWorkspaceIdFromPath(request.nextUrl.pathname)
+            if (workspaceId) {
+              const { data: member } = await supabase
+                .from("workspace_members")
+                .select("id")
+                .eq("workspace_id", workspaceId)
+                .eq("user_id", user.id)
+                .maybeSingle()
+
+              if (member) {
+                return response
+              }
+            }
+
             // Para /chat, redirigir a precios
             const preciosUrl = new URL('/precios', request.url)
             if (subscriptionStatus.reason === 'expired') {
@@ -249,6 +264,18 @@ async function checkSubscriptionInMiddleware(
     // En caso de error, denegar acceso para forzar verificación
     return { hasAccess: false, reason: 'error' }
   }
+}
+
+function extractWorkspaceIdFromPath(pathname: string): string | null {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+  const segments = pathname.split("/").filter(Boolean)
+  for (const segment of segments) {
+    if (uuidRegex.test(segment)) return segment
+  }
+
+  return null
 }
 
 export const config = {

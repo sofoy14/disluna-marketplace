@@ -142,19 +142,18 @@ export async function GET(request: Request) {
           error.message?.includes('code_verifier') ||
           error.code === 'validation_failed' ||
           error.status === 400) {
-        console.log('[Auth Callback] PKCE error detected - checking for existing session')
-        
-        // Try to get existing session from cookies (user might already be logged in)
-        const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
-        
-        if (sessionError) {
-          console.error('[Auth Callback] Error getting session:', sessionError)
+        console.log('[Auth Callback] PKCE error detected - checking for existing user')
+
+        // Avoid getSession() here (it can trigger refresh_token_not_found if cookies are stale).
+        const { data: { user: existingUser }, error: existingUserError } = await supabase.auth.getUser()
+
+        if (existingUserError) {
+          console.error('[Auth Callback] Error getting user:', existingUserError)
         }
-        
-        if (sessionData?.session?.user) {
-          console.log('[Auth Callback] Found existing session for:', sessionData.session.user.email)
-          // User already has a valid session, proceed with that
-          return await handleAuthenticatedUser(supabase, sessionData.session.user, next, appUrl)
+
+        if (existingUser) {
+          console.log('[Auth Callback] Found existing user for:', existingUser.email)
+          return await handleAuthenticatedUser(supabase, existingUser, next, appUrl)
         }
         
         // No existing session - PKCE flow failed
@@ -182,14 +181,14 @@ export async function GET(request: Request) {
     return await handleAuthenticatedUser(supabase, data.user, next, appUrl)
   }
 
-  // No code provided - try to get existing session
-  console.log('[Auth Callback] No code provided, checking for existing session')
-  
-  const { data: sessionData } = await supabase.auth.getSession()
-  
-  if (sessionData?.session?.user) {
-    console.log('[Auth Callback] Found existing session:', sessionData.session.user.email)
-    return await handleAuthenticatedUser(supabase, sessionData.session.user, next, appUrl)
+  // No code provided - try to get existing user
+  console.log('[Auth Callback] No code provided, checking for existing user')
+
+  const { data: { user: existingUser } } = await supabase.auth.getUser()
+
+  if (existingUser) {
+    console.log('[Auth Callback] Found existing user:', existingUser.email)
+    return await handleAuthenticatedUser(supabase, existingUser, next, appUrl)
   }
   
   if (next) {

@@ -18,6 +18,15 @@ function splitCsv(value: string | undefined) {
     : []
 }
 
+function sanitizeRedirect(path: string | null): string | null {
+  const value = (path || '').trim()
+  if (!value) return null
+  if (!value.startsWith('/')) return null
+  if (value.startsWith('//')) return null
+  if (value.includes('\\')) return null
+  return value
+}
+
 export async function POST(req: NextRequest) {
   const cookieStore = cookies()
   const formData = await req.formData()
@@ -29,6 +38,7 @@ export async function POST(req: NextRequest) {
 
   const email = (formData.get('email') as string | null)?.trim() || ''
   const password = (formData.get('password') as string | null) || ''
+  const redirectPath = sanitizeRedirect(formData.get('redirect') as string | null)
 
   if (!email || !password) {
     return redirect303(
@@ -52,12 +62,14 @@ export async function POST(req: NextRequest) {
 
   const supabase = createClient(cookieStore)
   const appUrl = env.appUrl()
+  const nextAfterVerify =
+    redirectPath?.startsWith('/invite/') ? redirectPath : `/${locale}/auth/verify-email`
 
   const { error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: `${appUrl}/auth/callback?next=/${locale}/auth/verify-email`
+      emailRedirectTo: `${appUrl}/auth/callback?next=${encodeURIComponent(nextAfterVerify)}`
     }
   })
 

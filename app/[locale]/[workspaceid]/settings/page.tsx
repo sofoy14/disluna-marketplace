@@ -22,7 +22,7 @@ import {
   SelectValue
 } from "@/components/ui/select"
 import { toast } from "sonner"
-import { IconLoader2, IconTrash, IconSend, IconX, IconHome } from "@tabler/icons-react"
+import { IconLoader2, IconTrash, IconSend, IconX, IconHome, IconLink, IconCopy } from "@tabler/icons-react"
 import ImagePicker from "@/components/ui/image-picker"
 import { TextareaAutosize } from "@/components/ui/textarea-autosize"
 import { LimitDisplay } from "@/components/ui/limit-display"
@@ -119,6 +119,7 @@ export default function WorkspaceSettingsPage() {
   const [inviteEmail, setInviteEmail] = useState("")
   const [inviteRole, setInviteRole] = useState<WorkspaceRole>("VIEWER")
   const [sendingInvite, setSendingInvite] = useState(false)
+  const [creatingInviteLink, setCreatingInviteLink] = useState(false)
 
   // Audit tab
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([])
@@ -382,6 +383,30 @@ export default function WorkspaceSettingsPage() {
     }
   }
 
+  const copyToClipboard = async (value: string) => {
+    if (typeof navigator === "undefined") return false
+
+    try {
+      await navigator.clipboard.writeText(value)
+      return true
+    } catch {
+      try {
+        const el = document.createElement("textarea")
+        el.value = value
+        el.setAttribute("readonly", "true")
+        el.style.position = "absolute"
+        el.style.left = "-9999px"
+        document.body.appendChild(el)
+        el.select()
+        document.execCommand("copy")
+        document.body.removeChild(el)
+        return true
+      } catch {
+        return false
+      }
+    }
+  }
+
   const handleSendInvitation = async () => {
     if (!inviteEmail || !inviteEmail.includes('@')) {
       toast.error("Email inválido")
@@ -395,6 +420,7 @@ export default function WorkspaceSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: inviteEmail, role: inviteRole })
       })
+      const responseClone = response.clone()
 
       if (!response.ok) {
         const error = await response.json()
@@ -405,10 +431,48 @@ export default function WorkspaceSettingsPage() {
       setInviteEmail("")
       setInviteRole("VIEWER")
       await loadInvitations()
+
+      const data = await responseClone.json().catch(() => ({} as any))
+      const token = data?.token as string | undefined
+      if (token) {
+        const inviteUrl = `${window.location.origin}/invite/${token}`
+        const copied = await copyToClipboard(inviteUrl)
+        toast.success(copied ? "Enlace de invitación copiado." : "Invitación creada.")
+      }
     } catch (error: any) {
       toast.error(error.message)
     } finally {
       setSendingInvite(false)
+    }
+  }
+
+  const handleCreateInviteLink = async () => {
+    try {
+      setCreatingInviteLink(true)
+      const response = await fetch(`/api/workspace/${workspaceId}/invitations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "link", role: inviteRole })
+      })
+
+      const data = await response.json().catch(() => ({} as any))
+      if (!response.ok) {
+        throw new Error(data.error || "Error al crear enlace de invitación")
+      }
+
+      const token = data?.token as string | undefined
+      if (!token) {
+        throw new Error("Invitación creada sin token")
+      }
+
+      const inviteUrl = `${window.location.origin}/invite/${token}`
+      const copied = await copyToClipboard(inviteUrl)
+      toast.success(copied ? "Enlace de invitación copiado." : "Enlace de invitación creado.")
+      await loadInvitations()
+    } catch (error: any) {
+      toast.error(error.message)
+    } finally {
+      setCreatingInviteLink(false)
     }
   }
 
@@ -427,6 +491,14 @@ export default function WorkspaceSettingsPage() {
 
       toast.success("Invitación revocada")
       await loadInvitations()
+
+      const data = await responseClone.json().catch(() => ({} as any))
+      const token = data?.token as string | undefined
+      if (token) {
+        const inviteUrl = `${window.location.origin}/invite/${token}`
+        const copied = await copyToClipboard(inviteUrl)
+        toast.success(copied ? "Enlace copiado." : "Enlace generado.")
+      }
     } catch (error: any) {
       toast.error(error.message)
     }
@@ -439,6 +511,7 @@ export default function WorkspaceSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invitationId, action: 'resend' })
       })
+      const responseClone = response.clone()
 
       if (!response.ok) {
         const error = await response.json()
@@ -659,6 +732,20 @@ export default function WorkspaceSettingsPage() {
                     </>
                   )}
                 </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleCreateInviteLink}
+                  disabled={creatingInviteLink}
+                >
+                  {creatingInviteLink ? (
+                    <IconLoader2 className="animate-spin" size={16} />
+                  ) : (
+                    <>
+                      <IconLink size={16} className="mr-2" />
+                      Crear enlace
+                    </>
+                  )}
+                </Button>
               </div>
             </div>
 
@@ -718,7 +805,7 @@ export default function WorkspaceSettingsPage() {
                                     size="icon"
                                     onClick={() => handleResendInvitation(invitation.id)}
                                   >
-                                    <IconSend size={16} />
+                                    <IconCopy size={16} />
                                   </Button>
                                   {invitation.status === 'PENDING' && (
                                     <Button

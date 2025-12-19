@@ -81,7 +81,7 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
   onContentTypeChange,
   onClose
 }) => {
-  const { chats, collections, folders, transcriptions } =
+  const { chats, collections, folders, transcriptions, workspaces } =
     useContext(ALIContext)
   
   // Plan access control - simplified using profile
@@ -95,6 +95,9 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
     canShowWorkspaceSwitcher,
     planDisplayName
   } = useProfilePlan()
+
+  const shouldShowWorkspaceSwitcher =
+    canShowWorkspaceSwitcher || (workspaces?.length ?? 0) > 1
   
   const { handleNewChat } = useChatHandler()
     
@@ -285,8 +288,8 @@ export const ModernSidebar: FC<ModernSidebarProps> = ({
                   </motion.div>
                 )}
               </div>
-              {/* WorkspaceSwitcher - Only show for plans that support multiple workspaces */}
-              {canShowWorkspaceSwitcher && (
+              {/* WorkspaceSwitcher - Show if multiple workspaces or plan supports it */}
+              {shouldShowWorkspaceSwitcher && (
               <motion.div 
                 className="w-full"
                 variants={itemVariants}

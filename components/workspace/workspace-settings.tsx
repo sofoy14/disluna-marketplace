@@ -18,6 +18,21 @@ import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { LimitDisplay } from "../ui/limit-display"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "../ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from "../ui/table"
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -32,6 +47,31 @@ import { DeleteWorkspace } from "./delete-workspace"
 interface WorkspaceSettingsProps {
   trigger?: ReactNode
   workspace?: Tables<"workspaces">
+}
+
+type WorkspaceRole = "ADMIN" | "LAWYER" | "ASSISTANT" | "VIEWER"
+type InvitationStatus = "PENDING" | "ACCEPTED" | "EXPIRED" | "REVOKED"
+
+interface WorkspaceMember {
+  id: string
+  workspace_id: string
+  user_id: string
+  role: WorkspaceRole
+  created_at: string
+  user?: {
+    id: string
+    email: string
+  }
+}
+
+interface WorkspaceInvitation {
+  id: string
+  workspace_id: string
+  email: string
+  role: WorkspaceRole
+  status: InvitationStatus
+  created_at: string
+  expires_at: string
 }
 
 export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({ 
@@ -65,6 +105,21 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
     workspace?.instructions || ""
   )
 
+  const [canManageWorkspace, setCanManageWorkspace] = useState(false)
+  const [loadingAccess, setLoadingAccess] = useState(false)
+
+  const [members, setMembers] = useState<WorkspaceMember[]>([])
+  const [loadingMembers, setLoadingMembers] = useState(false)
+
+  const [invitations, setInvitations] = useState<WorkspaceInvitation[]>([])
+  const [loadingInvitations, setLoadingInvitations] = useState(false)
+
+  const [inviteEmail, setInviteEmail] = useState("")
+  const [inviteRole, setInviteRole] = useState<WorkspaceRole>("VIEWER")
+  const [inviteLinkLabel, setInviteLinkLabel] = useState("")
+  const [sendingInvite, setSendingInvite] = useState(false)
+  const [creatingInviteLink, setCreatingInviteLink] = useState(false)
+
   const [defaultChatSettings, setDefaultChatSettings] = useState({
     model: workspace?.default_model,
     prompt: workspace?.default_prompt,
@@ -93,6 +148,267 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
       })
     }
   }, [workspace])
+
+  const copyToClipboard = async (value: string) => {
+    if (typeof navigator === "undefined") return false
+
+    try {
+      await navigator.clipboard.writeText(value)
+      return true
+    } catch {
+      try {
+        const el = document.createElement("textarea")
+        el.value = value
+        el.setAttribute("readonly", "true")
+        el.style.position = "absolute"
+        el.style.left = "-9999px"
+        document.body.appendChild(el)
+        el.select()
+        document.execCommand("copy")
+        document.body.removeChild(el)
+        return true
+      } catch {
+        return false
+      }
+    }
+  }
+
+  const loadMembers = async (workspaceId: string) => {
+    try {
+      setLoadingMembers(true)
+      const res = await fetch(`/api/workspace/${workspaceId}/members`)
+      if (!res.ok) {
+        throw new Error("No se pudieron cargar los miembros")
+      }
+      const data = (await res.json()) as { members?: WorkspaceMember[] }
+      setMembers(data.members || [])
+    } finally {
+      setLoadingMembers(false)
+    }
+  }
+
+  const loadInvitations = async (workspaceId: string) => {
+    try {
+      setLoadingInvitations(true)
+      const res = await fetch(`/api/workspace/${workspaceId}/invitations`)
+      if (!res.ok) {
+        throw new Error("No se pudieron cargar las invitaciones")
+      }
+      const data = (await res.json()) as { invitations?: WorkspaceInvitation[] }
+      setInvitations(data.invitations || [])
+    } finally {
+      setLoadingInvitations(false)
+    }
+  }
+
+  const ensureAccessLoaded = async () => {
+    const workspaceId = workspace?.id
+    if (!workspaceId) return
+
+    if (workspace?.is_home) {
+      setCanManageWorkspace(true)
+      setMembers([])
+      setInvitations([])
+      return
+    }
+
+    try {
+      setLoadingAccess(true)
+
+      const res = await fetch(`/api/workspace/${workspaceId}/members`)
+      if (!res.ok) {
+        setCanManageWorkspace(false)
+        setMembers([])
+        setInvitations([])
+        return
+      }
+
+      setCanManageWorkspace(true)
+      const data = (await res.json()) as { members?: WorkspaceMember[] }
+      setMembers(data.members || [])
+
+      await loadInvitations(workspaceId)
+    } finally {
+      setLoadingAccess(false)
+    }
+  }
+
+  useEffect(() => {
+    if (!isOpen) return
+    void ensureAccessLoaded()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, workspace?.id])
+
+  const handleUpdateMemberRole = async (userId: string, role: WorkspaceRole) => {
+    if (!workspace) return
+
+    try {
+      const res = await fetch(`/api/workspace/${workspace.id}/members`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, role })
+      })
+
+      const data = await res.json().catch(() => ({} as any))
+      if (!res.ok) {
+        throw new Error(data?.error || "Error al actualizar rol")
+      }
+
+      toast.success("Rol actualizado")
+      await loadMembers(workspace.id)
+    } catch (error: any) {
+      toast.error(error.message || "Error al actualizar rol")
+    }
+  }
+
+  const handleRemoveMember = async (userId: string) => {
+    if (!workspace) return
+    if (!confirm("Remover este miembro del workspace?")) return
+
+    try {
+      const res = await fetch(
+        `/api/workspace/${workspace.id}/members?userId=${encodeURIComponent(userId)}`,
+        { method: "DELETE" }
+      )
+
+      const data = await res.json().catch(() => ({} as any))
+      if (!res.ok) {
+        throw new Error(data?.error || "Error al remover miembro")
+      }
+
+      toast.success("Miembro removido")
+      await loadMembers(workspace.id)
+    } catch (error: any) {
+      toast.error(error.message || "Error al remover miembro")
+    }
+  }
+
+  const handleSendInvitation = async () => {
+    if (!workspace) return
+    if (!inviteEmail || !inviteEmail.includes("@")) {
+      toast.error("Email invalido")
+      return
+    }
+
+    try {
+      setSendingInvite(true)
+      const res = await fetch(`/api/workspace/${workspace.id}/invitations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: inviteEmail.trim(), role: inviteRole })
+      })
+
+      const data = await res.json().catch(() => ({} as any))
+      if (!res.ok) {
+        throw new Error(data?.error || "Error al enviar invitacion")
+      }
+
+      setInviteEmail("")
+      toast.success("Invitacion creada")
+
+      const token = data?.token as string | undefined
+      if (token && typeof window !== "undefined") {
+        const inviteUrl = `${window.location.origin}/invite/${token}`
+        const copied = await copyToClipboard(inviteUrl)
+        toast.success(copied ? "Enlace copiado" : "Invitacion lista")
+      }
+
+      await loadInvitations(workspace.id)
+    } catch (error: any) {
+      toast.error(error.message || "Error al enviar invitacion")
+    } finally {
+      setSendingInvite(false)
+    }
+  }
+
+  const handleCreateInviteLink = async () => {
+    if (!workspace) return
+
+    try {
+      setCreatingInviteLink(true)
+      const res = await fetch(`/api/workspace/${workspace.id}/invitations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "link",
+          role: inviteRole,
+          label: inviteLinkLabel.trim() || undefined
+        })
+      })
+
+      const data = await res.json().catch(() => ({} as any))
+      if (!res.ok) {
+        throw new Error(data?.error || "Error al crear enlace")
+      }
+
+      setInviteLinkLabel("")
+
+      const token = data?.token as string | undefined
+      if (!token) throw new Error("Invitacion creada sin token")
+
+      const inviteUrl = `${window.location.origin}/invite/${token}`
+      const copied = await copyToClipboard(inviteUrl)
+      toast.success(copied ? "Enlace copiado" : "Enlace creado")
+
+      await loadInvitations(workspace.id)
+    } catch (error: any) {
+      toast.error(error.message || "Error al crear enlace")
+    } finally {
+      setCreatingInviteLink(false)
+    }
+  }
+
+  const handleRevokeInvitation = async (invitationId: string) => {
+    if (!workspace) return
+
+    try {
+      const res = await fetch(`/api/workspace/${workspace.id}/invitations`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invitationId, action: "revoke" })
+      })
+
+      const data = await res.json().catch(() => ({} as any))
+      if (!res.ok) {
+        throw new Error(data?.error || "Error al revocar invitacion")
+      }
+
+      toast.success("Invitacion revocada")
+      await loadInvitations(workspace.id)
+    } catch (error: any) {
+      toast.error(error.message || "Error al revocar invitacion")
+    }
+  }
+
+  const handleResendInvitation = async (invitationId: string) => {
+    if (!workspace) return
+
+    try {
+      const res = await fetch(`/api/workspace/${workspace.id}/invitations`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invitationId, action: "resend" })
+      })
+
+      const data = await res.json().catch(() => ({} as any))
+      if (!res.ok) {
+        throw new Error(data?.error || "Error al reenviar invitacion")
+      }
+
+      toast.success("Invitacion reenviada")
+
+      const token = data?.token as string | undefined
+      if (token && typeof window !== "undefined") {
+        const inviteUrl = `${window.location.origin}/invite/${token}`
+        const copied = await copyToClipboard(inviteUrl)
+        toast.success(copied ? "Enlace copiado" : "Enlace generado")
+      }
+
+      await loadInvitations(workspace.id)
+    } catch (error: any) {
+      toast.error(error.message || "Error al reenviar invitacion")
+    }
+  }
 
   useEffect(() => {
     const workspaceImage =
@@ -206,6 +522,8 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
 
   if (!workspaceToUse || !profile) return null
 
+  const showAccessTab = !workspaceToUse.is_home && canManageWorkspace
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       {trigger ? (
@@ -260,13 +578,25 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
           </SheetHeader>
 
           <Tabs defaultValue="main" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-muted/50 rounded-lg p-1">
+            <TabsList
+              className={`grid w-full ${showAccessTab ? "grid-cols-3" : "grid-cols-2"} bg-muted/50 rounded-lg p-1`}
+            >
               <TabsTrigger 
                 value="main"
                 className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
               >
                 Principal
               </TabsTrigger>
+
+              {showAccessTab && (
+                <TabsTrigger
+                  value="access"
+                  className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
+                >
+                  Acceso
+                </TabsTrigger>
+              )}
+
               <TabsTrigger 
                 value="defaults"
                 className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
@@ -323,6 +653,205 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
                 </div>
               </div>
             </TabsContent>
+
+            {showAccessTab && (
+              <TabsContent className="mt-6 space-y-6" value="access">
+                <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-4 border border-border/50">
+                  Admin: gestiona miembros, roles e invitaciones del workspace.
+                </div>
+
+                <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-xs text-muted-foreground space-y-2">
+                  <div className="text-sm font-medium text-foreground/90">Roles (referencia)</div>
+                  <div>ADMIN: puede gestionar miembros e invitaciones.</div>
+                  <div>LAWYER / ASSISTANT: acceso operativo al workspace.</div>
+                  <div>VIEWER: acceso limitado (solo lectura, segun reglas del workspace).</div>
+                </div>
+
+                <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm font-medium">Invitaciones</div>
+                    <Button variant="ghost" size="sm" onClick={() => void ensureAccessLoaded()}>
+                      Actualizar
+                    </Button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-sm">Rol</Label>
+                    <Select value={inviteRole} onValueChange={v => setInviteRole(v as WorkspaceRole)}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="Rol" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="VIEWER">Viewer</SelectItem>
+                        <SelectItem value="ASSISTANT">Assistant</SelectItem>
+                        <SelectItem value="LAWYER">Lawyer</SelectItem>
+                        <SelectItem value="ADMIN">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="space-y-2">
+                      <Label className="text-sm">Invitar por email</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={inviteEmail}
+                          onChange={e => setInviteEmail(e.target.value)}
+                          placeholder="correo@ejemplo.com"
+                          className="rounded-lg border-border/60 focus:border-primary/50 focus:ring-primary/20 transition-all"
+                        />
+                        <Button onClick={handleSendInvitation} disabled={sendingInvite}>
+                          {sendingInvite ? "Enviando..." : "Invitar"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="text-sm">Enlace de invitacion</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          value={inviteLinkLabel}
+                          onChange={e => setInviteLinkLabel(e.target.value)}
+                          placeholder="Etiqueta (opcional)"
+                          className="rounded-lg border-border/60 focus:border-primary/50 focus:ring-primary/20 transition-all"
+                        />
+                        <Button
+                          variant="outline"
+                          onClick={handleCreateInviteLink}
+                          disabled={creatingInviteLink}
+                        >
+                          {creatingInviteLink ? "Creando..." : "Crear"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="text-sm font-medium">Miembros</div>
+                  <div className="rounded-lg border border-border/60 overflow-hidden">
+                    {loadingAccess || loadingMembers ? (
+                      <div className="p-4 text-sm text-muted-foreground">Cargando miembros...</div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Rol</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {members.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={3} className="text-center text-muted-foreground">
+                                No hay miembros listados.
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            members.map(member => (
+                              <TableRow key={member.id}>
+                                <TableCell className="font-mono text-xs">
+                                  {member.user?.email || member.user_id}
+                                </TableCell>
+                                <TableCell>
+                                  <Select
+                                    value={member.role}
+                                    onValueChange={v => handleUpdateMemberRole(member.user_id, v as WorkspaceRole)}
+                                  >
+                                    <SelectTrigger className="w-[180px]">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="VIEWER">Viewer</SelectItem>
+                                      <SelectItem value="ASSISTANT">Assistant</SelectItem>
+                                      <SelectItem value="LAWYER">Lawyer</SelectItem>
+                                      <SelectItem value="ADMIN">Admin</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleRemoveMember(member.user_id)}
+                                  >
+                                    Remover
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="text-sm font-medium">Invitaciones existentes</div>
+                  <div className="rounded-lg border border-border/60 overflow-hidden">
+                    {loadingAccess || loadingInvitations ? (
+                      <div className="p-4 text-sm text-muted-foreground">Cargando invitaciones...</div>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Contacto</TableHead>
+                            <TableHead>Rol</TableHead>
+                            <TableHead>Estado</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {invitations.length === 0 ? (
+                            <TableRow>
+                              <TableCell colSpan={4} className="text-center text-muted-foreground">
+                                No hay invitaciones.
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            invitations.map(invite => (
+                              <TableRow key={invite.id}>
+                                <TableCell className="font-mono text-xs">
+                                  {invite.email?.startsWith("link:")
+                                    ? `link (${invite.email.slice("link:".length)})`
+                                    : invite.email}
+                                </TableCell>
+                                <TableCell>{invite.role}</TableCell>
+                                <TableCell>{invite.status}</TableCell>
+                                <TableCell className="text-right">
+                                  {invite.status === "PENDING" ? (
+                                    <div className="flex justify-end gap-2">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => void handleResendInvitation(invite.id)}
+                                      >
+                                        Reenviar
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => void handleRevokeInvitation(invite.id)}
+                                      >
+                                        Revocar
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <span className="text-xs text-muted-foreground">—</span>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          )}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
+            )}
 
             <TabsContent className="mt-6" value="defaults">
               <div className="mb-6 text-sm text-muted-foreground bg-muted/30 rounded-lg p-4 border border-border/50">
