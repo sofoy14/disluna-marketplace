@@ -29,6 +29,9 @@ import { BaseCallbackHandler } from "@langchain/core/callbacks/base"
 import { getSupabaseServer } from '@/lib/supabase/server-client'
 import { canContinueChat, getUserPlanStatus, canUseModel, incrementModelUsage } from '@/lib/billing/plan-access'
 import { incrementTokenUsage } from '@/db/usage-tracking'
+import { detectDraftIntent } from "@/lib/draft-detection"
+import { classifyDocumentIntent } from "@/lib/classifiers/document-classifier"
+import { validateDraftContent } from "@/lib/utils/draft-utils"
 
 export const runtime = "nodejs"
 export const maxDuration = 180 // 3 minutos para investigación completa
@@ -91,11 +94,19 @@ class StreamingCallbackHandler extends BaseCallbackHandler {
   }
 
   private emit(event: object) {
+    // Si no hay controller, salir
+    if (!this.controller) return
+
     try {
+      // Verificar estado del controller (aunque la propiedad desiredSize no siempre es fiable en todos los entornos, es estándar)
+      // @ts-ignore
+      if (this.controller.desiredSize === null) return
+
       const data = JSON.stringify(event) + '\n'
       this.controller.enqueue(this.encoder.encode(data))
     } catch (e) {
-      console.error('Error emitting event:', e)
+      // Silenciar errores de enecolado (sucede si el cliente cierra conexión)
+      // console.error('Stream enqueue error (cliente desconectado):', e)
     }
   }
 
@@ -112,7 +123,7 @@ class StreamingCallbackHandler extends BaseCallbackHandler {
       // No emitir los tags, solo el contenido
       return
     }
-    
+
     this.emit({ type: 'token', content: token })
   }
 
@@ -128,9 +139,9 @@ class StreamingCallbackHandler extends BaseCallbackHandler {
   // Cuando se inicia una herramienta
   async handleToolStart(tool: any, input: string) {
     const toolName = tool?.name || 'herramienta'
-    this.emit({ 
-      type: 'tool_start', 
-      tool: toolName, 
+    this.emit({
+      type: 'tool_start',
+      tool: toolName,
       input: input.substring(0, 100) + (input.length > 100 ? '...' : '')
     })
   }
@@ -138,7 +149,7 @@ class StreamingCallbackHandler extends BaseCallbackHandler {
   // Cuando termina una herramienta
   async handleToolEnd(output: string) {
     // Resumir el output si es muy largo
-    const summary = output.length > 200 
+    const summary = output.length > 200
       ? output.substring(0, 200) + '... (ver fuentes abajo)'
       : output
     this.emit({ type: 'tool_end', output: summary })
@@ -151,9 +162,9 @@ class StreamingCallbackHandler extends BaseCallbackHandler {
 
   // Cuando el agente toma una acción
   async handleAgentAction(action: any) {
-    this.emit({ 
-      type: 'thinking', 
-      content: `📋 Decidí usar: ${action.tool} para "${action.toolInput?.query || action.toolInput?.url || '...'}"` 
+    this.emit({
+      type: 'thinking',
+      content: `📋 Decidí usar: ${action.tool} para "${action.toolInput?.query || action.toolInput?.url || '...'}"`
     })
   }
 
@@ -186,12 +197,12 @@ function convertMessages(messages: RequestBody['messages']): BaseMessage[] {
  * Obtiene o crea un agente para un chat específico
  */
 async function getOrCreateAgent(
-  chatId: string, 
-  modelId: string, 
+  chatId: string,
+  modelId: string,
   temperature: number
 ): Promise<LegalAgent> {
   const cacheKey = `${chatId}-${modelId}`
-  
+
   const cached = agentCache.get(cacheKey)
   if (cached) {
     cached.lastUsed = new Date()
@@ -214,7 +225,7 @@ async function getOrCreateAgent(
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now()
-  
+
   // Iniciar cleanup si no está corriendo
   if (!cleanupInterval) {
     cleanupInterval = setInterval(cleanupCache, CACHE_TTL)
@@ -228,7 +239,7 @@ export async function POST(request: NextRequest) {
     // BILLING CHECK: Verify user can continue chatting
     // ═══════════════════════════════════════════════════════════════════════
     let effectiveUserId = userId
-    
+
     // If no userId provided, try to get from auth header
     if (!effectiveUserId) {
       const authHeader = request.headers.get('Authorization')
@@ -243,10 +254,10 @@ export async function POST(request: NextRequest) {
     // Check if billing is enabled and user has access
     if (process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true' && effectiveUserId) {
       const canChat = await canContinueChat(effectiveUserId)
-      
+
       if (!canChat.allowed) {
         return NextResponse.json(
-          { 
+          {
             error: canChat.reason || "Has alcanzado el límite de tu plan",
             code: "USAGE_LIMIT_EXCEEDED",
             needsUpgrade: true
@@ -254,14 +265,14 @@ export async function POST(request: NextRequest) {
           { status: 402 } // Payment Required
         )
       }
-      
+
       // Check model-specific usage limits
       const modelId = chatSettings.model || 'alibaba/tongyi-deepresearch-30b-a3b'
       const modelCheck = await canUseModel(effectiveUserId, modelId)
-      
+
       if (!modelCheck.allowed) {
         return NextResponse.json(
-          { 
+          {
             error: modelCheck.reason || "Has alcanzado el límite de uso de este modelo",
             code: "MODEL_LIMIT_EXCEEDED",
             needsUpgrade: true,
@@ -293,6 +304,22 @@ export async function POST(request: NextRequest) {
     const userMessages = messages.filter(m => m.role === 'user')
     const lastUserMessage = userMessages[userMessages.length - 1]?.content || ''
 
+    // Detección de draft: heurística + clasificación LLM
+    const heuristicResult = detectDraftIntent(lastUserMessage)
+    let classificationResult = await classifyDocumentIntent(lastUserMessage, heuristicResult, true)
+
+    // Si la heurística tiene alta confianza pero LLM dice que no, dar más peso a heurística
+    if (heuristicResult.isDraft && heuristicResult.confidence >= 0.8 && !classificationResult.is_document) {
+      classificationResult = {
+        is_document: true,
+        doc_type: (heuristicResult.type as any) || "otro",
+        confidence: heuristicResult.confidence * 0.9
+      }
+    }
+
+    const isDraft = classificationResult.is_document && classificationResult.confidence >= 0.6
+    const draftType = classificationResult.doc_type
+
     // Obtener o crear agente
     const effectiveChatId = chatId || `temp-${Date.now()}`
     const agent = await getOrCreateAgent(effectiveChatId, modelId, temperature)
@@ -302,11 +329,11 @@ export async function POST(request: NextRequest) {
 
     // Crear stream de respuesta con eventos JSON
     const encoder = new TextEncoder()
-    
+
     const stream = new ReadableStream({
       async start(controller) {
         let isClosed = false
-        
+
         // Helper para emitir eventos de forma segura
         const emit = (event: object) => {
           if (isClosed) return
@@ -316,7 +343,7 @@ export async function POST(request: NextRequest) {
             // Ignorar errores si el controller ya está cerrado
           }
         }
-        
+
         const safeClose = () => {
           if (isClosed) return
           isClosed = true
@@ -339,9 +366,9 @@ export async function POST(request: NextRequest) {
 
           // Emitir información sobre herramientas usadas
           if (result.toolsUsed && result.toolsUsed.length > 0) {
-            emit({ 
-              type: 'thinking', 
-              content: `🔧 Herramientas utilizadas: ${result.toolsUsed.join(', ')}` 
+            emit({
+              type: 'thinking',
+              content: `🔧 Herramientas utilizadas: ${result.toolsUsed.join(', ')}`
             })
           }
 
@@ -349,10 +376,10 @@ export async function POST(request: NextRequest) {
           if (result.intermediateSteps && result.intermediateSteps.length > 0) {
             for (const step of result.intermediateSteps) {
               if (step.action?.tool) {
-                emit({ 
-                  type: 'tool_start', 
+                emit({
+                  type: 'tool_start',
                   tool: step.action.tool,
-                  input: typeof step.action.toolInput === 'string' 
+                  input: typeof step.action.toolInput === 'string'
                     ? step.action.toolInput.substring(0, 100)
                     : JSON.stringify(step.action.toolInput).substring(0, 100)
                 })
@@ -371,61 +398,90 @@ export async function POST(request: NextRequest) {
 
           // Limpiar la respuesta del modelo
           let cleanOutput = result.output
-          
-          // Limpieza de formato
-          cleanOutput = cleanOutput
-            .replace(/\*{0,2}Fuentes consultadas\*{0,2}\s*\n+/gi, '')
-            .replace(/\d+\s*referencias?\s*\n+/gi, '')
-            .replace(/\n+---\n*\*{0,2}Fuentes?\s*(consultadas|legales?)?\*{0,2}:?\s*\n*$/gi, '')
-            .replace(/\n+\*{0,2}Fuentes?\s*(consultadas|legales?)?\*{0,2}:?\s*\n*$/gi, '')
-            .replace(/\n*\*{0,2}(Advertencia|Nota importante|Importante|Disclaimer):?\*{0,2}[^]*?(consultar?|abogado|profesional|asesor)[^]*?\.?\n*/gi, '\n')
-            .replace(/\n{3,}/g, '\n\n')
-            .trim()
-          
+
+          // Si es modo draft, validar y formatear JSON
+          if (isDraft) {
+            const validation = validateDraftContent(cleanOutput)
+            if (validation.valid && validation.draft) {
+              // Asegurar disclaimer
+              if (!validation.draft.notes || validation.draft.notes.length === 0) {
+                validation.draft.notes = ["⚠️ Documento preliminar, requiere revisión profesional, no sustituye asesoría legal."]
+              } else if (!validation.draft.notes.some(note => note.includes("preliminar") || note.includes("revisión"))) {
+                validation.draft.notes.push("⚠️ Documento preliminar, requiere revisión profesional, no sustituye asesoría legal.")
+              }
+              cleanOutput = JSON.stringify(validation.draft)
+              emit({ type: 'draft_detected', doc_type: draftType })
+            } else {
+              // Intentar extraer JSON si está envuelto
+              const jsonMatch = cleanOutput.match(/```json\s*([\s\S]*?)\s*```/)
+              if (jsonMatch) {
+                try {
+                  const parsed = JSON.parse(jsonMatch[1])
+                  const revalidation = validateDraftContent(parsed)
+                  if (revalidation.valid && revalidation.draft) {
+                    cleanOutput = JSON.stringify(revalidation.draft)
+                    emit({ type: 'draft_detected', doc_type: draftType })
+                  }
+                } catch (e) {
+                  console.error("Error parseando JSON extraído:", e)
+                }
+              }
+            }
+          } else {
+            // Limpieza de formato normal
+            cleanOutput = cleanOutput
+              .replace(/\*{0,2}Fuentes consultadas\*{0,2}\s*\n+/gi, '')
+              .replace(/\d+\s*referencias?\s*\n+/gi, '')
+              .replace(/\n+---\n*\*{0,2}Fuentes?\s*(consultadas|legales?)?\*{0,2}:?\s*\n*$/gi, '')
+              .replace(/\n+\*{0,2}Fuentes?\s*(consultadas|legales?)?\*{0,2}:?\s*\n*$/gi, '')
+              .replace(/\n*\*{0,2}(Advertencia|Nota importante|Importante|Disclaimer):?\*{0,2}[^]*?(consultar?|abogado|profesional|asesor)[^]*?\.?\n*/gi, '\n')
+              .replace(/\n{3,}/g, '\n\n')
+              .trim()
+          }
+
           // Emitir respuesta token por token (streaming real)
           const words = cleanOutput.split(' ')
-          
+
           for (let i = 0; i < words.length; i++) {
             const word = words[i] + (i < words.length - 1 ? ' ' : '')
             emit({ type: 'token', content: word })
-            
+
             // Pequeña pausa para efecto de streaming visual
             await new Promise(resolve => setTimeout(resolve, 15))
           }
 
           // Emitir fuentes si existen
           if (result.sources && result.sources.length > 0) {
-            const validSources = result.sources.filter(s => 
+            const validSources = result.sources.filter(s =>
               s.url && s.url.startsWith('http') && s.url.length > 10
             )
-            
-            const uniqueSources = validSources.filter((s, i, arr) => 
+
+            const uniqueSources = validSources.filter((s, i, arr) =>
               arr.findIndex(x => x.url === s.url) === i
             )
-            
+
             if (uniqueSources.length > 0) {
               emit({ type: 'sources', sources: uniqueSources })
-              
+
               // También emitir como texto para compatibilidad
-              const sourcesSection = `\n\n---\n\n📚 **Fuentes consultadas:**\n\n${
-                uniqueSources.map((s, i) => {
-                  let title = s.title || 'Fuente legal'
-                  try {
-                    const url = new URL(s.url)
-                    const hostname = url.hostname.replace('www.', '')
-                    const knownDomains: Record<string, string> = {
-                      'secretariasenado.gov.co': 'Secretaría del Senado',
-                      'corteconstitucional.gov.co': 'Corte Constitucional',
-                      'consejodeestado.gov.co': 'Consejo de Estado',
-                      'suin-juriscol.gov.co': 'SUIN-Juriscol',
-                    }
-                    if (!title || title === s.url || title.length < 3) {
-                      title = knownDomains[hostname] || hostname
-                    }
-                  } catch {}
-                  return `${i + 1}. [${title}](${s.url})`
-                }).join('\n')
-              }`
+              const sourcesSection = `\n\n---\n\n📚 **Fuentes consultadas:**\n\n${uniqueSources.map((s, i) => {
+                let title = s.title || 'Fuente legal'
+                try {
+                  const url = new URL(s.url)
+                  const hostname = url.hostname.replace('www.', '')
+                  const knownDomains: Record<string, string> = {
+                    'secretariasenado.gov.co': 'Secretaría del Senado',
+                    'corteconstitucional.gov.co': 'Corte Constitucional',
+                    'consejodeestado.gov.co': 'Consejo de Estado',
+                    'suin-juriscol.gov.co': 'SUIN-Juriscol',
+                  }
+                  if (!title || title === s.url || title.length < 3) {
+                    title = knownDomains[hostname] || hostname
+                  }
+                } catch { }
+                return `${i + 1}. [${title}](${s.url})`
+              }).join('\n')
+                }`
               emit({ type: 'token', content: sourcesSection })
             }
           }
@@ -441,7 +497,7 @@ export async function POST(request: NextRequest) {
             const inputTokens = Math.ceil(
               messages.reduce((acc, m) => acc + m.content.length, 0) / 4
             )
-            
+
             try {
               await incrementTokenUsage(effectiveUserId, outputTokens, inputTokens)
               console.log(`📊 Token usage tracked: output=${outputTokens}, input=${inputTokens}`)
@@ -449,7 +505,7 @@ export async function POST(request: NextRequest) {
               console.error('Error tracking token usage:', trackingError)
               // Don't fail the request for tracking errors
             }
-            
+
             // Track model-specific usage for plan limits
             try {
               const modelUsageResult = await incrementModelUsage(effectiveUserId, modelId)
@@ -464,7 +520,7 @@ export async function POST(request: NextRequest) {
 
           // Emitir evento de finalización
           const processingTime = ((Date.now() - startTime) / 1000).toFixed(1)
-          emit({ 
+          emit({
             type: 'done',
             metadata: {
               model: modelId,
@@ -473,29 +529,29 @@ export async function POST(request: NextRequest) {
               sourcesCount: result.sources?.length || 0
             }
           })
-          
+
           safeClose()
 
         } catch (error: any) {
-          
+
           // Mensaje específico para error de max iterations
           let errorMessage = 'Hubo un error procesando tu consulta. Por favor, intenta de nuevo.'
-          
+
           if (error.message?.includes('max iterations') || error.message?.includes('Agent stopped')) {
             errorMessage = 'La consulta requiere más investigación de la que puedo completar en este momento. ' +
-                          'Te recomiendo dividir tu pregunta en consultas más específicas.'
+              'Te recomiendo dividir tu pregunta en consultas más específicas.'
             // Emitir como respuesta parcial, no como error
             emit({ type: 'token', content: errorMessage })
             emit({ type: 'done', metadata: { partial: true } })
           } else {
             emit({ type: 'error', message: errorMessage })
           }
-          
+
           safeClose()
         }
       }
     })
-    
+
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/event-stream; charset=utf-8',
@@ -508,7 +564,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     return NextResponse.json(
-      { 
+      {
         error: error.message || "Error procesando la consulta",
         details: process.env.NODE_ENV === 'development' ? error.toString() : undefined
       },
@@ -539,7 +595,7 @@ export async function GET() {
     recommendedModels: RESEARCH_MODELS,
     tools: [
       "search_legal_official",
-      "search_legal_academic", 
+      "search_legal_academic",
       "search_general_web",
       "extract_web_content",
       "verify_sources"

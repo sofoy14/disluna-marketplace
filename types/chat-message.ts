@@ -1,5 +1,6 @@
 import { Tables } from "@/supabase/types"
 import { ModelAnswer } from "./model-answer"
+import { LegalDraft } from "./draft"
 
 export interface BibliographyItem {
   id?: string
@@ -15,4 +16,5 @@ export interface ChatMessage {
   bibliography?: BibliographyItem[]
   answer?: ModelAnswer
   thinking?: string  // Proceso de razonamiento del agente (streaming)
+  draft?: LegalDraft // Borrador legal estructurado
 }

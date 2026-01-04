@@ -6,7 +6,6 @@ import { ALIContext } from "@/context/context"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
 import { ChatUI } from "@/components/chat/chat-ui"
 import { WelcomeScreen } from "@/components/chat/welcome-screen"
-import { LegalWritingScreen } from "@/components/chat/legal-writing-screen"
 import useHotkey from "@/lib/hooks/use-hotkey"
 
 const CHAT_MODE_EVENT = "chat-mode-changed"
@@ -35,14 +34,16 @@ export default function ChatPage() {
   }, [])
 
   // Mostrar ChatUI si hay actividad de chat
-  const showChatUI = params.chatid || 
-                     chatMessages.length > 0 || 
-                     selectedChat !== null ||
-                     isGenerating
+  const showChatUI = params.chatid ||
+    chatMessages.length > 0 ||
+    selectedChat !== null ||
+    isGenerating
 
   if (showChatUI) {
     return <ChatUI />
   }
 
-  return chatMode === "legal-writing" ? <LegalWritingScreen /> : <WelcomeScreen />
+  // Usar WelcomeScreen unificado con prop de modo
+  return <WelcomeScreen mode={chatMode} />
 }
+

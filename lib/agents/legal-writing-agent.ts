@@ -246,28 +246,88 @@ Redacta el documento completo siguiendo la estructura y lenguaje juridico colomb
 
   private async composeInitialDraftResponse(kind: keyof typeof REQUIREMENT_LIBRARY, userMessage: string): Promise<string> {
     const documentLabel = this.getDocumentLabel(kind)
+    const docType = kind === "tutela" ? "tutela" : kind === "contrato" ? "contrato" : "demanda"
 
     const instructions = `
-Eres un asistente de redaccion legal especializado en derecho colombiano. Debes responder en espanol colombiano neutro y con tono profesional.
+Eres un redactor jurídico experto en derecho colombiano. Genera un documento legal en formato JSON estricto.
 
-Sigue exactamente esta estructura en Markdown:
-1. Una linea que inicie con "Resumen del usuario:" seguida de una oracion que sintetice la peticion.
-2. Un bloque titulado "**Investigacion**" con 3 a 5 vinetas que referencien jurisprudencia relevante y criterios aplicables.
-3. Un bloque titulado "**Orientacion**" con 3 a 4 recomendaciones practicas para el usuario.
-4. Un encabezado "**Borrador de ${documentLabel}**".
-5. Inmediatamente despues del encabezado incluye el borrador completo entre [DOCUMENT_START] y [DOCUMENT_END]. El documento debe seguir el formato juridico colombiano, incorporar los apartados habituales (hechos, fundamentos juridicos, pretensiones, pruebas, juramento, notificaciones) y utilizar marcadores en mayusculas entre corchetes para la informacion faltante (por ejemplo, [NOMBRE DEL ACCIONANTE]).
-6. Cierra con una nota breve que indique que es un borrador informativo y que puede ajustarse con nueva informacion.
+IMPORTANTE: Responde SOLO con un objeto JSON válido (sin markdown, sin texto adicional).
 
-Aprovecha cualquier detalle del mensaje del usuario, cita jurisprudencia consolidada (por ejemplo, sentencias de la Corte Constitucional) cuando sea pertinente y evita inventar normas inexistentes.
+Esquema requerido:
+{
+  "type": "draft",
+  "doc_type": "${docType}",
+  "title": "Título corto y descriptivo del documento",
+  "jurisdiction": "CO",
+  "language": "es-CO",
+  "content_markdown": "Contenido completo del documento en Markdown estructurado. Debe incluir:\n- Encabezado con datos de las partes\n- Hechos (narración cronológica)\n- Fundamentos jurídicos (normas aplicables)\n- Pretensiones (lo que se solicita)\n- Pruebas (medios probatorios)\n- Juramento y notificaciones\n\nUsa placeholders en formato {{KEY}} para datos faltantes (ej: {{NOMBRE_CLIENTE}}, {{FECHA}}).",
+  "placeholders": [
+    {"key": "NOMBRE_CLIENTE", "label": "Nombre completo del cliente", "example": "Juan Pérez García"},
+    {"key": "FECHA", "label": "Fecha del documento", "example": "15 de enero de 2024"}
+  ],
+  "missing_info": ["Lista de información específica que falta para completar el documento"],
+  "notes": [
+    "⚠️ Documento preliminar, requiere revisión profesional, no sustituye asesoría legal.",
+    "Revisar y completar todos los placeholders antes de usar el documento.",
+    "Verificar fechas, nombres y datos específicos del caso."
+  ],
+  "email": {
+    "subject": "Asunto del correo si aplica",
+    "to": "",
+    "cc": "",
+    "body": "Cuerpo del correo si aplica"
+  }
+}
+
+REGLAS CRÍTICAS:
+- NO inventes hechos ni jurisprudencia
+- Usa placeholders {{KEY}} para datos faltantes
+- Incluye estructura legal típica según el tipo de documento
+- Siempre agrega el disclaimer en notes
+- content_markdown debe ser Markdown válido (sin code fences)
+- El JSON debe ser válido y parseable
+
+Solicitud del usuario: ${userMessage || "Sin información adicional"}
 `
 
     const result = await this.model.call([
-      { role: "system", content: instructions.trim() },
-      { role: "user", content: `Solicitud del usuario:\n${userMessage || "Sin informacion adicional"}\n\nElabora la respuesta siguiendo las indicaciones dadas.` }
+      { role: "system", content: instructions.trim() }
     ])
 
     const text = this.normalizeModelOutput(result.content)
-    return text.trim()
+    
+    // Validar que sea JSON válido
+    try {
+      // Intentar extraer JSON si está envuelto en markdown
+      const jsonBlockRegex = /```json\s*([\s\S]*?)\s*```/
+      const match = text.match(jsonBlockRegex)
+      let jsonText = match ? match[1] : text.trim()
+      
+      // Si no empieza con {, buscar el primer {
+      if (!jsonText.startsWith('{')) {
+        const firstBrace = jsonText.indexOf('{')
+        if (firstBrace !== -1) {
+          jsonText = jsonText.substring(firstBrace)
+        }
+      }
+      
+      // Validar que sea JSON válido
+      const parsed = JSON.parse(jsonText)
+      
+      // Asegurar que tenga el disclaimer
+      if (!parsed.notes || !Array.isArray(parsed.notes)) {
+        parsed.notes = []
+      }
+      if (!parsed.notes.some((n: string) => n.includes("preliminar") || n.includes("revisión"))) {
+        parsed.notes.unshift("⚠️ Documento preliminar, requiere revisión profesional, no sustituye asesoría legal.")
+      }
+      
+      return JSON.stringify(parsed)
+    } catch (error) {
+      console.error("Error validando JSON del draft:", error)
+      // Si falla, retornar el texto original (el frontend intentará parsearlo)
+      return text.trim()
+    }
   }
 
   private getDocumentLabel(kind: keyof typeof REQUIREMENT_LIBRARY): string {

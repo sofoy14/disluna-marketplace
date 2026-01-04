@@ -481,7 +481,93 @@ export const processResponse = async (
           // Error parsing chunk - ignorar
         }
 
-        // Actualizar mensaje con contenido y razonamiento
+        // Detectar si el contenido acumulado es un draft válido
+        // Solo intentar parsear si el stream está completo o si hay suficiente contenido
+        let draft: any = null
+        
+        // Verificar si parece ser un JSON draft
+        const looksLikeDraft = fullText.trim().startsWith('{') || 
+                               fullText.includes('"type": "draft"') ||
+                               fullText.includes('"type":"draft"')
+        
+        if (looksLikeDraft && fullText.length > 50) {
+          try {
+            const { validateDraftContent } = require("@/lib/utils/draft-utils")
+            
+            // Primero intentar validar el texto completo
+            const validation = validateDraftContent(fullText)
+            if (validation.valid && validation.draft) {
+              draft = validation.draft
+              console.log("✅ Draft detectado y validado desde contenido completo")
+            } else {
+              // Intentar extraer JSON de markdown code blocks
+              const jsonBlockRegex = /```json\s*([\s\S]*?)\s*```/
+              const match = fullText.match(jsonBlockRegex)
+              if (match) {
+                const revalidation = validateDraftContent(match[1])
+                if (revalidation.valid && revalidation.draft) {
+                  draft = revalidation.draft
+                  console.log("✅ Draft detectado y validado desde markdown block")
+                }
+              } else {
+                // Intentar extraer JSON si está al inicio del texto
+                const jsonStart = fullText.indexOf('{')
+                if (jsonStart !== -1 && jsonStart < 100) {
+                  // Buscar el cierre del JSON
+                  let braceCount = 0
+                  let jsonEnd = jsonStart
+                  for (let i = jsonStart; i < fullText.length; i++) {
+                    if (fullText[i] === '{') braceCount++
+                    if (fullText[i] === '}') braceCount--
+                    if (braceCount === 0) {
+                      jsonEnd = i + 1
+                      break
+                    }
+                  }
+                  if (jsonEnd > jsonStart) {
+                    const jsonCandidate = fullText.substring(jsonStart, jsonEnd)
+                    const candidateValidation = validateDraftContent(jsonCandidate)
+                    if (candidateValidation.valid && candidateValidation.draft) {
+                      draft = candidateValidation.draft
+                      console.log("✅ Draft detectado y validado desde JSON extraído")
+                    }
+                  }
+                }
+              }
+            }
+          } catch (e) {
+            console.warn("⚠️ Error validando draft durante streaming:", e)
+            // Ignorar errores de validación durante streaming
+          }
+        }
+        
+        // Si no se detectó como JSON pero parece ser un documento legal, intentar convertir
+        if (!draft && fullText.length > 200) {
+          const looksLikeDocument = 
+            fullText.includes("ARTÍCULO") ||
+            fullText.includes("ARTICULO") ||
+            fullText.includes("CONTRATO") ||
+            fullText.includes("TUTELA") ||
+            fullText.includes("DEMANDA") ||
+            fullText.includes("MEMORIAL") ||
+            fullText.includes("ARRENDAMIENTO") ||
+            fullText.includes("LEY APLICABLE")
+          
+          if (looksLikeDocument) {
+            try {
+              const { tryConvertToDraft } = require("@/lib/utils/draft-converter")
+              const convertedDraft = tryConvertToDraft(fullText)
+              if (convertedDraft) {
+                draft = convertedDraft
+                console.log("📄 Draft convertido desde texto plano durante streaming")
+              }
+            } catch (e) {
+              console.warn("⚠️ Error convirtiendo texto a draft:", e)
+            }
+          }
+        }
+
+        // Actualizar mensaje con contenido, razonamiento y draft
         setChatMessages(prev =>
           prev.map(chatMessage => {
             if (chatMessage.message.id === lastChatMessage.message.id) {
@@ -492,7 +578,9 @@ export const processResponse = async (
                 },
                 fileItems: chatMessage.fileItems,
                 // Agregar razonamiento al mensaje si existe
-                thinking: thinkingContent || undefined
+                thinking: thinkingContent || undefined,
+                // Agregar draft si se detectó
+                draft: draft || undefined
               }
 
               return updatedChatMessage

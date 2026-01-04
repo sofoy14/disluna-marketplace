@@ -20,9 +20,9 @@ import { ChatInput } from "./chat-input"
 import { ChatMessages } from "./chat-messages"
 import { ChatSecondaryButtons } from "./chat-secondary-buttons"
 
-interface ChatUIProps {}
+interface ChatUIProps { }
 
-export const ChatUI: FC<ChatUIProps> = ({}) => {
+export const ChatUI: FC<ChatUIProps> = ({ }) => {
   useHotkey("o", () => handleNewChat())
 
   const params = useParams()
@@ -80,30 +80,16 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       message =>
         message.image_paths
           ? message.image_paths.map(async imagePath => {
-              const url = await getMessageImageFromStorage(imagePath)
+            const url = await getMessageImageFromStorage(imagePath)
 
-              if (url) {
-                const response = await fetch(url)
-                const blob = await response.blob()
-                const base64 = await convertBlobToBase64(blob)
-
-                return {
-                  messageId: message.id,
-                  path: imagePath,
-                  base64,
-                  url,
-                  file: null
-                }
-              }
-
-              return {
-                messageId: message.id,
-                path: imagePath,
-                base64: "",
-                url,
-                file: null
-              }
-            })
+            return {
+              messageId: message.id,
+              path: imagePath,
+              base64: "", // Lazy load: we don't fetch base64 immediately anymore
+              url,
+              file: null
+            }
+          })
           : []
     )
 
@@ -167,18 +153,18 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
     }
 
     setSelectedChat(chat)
-    
+
     // Modelos de investigación válidos (M1 y M1 Pro)
     const validModels = [
       'alibaba/tongyi-deepresearch-30b-a3b',
       'moonshotai/kimi-k2-thinking'
     ]
-    
+
     // Usar el modelo del chat si es válido, sino usar Tongyi por defecto
-    const chatModel = validModels.includes(chat.model) 
-      ? chat.model 
+    const chatModel = validModels.includes(chat.model)
+      ? chat.model
       : 'alibaba/tongyi-deepresearch-30b-a3b'
-    
+
     setChatSettings({
       model: chatModel as LLMID,
       prompt: chat.prompt,

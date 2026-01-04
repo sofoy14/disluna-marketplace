@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils'
 import { Check, CheckCheck, Clock, AlertCircle, Copy, RefreshCw } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { MessageActionBar } from '@/components/messages/message-action-bar'
+import { StaticShaderAvatar } from '@/components/ui/static-shader-avatar'
+import { DraftCard } from '@/components/chat/draft-card'
+import { LegalDraft } from '@/types/draft'
 
 interface MessageBubbleProps {
   variant: 'user' | 'ai' | 'system'
@@ -114,6 +117,7 @@ export function MessageBubble({
       )}
     >
       {/* Avatar: usuario con foto; asistente con ShaderCanvas */}
+      {/* Avatar: usuario con foto; asistente con ShaderCanvas (solo si está generando) o estático */}
       {isUser ? (
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
@@ -131,13 +135,17 @@ export function MessageBubble({
           </Avatar>
         </motion.div>
       ) : (
-        <motion.div 
+        <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
           className="w-9 h-9 flex-shrink-0 rounded-full overflow-hidden ring-2 ring-violet-500/20 ring-offset-2 ring-offset-background shadow-lg shadow-violet-500/10"
         >
-          <ShaderCanvas size={36} shaderId={shaderId} />
+          {isGenerating ? (
+            <ShaderCanvas size={36} shaderId={shaderId} />
+          ) : (
+            <StaticShaderAvatar size={36} />
+          )}
         </motion.div>
       )}
 
@@ -177,7 +185,7 @@ export function MessageBubble({
           {isAI && (
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
           )}
-          
+
           {/* Shine effect for user messages */}
           {isUser && (
             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out pointer-events-none" />
@@ -190,7 +198,26 @@ export function MessageBubble({
               isUser && 'font-medium',
               isAI && 'font-normal',
             )}>
-              {content}
+              {(() => {
+                // Intento de parsear si es un draft JSON
+                let draft: LegalDraft | null = null
+                if (isAI && content.trim().startsWith('{') && content.includes('"type": "draft"')) {
+                  try {
+                    const parsed = JSON.parse(content)
+                    if (parsed.type === 'draft') {
+                      draft = parsed as LegalDraft
+                    }
+                  } catch (e) {
+                    // Fallback a texto normal si falla
+                  }
+                }
+
+                if (draft) {
+                  return <DraftCard draft={draft} />
+                }
+
+                return content
+              })()}
             </div>
           )}
 

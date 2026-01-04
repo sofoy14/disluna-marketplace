@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { Plus } from "lucide-react"
+import { Plus, FileText } from "lucide-react"
 import { useState, useEffect, useContext } from "react"
 import { ALIContext } from "@/context/context"
 import { useChatHandler } from "@/components/chat/chat-hooks/use-chat-handler"
@@ -11,13 +11,71 @@ import { PlaceholdersAndVanishInput, ModernSendIcon } from "@/components/ui/plac
 import { CreateFileModal } from "@/components/modals/CreateFileModal"
 import { cn } from "@/lib/utils"
 
-export function WelcomeScreen() {
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUGGESTIONS CONFIG
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface Suggestion {
+  id: string
+  title: string
+  prompt: string
+}
+
+const DEFAULT_PLACEHOLDERS = [
+  "¿Cuáles son los requisitos para una demanda?",
+  "Redacta una tutela por violación al debido proceso",
+  "Busca jurisprudencia sobre contratos laborales",
+  "Analiza este documento legal"
+]
+
+const LEGAL_WRITING_PLACEHOLDERS = [
+  "Redacta una acción de tutela para que mi EPS cubra una cirugía",
+  "Crea un contrato de arrendamiento por COP 2.5M mensuales",
+  "Proyecta un acuerdo de disolución de sociedad",
+  "Escribe un derecho de petición para solicitar información pública"
+]
+
+const LEGAL_WRITING_SUGGESTIONS: Suggestion[] = [
+  {
+    id: "tutela-salud",
+    title: "Acción de tutela por cirugía",
+    prompt: "Redacta una acción de tutela para que mi EPS cubra una cirugía que no está en el POS o PBS"
+  },
+  {
+    id: "contrato-arrendamiento",
+    title: "Contrato de arrendamiento",
+    prompt: "Redacta un contrato de arrendamiento para Barranquilla por COP 2.5M mensuales con renovación y ajuste anual por IPC"
+  },
+  {
+    id: "disolucion-sociedad",
+    title: "Disolución de sociedad",
+    prompt: "Proyecta un acuerdo de disolución de sociedad en comandita por mutuo acuerdo de todos los socios"
+  },
+  {
+    id: "solicitud-sentencias",
+    title: "Solicitud de sentencias",
+    prompt: "Redacta una solicitud de sentencias recientes al Tribunal Superior de Bogotá"
+  }
+]
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPONENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+interface WelcomeScreenProps {
+  mode?: 'default' | 'legal-writing'
+}
+
+export function WelcomeScreen({ mode = 'default' }: WelcomeScreenProps) {
   const { selectedWorkspace } = useContext(ALIContext)
   const { handleNewChat, handleSendMessage } = useChatHandler()
   const [inputValue, setInputValue] = useState("")
   const [selectedShader, setSelectedShader] = useState(1)
   const [isSending, setIsSending] = useState(false)
   const [sentMessage, setSentMessage] = useState("")
+
+  const isLegalWritingMode = mode === 'legal-writing'
+  const placeholders = isLegalWritingMode ? LEGAL_WRITING_PLACEHOLDERS : DEFAULT_PLACEHOLDERS
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -51,7 +109,7 @@ export function WelcomeScreen() {
       try {
         // Crear el nuevo chat y navegar
         await handleNewChat()
-        
+
         // Enviar el mensaje después de que la navegación esté lista
         setTimeout(() => {
           handleSendMessage(message, [], false)
@@ -72,33 +130,45 @@ export function WelcomeScreen() {
     handleSend()
   }
 
+  const handleSuggestionClick = (prompt: string) => {
+    handleSend(prompt)
+  }
+
   return (
     <div className="relative flex h-full flex-col bg-gradient-to-br from-background via-background to-primary/10 overflow-hidden">
-      
+
       {/* Header */}
-      <div className="absolute top-4 right-4 z-20">
+      <div className="absolute top-4 right-4 z-20 flex items-center gap-3">
+        {isLegalWritingMode && (
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20">
+            <FileText className="h-4 w-4 text-yellow-500" />
+            <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
+              Modo Redacción
+            </span>
+          </div>
+        )}
         <ModelSelectorToggle />
       </div>
 
       {/* Contenido principal */}
       <div className="flex-1 flex items-center justify-center p-4 md:p-6 relative">
-        
+
         <AnimatePresence mode="wait">
           {isSending && (
             <>
               {/* Orbe animándose - se mueve hacia donde estará el avatar del asistente */}
               <motion.div
-                initial={{ 
-                  position: "fixed", 
-                  top: "50%", 
-                  left: "50%", 
-                  x: "-50%", 
-                  y: "-50%", 
+                initial={{
+                  position: "fixed",
+                  top: "50%",
+                  left: "50%",
+                  x: "-50%",
+                  y: "-50%",
                   scale: 1,
                   opacity: 1,
-                  zIndex: 70 
+                  zIndex: 70
                 }}
-                animate={{ 
+                animate={{
                   top: "calc(50% + 80px)",
                   left: "calc(50% - 280px)",
                   x: "-50%",
@@ -106,8 +176,8 @@ export function WelcomeScreen() {
                   scale: 0.32,
                   opacity: 0,
                 }}
-                transition={{ 
-                  duration: 0.8, 
+                transition={{
+                  duration: 0.8,
                   ease: [0.32, 0.72, 0, 1],
                   opacity: { duration: 0.5, delay: 0.3 }
                 }}
@@ -151,7 +221,7 @@ export function WelcomeScreen() {
                     className="flex gap-3 items-start"
                   >
                     {/* Avatar del asistente - aparece donde termina el orbe */}
-                    <motion.div 
+                    <motion.div
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       transition={{ duration: 0.3, delay: 0.6, type: "spring", stiffness: 200 }}
@@ -165,17 +235,17 @@ export function WelcomeScreen() {
                       <div className="flex items-center gap-1.5 relative z-10">
                         <span className="text-xs font-medium text-muted-foreground">Pensando</span>
                         <div className="flex space-x-1">
-                          <motion.div 
+                          <motion.div
                             animate={{ y: [0, -4, 0], scale: [1, 1.1, 1] }}
                             transition={{ repeat: Infinity, duration: 0.6, delay: 0 }}
                             className="w-1.5 h-1.5 bg-gradient-to-br from-primary to-primary/60 rounded-full shadow-sm shadow-primary/30"
                           />
-                          <motion.div 
+                          <motion.div
                             animate={{ y: [0, -4, 0], scale: [1, 1.1, 1] }}
                             transition={{ repeat: Infinity, duration: 0.6, delay: 0.12 }}
                             className="w-1.5 h-1.5 bg-gradient-to-br from-primary to-primary/60 rounded-full shadow-sm shadow-primary/30"
                           />
-                          <motion.div 
+                          <motion.div
                             animate={{ y: [0, -4, 0], scale: [1, 1.1, 1] }}
                             transition={{ repeat: Infinity, duration: 0.6, delay: 0.24 }}
                             className="w-1.5 h-1.5 bg-gradient-to-br from-primary to-primary/60 rounded-full shadow-sm shadow-primary/30"
@@ -191,11 +261,11 @@ export function WelcomeScreen() {
         </AnimatePresence>
 
         {/* Contenido de bienvenida */}
-        <motion.div 
+        <motion.div
           className="w-full max-w-2xl"
-          animate={{ 
-            opacity: isSending ? 0 : 1, 
-            scale: isSending ? 0.9 : 1 
+          animate={{
+            opacity: isSending ? 0 : 1,
+            scale: isSending ? 0.9 : 1
           }}
           transition={{ duration: 0.3 }}
         >
@@ -205,18 +275,53 @@ export function WelcomeScreen() {
           </div>
 
           {/* Título */}
-          <h1 className="text-center text-2xl md:text-3xl lg:text-4xl mb-10 text-foreground font-light">
-            ¿En qué puedo ayudarte hoy?
+          <h1 className="text-center text-2xl md:text-3xl lg:text-4xl mb-6 text-foreground font-light">
+            {isLegalWritingMode
+              ? "¿Qué documento necesitas redactar?"
+              : "¿En qué puedo ayudarte hoy?"
+            }
           </h1>
+
+          {/* Sugerencias para modo legal-writing */}
+          {isLegalWritingMode && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="grid gap-3 md:grid-cols-2 mb-8"
+            >
+              {LEGAL_WRITING_SUGGESTIONS.map((suggestion, index) => (
+                <motion.button
+                  key={suggestion.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + index * 0.1 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => handleSuggestionClick(suggestion.prompt)}
+                  className={cn(
+                    "text-left p-4 rounded-xl",
+                    "bg-card/50 hover:bg-card",
+                    "border border-border/50 hover:border-primary/30",
+                    "shadow-sm hover:shadow-md",
+                    "transition-all duration-200",
+                    "group"
+                  )}
+                >
+                  <h3 className="font-medium text-sm text-foreground group-hover:text-primary transition-colors">
+                    {suggestion.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                    {suggestion.prompt}
+                  </p>
+                </motion.button>
+              ))}
+            </motion.div>
+          )}
 
           {/* Input */}
           <PlaceholdersAndVanishInput
-            placeholders={[
-              "¿Cuáles son los requisitos para una demanda?",
-              "Redacta una tutela por violación al debido proceso",
-              "Busca jurisprudencia sobre contratos laborales",
-              "Analiza este documento legal"
-            ]}
+            placeholders={placeholders}
             onChange={handleChange}
             onSubmit={handleSubmit}
             leftElement={

@@ -46,9 +46,7 @@ export {
 } from "./config/models"
 
 export {
-  LEGAL_AGENT_SYSTEM_PROMPT,
-  createAgentPrompt,
-  prompts
+  LEGAL_AGENT_SYSTEM_PROMPT
 } from "./config/prompts"
 
 // ═══════════════════════════════════════════════════════════════════════════════

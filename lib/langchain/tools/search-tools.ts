@@ -34,7 +34,7 @@ export interface SearchResult {
  */
 function classifySourceType(url: string): 'official' | 'academic' | 'general' {
   const urlLower = url.toLowerCase()
-  
+
   // Fuentes oficiales colombianas
   const officialDomains = [
     '.gov.co',
@@ -54,11 +54,11 @@ function classifySourceType(url: string): 'official' | 'academic' | 'general' {
     'superfinanciera.gov.co',
     'dian.gov.co'
   ]
-  
+
   if (officialDomains.some(domain => urlLower.includes(domain))) {
     return 'official'
   }
-  
+
   // Fuentes académicas
   const academicDomains = [
     '.edu.co',
@@ -70,11 +70,11 @@ function classifySourceType(url: string): 'official' | 'academic' | 'general' {
     'redalyc.org',
     'scielo'
   ]
-  
+
   if (academicDomains.some(domain => urlLower.includes(domain))) {
     return 'academic'
   }
-  
+
   return 'general'
 }
 
@@ -94,12 +94,12 @@ function scoreSource(url: string): number {
  * Ejecuta búsqueda usando Serper API
  */
 async function executeSerperSearch(
-  query: string, 
+  query: string,
   numResults: number = 5,
   siteFilter?: string
 ): Promise<SearchResult[]> {
   const apiKey = process.env.SERPER_API_KEY
-  
+
   if (!apiKey) {
     console.error('❌ SERPER_API_KEY no configurada')
     throw new Error('SERPER_API_KEY no configurada en variables de entorno')
@@ -112,6 +112,9 @@ async function executeSerperSearch(
   }
 
   console.log(`🔍 Serper Search: "${finalQuery}" (${numResults} resultados)`)
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 15000)
 
   try {
     const response = await fetch("https://google.serper.dev/search", {
@@ -126,8 +129,10 @@ async function executeSerperSearch(
         gl: "co", // Colombia
         hl: "es"  // Español
       }),
-      signal: AbortSignal.timeout(15000)
+      signal: controller.signal
     })
+
+    clearTimeout(timeoutId)
 
     if (!response.ok) {
       const errorText = await response.text()
@@ -148,9 +153,18 @@ async function executeSerperSearch(
       score: scoreSource(item.link || '')
     }))
 
-  } catch (error) {
+  } catch (error: any) {
+    clearTimeout(timeoutId)
+
+    // Silenciar errores de abort (timeout) para no romper el flujo
+    if (error.name === 'AbortError') {
+      console.warn(`⚠️ Timeout en búsqueda de Serper para: ${query}`)
+      return []
+    }
+
     console.error(`❌ Error en Serper Search:`, error)
-    throw error
+    // No lanzar error, retornar array vacío para robustez
+    return []
   }
 }
 
@@ -182,21 +196,21 @@ Usa esta herramienta PRIMERO para cualquier pregunta sobre leyes, decretos, sent
   func: async ({ query, maxResults }) => {
     // Normalizar query: si es array, usar el primer elemento o unirlos
     const normalizedQuery = Array.isArray(query) ? query[0] : query
-    
+
     console.log(`🏛️ [TOOL] search_legal_official: "${normalizedQuery}"`)
-    
+
     try {
       // Filtro para sitios oficiales colombianos
       const siteFilter = 'site:gov.co OR site:corteconstitucional.gov.co OR site:consejodeestado.gov.co OR site:suin-juriscol.gov.co OR site:secretariasenado.gov.co'
-      
+
       // Si es array, hacer múltiples búsquedas
       let allResults: SearchResult[] = []
-      
+
       if (Array.isArray(query)) {
         // Buscar con las primeras 2 queries del array
         for (const q of query.slice(0, 2)) {
           const results = await executeSerperSearch(
-            `${q} Colombia`, 
+            `${q} Colombia`,
             Math.ceil((maxResults || 5) / 2),
             siteFilter
           )
@@ -204,17 +218,17 @@ Usa esta herramienta PRIMERO para cualquier pregunta sobre leyes, decretos, sent
         }
       } else {
         allResults = await executeSerperSearch(
-          `${normalizedQuery} Colombia`, 
+          `${normalizedQuery} Colombia`,
           maxResults || 5,
           siteFilter
         )
       }
-      
+
       // Filtrar solo fuentes oficiales y eliminar duplicados
       const officialResults = allResults
         .filter(r => r.type === 'official')
         .filter((r, i, arr) => arr.findIndex(x => x.url === r.url) === i)
-      
+
       if (officialResults.length === 0) {
         return JSON.stringify({
           success: false,
@@ -222,9 +236,9 @@ Usa esta herramienta PRIMERO para cualquier pregunta sobre leyes, decretos, sent
           results: []
         })
       }
-      
+
       console.log(`✅ [TOOL] search_legal_official: ${officialResults.length} resultados oficiales`)
-      
+
       return JSON.stringify({
         success: true,
         query: normalizedQuery,
@@ -237,7 +251,7 @@ Usa esta herramienta PRIMERO para cualquier pregunta sobre leyes, decretos, sent
           score: r.score
         }))
       })
-      
+
     } catch (error) {
       console.error(`❌ [TOOL] search_legal_official error:`, error)
       return JSON.stringify({
@@ -271,19 +285,19 @@ Usa esta herramienta para complementar la información oficial con análisis doc
   func: async ({ query, maxResults }) => {
     // Normalizar query
     const normalizedQuery = Array.isArray(query) ? query[0] : query
-    
+
     console.log(`📚 [TOOL] search_legal_academic: "${normalizedQuery}"`)
-    
+
     try {
       // Filtro para sitios académicos
       const siteFilter = 'site:edu.co OR site:redalyc.org OR site:scielo.org.co'
-      
+
       const results = await executeSerperSearch(
-        `${normalizedQuery} Colombia doctrina jurídica`, 
+        `${normalizedQuery} Colombia doctrina jurídica`,
         maxResults || 3,
         siteFilter
       )
-      
+
       if (results.length === 0) {
         return JSON.stringify({
           success: false,
@@ -291,9 +305,9 @@ Usa esta herramienta para complementar la información oficial con análisis doc
           results: []
         })
       }
-      
+
       console.log(`✅ [TOOL] search_legal_academic: ${results.length} resultados académicos`)
-      
+
       return JSON.stringify({
         success: true,
         query: normalizedQuery,
@@ -306,7 +320,7 @@ Usa esta herramienta para complementar la información oficial con análisis doc
           score: r.score
         }))
       })
-      
+
     } catch (error) {
       console.error(`❌ [TOOL] search_legal_academic error:`, error)
       return JSON.stringify({
@@ -336,15 +350,15 @@ Usa esta herramienta solo cuando las fuentes oficiales y académicas no proporci
   func: async ({ query, maxResults }) => {
     // Normalizar query
     const normalizedQuery = Array.isArray(query) ? query[0] : query
-    
+
     console.log(`🌐 [TOOL] search_general_web: "${normalizedQuery}"`)
-    
+
     try {
       const results = await executeSerperSearch(
-        `${normalizedQuery} Colombia`, 
+        `${normalizedQuery} Colombia`,
         maxResults || 5
       )
-      
+
       if (results.length === 0) {
         return JSON.stringify({
           success: false,
@@ -352,9 +366,9 @@ Usa esta herramienta solo cuando las fuentes oficiales y académicas no proporci
           results: []
         })
       }
-      
+
       console.log(`✅ [TOOL] search_general_web: ${results.length} resultados`)
-      
+
       return JSON.stringify({
         success: true,
         query: normalizedQuery,
@@ -367,7 +381,7 @@ Usa esta herramienta solo cuando las fuentes oficiales y académicas no proporci
           score: r.score
         }))
       })
-      
+
     } catch (error) {
       console.error(`❌ [TOOL] search_general_web error:`, error)
       return JSON.stringify({

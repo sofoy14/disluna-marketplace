@@ -32,6 +32,8 @@ import { CitationsPanel } from "./citations-panel"
 import { parseModelAnswer } from "@/lib/parsers/model-answer"
 import { processStreamContent } from "@/lib/stream-processor"
 import { DocumentSheet } from "../chat/document-sheet"
+import { DraftCard } from "@/components/chat/draft-card"
+import { LegalDraft } from "@/types/draft"
 
 const ICON_SIZE = 32
 
@@ -40,6 +42,7 @@ interface MessageProps {
   fileItems: Tables<"file_items">[]
   bibliography?: BibliographyItem[]
   thinking?: string  // Proceso de razonamiento del agente
+  draft?: LegalDraft // Borrador legal estructurado
   isEditing: boolean
   isLast: boolean
   onStartEdit: (message: Tables<"messages">) => void
@@ -52,6 +55,7 @@ export const Message: FC<MessageProps> = ({
   fileItems,
   bibliography,
   thinking,
+  draft: draftFromProps,
   isEditing,
   isLast,
   onStartEdit,
@@ -97,7 +101,7 @@ export const Message: FC<MessageProps> = ({
   // Estado para documento editable
   const [showDocumentEditor, setShowDocumentEditor] = useState(false)
   const [documentContent, setDocumentContent] = useState("")
-  
+
   // Procesar contenido para detectar documentos y razonamiento
   const processedContent = useMemo(() => {
     if (message.role === "assistant") {
@@ -117,6 +121,7 @@ export const Message: FC<MessageProps> = ({
   const assistantCitations = assistantAnswer.citations ?? []
   const [viewSources, setViewSources] = useState(false)
   const [showFileItemPreview, setShowFileItemPreview] = useState(false)
+  const [selectedFileItem, setSelectedFileItem] = useState<Tables<"file_items"> | null>(null)
 
   // Sincronizar contenido del documento cuando se detecta
   useEffect(() => {
@@ -128,32 +133,32 @@ export const Message: FC<MessageProps> = ({
   // Generar preguntas sugeridas cuando el mensaje del asistente esté completo
   useEffect(() => {
     if (
-      message.role === "assistant" && 
-      isLast && 
-      !isGenerating && 
+      message.role === "assistant" &&
+      isLast &&
+      !isGenerating &&
       firstTokenReceived &&
       message.content.length > 100 // Solo para respuestas sustanciales
     ) {
       const generateQuestions = async () => {
         // Obtener la pregunta del usuario anterior
         const userMessage = chatMessages.find(
-          (msg, index) => 
-            msg.message.sequence_number === message.sequence_number - 1 && 
+          (msg, index) =>
+            msg.message.sequence_number === message.sequence_number - 1 &&
             msg.message.role === "user"
         )
-        
+
         if (userMessage) {
           const questions = await generateSuggestedQuestions(
             message.content,
             userMessage.message.content,
             chatMessages.map(msg => msg.message.content)
           )
-          
+
           setSuggestedQuestions(questions)
           setShowSuggestedQuestions(true)
         }
       }
-      
+
       generateQuestions()
     }
   }, [message.role, isLast, isGenerating, firstTokenReceived, message.content, chatMessages, generateSuggestedQuestions, setSuggestedQuestions, setShowSuggestedQuestions])
@@ -277,19 +282,19 @@ export const Message: FC<MessageProps> = ({
   const modelDetails = LLM_LIST.find(model => model.modelId === message.model)
 
   // Detectar si el mensaje es un documento legal estructurado
-  const isLegalDocument = 
-    message.role === "assistant" && 
+  const isLegalDocument =
+    message.role === "assistant" &&
     (message.content.includes("<h1>") || message.content.includes("<h2>")) &&
     (message.content.includes("demanda") ||
-     message.content.includes("tutela") ||
-     message.content.includes("contrato") ||
-     message.content.includes("documento legal") ||
-     message.content.includes("memorial") ||
-     message.content.includes("derecho de petición") ||
-     message.assistant_id && assistants.find(a => 
-       a.id === message.assistant_id && 
-       (a.name.toLowerCase().includes("redacción") || a.name.toLowerCase().includes("redaccion"))
-     ))
+      message.content.includes("tutela") ||
+      message.content.includes("contrato") ||
+      message.content.includes("documento legal") ||
+      message.content.includes("memorial") ||
+      message.content.includes("derecho de petición") ||
+      message.assistant_id && assistants.find(a =>
+        a.id === message.assistant_id &&
+        (a.name.toLowerCase().includes("redacción") || a.name.toLowerCase().includes("redaccion"))
+      ))
 
   const fileAccumulator: Record<
     string,
@@ -353,7 +358,7 @@ export const Message: FC<MessageProps> = ({
         </div>
       )
     }
-    
+
     if (isEditing) {
       return (
         <div className="space-y-4">
@@ -375,12 +380,89 @@ export const Message: FC<MessageProps> = ({
         </div>
       )
     }
-    
+
     if (isLegalDocument) {
       return <DocumentViewer content={message.content} messageId={message.id} />
     }
 
     if (message.role === "assistant") {
+      // Priorizar draft del prop (viene del stream processing)
+      let draft: LegalDraft | null = draftFromProps || null
+
+      // Si no hay draft en props, intentar parsear del contenido
+      if (!draft) {
+        let draftContent = assistantAnswer.text
+
+        // Usar utilidad de validación para mejor parsing
+        const { validateDraftContent } = require("@/lib/utils/draft-utils")
+        const { tryConvertToDraft } = require("@/lib/utils/draft-converter")
+
+        // Primero intentar como JSON
+        const validation = validateDraftContent(draftContent)
+
+        if (validation.valid && validation.draft) {
+          draft = validation.draft
+        } else {
+          // Intentar extraer JSON si está envuelto en markdown
+          const jsonBlockRegex = /```json\s*([\s\S]*?)\s*```/
+          const match = draftContent.match(jsonBlockRegex)
+
+          if (match) {
+            const revalidation = validateDraftContent(match[1])
+            if (revalidation.valid && revalidation.draft) {
+              draft = revalidation.draft
+            }
+          } else if (draftContent.trim().startsWith('{') && draftContent.includes('"type": "draft"')) {
+            // Intentar parsear directamente (puede estar incompleto durante streaming)
+            try {
+              // Buscar el JSON completo incluso si está incompleto
+              const jsonStart = draftContent.indexOf('{')
+              if (jsonStart !== -1) {
+                // Intentar encontrar el cierre del JSON
+                let braceCount = 0
+                let jsonEnd = jsonStart
+                for (let i = jsonStart; i < draftContent.length; i++) {
+                  if (draftContent[i] === '{') braceCount++
+                  if (draftContent[i] === '}') braceCount--
+                  if (braceCount === 0) {
+                    jsonEnd = i + 1
+                    break
+                  }
+                }
+                const jsonCandidate = draftContent.substring(jsonStart, jsonEnd)
+                const candidateValidation = validateDraftContent(jsonCandidate)
+                if (candidateValidation.valid && candidateValidation.draft) {
+                  draft = candidateValidation.draft
+                }
+              }
+            } catch (e) {
+              // Si falla el parseo, intentar convertir desde texto
+            }
+          }
+
+          // Si aún no hay draft, intentar convertir desde texto plano
+          // (útil cuando el modelo no genera JSON)
+          if (!draft) {
+            const convertedDraft = tryConvertToDraft(draftContent, message.content)
+            if (convertedDraft) {
+              draft = convertedDraft
+              console.log("📄 Draft convertido desde texto plano")
+            }
+          }
+        }
+      }
+
+      if (draft) {
+        // Handler para cambios en el draft (persistencia local)
+        const handleDraftChange = (newContent: string) => {
+          // Guardar en estado local si es necesario
+          // Por ahora solo actualizamos el estado del componente
+          // En el futuro se podría guardar en metadata del mensaje
+        }
+
+        return <DraftCard draft={draft} onChange={handleDraftChange} />
+      }
+
       return <AnswerView text={assistantAnswer.text} />
     }
 
@@ -442,70 +524,70 @@ export const Message: FC<MessageProps> = ({
 
           {/* File items */}
           {fileItems.length > 0 && (
-          <div className="border-primary mt-6 border-t pt-4 font-bold">
-            {!viewSources ? (
-              <div
-                className="flex cursor-pointer items-center text-lg hover:opacity-50"
-                onClick={() => setViewSources(true)}
-              >
-                {fileItems.length}
-                {fileItems.length > 1 ? " Fuentes " : " Fuente "}
-                from {Object.keys(fileSummary).length}{" "}
-                {Object.keys(fileSummary).length > 1 ? "Archivos" : "Archivo"}{" "}
-                <IconCaretRightFilled className="ml-1" />
-              </div>
-            ) : (
-              <>
+            <div className="border-primary mt-6 border-t pt-4 font-bold">
+              {!viewSources ? (
                 <div
                   className="flex cursor-pointer items-center text-lg hover:opacity-50"
-                  onClick={() => setViewSources(false)}
+                  onClick={() => setViewSources(true)}
                 >
                   {fileItems.length}
                   {fileItems.length > 1 ? " Fuentes " : " Fuente "}
                   from {Object.keys(fileSummary).length}{" "}
                   {Object.keys(fileSummary).length > 1 ? "Archivos" : "Archivo"}{" "}
-                  <IconCaretDownFilled className="ml-1" />
+                  <IconCaretRightFilled className="ml-1" />
                 </div>
+              ) : (
+                <>
+                  <div
+                    className="flex cursor-pointer items-center text-lg hover:opacity-50"
+                    onClick={() => setViewSources(false)}
+                  >
+                    {fileItems.length}
+                    {fileItems.length > 1 ? " Fuentes " : " Fuente "}
+                    from {Object.keys(fileSummary).length}{" "}
+                    {Object.keys(fileSummary).length > 1 ? "Archivos" : "Archivo"}{" "}
+                    <IconCaretDownFilled className="ml-1" />
+                  </div>
 
-                <div className="mt-3 space-y-4">
-                  {Object.values(fileSummary).map((file, index) => (
-                    <div key={index}>
-                      <div className="flex items-center space-x-2">
-                        <div>
-                          <FileIcon type={file.type} />
+                  <div className="mt-3 space-y-4">
+                    {Object.values(fileSummary).map((file, index) => (
+                      <div key={index}>
+                        <div className="flex items-center space-x-2">
+                          <div>
+                            <FileIcon type={file.type} />
+                          </div>
+
+                          <div className="truncate">{file.name}</div>
                         </div>
 
-                        <div className="truncate">{file.name}</div>
-                      </div>
-
-                      {fileItems
-                        .filter(fileItem => {
-                          const parentFile = files.find(
-                            parentFile => parentFile.id === fileItem.file_id
-                          )
-                          return parentFile?.id === file.id
-                        })
-                        .map((fileItem, index) => (
-                          <div
-                            key={index}
-                            className="ml-8 mt-1.5 flex cursor-pointer items-center space-x-2 hover:opacity-50"
-                            onClick={() => {
-                              setSelectedFileItem(fileItem)
-                              setShowFileItemPreview(true)
-                            }}
-                          >
-                            <div className="text-sm font-normal">
-                              <span className="mr-1 text-lg font-bold">-</span>{" "}
-                              {fileItem.content.substring(0, 200)}...
+                        {fileItems
+                          .filter(fileItem => {
+                            const parentFile = files.find(
+                              parentFile => parentFile.id === fileItem.file_id
+                            )
+                            return parentFile?.id === file.id
+                          })
+                          .map((fileItem, index) => (
+                            <div
+                              key={index}
+                              className="ml-8 mt-1.5 flex cursor-pointer items-center space-x-2 hover:opacity-50"
+                              onClick={() => {
+                                setSelectedFileItem(fileItem)
+                                setShowFileItemPreview(true)
+                              }}
+                            >
+                              <div className="text-sm font-normal">
+                                <span className="mr-1 text-lg font-bold">-</span>{" "}
+                                {fileItem.content.substring(0, 200)}...
+                              </div>
                             </div>
-                          </div>
-                        ))}
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+                          ))}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           )}
 
           {/* Images */}
@@ -517,7 +599,7 @@ export const Message: FC<MessageProps> = ({
                 <Image
                   key={index}
                   className="cursor-pointer rounded hover:opacity-50"
-                  src={path.startsWith("data") ? path : item?.base64}
+                  src={item?.url || item?.base64 || path}
                   alt="message image"
                   width={300}
                   height={300}
@@ -525,8 +607,8 @@ export const Message: FC<MessageProps> = ({
                     setSelectedImage({
                       messageId: message.id,
                       path,
-                      base64: path.startsWith("data") ? path : item?.base64 || "",
-                      url: path.startsWith("data") ? "" : item?.url || "",
+                      base64: item?.base64 || "",
+                      url: item?.url || (path.startsWith("data") ? "" : path),
                       file: null
                     })
 
