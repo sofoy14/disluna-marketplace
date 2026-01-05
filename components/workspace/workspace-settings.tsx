@@ -11,6 +11,7 @@ import { Tables } from "@/supabase/types"
 import { IconHome, IconSettings } from "@tabler/icons-react"
 import { FC, ReactNode, useContext, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
+import { AnimatePresence } from "framer-motion"
 import { Button } from "../ui/button"
 import { ChatSettingsForm } from "../ui/chat-settings-form"
 import ImagePicker from "../ui/image-picker"
@@ -43,6 +44,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
 import { TextareaAutosize } from "../ui/textarea-autosize"
 import { WithTooltip } from "../ui/with-tooltip"
 import { DeleteWorkspace } from "./delete-workspace"
+import {
+  MemberCard,
+  InvitationCard,
+  InviteSection,
+  RoleBadge
+} from "./workspace-members-ui"
 
 interface WorkspaceSettingsProps {
   trigger?: ReactNode
@@ -74,9 +81,9 @@ interface WorkspaceInvitation {
   expires_at: string
 }
 
-export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({ 
+export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
   trigger,
-  workspace: workspaceProp 
+  workspace: workspaceProp
 }) => {
   const {
     profile,
@@ -463,38 +470,38 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
           defaultChatSettings.includeWorkspaceInstructions
       })
 
-    // Solo actualizar chat settings si es el workspace seleccionado
-    if (
-      workspace.id === selectedWorkspace?.id &&
-      defaultChatSettings.model &&
-      defaultChatSettings.prompt &&
-      defaultChatSettings.temperature &&
-      defaultChatSettings.contextLength &&
-      defaultChatSettings.includeProfileContext &&
-      defaultChatSettings.includeWorkspaceInstructions &&
-      defaultChatSettings.embeddingsProvider
-    ) {
-      setChatSettings({
-        model: defaultChatSettings.model as LLMID,
-        prompt: defaultChatSettings.prompt,
-        temperature: defaultChatSettings.temperature,
-        contextLength: defaultChatSettings.contextLength,
-        includeProfileContext: defaultChatSettings.includeProfileContext,
-        includeWorkspaceInstructions:
-          defaultChatSettings.includeWorkspaceInstructions,
-        embeddingsProvider: defaultChatSettings.embeddingsProvider as
-          | "openai"
-          | "local"
-      })
-    }
+      // Solo actualizar chat settings si es el workspace seleccionado
+      if (
+        workspace.id === selectedWorkspace?.id &&
+        defaultChatSettings.model &&
+        defaultChatSettings.prompt &&
+        defaultChatSettings.temperature &&
+        defaultChatSettings.contextLength &&
+        defaultChatSettings.includeProfileContext &&
+        defaultChatSettings.includeWorkspaceInstructions &&
+        defaultChatSettings.embeddingsProvider
+      ) {
+        setChatSettings({
+          model: defaultChatSettings.model as LLMID,
+          prompt: defaultChatSettings.prompt,
+          temperature: defaultChatSettings.temperature,
+          contextLength: defaultChatSettings.contextLength,
+          includeProfileContext: defaultChatSettings.includeProfileContext,
+          includeWorkspaceInstructions:
+            defaultChatSettings.includeWorkspaceInstructions,
+          embeddingsProvider: defaultChatSettings.embeddingsProvider as
+            | "openai"
+            | "local"
+        })
+      }
 
       setIsOpen(false)
-      
+
       // Si es el workspace seleccionado, actualizarlo
       if (workspace.id === selectedWorkspace?.id) {
         setSelectedWorkspace(updatedWorkspace)
       }
-      
+
       setWorkspaces(workspaces => {
         return workspaces.map(w => {
           if (w.id === workspace.id) {
@@ -527,7 +534,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       {trigger ? (
-        <div 
+        <div
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
@@ -581,7 +588,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
             <TabsList
               className={`grid w-full ${showAccessTab ? "grid-cols-3" : "grid-cols-2"} bg-muted/50 rounded-lg p-1`}
             >
-              <TabsTrigger 
+              <TabsTrigger
                 value="main"
                 className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
               >
@@ -597,7 +604,7 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
                 </TabsTrigger>
               )}
 
-              <TabsTrigger 
+              <TabsTrigger
                 value="defaults"
                 className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm transition-all"
               >
@@ -656,199 +663,88 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
 
             {showAccessTab && (
               <TabsContent className="mt-6 space-y-6" value="access">
-                <div className="text-sm text-muted-foreground bg-muted/30 rounded-lg p-4 border border-border/50">
-                  Admin: gestiona miembros, roles e invitaciones del workspace.
-                </div>
+                {/* Invite Section */}
+                <InviteSection
+                  inviteEmail={inviteEmail}
+                  setInviteEmail={setInviteEmail}
+                  inviteRole={inviteRole}
+                  setInviteRole={setInviteRole}
+                  inviteLinkLabel={inviteLinkLabel}
+                  setInviteLinkLabel={setInviteLinkLabel}
+                  onSendInvitation={handleSendInvitation}
+                  onCreateInviteLink={handleCreateInviteLink}
+                  sendingInvite={sendingInvite}
+                  creatingInviteLink={creatingInviteLink}
+                />
 
-                <div className="rounded-lg border border-border/60 bg-muted/30 p-4 text-xs text-muted-foreground space-y-2">
-                  <div className="text-sm font-medium text-foreground/90">Roles (referencia)</div>
-                  <div>ADMIN: puede gestionar miembros e invitaciones.</div>
-                  <div>LAWYER / ASSISTANT: acceso operativo al workspace.</div>
-                  <div>VIEWER: acceso limitado (solo lectura, segun reglas del workspace).</div>
-                </div>
-
-                <div className="rounded-lg border border-border/60 bg-muted/30 p-4 space-y-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-sm font-medium">Invitaciones</div>
-                    <Button variant="ghost" size="sm" onClick={() => void ensureAccessLoaded()}>
+                {/* Members Section */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-foreground">Miembros</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => void ensureAccessLoaded()}
+                      className="text-xs"
+                    >
                       Actualizar
                     </Button>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-sm">Rol</Label>
-                    <Select value={inviteRole} onValueChange={v => setInviteRole(v as WorkspaceRole)}>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Rol" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="VIEWER">Viewer</SelectItem>
-                        <SelectItem value="ASSISTANT">Assistant</SelectItem>
-                        <SelectItem value="LAWYER">Lawyer</SelectItem>
-                        <SelectItem value="ADMIN">Admin</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="space-y-2">
-                      <Label className="text-sm">Invitar por email</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          value={inviteEmail}
-                          onChange={e => setInviteEmail(e.target.value)}
-                          placeholder="correo@ejemplo.com"
-                          className="rounded-lg border-border/60 focus:border-primary/50 focus:ring-primary/20 transition-all"
-                        />
-                        <Button onClick={handleSendInvitation} disabled={sendingInvite}>
-                          {sendingInvite ? "Enviando..." : "Invitar"}
-                        </Button>
-                      </div>
+                  {loadingAccess || loadingMembers ? (
+                    <div className="p-8 text-center text-sm text-muted-foreground bg-muted/20 rounded-xl border border-border/50">
+                      Cargando miembros...
                     </div>
-
-                    <div className="space-y-2">
-                      <Label className="text-sm">Enlace de invitacion</Label>
-                      <div className="flex gap-2">
-                        <Input
-                          value={inviteLinkLabel}
-                          onChange={e => setInviteLinkLabel(e.target.value)}
-                          placeholder="Etiqueta (opcional)"
-                          className="rounded-lg border-border/60 focus:border-primary/50 focus:ring-primary/20 transition-all"
-                        />
-                        <Button
-                          variant="outline"
-                          onClick={handleCreateInviteLink}
-                          disabled={creatingInviteLink}
-                        >
-                          {creatingInviteLink ? "Creando..." : "Crear"}
-                        </Button>
-                      </div>
+                  ) : members.length === 0 ? (
+                    <div className="p-8 text-center text-sm text-muted-foreground bg-muted/20 rounded-xl border border-border/50">
+                      No hay miembros adicionales en este workspace.
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <AnimatePresence mode="popLayout">
+                        {members.map((member) => (
+                          <MemberCard
+                            key={member.id}
+                            member={member}
+                            isOwner={workspace?.user_id === member.user_id}
+                            canManage={canManageWorkspace}
+                            onUpdateRole={(userId, role) => handleUpdateMemberRole(userId, role)}
+                            onRemove={(userId) => handleRemoveMember(userId)}
+                          />
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
 
+                {/* Invitations Section */}
                 <div className="space-y-3">
-                  <div className="text-sm font-medium">Miembros</div>
-                  <div className="rounded-lg border border-border/60 overflow-hidden">
-                    {loadingAccess || loadingMembers ? (
-                      <div className="p-4 text-sm text-muted-foreground">Cargando miembros...</div>
-                    ) : (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Rol</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {members.length === 0 ? (
-                            <TableRow>
-                              <TableCell colSpan={3} className="text-center text-muted-foreground">
-                                No hay miembros listados.
-                              </TableCell>
-                            </TableRow>
-                          ) : (
-                            members.map(member => (
-                              <TableRow key={member.id}>
-                                <TableCell className="font-mono text-xs">
-                                  {member.user?.email || member.user_id}
-                                </TableCell>
-                                <TableCell>
-                                  <Select
-                                    value={member.role}
-                                    onValueChange={v => handleUpdateMemberRole(member.user_id, v as WorkspaceRole)}
-                                  >
-                                    <SelectTrigger className="w-[180px]">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                      <SelectItem value="VIEWER">Viewer</SelectItem>
-                                      <SelectItem value="ASSISTANT">Assistant</SelectItem>
-                                      <SelectItem value="LAWYER">Lawyer</SelectItem>
-                                      <SelectItem value="ADMIN">Admin</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleRemoveMember(member.user_id)}
-                                  >
-                                    Remover
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    )}
-                  </div>
-                </div>
+                  <h3 className="text-sm font-semibold text-foreground">Invitaciones pendientes</h3>
 
-                <div className="space-y-3">
-                  <div className="text-sm font-medium">Invitaciones existentes</div>
-                  <div className="rounded-lg border border-border/60 overflow-hidden">
-                    {loadingAccess || loadingInvitations ? (
-                      <div className="p-4 text-sm text-muted-foreground">Cargando invitaciones...</div>
-                    ) : (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Contacto</TableHead>
-                            <TableHead>Rol</TableHead>
-                            <TableHead>Estado</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {invitations.length === 0 ? (
-                            <TableRow>
-                              <TableCell colSpan={4} className="text-center text-muted-foreground">
-                                No hay invitaciones.
-                              </TableCell>
-                            </TableRow>
-                          ) : (
-                            invitations.map(invite => (
-                              <TableRow key={invite.id}>
-                                <TableCell className="font-mono text-xs">
-                                  {invite.email?.startsWith("link:")
-                                    ? `link (${invite.email.slice("link:".length)})`
-                                    : invite.email}
-                                </TableCell>
-                                <TableCell>{invite.role}</TableCell>
-                                <TableCell>{invite.status}</TableCell>
-                                <TableCell className="text-right">
-                                  {invite.status === "PENDING" ? (
-                                    <div className="flex justify-end gap-2">
-                                      <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => void handleResendInvitation(invite.id)}
-                                      >
-                                        Reenviar
-                                      </Button>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => void handleRevokeInvitation(invite.id)}
-                                      >
-                                        Revocar
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                    <span className="text-xs text-muted-foreground">—</span>
-                                  )}
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
-                    )}
-                  </div>
+                  {loadingAccess || loadingInvitations ? (
+                    <div className="p-8 text-center text-sm text-muted-foreground bg-muted/20 rounded-xl border border-border/50">
+                      Cargando invitaciones...
+                    </div>
+                  ) : invitations.filter(i => i.status === "PENDING").length === 0 ? (
+                    <div className="p-8 text-center text-sm text-muted-foreground bg-muted/20 rounded-xl border border-border/50">
+                      No hay invitaciones pendientes.
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <AnimatePresence mode="popLayout">
+                        {invitations
+                          .filter(i => i.status === "PENDING")
+                          .map((invite) => (
+                            <InvitationCard
+                              key={invite.id}
+                              invitation={invite}
+                              onRevoke={(id) => void handleRevokeInvitation(id)}
+                              onResend={(id) => void handleResendInvitation(id)}
+                            />
+                          ))}
+                      </AnimatePresence>
+                    </div>
+                  )}
                 </div>
               </TabsContent>
             )}
@@ -879,16 +775,16 @@ export const WorkspaceSettings: FC<WorkspaceSettingsProps> = ({
           </div>
 
           <div className="flex gap-2">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               onClick={() => setIsOpen(false)}
               className="rounded-lg hover:bg-muted/50 transition-colors"
             >
               Cancelar
             </Button>
 
-            <Button 
-              ref={buttonRef} 
+            <Button
+              ref={buttonRef}
               onClick={handleSave}
               className="rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all"
             >

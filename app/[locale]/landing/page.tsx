@@ -4,17 +4,17 @@ import { useRef, useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion"
-import { 
-  ArrowRight, 
-  Check, 
-  Star, 
-  Shield, 
-  Zap, 
-  Sparkles, 
-  FileText, 
-  Scale, 
-  BookOpen, 
-  FolderOpen, 
+import {
+  ArrowRight,
+  Check,
+  Star,
+  Shield,
+  Zap,
+  Sparkles,
+  FileText,
+  Scale,
+  BookOpen,
+  FolderOpen,
   ChevronDown,
   Bot,
   Search,
@@ -97,12 +97,12 @@ const CARD_DISPLAY_TIME = 3000; // 3 seconds
 function AnimatedAnalyzingContent() {
   const [progress, setProgress] = useState(0);
   const [activeDoc, setActiveDoc] = useState(0);
-  
+
   useEffect(() => {
     // Reset on mount
     setProgress(0);
     setActiveDoc(0);
-    
+
     // Animate progress from 0 to 100 in exactly 3 seconds
     // 100 steps / 3000ms = ~30ms per step (using 2% increments = 50 steps, so 60ms each)
     const progressInterval = setInterval(() => {
@@ -111,12 +111,12 @@ function AnimatedAnalyzingContent() {
         return Math.min(prev + 2, 100);
       });
     }, 56); // 3000ms / ~54 steps ≈ 56ms to reach exactly 100% at 3s
-    
+
     // Cycle through documents (4 docs in 3 seconds = 750ms each)
     const docInterval = setInterval(() => {
       setActiveDoc(prev => (prev + 1) % 4);
     }, 700);
-    
+
     return () => {
       clearInterval(progressInterval);
       clearInterval(docInterval);
@@ -126,7 +126,7 @@ function AnimatedAnalyzingContent() {
   return (
     <>
       <div className="text-[9px] text-gray-400 mb-1">
-        Escaneando Expediente: <motion.span 
+        Escaneando Expediente: <motion.span
           key={progress}
           initial={{ opacity: 0.5 }}
           animate={{ opacity: 1 }}
@@ -137,10 +137,10 @@ function AnimatedAnalyzingContent() {
       </div>
       <div className="grid grid-cols-4 gap-1 mb-2">
         {[0, 1, 2, 3].map(i => (
-          <motion.div 
+          <motion.div
             key={i}
             className="h-6 bg-white/5 rounded border flex items-center justify-center relative overflow-hidden"
-            animate={{ 
+            animate={{
               borderColor: activeDoc === i ? "rgba(251,191,36,0.8)" : "rgba(255,255,255,0.1)",
               backgroundColor: activeDoc === i ? "rgba(251,191,36,0.1)" : "rgba(255,255,255,0.05)"
             }}
@@ -148,7 +148,7 @@ function AnimatedAnalyzingContent() {
           >
             <FileText className={`w-2.5 h-2.5 transition-colors duration-300 ${activeDoc === i ? 'text-amber-400' : 'text-gray-500'}`} />
             {activeDoc === i && (
-              <motion.div 
+              <motion.div
                 className="absolute inset-0 bg-amber-400/10"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
@@ -157,7 +157,7 @@ function AnimatedAnalyzingContent() {
               />
             )}
             {i < activeDoc && (
-              <motion.div 
+              <motion.div
                 className="absolute top-0.5 right-0.5"
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -171,7 +171,7 @@ function AnimatedAnalyzingContent() {
       <div className="space-y-1">
         <div className="flex justify-between text-[8px] text-gray-400">
           <span>Partes</span>
-          <motion.span 
+          <motion.span
             className="text-amber-400 font-mono tabular-nums"
             key={progress}
           >
@@ -179,7 +179,7 @@ function AnimatedAnalyzingContent() {
           </motion.span>
         </div>
         <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-          <motion.div 
+          <motion.div
             className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full relative"
             style={{ width: `${progress}%` }}
             transition={{ duration: 0.1 }}
@@ -202,7 +202,7 @@ function AnimatedRedactingContent() {
   useEffect(() => {
     // Reset on mount
     setDisplayText("");
-    
+
     let index = 0;
     // Type full text in ~2.8 seconds (leaving time to see completed text)
     // ~95 chars / 2800ms = ~30ms per char
@@ -228,7 +228,7 @@ function AnimatedRedactingContent() {
     <>
       <div className="text-[9px] text-gray-400 mb-1 flex items-center gap-2">
         <span>Borrador: Contrato</span>
-        <motion.div 
+        <motion.div
           className="flex gap-0.5"
           animate={{ opacity: [0.3, 1, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity }}
@@ -241,7 +241,7 @@ function AnimatedRedactingContent() {
       <div className="relative h-16 bg-white/5 rounded border border-white/5 p-2 font-mono text-[7px] text-gray-300 overflow-hidden leading-relaxed shadow-inner">
         <div className="whitespace-pre-wrap">
           {displayText}
-          <motion.span 
+          <motion.span
             className="inline-block w-0.5 h-2.5 bg-purple-400 ml-0.5 align-middle"
             animate={{ opacity: cursorVisible ? 1 : 0 }}
             transition={{ duration: 0.1 }}
@@ -251,8 +251,8 @@ function AnimatedRedactingContent() {
       </div>
       <div className="flex gap-1 mt-1.5 flex-wrap items-center">
         {["Confidencial", "Garantías", "Art. 1502"].map((tag, i) => (
-          <motion.span 
-            key={i} 
+          <motion.span
+            key={i}
             className="px-1.5 py-0.5 rounded bg-purple-500/20 text-[8px] text-purple-300 border border-purple-500/20"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -261,7 +261,7 @@ function AnimatedRedactingContent() {
             {tag}
           </motion.span>
         ))}
-        <motion.span 
+        <motion.span
           className="text-[8px] text-purple-400/60 ml-auto font-mono"
           animate={{ opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -282,7 +282,7 @@ function AnimatedCommunicatingContent() {
     // Reset on mount
     setSendProgress(0);
     setStatus('preparing');
-    
+
     let progress = 0;
     // 100% in 2.7 seconds (leaving 0.3s to show "sent" state)
     // 50 steps * 54ms = 2700ms
@@ -290,7 +290,7 @@ function AnimatedCommunicatingContent() {
       progress += 2;
       const clampedProgress = Math.min(progress, 100);
       setSendProgress(clampedProgress);
-      
+
       if (clampedProgress < 30) {
         setStatus('preparing');
       } else if (clampedProgress < 95) {
@@ -298,7 +298,7 @@ function AnimatedCommunicatingContent() {
       } else {
         setStatus('sent');
       }
-      
+
       // Stop at 100, don't reset
       if (progress >= 100) {
         clearInterval(interval);
@@ -318,7 +318,7 @@ function AnimatedCommunicatingContent() {
     <>
       <div className="flex items-center gap-2 mb-2">
         <motion.div
-          animate={{ 
+          animate={{
             scale: status === 'sending' ? [1, 1.1, 1] : 1,
             borderColor: status === 'sent' ? 'rgba(52, 211, 153, 0.5)' : 'rgba(255,255,255,0.1)'
           }}
@@ -334,21 +334,20 @@ function AnimatedCommunicatingContent() {
           <div className="text-gray-500 text-[8px]">Asunto: Análisis del caso...</div>
         </div>
       </div>
-      
+
       {/* Message preview with typing indicator */}
       <div className="p-2 bg-white/5 rounded border border-white/5 text-[8px] text-gray-400 italic relative leading-tight">
         <div className="absolute -top-0.5 -left-0.5 w-1.5 h-1.5 border-t border-l border-emerald-500/50" />
         "Estimado Dr., adjunto el análisis detallado..."
         <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 border-b border-r border-emerald-500/50" />
       </div>
-      
+
       {/* Upload progress bar */}
       <div className="mt-2 space-y-1">
         <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
-          <motion.div 
-            className={`h-full rounded-full transition-colors duration-300 ${
-              status === 'sent' ? 'bg-emerald-400' : 'bg-gradient-to-r from-emerald-500 to-emerald-400'
-            }`}
+          <motion.div
+            className={`h-full rounded-full transition-colors duration-300 ${status === 'sent' ? 'bg-emerald-400' : 'bg-gradient-to-r from-emerald-500 to-emerald-400'
+              }`}
             style={{ width: `${sendProgress}%` }}
           >
             {status === 'sending' && (
@@ -356,7 +355,7 @@ function AnimatedCommunicatingContent() {
             )}
           </motion.div>
         </div>
-        <motion.div 
+        <motion.div
           className={`flex items-center justify-between text-[8px] ${statusConfig[status].color}`}
           key={status}
           initial={{ opacity: 0, y: -5 }}
@@ -379,7 +378,7 @@ function AnimatedMonitoringContent() {
   const targetBars = [20, 45, 60, 80, 40, 70, 55];
   const [notificationCount, setNotificationCount] = useState(0);
   const [alerts, setAlerts] = useState<string[]>([]);
-  
+
   const alertMessages = [
     "Movimiento proc. 11001...",
     "Nueva citación judicial",
@@ -392,7 +391,7 @@ function AnimatedMonitoringContent() {
     setBars([0, 0, 0, 0, 0, 0, 0]);
     setNotificationCount(0);
     setAlerts([alertMessages[0]]);
-    
+
     // Animate bars growing - complete in ~2 seconds
     // Max target is 80, so 80/5 = 16 steps, 16 * 125ms = 2000ms
     const barInterval = setInterval(() => {
@@ -433,7 +432,7 @@ function AnimatedMonitoringContent() {
       <div className="space-y-1.5 min-h-[36px]">
         <AnimatePresence mode="popLayout">
           {alerts.slice(-2).map((alert, idx) => (
-            <motion.div 
+            <motion.div
               key={`${alert}-${idx}`}
               className="flex items-center gap-1.5 p-1.5 bg-white/5 rounded border border-white/5 hover:bg-white/10 transition-colors cursor-pointer"
               initial={{ x: 20, opacity: 0, height: 0 }}
@@ -441,7 +440,7 @@ function AnimatedMonitoringContent() {
               exit={{ x: -20, opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <motion.div 
+              <motion.div
                 className="w-1.5 h-1.5 rounded-full bg-pink-500 shadow-[0_0_8px_rgba(244,114,182,0.8)]"
                 animate={{ scale: [1, 1.3, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
@@ -453,17 +452,17 @@ function AnimatedMonitoringContent() {
       </div>
       <div className="h-8 mt-2 flex items-end justify-between gap-0.5 px-1">
         {bars.map((h, i) => (
-          <motion.div 
-            key={i} 
+          <motion.div
+            key={i}
             className="w-full bg-gradient-to-t from-pink-500 to-pink-400 rounded-t-sm relative overflow-hidden"
             style={{ height: `${h}%` }}
-            whileHover={{ 
-              scaleY: 1.1, 
+            whileHover={{
+              scaleY: 1.1,
               backgroundColor: 'rgb(244, 114, 182)',
               transition: { duration: 0.2 }
             }}
           >
-            <motion.div 
+            <motion.div
               className="absolute inset-0 bg-white/20"
               initial={{ y: '100%' }}
               animate={{ y: '-100%' }}
@@ -490,12 +489,12 @@ function HeroSection() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024); // lg breakpoint
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
+
   // Data for the 5 agent cards - Updated with Action Titles
   const cards = [
     {
@@ -512,8 +511,8 @@ function HeroSection() {
         <>
           <div className="text-[9px] text-gray-400 mb-1">Filtrando: Resp. Civil</div>
           <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden mb-2">
-            <motion.div 
-              className="h-full bg-blue-400" 
+            <motion.div
+              className="h-full bg-blue-400"
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
               transition={{ duration: 2.8, ease: "linear" }}
@@ -521,7 +520,7 @@ function HeroSection() {
           </div>
           <div className="space-y-1.5">
             {[1, 2].map((i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 className="flex items-center gap-1.5 p-1.5 rounded bg-white/5 border border-white/5"
                 initial={{ opacity: 0, x: -10 }}
@@ -530,8 +529,8 @@ function HeroSection() {
               >
                 <div className="w-0.5 h-4 bg-blue-500/50 rounded-full" />
                 <div className="space-y-0.5 w-full">
-                   <div className="h-1.5 bg-gray-500/50 rounded w-3/4" />
-                   <div className="h-1.5 bg-gray-500/30 rounded w-1/2" />
+                  <div className="h-1.5 bg-gray-500/50 rounded w-3/4" />
+                  <div className="h-1.5 bg-gray-500/30 rounded w-1/2" />
                 </div>
               </motion.div>
             ))}
@@ -595,20 +594,20 @@ function HeroSection() {
   // Helper to generate random position within bounds - AVOIDS CENTER (ALI text)
   const getRandomPosition = (forMobile: boolean = false) => {
     const positions = forMobile ? mobilePositions : desktopPositions;
-    
+
     // Get a random index that's different from the previous one
     let newIndex;
     do {
       newIndex = Math.floor(Math.random() * positions.length);
     } while (newIndex === prevPositionIndex && positions.length > 1);
-    
+
     setPrevPositionIndex(newIndex);
     const randomPos = positions[newIndex];
-    
+
     if (forMobile) {
       setMobilePosition(randomPos);
     }
-    
+
     return randomPos;
   };
 
@@ -630,18 +629,18 @@ function HeroSection() {
       // 2. Calculate position for NEXT card (pass isMobile flag)
       const nextPos = getRandomPosition(isMobile);
       setCurrentPosition(nextPos);
-      
+
       // 3. Orb starts "working" - energy buildup
       setIsOrbWorking(true);
-      
+
       // 4. Show Vector (anticipation) - only on desktop
       if (!isMobile) {
         setIsVectorVisible(true);
       }
-      
+
       // Wait for vector draw (reduced for faster cycle)
       await new Promise(r => setTimeout(r, 600));
-      
+
       if (!isActive) return;
 
       // 5. Show Card
@@ -649,20 +648,20 @@ function HeroSection() {
       setActiveCardIndex(currentIndex);
       setIsVectorVisible(false); // Vector fades as card appears
       setIsOrbWorking(false); // Orb calms down
-      
+
       // Wait for display time - exactly 3 seconds (synced with animations)
       await new Promise(r => setTimeout(r, CARD_DISPLAY_TIME));
-      
+
       if (!isActive) return;
 
       // 6. Hide Card
-      setActiveCardIndex(-1); 
-      
+      setActiveCardIndex(-1);
+
       // Short pause before next cycle
       await new Promise(r => setTimeout(r, 400));
 
       if (!isActive) return;
-      
+
       // Loop
       runSequence();
     };
@@ -688,22 +687,22 @@ function HeroSection() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Text Content */}
-          <motion.div 
+          <motion.div
             className="space-y-8 text-center lg:text-left order-2 lg:order-1 lg:mt-8"
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
           >
-            <div className="relative h-[180px] sm:h-[220px] md:h-[280px] overflow-visible">
+            <div className="relative h-[200px] sm:h-[240px] md:h-[300px] overflow-visible pb-4">
               {/* Phase 1: ALI Horizontal Word */}
               <motion.div
                 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight absolute top-0 left-0 lg:left-0 w-full lg:w-auto flex justify-center lg:justify-start"
                 initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ 
+                animate={{
                   opacity: [0, 1, 1, 0],
                   scale: [0.8, 1, 1, 1]
                 }}
-                transition={{ 
+                transition={{
                   duration: 2,
                   times: [0, 0.2, 0.7, 1],
                   ease: "easeInOut"
@@ -715,8 +714,8 @@ function HeroSection() {
               </motion.div>
 
               {/* Phase 2 & 3: Letters split vertically then expand */}
-              <motion.h1 
-                className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-normal text-white absolute top-0 left-0 w-full lg:w-auto overflow-visible"
+              <motion.h1
+                className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-relaxed text-white absolute top-0 left-0 w-full lg:w-auto overflow-visible"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 1.8, duration: 0.3 }}
@@ -724,19 +723,19 @@ function HeroSection() {
                 <div className="flex flex-col items-center lg:items-start overflow-visible">
                   {/* Line 1: A -> Asistente */}
                   <div className="flex items-baseline overflow-visible">
-                    <motion.span 
+                    <motion.span
                       className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block overflow-visible"
-                      initial={{ 
+                      initial={{
                         x: "0.65em",
                         y: "1.1em"
                       }}
-                      animate={{ 
+                      animate={{
                         x: 0,
                         y: 0
                       }}
-                      transition={{ 
+                      transition={{
                         delay: 1.8,
-                        duration: 0.6, 
+                        duration: 0.6,
                         ease: [0.22, 1, 0.36, 1]
                       }}
                     >
@@ -751,22 +750,22 @@ function HeroSection() {
                       sistente
                     </motion.span>
                   </div>
-                  
+
                   {/* Line 2: L -> Legal */}
                   <div className="flex items-baseline overflow-visible">
-                    <motion.span 
+                    <motion.span
                       className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block overflow-visible"
-                      initial={{ 
+                      initial={{
                         x: "0.15em",
                         y: 0
                       }}
-                      animate={{ 
+                      animate={{
                         x: 0,
                         y: 0
                       }}
-                      transition={{ 
+                      transition={{
                         delay: 1.8,
-                        duration: 0.6, 
+                        duration: 0.6,
                         ease: [0.22, 1, 0.36, 1]
                       }}
                     >
@@ -781,22 +780,22 @@ function HeroSection() {
                       egal
                     </motion.span>
                   </div>
-                  
+
                   {/* Line 3: I -> Inteligente */}
-                  <div className="flex items-baseline overflow-visible">
-                    <motion.span 
+                  <div className="flex items-baseline overflow-visible pb-3">
+                    <motion.span
                       className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 inline-block overflow-visible"
-                      initial={{ 
+                      initial={{
                         x: "-0.35em",
                         y: "-1.1em"
                       }}
-                      animate={{ 
+                      animate={{
                         x: 0,
                         y: 0
                       }}
-                      transition={{ 
+                      transition={{
                         delay: 1.8,
-                        duration: 0.6, 
+                        duration: 0.6,
                         ease: [0.22, 1, 0.36, 1]
                       }}
                     >
@@ -806,7 +805,7 @@ function HeroSection() {
                       initial={{ opacity: 0, width: 0 }}
                       animate={{ opacity: 1, width: "auto" }}
                       transition={{ delay: 2.9, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                      className="inline-block overflow-visible whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400"
+                      className="inline-block overflow-visible whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 pb-4"
                     >
                       nteligente
                     </motion.span>
@@ -814,11 +813,11 @@ function HeroSection() {
                 </div>
               </motion.h1>
             </div>
-            
+
             <motion.p variants={fadeIn} custom={2} className="text-lg sm:text-xl text-gray-400 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
               Analiza, redacta y gestiona tus casos con una precisión sobrehumana. La plataforma definitiva para el abogado del futuro.
             </motion.p>
-            
+
             <motion.div variants={fadeIn} custom={3} className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
               <Button size="lg" className="w-full sm:w-auto h-14 px-8 bg-white text-black hover:bg-gray-200 transition-colors rounded-full font-bold text-base shadow-[0_0_20px_rgba(255,255,255,0.3)]" asChild>
                 <Link href="/login">
@@ -833,23 +832,23 @@ function HeroSection() {
             </motion.div>
 
             <motion.div variants={fadeIn} custom={4} className="grid grid-cols-3 gap-4 pt-8 border-t border-white/5">
-               <div>
-                 <div className="text-lg font-bold text-white mb-1">Ahorra tiempo</div>
-                 <div className="text-xs text-gray-500 leading-relaxed">Búsqueda y redacción más rápidas</div>
-               </div>
-               <div>
-                 <div className="text-lg font-bold text-white mb-1">Reduce errores</div>
-                 <div className="text-xs text-gray-500 leading-relaxed">Control de procesos y vencimientos</div>
-               </div>
-               <div>
-                 <div className="text-lg font-bold text-white mb-1">Hecho para Colombia</div>
-                 <div className="text-xs text-gray-500 leading-relaxed">Normativa y jurisprudencia aplicable</div>
-               </div>
+              <div>
+                <div className="text-lg font-bold text-white mb-1">Ahorra tiempo</div>
+                <div className="text-xs text-gray-500 leading-relaxed">Búsqueda y redacción más rápidas</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-white mb-1">Reduce errores</div>
+                <div className="text-xs text-gray-500 leading-relaxed">Control de procesos y vencimientos</div>
+              </div>
+              <div>
+                <div className="text-lg font-bold text-white mb-1">Hecho para Colombia</div>
+                <div className="text-xs text-gray-500 leading-relaxed">Normativa y jurisprudencia aplicable</div>
+              </div>
             </motion.div>
           </motion.div>
 
           {/* 3D Orb & Agentic UI */}
-          <motion.div 
+          <motion.div
             className="flex justify-center items-center order-1 lg:order-2 relative min-h-[400px] sm:min-h-[550px] lg:min-h-[600px] lg:-mt-6"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -898,18 +897,18 @@ function HeroSection() {
                   </>
                 )}
               </AnimatePresence>
-              
+
               <ShaderCanvas size={isMobile ? 280 : 480} shaderId={2} />
-              
+
               {/* ALI Text Overlay */}
               <motion.div
                 className="absolute inset-0 flex items-center justify-center pointer-events-none z-20"
                 initial={{ opacity: 0, scale: 0.5, filter: "blur(10px)" }}
                 animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                transition={{ 
-                  duration: 0.8, 
+                transition={{
+                  duration: 0.8,
                   delay: 1.5,
-                  ease: "easeOut" 
+                  ease: "easeOut"
                 }}
               >
                 <h1 className={`font-bold bg-gradient-to-r from-purple-600 to-purple-400 bg-clip-text text-transparent drop-shadow-sm ${isMobile ? 'text-5xl' : 'text-8xl'}`}>
@@ -922,115 +921,115 @@ function HeroSection() {
             <AnimatePresence>
               {isVectorVisible && !isMobile && (
                 <svg className="absolute top-1/2 left-1/2 w-[800px] h-[800px] -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none overflow-visible">
-                   <defs>
-                     {/* Glow filter for the vector */}
-                     <filter id="vectorGlow" x="-50%" y="-50%" width="200%" height="200%">
-                       <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                       <feMerge>
-                         <feMergeNode in="coloredBlur"/>
-                         <feMergeNode in="SourceGraphic"/>
-                       </feMerge>
-                     </filter>
-                     {/* Gradient for energy flow */}
-                     <linearGradient id={`vectorGradient-${nextCardIndex}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                       <stop offset="0%" stopColor={cards[nextCardIndex].color} stopOpacity="0.3" />
-                       <stop offset="50%" stopColor={cards[nextCardIndex].color} stopOpacity="1" />
-                       <stop offset="100%" stopColor={cards[nextCardIndex].color} stopOpacity="0.8" />
-                     </linearGradient>
-                   </defs>
-                   
-                   {/* Background glow line (wider, more diffuse) */}
-                   <motion.line 
-                     x1="50%" y1="50%"
-                     x2={`calc(50% + ${currentPosition.x}px)`}
-                     y2={`calc(50% + ${currentPosition.y}px)`}
-                     stroke={cards[nextCardIndex].color}
-                     strokeWidth="12"
-                     strokeOpacity="0.15"
-                     strokeLinecap="round"
-                     initial={{ pathLength: 0 }}
-                     animate={{ pathLength: 1 }}
-                     transition={{ duration: 0.5, ease: "easeOut" }}
-                   />
-                   
-                   {/* Main energy line */}
-                   <motion.line 
-                     x1="50%" y1="50%"
-                     x2={`calc(50% + ${currentPosition.x}px)`}
-                     y2={`calc(50% + ${currentPosition.y}px)`}
-                     stroke={cards[nextCardIndex].color}
-                     strokeWidth="3"
-                     strokeLinecap="round"
-                     filter="url(#vectorGlow)"
-                     initial={{ pathLength: 0, opacity: 0 }}
-                     animate={{ pathLength: 1, opacity: 1 }}
-                     exit={{ opacity: 0, transition: { duration: 0.2 } }}
-                     transition={{ duration: 0.5, ease: "easeOut" }}
-                   />
-                   
-                   {/* Animated energy particles along the line */}
-                   {[0, 1, 2].map((i) => (
-                     <motion.circle
-                       key={i}
-                       r="3"
-                       fill={cards[nextCardIndex].color}
-                       filter="url(#vectorGlow)"
-                       initial={{ 
-                         cx: "50%", 
-                         cy: "50%",
-                         opacity: 0,
-                         scale: 0
-                       }}
-                       animate={{ 
-                         cx: `calc(50% + ${currentPosition.x}px)`,
-                         cy: `calc(50% + ${currentPosition.y}px)`,
-                         opacity: [0, 1, 1, 0],
-                         scale: [0.5, 1.2, 1, 0.5]
-                       }}
-                       transition={{ 
-                         duration: 0.4,
-                         delay: i * 0.1,
-                         ease: "easeOut"
-                       }}
-                     />
-                   ))}
-                   
-                   {/* Pulsing endpoint glow */}
-                   <motion.circle
-                      cx={`calc(50% + ${currentPosition.x}px)`}
-                      cy={`calc(50% + ${currentPosition.y}px)`}
-                      r="20"
-                      fill={cards[nextCardIndex].color}
-                      fillOpacity="0.2"
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: [0, 1.5, 1], opacity: [0, 0.4, 0.2] }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                   />
-                   
-                   {/* Main endpoint dot */}
-                   <motion.circle
-                      cx={`calc(50% + ${currentPosition.x}px)`}
-                      cy={`calc(50% + ${currentPosition.y}px)`}
-                      r="6"
+                  <defs>
+                    {/* Glow filter for the vector */}
+                    <filter id="vectorGlow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+                      <feMerge>
+                        <feMergeNode in="coloredBlur" />
+                        <feMergeNode in="SourceGraphic" />
+                      </feMerge>
+                    </filter>
+                    {/* Gradient for energy flow */}
+                    <linearGradient id={`vectorGradient-${nextCardIndex}`} x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor={cards[nextCardIndex].color} stopOpacity="0.3" />
+                      <stop offset="50%" stopColor={cards[nextCardIndex].color} stopOpacity="1" />
+                      <stop offset="100%" stopColor={cards[nextCardIndex].color} stopOpacity="0.8" />
+                    </linearGradient>
+                  </defs>
+
+                  {/* Background glow line (wider, more diffuse) */}
+                  <motion.line
+                    x1="50%" y1="50%"
+                    x2={`calc(50% + ${currentPosition.x}px)`}
+                    y2={`calc(50% + ${currentPosition.y}px)`}
+                    stroke={cards[nextCardIndex].color}
+                    strokeWidth="12"
+                    strokeOpacity="0.15"
+                    strokeLinecap="round"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+
+                  {/* Main energy line */}
+                  <motion.line
+                    x1="50%" y1="50%"
+                    x2={`calc(50% + ${currentPosition.x}px)`}
+                    y2={`calc(50% + ${currentPosition.y}px)`}
+                    stroke={cards[nextCardIndex].color}
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    filter="url(#vectorGlow)"
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
+                    exit={{ opacity: 0, transition: { duration: 0.2 } }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  />
+
+                  {/* Animated energy particles along the line */}
+                  {[0, 1, 2].map((i) => (
+                    <motion.circle
+                      key={i}
+                      r="3"
                       fill={cards[nextCardIndex].color}
                       filter="url(#vectorGlow)"
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: 1, scale: [0, 1.3, 1] }}
-                      exit={{ opacity: 0, scale: 0 }}
-                      transition={{ duration: 0.3, delay: 0.4 }} 
-                   />
-                   
-                   {/* Inner bright core */}
-                   <motion.circle
-                      cx={`calc(50% + ${currentPosition.x}px)`}
-                      cy={`calc(50% + ${currentPosition.y}px)`}
-                      r="3"
-                      fill="white"
-                      initial={{ opacity: 0, scale: 0 }}
-                      animate={{ opacity: [0, 1, 0.8], scale: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3, delay: 0.45 }} 
-                   />
+                      initial={{
+                        cx: "50%",
+                        cy: "50%",
+                        opacity: 0,
+                        scale: 0
+                      }}
+                      animate={{
+                        cx: `calc(50% + ${currentPosition.x}px)`,
+                        cy: `calc(50% + ${currentPosition.y}px)`,
+                        opacity: [0, 1, 1, 0],
+                        scale: [0.5, 1.2, 1, 0.5]
+                      }}
+                      transition={{
+                        duration: 0.4,
+                        delay: i * 0.1,
+                        ease: "easeOut"
+                      }}
+                    />
+                  ))}
+
+                  {/* Pulsing endpoint glow */}
+                  <motion.circle
+                    cx={`calc(50% + ${currentPosition.x}px)`}
+                    cy={`calc(50% + ${currentPosition.y}px)`}
+                    r="20"
+                    fill={cards[nextCardIndex].color}
+                    fillOpacity="0.2"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: [0, 1.5, 1], opacity: [0, 0.4, 0.2] }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  />
+
+                  {/* Main endpoint dot */}
+                  <motion.circle
+                    cx={`calc(50% + ${currentPosition.x}px)`}
+                    cy={`calc(50% + ${currentPosition.y}px)`}
+                    r="6"
+                    fill={cards[nextCardIndex].color}
+                    filter="url(#vectorGlow)"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: [0, 1.3, 1] }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    transition={{ duration: 0.3, delay: 0.4 }}
+                  />
+
+                  {/* Inner bright core */}
+                  <motion.circle
+                    cx={`calc(50% + ${currentPosition.x}px)`}
+                    cy={`calc(50% + ${currentPosition.y}px)`}
+                    r="3"
+                    fill="white"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: [0, 1, 0.8], scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3, delay: 0.45 }}
+                  />
                 </svg>
               )}
             </AnimatePresence>
@@ -1038,7 +1037,7 @@ function HeroSection() {
             {/* --- Agentic Cards (Sequential Random Display) --- */}
             <AnimatePresence mode="wait">
               {activeCardIndex >= 0 && !isVectorVisible && (
-                <motion.div 
+                <motion.div
                   key={`${activeCardIndex}-${isMobile ? `${mobilePosition.x}-${mobilePosition.y}` : currentPosition.x}`}
                   className={`absolute z-30 ${isMobile ? 'w-40' : 'w-52'}`}
                   style={isMobile ? {
@@ -1052,21 +1051,21 @@ function HeroSection() {
                     left: `calc(50% + ${currentPosition.x}px)`,
                     transform: "translate(-50%, -50%)"
                   }}
-                  initial={{ 
-                    opacity: 0, 
-                    scale: 0.8, 
+                  initial={{
+                    opacity: 0,
+                    scale: 0.8,
                     filter: "blur(8px)"
                   }}
-                  animate={{ 
-                    opacity: 1, 
-                    scale: 1, 
+                  animate={{
+                    opacity: 1,
+                    scale: 1,
                     filter: "blur(0px)"
                   }}
-                  exit={{ 
-                    opacity: 0, 
-                    scale: 0.9, 
-                    filter: "blur(8px)", 
-                    transition: { duration: 0.3 } 
+                  exit={{
+                    opacity: 0,
+                    scale: 0.9,
+                    filter: "blur(8px)",
+                    transition: { duration: 0.3 }
                   }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
@@ -1074,10 +1073,10 @@ function HeroSection() {
                     {/* Header - Reduced padding and size */}
                     <div className="px-3 py-2 border-b border-white/10 flex items-center gap-2 bg-white/5">
                       <div className={`p-1 rounded-md bg-white/10 shadow-[0_0_10px_rgba(0,0,0,0.5)]`}>
-                         {(() => {
-                            const Icon = cards[activeCardIndex].icon;
-                            return <Icon className="w-3.5 h-3.5" style={{ color: cards[activeCardIndex].color }} />;
-                         })()}
+                        {(() => {
+                          const Icon = cards[activeCardIndex].icon;
+                          return <Icon className="w-3.5 h-3.5" style={{ color: cards[activeCardIndex].color }} />;
+                        })()}
                       </div>
                       <div className="flex items-center">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-white truncate mr-0.5">
@@ -1086,7 +1085,7 @@ function HeroSection() {
                         <TypingEllipsis />
                       </div>
                       <div className="ml-auto flex items-center gap-1.5">
-                         <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
                       </div>
                     </div>
                     {/* Content - Reduced padding */}
@@ -1182,7 +1181,7 @@ function VisualDashboard() {
             <p className="text-gray-400 text-lg leading-relaxed">
               Gestiona todos tus casos, documentos y procesos desde un solo lugar. Visualiza el estado de tus expedientes, controla vencimientos y organiza tu carga de trabajo de manera eficiente.
             </p>
-            
+
             <div className="space-y-4">
               {[
                 "Vista consolidada de todos tus procesos legales",
@@ -1200,7 +1199,7 @@ function VisualDashboard() {
           </div>
 
           <div className="flex-1 w-full perspective-1000">
-            <motion.div 
+            <motion.div
               className="relative transform rotate-y-[-10deg] rotate-x-[5deg]"
               initial={{ rotateY: -10, rotateX: 5 }}
               whileHover={{ rotateY: 0, rotateX: 0 }}
@@ -1222,35 +1221,35 @@ function VisualDashboard() {
 
                 {/* Mock Content - Grid */}
                 <div className="grid grid-cols-3 gap-4 flex-1">
-                   {/* Main Chart Area */}
-                   <div className="col-span-2 bg-white/5 rounded-lg p-4 border border-white/5 flex flex-col justify-between">
-                      <div className="flex justify-between mb-4">
-                        <div className="h-3 w-16 bg-white/10 rounded" />
-                        <div className="h-3 w-8 bg-green-500/20 rounded" />
+                  {/* Main Chart Area */}
+                  <div className="col-span-2 bg-white/5 rounded-lg p-4 border border-white/5 flex flex-col justify-between">
+                    <div className="flex justify-between mb-4">
+                      <div className="h-3 w-16 bg-white/10 rounded" />
+                      <div className="h-3 w-8 bg-green-500/20 rounded" />
+                    </div>
+                    <div className="flex items-end gap-2 h-24">
+                      {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
+                        <div key={i} className="flex-1 bg-blue-500/50 rounded-t-sm hover:bg-blue-400 transition-colors" style={{ height: `${h}%` }} />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Side Widgets */}
+                  <div className="space-y-4">
+                    <div className="bg-white/5 rounded-lg p-3 border border-white/5 h-1/2">
+                      <div className="w-8 h-8 rounded-full border-2 border-purple-500/50 mb-2" />
+                      <div className="h-2 w-full bg-white/10 rounded" />
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-3 border border-white/5 h-[45%]">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="w-2 h-2 bg-green-400 rounded-full" />
+                        <div className="h-2 w-10 bg-white/10 rounded" />
                       </div>
-                      <div className="flex items-end gap-2 h-24">
-                        {[40, 70, 45, 90, 65, 80, 50].map((h, i) => (
-                          <div key={i} className="flex-1 bg-blue-500/50 rounded-t-sm hover:bg-blue-400 transition-colors" style={{ height: `${h}%` }} />
-                        ))}
+                      <div className="h-1 w-full bg-white/5 rounded overflow-hidden">
+                        <div className="h-full w-2/3 bg-green-400" />
                       </div>
-                   </div>
-                   
-                   {/* Side Widgets */}
-                   <div className="space-y-4">
-                      <div className="bg-white/5 rounded-lg p-3 border border-white/5 h-1/2">
-                        <div className="w-8 h-8 rounded-full border-2 border-purple-500/50 mb-2" />
-                        <div className="h-2 w-full bg-white/10 rounded" />
-                      </div>
-                      <div className="bg-white/5 rounded-lg p-3 border border-white/5 h-[45%]">
-                         <div className="flex items-center gap-2 mb-2">
-                            <div className="w-2 h-2 bg-green-400 rounded-full" />
-                            <div className="h-2 w-10 bg-white/10 rounded" />
-                         </div>
-                         <div className="h-1 w-full bg-white/5 rounded overflow-hidden">
-                            <div className="h-full w-2/3 bg-green-400" />
-                         </div>
-                      </div>
-                   </div>
+                    </div>
+                  </div>
                 </div>
               </GlassCard>
             </motion.div>
@@ -1289,7 +1288,7 @@ function TestimonialsGrid() {
             <GlassCard key={i} className="p-8 flex flex-col justify-between">
               <div className="mb-6">
                 <div className="flex gap-1 mb-4">
-                  {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 fill-white text-white" />)}
+                  {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-4 h-4 fill-white text-white" />)}
                 </div>
                 <p className="text-gray-300 italic leading-relaxed">"{t.text}"</p>
               </div>
@@ -1366,160 +1365,155 @@ function PricingDark() {
 
   return (
     <section id="pricing" className="py-32 relative overflow-hidden bg-[#030305]">
-       {/* Radial gradient background */}
-       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-t from-purple-900/20 to-transparent opacity-50 pointer-events-none" />
-       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* Radial gradient background */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-t from-purple-900/20 to-transparent opacity-50 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none" />
 
-       <div className="container mx-auto px-4 relative z-10">
-         <div className="text-center mb-16">
-           <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-sm mb-6">
-             <Sparkles className="w-4 h-4" />
-             Precios simples y transparentes
-           </span>
-           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Elige el plan que se adapta a tu práctica</h2>
-           <p className="text-gray-400 max-w-2xl mx-auto">
-             Planes diseñados para diferentes necesidades profesionales. Sin costos ocultos ni permanencia. Cancela cuando quieras.
-           </p>
-         </div>
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="text-center mb-16">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-sm mb-6">
+            <Sparkles className="w-4 h-4" />
+            Precios simples y transparentes
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">Elige el plan que se adapta a tu práctica</h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            Planes diseñados para diferentes necesidades profesionales. Sin costos ocultos ni permanencia. Cancela cuando quieras.
+          </p>
+        </div>
 
-         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-           {plans.map((plan, index) => {
-             const isPro = plan.popular
-             const Icon = plan.icon
-             
-             return (
-               <motion.div
-                 key={plan.id}
-                 initial={{ opacity: 0, y: 30 }}
-                 whileInView={{ opacity: 1, y: 0 }}
-                 viewport={{ once: true }}
-                 transition={{ delay: index * 0.15, duration: 0.5 }}
-               >
-                 <GlassCard 
-                   className={`p-0 h-full flex flex-col relative overflow-hidden ${
-                     isPro 
-                       ? '!border-purple-500/50 !bg-purple-900/20 shadow-[0_0_60px_rgba(139,92,246,0.3)]' 
-                       : '!border-blue-500/30 !bg-blue-900/10'
-                   }`}
-                   hoverEffect={false}
-                 >
-                   {/* Pro badge */}
-                   {isPro && (
-                     <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-20">
-                       <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm font-semibold shadow-lg">
-                         <Star className="w-3.5 h-3.5 fill-current" />
-                         Recomendado
-                       </span>
-                     </div>
-                   )}
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {plans.map((plan, index) => {
+            const isPro = plan.popular
+            const Icon = plan.icon
 
-                   {/* Header */}
-                   <div className="p-8 pb-6 text-center pt-10">
-                     <div className={`w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center ${
-                       isPro 
-                         ? 'bg-gradient-to-br from-purple-500 to-purple-700' 
-                         : 'bg-gradient-to-br from-blue-500 to-blue-700'
-                     }`}>
-                       <Icon className="w-7 h-7 text-white" />
-                     </div>
-                     
-                     <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
-                     <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
-                     
-                     <div className="flex items-baseline justify-center gap-1 mb-2">
-                       <span className="text-5xl font-bold text-white">{plan.price}</span>
-                     </div>
-                     <p className="text-gray-500 text-sm">COP {plan.period}</p>
-                   </div>
+            return (
+              <motion.div
+                key={plan.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15, duration: 0.5 }}
+              >
+                <GlassCard
+                  className={`p-0 h-full flex flex-col relative overflow-hidden ${isPro
+                    ? '!border-purple-500/50 !bg-purple-900/20 shadow-[0_0_60px_rgba(139,92,246,0.3)]'
+                    : '!border-blue-500/30 !bg-blue-900/10'
+                    }`}
+                  hoverEffect={false}
+                >
+                  {/* Pro badge */}
+                  {isPro && (
+                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 z-20">
+                      <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm font-semibold shadow-lg">
+                        <Star className="w-3.5 h-3.5 fill-current" />
+                        Recomendado
+                      </span>
+                    </div>
+                  )}
 
-                   {/* Highlights Grid */}
-                   <div className={`mx-6 mb-6 p-4 rounded-xl grid grid-cols-2 gap-3 ${
-                     isPro ? 'bg-white/5' : 'bg-white/5'
-                   }`}>
-                     {plan.highlights.map((h, idx) => (
-                       <div key={idx} className="text-center">
-                         <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-0.5">
-                           {h.label}
-                         </p>
-                         <p className={`text-sm font-bold ${isPro ? 'text-purple-300' : 'text-blue-300'}`}>
-                           {h.value}
-                         </p>
-                       </div>
-                     ))}
-                   </div>
+                  {/* Header */}
+                  <div className="p-8 pb-6 text-center pt-10">
+                    <div className={`w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center ${isPro
+                      ? 'bg-gradient-to-br from-purple-500 to-purple-700'
+                      : 'bg-gradient-to-br from-blue-500 to-blue-700'
+                      }`}>
+                      <Icon className="w-7 h-7 text-white" />
+                    </div>
 
-                   {/* Features */}
-                   <div className="px-8 pb-6 flex-1">
-                     <ul className="space-y-3">
-                       {plan.features.map((f, i) => (
-                         <li key={i} className="flex items-start gap-3">
-                           {f.included ? (
-                             <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                               isPro ? 'bg-purple-500/20' : 'bg-blue-500/20'
-                             }`}>
-                               <Check className={`w-3 h-3 ${isPro ? 'text-purple-400' : 'text-blue-400'}`} />
-                             </div>
-                           ) : (
-                             <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 mt-0.5">
-                               <span className="text-gray-600 text-xs">✕</span>
-                             </div>
-                           )}
-                           <span className={f.included ? 'text-gray-300' : 'text-gray-600 line-through'}>
-                             {f.name}
-                           </span>
-                         </li>
-                       ))}
-                     </ul>
-                   </div>
+                    <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+                    <p className="text-gray-400 text-sm mb-6">{plan.description}</p>
 
-                   {/* CTA */}
-                   <div className="p-8 pt-0">
-                     <Button 
-                       className={`w-full h-14 rounded-full text-lg font-bold transition-all ${
-                         isPro 
-                           ? 'bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white shadow-[0_0_30px_rgba(139,92,246,0.4)]' 
-                           : 'bg-white text-black hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
-                       }`}
-                       asChild
-                     >
-                       <Link href={`/login?plan=${plan.id}`}>
-                         {isPro ? 'Comenzar con PRO' : 'Comenzar con Básico'}
-                       </Link>
-                     </Button>
-                     <p className="text-center text-gray-500 text-xs mt-3">
-                       Sin permanencia · Cancela cuando quieras
-                     </p>
-                   </div>
-                 </GlassCard>
-               </motion.div>
-             )
-           })}
-         </div>
+                    <div className="flex items-baseline justify-center gap-1 mb-2">
+                      <span className="text-5xl font-bold text-white">{plan.price}</span>
+                    </div>
+                    <p className="text-gray-500 text-sm">COP {plan.period}</p>
+                  </div>
 
-         {/* Trust badges */}
-         <div className="flex flex-wrap justify-center gap-8 mt-16 text-sm text-gray-500">
-           <div className="flex items-center gap-2">
-             <Shield className="w-4 h-4" />
-             Pago seguro con Wompi
-           </div>
-           <div className="flex items-center gap-2">
-             <Check className="w-4 h-4 text-green-500" />
-             Facturación mensual
-           </div>
-           <div className="flex items-center gap-2">
-             <Zap className="w-4 h-4 text-yellow-500" />
-             Activación inmediata
-           </div>
-         </div>
+                  {/* Highlights Grid */}
+                  <div className={`mx-6 mb-6 p-4 rounded-xl grid grid-cols-2 gap-3 ${isPro ? 'bg-white/5' : 'bg-white/5'
+                    }`}>
+                    {plan.highlights.map((h, idx) => (
+                      <div key={idx} className="text-center">
+                        <p className="text-[10px] uppercase tracking-wide text-gray-500 mb-0.5">
+                          {h.label}
+                        </p>
+                        <p className={`text-sm font-bold ${isPro ? 'text-purple-300' : 'text-blue-300'}`}>
+                          {h.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
 
-         {/* Comparison note */}
-         <div className="mt-8 text-center max-w-2xl mx-auto">
-           <p className="text-gray-500 text-sm">
-             ¿Necesitas gestionar expedientes y procesos? El <strong className="text-purple-400">Plan PRO</strong> incluye herramientas 
-             para seguimiento de casos, alertas de vencimientos y transcripción de audiencias. Ideal para despachos y litigantes activos.
-           </p>
-         </div>
-       </div>
+                  {/* Features */}
+                  <div className="px-8 pb-6 flex-1">
+                    <ul className="space-y-3">
+                      {plan.features.map((f, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          {f.included ? (
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isPro ? 'bg-purple-500/20' : 'bg-blue-500/20'
+                              }`}>
+                              <Check className={`w-3 h-3 ${isPro ? 'text-purple-400' : 'text-blue-400'}`} />
+                            </div>
+                          ) : (
+                            <div className="w-5 h-5 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-gray-600 text-xs">✕</span>
+                            </div>
+                          )}
+                          <span className={f.included ? 'text-gray-300' : 'text-gray-600 line-through'}>
+                            {f.name}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* CTA */}
+                  <div className="p-8 pt-0">
+                    <Button
+                      className={`w-full h-14 rounded-full text-lg font-bold transition-all ${isPro
+                        ? 'bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white shadow-[0_0_30px_rgba(139,92,246,0.4)]'
+                        : 'bg-white text-black hover:bg-gray-200 shadow-[0_0_20px_rgba(255,255,255,0.2)]'
+                        }`}
+                      asChild
+                    >
+                      <Link href={`/login?plan=${plan.id}`}>
+                        {isPro ? 'Comenzar con PRO' : 'Comenzar con Básico'}
+                      </Link>
+                    </Button>
+                    <p className="text-center text-gray-500 text-xs mt-3">
+                      Sin permanencia · Cancela cuando quieras
+                    </p>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            )
+          })}
+        </div>
+
+        {/* Trust badges */}
+        <div className="flex flex-wrap justify-center gap-8 mt-16 text-sm text-gray-500">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4" />
+            Pago seguro con Wompi
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-green-500" />
+            Facturación mensual
+          </div>
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-yellow-500" />
+            Activación inmediata
+          </div>
+        </div>
+
+        {/* Comparison note */}
+        <div className="mt-8 text-center max-w-2xl mx-auto">
+          <p className="text-gray-500 text-sm">
+            ¿Necesitas gestionar expedientes y procesos? El <strong className="text-purple-400">Plan PRO</strong> incluye herramientas
+            para seguimiento de casos, alertas de vencimientos y transcripción de audiencias. Ideal para despachos y litigantes activos.
+          </p>
+        </div>
+      </div>
     </section>
   )
 }
@@ -1529,25 +1523,25 @@ function FinalCTADark() {
     <section className="py-24 relative overflow-hidden bg-black">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-50"></div>
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none" />
-      
+
       <div className="container mx-auto px-4 relative z-10 text-center">
         <div className="max-w-3xl mx-auto space-y-8">
           <h2 className="text-4xl sm:text-5xl font-bold text-white tracking-tight">
             Comienza a trabajar de manera más eficiente hoy
           </h2>
           <p className="text-xl text-gray-400">
-            Elige el <span className="text-blue-400 font-semibold">Plan Básico desde $29.000/mes</span> para consultas y búsquedas, 
+            Elige el <span className="text-blue-400 font-semibold">Plan Básico desde $29.000/mes</span> para consultas y búsquedas,
             o el <span className="text-purple-400 font-semibold">Plan PRO a $68.000/mes</span> con gestión completa de procesos y transcripciones.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
             <Button size="lg" className="h-16 px-10 rounded-full text-lg bg-white text-black hover:scale-105 transition-transform font-bold" asChild>
-               <Link href="/login?plan=basic">Plan Básico</Link>
+              <Link href="/login?plan=basic">Plan Básico</Link>
             </Button>
             <Button size="lg" className="h-16 px-10 rounded-full text-lg bg-gradient-to-r from-purple-500 to-purple-700 text-white hover:scale-105 transition-transform font-bold shadow-[0_0_30px_rgba(139,92,246,0.4)]" asChild>
-               <Link href="/login?plan=pro">
-                 <Sparkles className="w-5 h-5 mr-2" />
-                 Plan PRO
-               </Link>
+              <Link href="/login?plan=pro">
+                <Sparkles className="w-5 h-5 mr-2" />
+                Plan PRO
+              </Link>
             </Button>
           </div>
           <p className="text-sm text-gray-500">

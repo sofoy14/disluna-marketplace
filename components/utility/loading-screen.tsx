@@ -1,70 +1,157 @@
 "use client"
 
-import { FC } from "react"
+import { FC, useState, useEffect } from "react"
 
 interface LoadingScreenProps {
-  message?: string
+    message?: string
+    showMessages?: boolean
+    variant?: "default" | "minimal" | "branded"
 }
 
-export const LoadingScreen: FC<LoadingScreenProps> = ({ 
-  message = "Cargando..." 
+const defaultMessages = [
+    "Preparando tu experiencia legal...",
+    "Cargando módulos de inteligencia...",
+    "Conectando con ALI...",
+    "Optimizando recursos...",
+    "Casi listo...",
+]
+
+export const LoadingScreen: FC<LoadingScreenProps> = ({
+    message,
+    showMessages = true,
+    variant = "default"
 }) => {
-  return (
-    <div 
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'hsl(0, 0%, 3.9%)',
-        color: 'hsl(0, 0%, 98%)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 9999
-      }}
-    >
-      <div 
-        style={{
-          width: '80px',
-          height: '80px',
-          border: '8px solid hsl(0, 0%, 20%)',
-          borderTop: '8px solid #3b82f6',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite'
-        }}
-      />
-      <p 
-        style={{
-          marginTop: '2rem',
-          fontSize: '1.25rem',
-          fontWeight: '600',
-          color: 'hsl(0, 0%, 80%)'
-        }}
-      >
-        {message}
-      </p>
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+    const [messageIndex, setMessageIndex] = useState(0)
+    const [dots, setDots] = useState("")
+    const [mounted, setMounted] = useState(false)
+
+    useEffect(() => {
+        setMounted(true)
+        if (!showMessages || message) return
+
+        const messageInterval = setInterval(() => {
+            setMessageIndex(prev => (prev + 1) % defaultMessages.length)
+        }, 2000)
+
+        return () => clearInterval(messageInterval)
+    }, [showMessages, message])
+
+    useEffect(() => {
+        const dotsInterval = setInterval(() => {
+            setDots(prev => (prev.length >= 3 ? "" : prev + "."))
+        }, 400)
+
+        return () => clearInterval(dotsInterval)
+    }, [])
+
+    if (!mounted) return null
+
+    const displayMessage = message || (showMessages ? defaultMessages[messageIndex] : "Cargando...")
+
+    if (variant === "minimal") {
+        return (
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="size-12 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
+                    <p className="text-sm text-foreground/70">
+                        {displayMessage}
+                        <span className="inline-block w-4 text-primary">{dots}</span>
+                    </p>
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background">
+            {/* Fondo animado con efectos de luz usando variables de tema */}
+            <div className="absolute inset-0 overflow-hidden">
+                <div
+                    className="absolute -left-1/4 top-1/4 size-[600px] animate-pulse rounded-full bg-primary/5 blur-3xl dark:bg-primary/10"
+                    style={{ animationDuration: "3s" }}
+                />
+                <div
+                    className="absolute -right-1/4 bottom-1/4 size-[600px] animate-pulse rounded-full bg-blue-500/5 blur-3xl dark:bg-blue-500/10"
+                    style={{ animationDuration: "3s", animationDelay: "1.5s" }}
+                />
+            </div>
+
+            {/* Contenido principal */}
+            <div className="relative z-10 flex flex-col items-center gap-8">
+                {/* Logo ALI o Spinner */}
+                <div className="relative flex items-center justify-center">
+                    {/* Círculo exterior pulsante */}
+                    <div
+                        className="absolute size-28 animate-ping rounded-full bg-primary/10"
+                        style={{ animationDuration: "2s" }}
+                    />
+
+                    {/* Anillos de spinner */}
+                    <div className="relative size-24">
+                        {/* Anillo exterior */}
+                        <div
+                            className="absolute inset-0 animate-spin rounded-full border-[3px] border-primary/20 border-t-primary"
+                            style={{ animationDuration: "1.2s" }}
+                        />
+                        {/* Anillo medio */}
+                        <div
+                            className="absolute inset-2 animate-spin rounded-full border-[3px] border-blue-500/20 border-t-blue-500"
+                            style={{ animationDuration: "1.8s", animationDirection: "reverse" }}
+                        />
+                        {/* Centro con brillo */}
+                        <div className="absolute inset-6 flex items-center justify-center rounded-full bg-primary/5">
+                            <div className="size-3 animate-pulse rounded-full bg-primary/50" />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Branding */}
+                {variant === "branded" && (
+                    <div className="mb-2 bg-gradient-to-r from-primary via-purple-500 to-blue-500 bg-clip-text text-3xl font-bold tracking-wider text-transparent">
+                        ALI
+                    </div>
+                )}
+
+                {/* Mensaje dinámico */}
+                <div className="text-center">
+                    <p className="min-w-72 text-lg font-medium text-foreground/80 transition-opacity duration-500">
+                        {displayMessage}
+                        <span className="inline-block w-5 text-left text-primary">{dots}</span>
+                    </p>
+                </div>
+
+                {/* Barra de progreso animada */}
+                <div className="h-1 w-56 overflow-hidden rounded-full bg-foreground/5">
+                    <div
+                        className="h-full rounded-full bg-gradient-to-r from-primary via-blue-500 to-primary"
+                        style={{
+                            animation: "shimmer 2s ease-in-out infinite",
+                            backgroundSize: "200% 100%"
+                        }}
+                    />
+                </div>
+
+                {/* Indicador secundario */}
+                <div className="flex items-center gap-2">
+                    <div className="size-1.5 animate-pulse rounded-full bg-primary/60" style={{ animationDelay: "0ms" }} />
+                    <div className="size-1.5 animate-pulse rounded-full bg-primary/60" style={{ animationDelay: "200ms" }} />
+                    <div className="size-1.5 animate-pulse rounded-full bg-primary/60" style={{ animationDelay: "400ms" }} />
+                </div>
+            </div>
+
+            {/* Estilos */}
+            <style jsx>{`
+        @keyframes shimmer {
+          0% {
+            background-position: -200% 0;
+          }
+          100% {
+            background-position: 200% 0;
+          }
         }
       `}</style>
-    </div>
-  )
+        </div>
+    )
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+export default LoadingScreen

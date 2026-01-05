@@ -51,6 +51,33 @@ export async function POST(req: NextRequest) {
 
   const userId = data.user.id
 
+  // Log location
+  try {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip")
+    if (ip && ip !== "::1") {
+      // Use fire-and-forget or short timeout fetch if possible, but for reliability await it.
+      // We accept a small delay for the first login.
+      fetch(`https://ipapi.co/${ip}/json/`)
+        .then(res => res.json())
+        .then(geoData => {
+          if (geoData && !geoData.error) {
+            supabase.from("user_locations" as any).insert({
+              user_id: userId,
+              ip_address: ip,
+              country: geoData.country_name,
+              city: geoData.city,
+              region: geoData.region,
+              latitude: geoData.latitude,
+              longitude: geoData.longitude,
+              user_agent: req.headers.get("user-agent")
+            }).then()
+          }
+        }).catch(err => console.error("Geo log error", err))
+    }
+  } catch (e) {
+    // Ignore errors to not block login
+  }
+
   // If user is coming from an invitation link, send them back to accept it (no subscription/home-workspace required)
   if (redirectPath?.startsWith('/invite/')) {
     return redirect303(redirectPath)

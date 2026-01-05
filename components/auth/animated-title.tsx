@@ -32,7 +32,7 @@ export function AnimatedTitle({ size = "lg" }: AnimatedTitleProps) {
   }, [])
 
   return (
-    <div className={`${size === "sm" ? "mt-2" : "mt-4"} ${textSize} font-semibold text-center whitespace-nowrap relative ${size === "sm" ? "h-7" : "h-12"} flex items-center justify-center`}>
+    <div className={`${size === "sm" ? "mt-2" : "mt-4"} ${textSize} font-semibold text-center whitespace-nowrap relative ${size === "sm" ? "h-10" : "h-16"} flex items-center justify-center overflow-visible`}>
       <AnimatePresence mode="wait">
         {/* Phase 1: ALI together */}
         {!showWords && (
@@ -44,7 +44,7 @@ export function AnimatedTitle({ size = "lg" }: AnimatedTitleProps) {
             transition={{ duration: 0.5, ease: "easeOut" }}
             className="absolute"
           >
-            <span className={`${letterSize} font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400`}>
+            <span className={`${letterSize} font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 pb-1`}>
               ALI
             </span>
           </motion.div>
@@ -63,29 +63,29 @@ export function AnimatedTitle({ size = "lg" }: AnimatedTitleProps) {
             {/* A -> Asistente */}
             <motion.span
               initial={{ x: 0 }}
-              animate={{ 
+              animate={{
                 x: showExpansion ? 0 : -separationDistance
               }}
-              transition={{ 
+              transition={{
                 duration: showExpansion ? 0.4 : 0.5,
                 ease: [0.22, 1, 0.36, 1],
                 delay: showExpansion ? 0 : 0
               }}
               className="inline-flex items-baseline"
             >
-              <span className={`${letterSize} font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 leading-none`}>A</span>
+              <span className={`${letterSize} font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 leading-normal pb-1`}>A</span>
               <motion.span
                 initial={{ width: 0, opacity: 0 }}
-                animate={{ 
+                animate={{
                   width: showExpansion ? "auto" : 0,
                   opacity: showExpansion ? 1 : 0
                 }}
-                transition={{ 
+                transition={{
                   delay: showExpansion ? 0.1 : 0,
                   duration: 0.4,
                   ease: [0.22, 1, 0.36, 1]
                 }}
-                className={`inline-block overflow-hidden ${textSize} font-semibold text-gray-600 dark:text-gray-300 leading-none`}
+                className={`inline-block overflow-hidden ${textSize} font-semibold text-gray-600 dark:text-gray-300 leading-normal pb-1`}
               >
                 sistente
               </motion.span>
@@ -98,19 +98,19 @@ export function AnimatedTitle({ size = "lg" }: AnimatedTitleProps) {
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="inline-flex items-baseline"
             >
-              <span className={`${letterSize} font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 leading-none`}>L</span>
+              <span className={`${letterSize} font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 leading-normal pb-1`}>L</span>
               <motion.span
                 initial={{ width: 0, opacity: 0 }}
-                animate={{ 
+                animate={{
                   width: showExpansion ? "auto" : 0,
                   opacity: showExpansion ? 1 : 0
                 }}
-                transition={{ 
+                transition={{
                   delay: showExpansion ? 0.2 : 0,
                   duration: 0.4,
                   ease: [0.22, 1, 0.36, 1]
                 }}
-                className={`inline-block overflow-hidden ${textSize} font-semibold text-gray-600 dark:text-gray-300 leading-none`}
+                className={`inline-block overflow-hidden ${textSize} font-semibold text-gray-600 dark:text-gray-300 leading-normal pb-1`}
               >
                 egal
               </motion.span>
@@ -119,10 +119,10 @@ export function AnimatedTitle({ size = "lg" }: AnimatedTitleProps) {
             {/* I -> Inteligente */}
             <motion.span
               initial={{ x: 0 }}
-              animate={{ 
+              animate={{
                 x: showExpansion ? 0 : separationDistance
               }}
-              transition={{ 
+              transition={{
                 duration: showExpansion ? 0.4 : 0.5,
                 ease: [0.22, 1, 0.36, 1],
                 delay: showExpansion ? 0 : 0
@@ -131,16 +131,16 @@ export function AnimatedTitle({ size = "lg" }: AnimatedTitleProps) {
             >
               <motion.span
                 initial={{ width: 0, opacity: 0 }}
-                animate={{ 
+                animate={{
                   width: showExpansion ? "auto" : 0,
                   opacity: showExpansion ? 1 : 0
                 }}
-                transition={{ 
+                transition={{
                   delay: showExpansion ? 0.3 : 0,
                   duration: 0.4,
                   ease: [0.22, 1, 0.36, 1]
                 }}
-                className={`inline-block overflow-hidden ${letterSize} font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 leading-none`}
+                className={`inline-block overflow-hidden ${letterSize} font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-purple-400 leading-normal pb-1`}
               >
                 Inteligente
               </motion.span>

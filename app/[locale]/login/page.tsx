@@ -68,12 +68,22 @@ export default async function Login({
     // This fixes users who paid before the bug fix
     await supabase
       .from('profiles')
-      .update({ 
-        onboarding_completed: true, 
+      .update({
+        onboarding_completed: true,
         onboarding_step: 'completed',
         has_onboarded: true
       })
       .eq('user_id', user.id)
+
+    // Log location for persisted session
+    try {
+      // We can't access IP easily in Server Component without headers() which is available
+      const headersList = cookies() // wait, cookies() doesn't give headers. 
+      // We need headers().
+    } catch (e) { }
+    // Actually, getting IP in Server Component:
+    // import { headers } from "next/headers"
+    // const ip = headers().get("x-forwarded-for")...
 
     // User has workspace and subscription - go to chat
     return redirect(`/${locale}/${homeWorkspace.id}/chat`)

@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 import { AdminSidebar } from "@/components/admin/AdminSidebar"
 
 export default function AdminLayout({
@@ -5,6 +7,13 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
+  const cookieStore = cookies()
+  const adminSession = cookieStore.get("admin_session")
+
+  if (adminSession?.value !== "true") {
+    redirect("/admin/login")
+  }
+
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       <AdminSidebar />
