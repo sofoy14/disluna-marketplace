@@ -24,9 +24,9 @@ import { usePromptAndCommand } from "./chat-hooks/use-prompt-and-command"
 import { useSelectFileHandler } from "./chat-hooks/use-select-file-handler"
 import { CreateFileModal } from "../modals/CreateFileModal"
 
-interface ChatInputProps {}
+interface ChatInputProps { }
 
-export const ChatInput: FC<ChatInputProps> = ({}) => {
+export const ChatInput: FC<ChatInputProps> = ({ }) => {
   const { t } = useTranslation()
 
   useHotkey("l", () => {
@@ -91,13 +91,14 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     if (!isTyping && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
       setIsPromptPickerOpen(false)
-      
+
       // Desactivar sugerencias después de enviar la primera pregunta
       if (showPlaceholderSuggestions) {
         setShowPlaceholderSuggestions(false)
       }
-      
+
       handleSendMessage(userInput, chatMessages, false)
+      handleInputChange("") // Explicitly clear input
     }
 
     // Consolidate conditions to avoid TypeScript error
@@ -178,7 +179,7 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
     <>
       <div className="flex flex-col flex-wrap justify-center gap-1">
         <ChatFilesDisplay />
-        
+
         {/* Selector de Colección - Oculto por defecto */}
 
         {/* Herramientas de búsqueda habilitadas automáticamente - Ocultas */}
@@ -285,13 +286,14 @@ export const ChatInput: FC<ChatInputProps> = ({}) => {
               <ModernSendIcon
                 onClick={() => {
                   if (!userInput) return
-                  
+
                   // Desactivar sugerencias después de enviar la primera pregunta
                   if (showPlaceholderSuggestions) {
                     setShowPlaceholderSuggestions(false)
                   }
-                  
+
                   handleSendMessage(userInput, chatMessages, false)
+                  handleInputChange("") // Explicitly clear input
                 }}
                 disabled={!userInput}
               />

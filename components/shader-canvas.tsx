@@ -12,9 +12,9 @@ interface ShaderCanvasProps {
   shaderId?: number;
 }
 
-export const ShaderCanvas = ({ 
-  size = 600, 
-  onClick, 
+export const ShaderCanvas = ({
+  size = 600,
+  onClick,
   hasActiveReminders = false,
   hasUpcomingReminders = false,
   shaderId = 1
@@ -34,13 +34,13 @@ export const ShaderCanvas = ({
   useEffect(() => {
     // Check if theme is dark
     const checkTheme = () => {
-      const isDarkMode = theme === 'dark' || 
-                        (typeof window !== 'undefined' && document.documentElement.classList.contains('dark'));
+      const isDarkMode = theme === 'dark' ||
+        (typeof window !== 'undefined' && document.documentElement.classList.contains('dark'));
       setIsDark(isDarkMode);
     };
-    
+
     checkTheme();
-    
+
     // Listen for theme changes
     const observer = new MutationObserver(checkTheme);
     if (typeof window !== 'undefined') {
@@ -50,14 +50,14 @@ export const ShaderCanvas = ({
         subtree: false
       });
     }
-    
+
     return () => observer.disconnect();
   }, [theme]);
 
   // Track mouse position relative to the canvas without causing re-renders
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!canvasRef.current) return;
-    
+
     const rect = canvasRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
@@ -101,6 +101,9 @@ export const ShaderCanvas = ({
     // Create buffers
     const buffers = initBuffers(gl);
     let startTime = Date.now();
+    let lastRenderTime = 0;
+    const FPS = 30;
+    const interval = 1000 / FPS;
 
     // Set canvas size
     canvas.width = size;
@@ -108,27 +111,37 @@ export const ShaderCanvas = ({
     gl.viewport(0, 0, canvas.width, canvas.height);
 
     // Render function
-    const render = () => {
-      const currentTime = (Date.now() - startTime) / 1000;
-      
-      // Get the current mouse position from ref
-      const mousePos = mousePositionRef.current;
-      
-      drawScene(
-        gl!, 
-        programInfoRef.current, 
-        buffers, 
-        currentTime, 
-        canvas.width, 
-        canvas.height, 
-        hasActiveReminders, 
-        hasUpcomingReminders,
-        mousePos // Pass current mouse position from ref
-      );
+    const render = (now: number) => {
+      // Pause if not visible
+      if (document.visibilityState !== 'visible') {
+        animationRef.current = requestAnimationFrame(render);
+        return;
+      }
+
+      const delta = now - lastRenderTime;
+
+      if (delta >= interval) {
+        lastRenderTime = now - (delta % interval);
+
+        const currentTime = (Date.now() - startTime) / 1000;
+        const mousePos = mousePositionRef.current;
+
+        drawScene(
+          gl!,
+          programInfoRef.current,
+          buffers,
+          currentTime,
+          canvas.width,
+          canvas.height,
+          hasActiveReminders,
+          hasUpcomingReminders,
+          mousePos
+        );
+      }
       animationRef.current = requestAnimationFrame(render);
     };
 
-    render();
+    animationRef.current = requestAnimationFrame(render);
 
     return () => {
       cancelAnimationFrame(animationRef.current);
@@ -189,9 +202,9 @@ export const ShaderCanvas = ({
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     const positions = [
       -1.0, -1.0,
-       1.0, -1.0,
-       1.0,  1.0,
-      -1.0,  1.0,
+      1.0, -1.0,
+      1.0, 1.0,
+      -1.0, 1.0,
     ];
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
@@ -224,11 +237,11 @@ export const ShaderCanvas = ({
 
   // Draw the scene
   function drawScene(
-    gl: WebGLRenderingContext, 
-    programInfo: any, 
-    buffers: any, 
-    currentTime: number, 
-    width: number, 
+    gl: WebGLRenderingContext,
+    programInfo: any,
+    buffers: any,
+    currentTime: number,
+    width: number,
     height: number,
     hasActiveReminders: boolean,
     hasUpcomingReminders: boolean,
@@ -293,11 +306,11 @@ export const ShaderCanvas = ({
   };
 
   return (
-    <canvas 
-      ref={canvasRef} 
-      className="rounded-full transition-transform duration-300 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.5)]" 
-      style={{ 
-        width: size, 
+    <canvas
+      ref={canvasRef}
+      className="rounded-full transition-transform duration-300 shadow-[0_0_20px_hsl(var(--primary)/0.4)] hover:shadow-[0_0_30px_hsl(var(--primary)/0.5)]"
+      style={{
+        width: size,
         height: size,
         transform: isHovered ? 'scale(1.03)' : 'scale(1)',
         cursor: 'pointer'

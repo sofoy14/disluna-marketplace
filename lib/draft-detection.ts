@@ -15,7 +15,10 @@ export function detectDraftIntent(message: string): { isDraft: boolean; confiden
         "necesito un", "quiero un", "hazme un", "prepárame un",
         "elabora", "prepara", "diseña", "estructura",
         "accion de tutela", "acción de tutela", "derecho de peticion",
-        "escrito", "documento legal", "documento jurídico"
+        "escrito", "documento legal", "documento jurídico",
+        // Nuevos tipos
+        "incapacidad", "excusa", "permiso", "solicitud", "certificación",
+        "constancia", "autorización", "renuncia", "retiro", "queja", "reclamo"
     ]
 
     // Tipos de documentos mapeables
@@ -36,13 +39,19 @@ export function detectDraftIntent(message: string): { isDraft: boolean; confiden
         "email": "correo",
         "e-mail": "correo",
         "carta": "comunicado",
-        "oficio": "comunicado"
+        "oficio": "comunicado",
+        "incapacidad": "incapacidad",
+        "excusa": "excusa",
+        "renuncia": "renuncia",
+        "queja": "reclamo",
+        "reclamo": "reclamo"
     }
 
-    // Verbos de acción explícita (intención de crear)
+    // Verbos de acción explícita (intención de crear o editar)
     const draftingVerbs = [
         "redacta", "escribe", "genera", "crea", "prepara", "hazme", "elabora",
-        "necesito un", "quiero un", "diseña", "estructura", "borrador de"
+        "necesito un", "quiero un", "diseña", "estructura", "borrador de",
+        "modifica", "corrige", "ajusta", "cambia", "actualiza", "mejora", "reformula"
     ]
 
     // 1. Detección por palabras clave (requiere verbo + tipo)

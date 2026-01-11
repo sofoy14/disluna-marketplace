@@ -14,25 +14,33 @@ interface DocumentSheetProps {
 export function DocumentSheet({ open, onOpenChange, content, onSave }: DocumentSheetProps) {
   const [editorContent, setEditorContent] = useState(content)
 
-  const handleSave = (newContent: string) => {
+  const handleContentChange = (newContent: string) => {
     setEditorContent(newContent)
     onSave?.(newContent)
   }
 
+  // Adapter: Convert raw content string to LegalDraft object
+  const draftAdapter: any = {
+    type: "draft",
+    doc_type: "otro",
+    title: "Documento Generado",
+    content_markdown: editorContent
+  }
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:w-[60%] p-0">
+      <SheetContent side="right" className="w-full sm:w-[60%] p-0 overflow-y-auto">
         <SheetHeader className="px-6 py-4 border-b">
           <SheetTitle>Editor de Documento</SheetTitle>
           <SheetDescription>
             Edita y descarga el documento legal generado
           </SheetDescription>
         </SheetHeader>
-        
-        <div className="h-[calc(100vh-80px)]">
-          <DocumentEditor 
-            content={editorContent} 
-            onSave={handleSave}
+
+        <div className="p-4">
+          <DocumentEditor
+            draft={draftAdapter}
+            onContentChange={handleContentChange}
           />
         </div>
       </SheetContent>

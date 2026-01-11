@@ -1,15 +1,17 @@
-'use client'
+"use client"
 
 import { motion } from 'framer-motion'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ShaderCanvas } from '@/components/shader-canvas'
 import { cn } from '@/lib/utils'
-import { Check, CheckCheck, Clock, AlertCircle, Copy, RefreshCw } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { Check, CheckCheck, Clock, AlertCircle } from 'lucide-react'
+import { useEffect, useState, memo } from 'react'
 import { MessageActionBar } from '@/components/messages/message-action-bar'
 import { StaticShaderAvatar } from '@/components/ui/static-shader-avatar'
-import { DraftCard } from '@/components/chat/draft-card'
+import { DocumentEditor } from '@/components/chat/document-editor'
 import { LegalDraft } from '@/types/draft'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 interface MessageBubbleProps {
   variant: 'user' | 'ai' | 'system'
@@ -36,7 +38,7 @@ const statusIcons = {
   error: AlertCircle,
 }
 
-export function MessageBubble({
+export const MessageBubble = memo(({
   variant,
   content,
   timestamp,
@@ -52,13 +54,14 @@ export function MessageBubble({
   isLast = false,
   isGenerating = false,
   children
-}: MessageBubbleProps) {
+}: MessageBubbleProps) => {
   const [copied, setCopied] = useState(false)
   const isUser = variant === 'user'
   const isAI = variant === 'ai'
   const isSystem = variant === 'system'
 
-  // Shader seleccionado por el usuario en panel de personalización
+  // Shader seleccionado - Optimizado: Solo el último mensaje AI necesita trackear cambios dinámicos si es necesario
+  // Pero para simplicidad, mantendremos el estado pero con un listener más ligero si es posible
   const [shaderId, setShaderId] = useState<number>(1)
 
   useEffect(() => {
@@ -67,17 +70,17 @@ export function MessageBubble({
     const saved = localStorage.getItem('selectedShader')
     if (saved) setShaderId(parseInt(saved, 10))
 
-    const handleShaderChanged = (e: CustomEvent<number>) => {
+    if (!isAI || !isLast) return // Solo el último mensaje AI necesita reaccionar a cambios vivos de shader
+
+    const handleShaderChanged = (e: any) => {
       setShaderId(e.detail)
     }
 
-    window.addEventListener('shaderChanged', handleShaderChanged as unknown as EventListener)
+    window.addEventListener('shaderChanged', handleShaderChanged as any)
     return () => {
-      window.removeEventListener('shaderChanged', handleShaderChanged as unknown as EventListener)
+      window.removeEventListener('shaderChanged', handleShaderChanged as any)
     }
-  }, [])
-
-  const StatusIcon = statusIcons[status]
+  }, [isAI, isLast])
 
   const handleCopy = () => {
     if (onCopy) {
@@ -90,12 +93,11 @@ export function MessageBubble({
   if (isSystem) {
     return (
       <motion.div
-        initial={{ opacity: 0, y: 10, filter: 'blur(8px)' }}
-        animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
         className="flex justify-center my-4"
       >
-        <div className="px-5 py-2.5 rounded-full bg-gradient-to-r from-muted/80 to-muted/60 backdrop-blur-sm text-muted-foreground text-sm font-medium border border-border/50 shadow-sm">
+        <div className="px-5 py-2.5 rounded-full bg-muted/80 backdrop-blur-sm text-muted-foreground text-sm font-medium border border-border/50 shadow-sm">
           {content}
         </div>
       </motion.div>
@@ -104,27 +106,17 @@ export function MessageBubble({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{
-        type: 'spring',
-        stiffness: 350,
-        damping: 28,
-      }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       className={cn(
         'group flex gap-3 px-4 py-3',
         isUser && 'flex-row-reverse',
       )}
     >
-      {/* Avatar: usuario con foto; asistente con ShaderCanvas */}
-      {/* Avatar: usuario con foto; asistente con ShaderCanvas (solo si está generando) o estático */}
       {isUser ? (
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
-        >
-          <Avatar className="w-9 h-9 flex-shrink-0 ring-2 ring-primary/20 ring-offset-2 ring-offset-background shadow-lg">
+        <div className="w-9 h-9 flex-shrink-0">
+          <Avatar className="w-9 h-9 ring-2 ring-primary/20 ring-offset-2 ring-offset-background shadow-lg">
             <AvatarImage src={avatar} alt={userName} />
             <AvatarFallback className={cn(
               'text-xs font-semibold',
@@ -133,20 +125,15 @@ export function MessageBubble({
               {userName.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
-        </motion.div>
+        </div>
       ) : (
-        <motion.div
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.1, type: 'spring', stiffness: 400, damping: 20 }}
-          className="w-9 h-9 flex-shrink-0 rounded-full overflow-hidden ring-2 ring-violet-500/20 ring-offset-2 ring-offset-background shadow-lg shadow-violet-500/10"
-        >
+        <div className="w-9 h-9 flex-shrink-0 rounded-full overflow-hidden ring-2 ring-violet-500/20 ring-offset-2 ring-offset-background shadow-lg shadow-violet-500/10">
           {isGenerating ? (
             <ShaderCanvas size={36} shaderId={shaderId} />
           ) : (
             <StaticShaderAvatar size={36} />
           )}
-        </motion.div>
+        </div>
       )}
 
       {/* Message Container */}
@@ -155,9 +142,7 @@ export function MessageBubble({
         isUser ? 'items-end max-w-[70%] sm:max-w-[70%]' : 'items-start max-w-[80%] sm:max-w-[75%]'
       )}>
         {/* Bubble */}
-        <motion.div
-          whileHover={{ scale: 1.005 }}
-          transition={{ duration: 0.15 }}
+        <div
           className={cn(
             'relative overflow-hidden',
             'px-4 py-3.5 rounded-2xl',
@@ -167,7 +152,6 @@ export function MessageBubble({
               'text-primary-foreground',
               'rounded-tr-sm',
               'shadow-lg shadow-primary/25',
-              'hover:shadow-xl hover:shadow-primary/30',
               'border-0',
             ],
             isAI && [
@@ -176,52 +160,86 @@ export function MessageBubble({
               'rounded-tl-sm',
               'border border-border/60',
               'shadow-md shadow-black/5 dark:shadow-black/20',
-              'hover:shadow-lg hover:border-border/80',
               'backdrop-blur-sm',
             ],
           )}
         >
-          {/* Subtle glass effect overlay for AI messages */}
           {isAI && (
             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none" />
           )}
 
-          {/* Shine effect for user messages */}
           {isUser && (
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out pointer-events-none" />
           )}
 
           {/* Content */}
-          {children || (
-            <div className={cn(
-              'text-[15px] leading-relaxed whitespace-pre-wrap relative z-10',
-              isUser && 'font-medium',
-              isAI && 'font-normal',
-            )}>
-              {(() => {
-                // Intento de parsear si es un draft JSON
-                let draft: LegalDraft | null = null
-                if (isAI && content.trim().startsWith('{') && content.includes('"type": "draft"')) {
-                  try {
-                    const parsed = JSON.parse(content)
-                    if (parsed.type === 'draft') {
-                      draft = parsed as LegalDraft
-                    }
-                  } catch (e) {
-                    // Fallback a texto normal si falla
+          <div className={cn(
+            'text-[15px] leading-relaxed relative z-10',
+            isUser && 'font-medium',
+            isAI && 'font-normal',
+          )}>
+            {(() => {
+              // Intento de parsear si es un draft JSON
+              let draft: LegalDraft | null = null
+              if (isAI && content.trim().startsWith('{') && content.includes('"type": "draft"')) {
+                try {
+                  const parsed = JSON.parse(content)
+                  if (parsed.type === 'draft') {
+                    draft = parsed as LegalDraft
                   }
-                }
+                } catch (e) { }
+              }
 
-                if (draft) {
-                  return <DraftCard draft={draft} />
-                }
+              if (draft) {
+                return (
+                  <DocumentEditor
+                    draft={draft}
+                    onRequestChanges={async (instruction) => {
+                      try {
+                        const response = await fetch('/api/chat/refine-document', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            document: draft,
+                            instruction,
+                            model: 'gpt-4o'
+                          })
+                        })
 
-                return content
-              })()}
-            </div>
-          )}
+                        if (!response.ok) throw new Error("Error refinando documento")
 
-        </motion.div>
+                        const newDraft = await response.json()
+                        return newDraft
+                      } catch (e) {
+                        console.error(e)
+                        throw e
+                      }
+                    }}
+                  />
+                )
+              }
+
+              return (
+                <div className={cn(
+                  "markdown-content break-words",
+                  isUser ? "prose-p:text-primary-foreground prose-a:text-primary-foreground/90" : "prose-neutral dark:prose-invert"
+                )}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" className="underline font-medium" />,
+                      p: ({ node, ...props }) => <p {...props} className="mb-2 last:mb-0" />,
+                      ul: ({ node, ...props }) => <ul {...props} className="pl-4 mb-2 list-disc" />,
+                      ol: ({ node, ...props }) => <ol {...props} className="pl-4 mb-2 list-decimal" />,
+                    }}
+                  >
+                    {content}
+                  </ReactMarkdown>
+                </div>
+              )
+            })()}
+          </div>
+        </div>
 
         {/* Action Bar for AI messages */}
         {isAI && onCopy && (
@@ -241,5 +259,6 @@ export function MessageBubble({
       </div>
     </motion.div>
   )
-}
+})
 
+MessageBubble.displayName = 'MessageBubble'

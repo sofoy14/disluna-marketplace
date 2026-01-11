@@ -3,6 +3,8 @@ import { ALIContext } from "@/context/context"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { BibliographyItem } from "@/types/chat-message"
 import { LLM, LLMID, MessageImage, ModelProvider } from "@/types"
+import { Database } from "@/supabase/types"
+type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row']
 import {
   IconCaretDownFilled,
   IconCaretRightFilled,
@@ -32,7 +34,7 @@ import { CitationsPanel } from "./citations-panel"
 import { parseModelAnswer } from "@/lib/parsers/model-answer"
 import { processStreamContent } from "@/lib/stream-processor"
 import { DocumentSheet } from "../chat/document-sheet"
-import { DraftCard } from "@/components/chat/draft-card"
+import { DocumentEditor } from "@/components/chat/document-editor"
 import { LegalDraft } from "@/types/draft"
 
 const ICON_SIZE = 32
@@ -460,7 +462,7 @@ export const Message: FC<MessageProps> = ({
           // En el futuro se podría guardar en metadata del mensaje
         }
 
-        return <DraftCard draft={draft} onChange={handleDraftChange} />
+        return <DocumentEditor draft={draft} onContentChange={handleDraftChange} />
       }
 
       return <AnswerView text={assistantAnswer.text} />
