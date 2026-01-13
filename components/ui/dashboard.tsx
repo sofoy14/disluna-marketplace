@@ -26,7 +26,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
   const pathname = usePathname()
   const router = useRouter()
   const searchParams = useSearchParams()
-  
+
   // Determinar contentType basado en la ruta actual
   const getContentTypeFromPath = (): ContentType => {
     if (pathname?.includes("/transcriptions")) {
@@ -47,7 +47,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
   const [contentType, setContentType] = useState<ContentType>(
     getContentTypeFromPath()
   )
-  
+
   // Actualizar contentType cuando cambia la ruta
   useEffect(() => {
     if (pathname?.includes("/transcriptions")) {
@@ -63,10 +63,10 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
   }, [pathname, searchParams])
   const [showSidebar, setShowSidebar] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
-  
+
   // Detectar si es móvil
   const [isMobile, setIsMobile] = useState(false)
-  
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -145,7 +145,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
         }}
         className={cn(
           "overflow-visible",
-          isMobile 
+          isMobile
             ? "fixed inset-y-0 left-0 z-50 md:relative md:z-auto"
             : "relative"
         )}
@@ -161,7 +161,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
             onValueChange={tabValue => {
               const type = tabValue as ContentType
               setContentType(type)
-              
+
               // Navegar a la ruta correcta según el tipo
               if (type === "transcriptions") {
                 const basePath = pathname.split('/').slice(0, -1).join('/')
@@ -181,13 +181,13 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
             {/* SidebarSwitcher ocultado - ahora todo está en la ModernSidebar */}
             {/* <SidebarSwitcher onContentTypeChange={setContentType} /> */}
 
-            <Sidebar 
-              contentType={contentType} 
+            <Sidebar
+              contentType={contentType}
               showSidebar={showSidebar}
               onClose={() => setShowSidebar(false)}
               onContentTypeChange={(type) => {
                 setContentType(type)
-                
+
                 // Navegar a la ruta correcta según el tipo de contenido
                 if (type === "transcriptions") {
                   const basePath = pathname.split('/').slice(0, -1).join('/')
@@ -212,7 +212,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
       </motion.div>
 
       <div
-        className="relative flex w-screen min-w-[90%] grow flex-col sm:min-w-fit bg-gradient-to-br from-background via-background to-primary/20"
+        className="relative flex flex-1 min-w-0 flex-col bg-gradient-to-br from-background via-background to-primary/20 overflow-hidden"
         onDrop={onFileDrop}
         onDragOver={onDragOver}
         onDragEnter={handleDragEnter}
@@ -240,11 +240,11 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
           }}
           className={cn(
             "absolute z-10",
-            isMobile 
+            isMobile
               ? "left-3 top-4"
               : showSidebar
-              ? "left-[4px] top-[50%] -translate-y-1/2"
-              : "left-3 top-4"
+                ? "left-[4px] top-[50%] -translate-y-1/2"
+                : "left-3 top-4"
           )}
         >
           <motion.button
@@ -260,8 +260,8 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
             )}
             aria-label={showSidebar ? "Cerrar menú" : "Abrir menú"}
           >
-            <IconChevronCompactRight 
-              size={isMobile || !showSidebar ? 22 : 20} 
+            <IconChevronCompactRight
+              size={isMobile || !showSidebar ? 22 : 20}
               className="text-foreground/80"
             />
           </motion.button>

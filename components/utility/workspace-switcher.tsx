@@ -7,7 +7,7 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover"
 import { ALIContext } from "@/context/context"
-import { createWorkspace } from "@/db/workspaces"
+import { createWorkspaceWithPlanCheck } from "@/db/workspaces"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { useProfilePlan } from "@/lib/hooks/use-profile-plan"
 import { IconBuilding, IconHome, IconPlus, IconSettings, IconLock, IconEdit } from "@tabler/icons-react"
@@ -19,7 +19,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
-import { WorkspaceSettings } from "../workspace/workspace-settings"
 import { WithTooltip } from "../ui/with-tooltip"
 import { toast } from "sonner"
 
@@ -41,7 +40,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
   } = useContext(ALIContext)
 
   const { handleNewChat } = useChatHandler()
-  
+
   // Plan access control for workspaces - simplified using profile
   const { canShowWorkspaceSwitcher } = useProfilePlan()
 
@@ -59,7 +58,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
 
   const handleCreateWorkspace = async () => {
     if (!selectedWorkspace) return
-    
+
     // Check if user can create more workspaces
     if (!canShowWorkspaceSwitcher) {
       // Student plan - cannot create additional workspaces
@@ -67,10 +66,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
     }
 
     try {
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/utility/workspace-switcher.tsx:69',message:'Before createWorkspace',data:{userId:selectedWorkspace.user_id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
-      const createdWorkspace = await createWorkspace({
+      const result = await createWorkspaceWithPlanCheck({
         user_id: selectedWorkspace.user_id,
         default_context_length: selectedWorkspace.default_context_length,
         default_model: selectedWorkspace.default_model,
@@ -85,19 +81,21 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
         is_home: false,
         name: "Nuevo Espacio de Trabajo"
       })
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/utility/workspace-switcher.tsx:84',message:'After createWorkspace',data:{workspaceId:createdWorkspace?.id,workspaceName:createdWorkspace?.name,hasId:!!createdWorkspace?.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
 
-      setWorkspaces([...workspaces, createdWorkspace])
-      setSelectedWorkspace(createdWorkspace)
-      setOpen(false)
+      if (result.success && result.workspace) {
+        setWorkspaces([...workspaces, result.workspace])
+        setSelectedWorkspace(result.workspace)
+        setOpen(false)
 
-      toast.success(`Espacio "${createdWorkspace.name}" creado exitosamente`)
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/utility/workspace-switcher.tsx:91',message:'Before router.push',data:{workspaceId:createdWorkspace.id,route:`/${createdWorkspace.id}/settings`},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
-      return router.push(`/${createdWorkspace.id}/settings`)
+        toast.success(`Espacio "${result.workspace.name}" creado exitosamente`)
+        return router.push(`/${result.workspace.id}/settings`)
+      } else if (result.needsUpgrade) {
+        toast.error("Límite alcanzado", {
+          description: "Actualiza tu plan para crear más workspaces"
+        })
+      } else {
+        toast.error(result.error || "Error al crear el espacio de trabajo")
+      }
     } catch (error: any) {
       console.error("Error creating workspace:", error)
       toast.error(error.message || "Error al crear el espacio de trabajo")
@@ -135,20 +133,20 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
   // Variantes de animación para los items de workspace
   const workspaceItemVariants = {
     hidden: { opacity: 0, x: -8 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
       transition: { type: 'spring' as const, stiffness: 400, damping: 30 }
     }
   }
 
   // Componente para renderizar cada workspace item
-  const WorkspaceItem = ({ 
-    workspace, 
-    index 
-  }: { 
-    workspace: typeof workspaces[0], 
-    index: number 
+  const WorkspaceItem = ({
+    workspace,
+    index
+  }: {
+    workspace: typeof workspaces[0],
+    index: number
   }) => {
     const [showActions, setShowActions] = useState(false)
     const isActive = selectedWorkspace?.id === workspace.id
@@ -163,7 +161,7 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
         initial="hidden"
         animate="visible"
         transition={{ delay: index * 0.05 }}
-        whileHover={{ 
+        whileHover={{
           scale: 1.01,
           transition: { type: 'spring', stiffness: 400, damping: 25 }
         }}
@@ -202,8 +200,8 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
         ) : (
           <div className={cn(
             "relative flex-shrink-0 rounded-lg p-1.5 transition-colors duration-200",
-            isActive 
-              ? "bg-primary/15" 
+            isActive
+              ? "bg-primary/15"
               : "bg-foreground/5 group-hover:bg-foreground/10"
           )}>
             <IconComponent
@@ -232,20 +230,16 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
           className="flex items-center"
           onClick={(e) => e.stopPropagation()}
         >
-          <WorkspaceSettings
-            workspace={workspace}
-            trigger={
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 hover:bg-foreground/10"
-                type="button"
-                title="Editar espacio"
-              >
-                <IconEdit size={14} />
-              </Button>
-            }
-          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 hover:bg-foreground/10"
+            type="button"
+            title="Configuración"
+            onClick={() => router.push(`/${workspace.id}/settings`)}
+          >
+            <IconSettings size={14} />
+          </Button>
         </motion.div>
       </motion.div>
     )
@@ -289,14 +283,14 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             {canShowWorkspaceSwitcher ? (
-            <Button
-              className="flex items-center space-x-2"
-              size="sm"
-              onClick={handleCreateWorkspace}
-            >
-              <IconPlus size={16} />
-              <span>Nuevo espacio</span>
-            </Button>
+              <Button
+                className="flex items-center space-x-2"
+                size="sm"
+                onClick={handleCreateWorkspace}
+              >
+                <IconPlus size={16} />
+                <span>Nuevo espacio</span>
+              </Button>
             ) : (
               <WithTooltip
                 display={
@@ -321,14 +315,18 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
               />
             )}
 
-            {showSettingsButton && (
-              <WorkspaceSettings
-                trigger={
-                  <Button variant="outline" size="icon" className="h-9 w-9">
-                    <IconSettings size={18} />
-                  </Button>
-                }
-              />
+            {showSettingsButton && selectedWorkspace && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-9 w-9"
+                onClick={() => {
+                  setOpen(false)
+                  router.push(`/${selectedWorkspace.id}/settings`)
+                }}
+              >
+                <IconSettings size={18} />
+              </Button>
             )}
           </div>
 
@@ -345,9 +343,9 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
               {workspaces
                 .filter(workspace => workspace.is_home)
                 .map((workspace, index) => (
-                  <WorkspaceItem 
-                    key={workspace.id} 
-                    workspace={workspace} 
+                  <WorkspaceItem
+                    key={workspace.id}
+                    workspace={workspace}
                     index={index}
                   />
                 ))}
@@ -360,9 +358,9 @@ export const WorkspaceSwitcher: FC<WorkspaceSwitcherProps> = ({
                 )
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((workspace, index) => (
-                  <WorkspaceItem 
-                    key={workspace.id} 
-                    workspace={workspace} 
+                  <WorkspaceItem
+                    key={workspace.id}
+                    workspace={workspace}
                     index={workspaces.filter(w => w.is_home).length + index}
                   />
                 ))}

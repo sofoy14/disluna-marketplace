@@ -5,7 +5,7 @@ import { FC, useContext, useState } from "react"
 import { SIDEBAR_WIDTH } from "../ui/dashboard"
 import { TabsContent } from "../ui/tabs"
 import { WorkspaceSwitcher } from "../utility/workspace-switcher"
-import { WorkspaceSettings } from "../workspace/workspace-settings"
+
 import { SidebarContent } from "./sidebar-content"
 import { ModernSidebar } from "./modern/ModernSidebar"
 
@@ -25,7 +25,7 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar, onContentT
     assistants,
     tools
   } = useContext(ALIContext)
-  
+
   const [useModernDesign] = useState(true) // Flag para activar el diseño moderno
 
   const chatFolders = folders.filter(folder => folder.type === "chats")
@@ -76,9 +76,7 @@ export const Sidebar: FC<SidebarProps> = ({ contentType, showSidebar, onContentT
     >
       <div className="flex h-full flex-col p-3">
         <div className="flex items-center border-b-2 pb-2">
-          <WorkspaceSwitcher showSettingsButton={false} />
-
-          <WorkspaceSettings />
+          <WorkspaceSwitcher showSettingsButton={true} />
         </div>
 
         {(() => {

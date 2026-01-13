@@ -125,12 +125,21 @@ export function PlaceholdersAndVanishInput({
     }
   }, [showSuggestions, value, placeholders.length])
 
-  // Manejar keydown - propagar al padre
+  // Manejar keydown - propagar al padre y manejar Enter
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (onKeyDown) {
       onKeyDown(e)
     }
-    // El padre (chat-input.tsx) maneja todo lo demás con preventDefault
+
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      if (onSubmit) {
+        // Create a synthetic FormEvent since we're calling from a textarea
+        // We cast it to any first to avoid strict type checks since we just need it to trigger the handler
+        const formEvent = e as unknown as React.FormEvent<HTMLFormElement>
+        onSubmit(formEvent)
+      }
+    }
   }
 
   // Manejar cambios - simplemente propagar
@@ -161,10 +170,10 @@ export function PlaceholdersAndVanishInput({
     >
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
 
-      <div className="flex items-center gap-2 px-3 py-2 h-full">
+      <div className="flex items-center gap-2 px-3 py-2 h-full relative z-10">
         {leftElement && (
           <motion.div
-            className="flex-shrink-0 z-10 self-end mb-1"
+            className="flex-shrink-0 z-20 self-end mb-1"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -190,7 +199,8 @@ export function PlaceholdersAndVanishInput({
               "px-2 py-3",
               "text-sm sm:text-base",
               "text-foreground placeholder:text-muted-foreground/60",
-              "focus:outline-none focus:ring-0"
+              "focus:outline-none focus:ring-0",
+              "relative z-20" // Ensure textarea is above placeholders
             )}
             style={{
               minHeight: "48px",
@@ -200,7 +210,7 @@ export function PlaceholdersAndVanishInput({
 
           {/* Placeholders animados - solo mostrar si showSuggestions=true Y value está vacío */}
           {showSuggestions && !value && (
-            <div className="pointer-events-none absolute inset-0 flex items-center px-2 text-sm sm:text-base leading-none text-muted-foreground/50">
+            <div className="pointer-events-none absolute inset-0 flex items-center px-2 text-sm sm:text-base leading-none text-muted-foreground/50 z-10">
               <AnimatePresence mode="wait">
                 <motion.p
                   initial={{ y: 5, opacity: 0 }}
@@ -218,7 +228,7 @@ export function PlaceholdersAndVanishInput({
         </div>
 
         {rightElement && (
-          <div className="flex-shrink-0 z-10 self-end mb-1">
+          <div className="flex-shrink-0 z-20 self-end mb-1">
             {rightElement}
           </div>
         )}

@@ -63,12 +63,12 @@ export default function ProcessesPage() {
   }
 
   const filteredProcesses = processes.filter(process => {
-    const matchesSearch = 
+    const matchesSearch =
       process.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (process.description || "").toLowerCase().includes(searchQuery.toLowerCase())
-    
-    const matchesStatus = 
-      statusFilter === "all" || 
+
+    const matchesStatus =
+      statusFilter === "all" ||
       process.indexing_status === statusFilter
 
     return matchesSearch && matchesStatus
@@ -151,7 +151,7 @@ export default function ProcessesPage() {
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProcesses.map((process) => (
               <ProcessCard key={process.id} process={process} />
             ))}

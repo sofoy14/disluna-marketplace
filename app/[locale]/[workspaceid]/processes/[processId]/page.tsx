@@ -115,6 +115,7 @@ export default function ProcessDetailPage() {
           <ProcessChat
             processId={processId}
             processName={process.name}
+            workspaceId={workspaceId}
             indexingStatus={process.indexing_status || "pending"}
             chatId={`process-${processId}`}
           />
@@ -123,8 +124,9 @@ export default function ProcessDetailPage() {
         <TabsContent value="documents" className="flex-1 overflow-y-auto p-6 m-0">
           <ProcessDocuments
             processId={processId}
+            workspaceId={workspaceId}
             documents={documents}
-            onDocumentsChange={loadProcess}
+            on DocumentsChange={loadProcess}
           />
         </TabsContent>
       </Tabs>

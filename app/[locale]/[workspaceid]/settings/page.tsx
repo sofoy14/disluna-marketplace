@@ -1,35 +1,34 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useContext } from "react"
 import { useParams, useRouter } from "next/navigation"
+import { ALIContext } from "@/context/context"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from "@/components/ui/table"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
 import { toast } from "sonner"
-import { IconLoader2, IconTrash, IconSend, IconX, IconHome, IconLink, IconCopy } from "@tabler/icons-react"
+import { IconLoader2, IconHome, IconAlertTriangle } from "@tabler/icons-react"
 import ImagePicker from "@/components/ui/image-picker"
-import { TextareaAutosize } from "@/components/ui/textarea-autosize"
-import { LimitDisplay } from "@/components/ui/limit-display"
-import { WORKSPACE_INSTRUCTIONS_MAX, WORKSPACE_DESCRIPTION_MAX } from "@/db/limits"
 import { getWorkspaceImageFromStorage, uploadWorkspaceImage } from "@/db/storage/workspace-images"
-import { convertBlobToBase64 } from "@/lib/blob-to-b64"
-import { WithTooltip } from "@/components/ui/with-tooltip"
+import {
+  MemberCard,
+  InvitationCard,
+  InviteSection,
+  AccessSummary,
+  LinkExpiration,
+  LinkMaxUses
+} from "@/components/workspace/workspace-members-ui"
+import {
+  AssistantPolicies,
+  AssistantPoliciesState,
+  instructionsToPolicies,
+  policiesToInstructions
+} from "@/components/workspace/assistant-policies"
+import { DangerZone } from "@/components/workspace/danger-zone"
+import { DeleteWorkspace } from "@/components/workspace/delete-workspace"
+
+import { AnimatePresence } from "framer-motion"
 
 // Types
 type WorkspaceRole = 'ADMIN' | 'LAWYER' | 'ASSISTANT' | 'VIEWER'
@@ -57,73 +56,47 @@ interface WorkspaceInvitation {
   expires_at: string
 }
 
-interface AuditLog {
-  id: string
-  action_type: string
-  resource_type: string
-  details: Record<string, any>
-  created_at: string
-  actor?: {
-    id: string
-    email: string
-  }
-}
-
-// Presets para instrucciones del asistente
-const ASSISTANT_PRESETS = [
-  {
-    label: "Formal",
-    text: "Responde de manera formal y profesional, usando lenguaje jurídico apropiado."
-  },
-  {
-    label: "Con citas",
-    text: "Incluye citas y referencias legales cuando sea relevante para respaldar tus respuestas."
-  },
-  {
-    label: "Resumen al final",
-    text: "Proporciona un resumen ejecutivo al final de cada respuesta extensa."
-  },
-  {
-    label: "Preguntar antes de asumir",
-    text: "Si hay ambigüedad en la consulta, pregunta al usuario antes de hacer suposiciones."
-  }
-]
-
 export default function WorkspaceSettingsPage() {
   const params = useParams()
   const router = useRouter()
+  const { profile } = useContext(ALIContext)
   const workspaceId = params.workspaceid as string
 
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
   const [workspace, setWorkspace] = useState<any>(null)
 
-  // General tab
+  // Profile tab
   const [name, setName] = useState("")
   const [description, setDescription] = useState("")
   const [imageLink, setImageLink] = useState("")
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [saving, setSaving] = useState(false)
 
-  // Assistant tab
-  const [instructions, setInstructions] = useState("")
-  const [savingInstructions, setSavingInstructions] = useState(false)
-
-  // Members tab
+  // Members/Invitations
   const [members, setMembers] = useState<WorkspaceMember[]>([])
   const [loadingMembers, setLoadingMembers] = useState(false)
-
-  // Invitations tab
   const [invitations, setInvitations] = useState<WorkspaceInvitation[]>([])
   const [loadingInvitations, setLoadingInvitations] = useState(false)
   const [inviteEmail, setInviteEmail] = useState("")
   const [inviteRole, setInviteRole] = useState<WorkspaceRole>("VIEWER")
+  const [inviteLinkLabel, setInviteLinkLabel] = useState("")
   const [sendingInvite, setSendingInvite] = useState(false)
   const [creatingInviteLink, setCreatingInviteLink] = useState(false)
+  const [linkExpiration, setLinkExpiration] = useState<LinkExpiration>("7")
+  const [linkMaxUses, setLinkMaxUses] = useState<LinkMaxUses>("1")
 
-  // Audit tab
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([])
-  const [loadingAudit, setLoadingAudit] = useState(false)
+  // Policies
+  const [assistantPolicies, setAssistantPolicies] = useState<AssistantPoliciesState>({
+    tone: "formal",
+    citations: "when_applicable",
+    askBeforeAssuming: true,
+    includeSummary: true,
+    additionalInstructions: ""
+  })
+  const [savingPolicies, setSavingPolicies] = useState(false)
+
+
 
   useEffect(() => {
     checkAccessAndLoad()
@@ -133,7 +106,6 @@ export default function WorkspaceSettingsPage() {
     try {
       setLoading(true)
 
-      // Get current user and workspace
       const settingsResponse = await fetch(`/api/workspace/${workspaceId}/settings`)
       if (!settingsResponse.ok) {
         if (settingsResponse.status === 401 || settingsResponse.status === 403) {
@@ -148,13 +120,15 @@ export default function WorkspaceSettingsPage() {
       const workspaceData = settingsData.workspace
 
       if (!workspaceData) {
-        throw new Error("Workspace no encontrado")
+        throw new Error("Espacio no encontrado")
       }
 
       setWorkspace(workspaceData)
       setName(workspaceData.name || "")
       setDescription(workspaceData.description || "")
-      setInstructions(workspaceData.instructions || "")
+      setAssistantPolicies(instructionsToPolicies(workspaceData.instructions || ""))
+
+
 
       // Check if user is admin
       const adminCheckResponse = await fetch(`/api/workspace/${workspaceId}/admin-check`)
@@ -163,7 +137,7 @@ export default function WorkspaceSettingsPage() {
         setIsAdmin(adminData.isAdmin || false)
       }
 
-      // Load workspace image if exists
+      // Load workspace image
       if (workspaceData.image_path) {
         try {
           const imageUrl = await getWorkspaceImageFromStorage(workspaceData.image_path)
@@ -173,6 +147,12 @@ export default function WorkspaceSettingsPage() {
         } catch (error) {
           console.error("Error loading workspace image:", error)
         }
+      }
+
+      // Load members and invitations if admin
+      if (adminCheckResponse.ok) {
+        loadMembers()
+        loadInvitations()
       }
     } catch (error: any) {
       console.error("Error loading settings:", error)
@@ -191,7 +171,7 @@ export default function WorkspaceSettingsPage() {
       const data = await response.json()
       setMembers(data.members || [])
     } catch (error: any) {
-      toast.error(error.message)
+      console.error("Error loading members:", error)
     } finally {
       setLoadingMembers(false)
     }
@@ -205,93 +185,52 @@ export default function WorkspaceSettingsPage() {
       const data = await response.json()
       setInvitations(data.invitations || [])
     } catch (error: any) {
-      toast.error(error.message)
+      console.error("Error loading invitations:", error)
     } finally {
       setLoadingInvitations(false)
     }
   }
 
-  const loadAuditLogs = async () => {
-    try {
-      setLoadingAudit(true)
-      const response = await fetch(`/api/workspace/${workspaceId}/audit-logs?limit=50`)
-      if (!response.ok) throw new Error("Error al cargar auditoría")
-      const data = await response.json()
-      setAuditLogs(data.logs || [])
-    } catch (error: any) {
-      toast.error(error.message)
-    } finally {
-      setLoadingAudit(false)
-    }
-  }
-
-  const handleSaveGeneral = async () => {
+  const handleSaveProfile = async () => {
     try {
       setSaving(true)
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:227',message:'handleSaveGeneral entry',data:{workspaceId,name,description,hasSelectedImage:!!selectedImage},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
-      
+
       let imagePath: string | undefined = undefined
-      
-      // Upload image if selected
+
       if (selectedImage && workspace) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:234',message:'Before uploadWorkspaceImage',data:{workspaceId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         imagePath = await uploadWorkspaceImage(workspace, selectedImage)
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:236',message:'After uploadWorkspaceImage',data:{workspaceId,imagePath},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
       } else if (workspace?.image_path) {
-        // Keep existing image path if no new image selected
         imagePath = workspace.image_path
       }
 
-      const updatePayload: any = { 
-        name, 
-        description
-      }
-      
-      // Only include image_path if it's defined
+      const updatePayload: any = { name, description }
       if (imagePath !== undefined) {
         updatePayload.image_path = imagePath
       }
 
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:250',message:'Before fetch PATCH',data:{workspaceId,updatePayload},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       const response = await fetch(`/api/workspace/${workspaceId}/settings`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatePayload)
       })
 
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:257',message:'After fetch PATCH',data:{workspaceId,status:response.status,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
-
       if (!response.ok) {
         const error = await response.json()
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:262',message:'PATCH response error',data:{workspaceId,status:response.status,error},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         throw new Error(error.error || "Error al guardar")
       }
 
       const data = await response.json()
       setWorkspace(data.workspace)
-      
-      // Update image link if uploaded
-      if (imagePath && imagePath !== workspace?.image_path && imagePath !== "") {
+
+      if (imagePath && imagePath !== workspace?.image_path) {
         const imageUrl = await getWorkspaceImageFromStorage(imagePath)
         if (imageUrl) {
           setImageLink(imageUrl)
         }
       }
-      
+
       setSelectedImage(null)
-      toast.success("Configuración guardada exitosamente")
+      toast.success("Perfil guardado exitosamente")
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -299,45 +238,32 @@ export default function WorkspaceSettingsPage() {
     }
   }
 
-  const handleSaveInstructions = async () => {
+  const handleSavePolicies = async () => {
     try {
-      setSavingInstructions(true)
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:273',message:'handleSaveInstructions entry',data:{workspaceId,instructionsLength:instructions.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
+      setSavingPolicies(true)
+
       const response = await fetch(`/api/workspace/${workspaceId}/settings`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ instructions })
+        body: JSON.stringify({
+          body: JSON.stringify({
+            instructions: policiesToInstructions(assistantPolicies)
+          })
+        })
       })
-
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:280',message:'After fetch PATCH instructions',data:{workspaceId,status:response.status,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
 
       if (!response.ok) {
         const error = await response.json()
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/[locale]/[workspaceid]/settings/page.tsx:285',message:'PATCH instructions response error',data:{workspaceId,status:response.status,error},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-        // #endregion
         throw new Error(error.error || "Error al guardar")
       }
 
       const data = await response.json()
       setWorkspace(data.workspace)
-      toast.success("Instrucciones guardadas exitosamente")
+      toast.success("Políticas guardadas exitosamente")
     } catch (error: any) {
       toast.error(error.message)
     } finally {
-      setSavingInstructions(false)
-    }
-  }
-
-  const handlePresetClick = (presetText: string) => {
-    if (instructions.trim()) {
-      setInstructions(prev => prev ? `${prev}\n\n${presetText}` : presetText)
-    } else {
-      setInstructions(presetText)
+      setSavingPolicies(false)
     }
   }
 
@@ -354,7 +280,7 @@ export default function WorkspaceSettingsPage() {
         throw new Error(error.error || "Error al actualizar rol")
       }
 
-      toast.success("Rol actualizado exitosamente")
+      toast.success("Rol actualizado")
       await loadMembers()
     } catch (error: any) {
       toast.error(error.message)
@@ -362,9 +288,7 @@ export default function WorkspaceSettingsPage() {
   }
 
   const handleRemoveMember = async (userId: string) => {
-    if (!confirm("¿Estás seguro de que deseas remover este miembro?")) {
-      return
-    }
+    if (!confirm("¿Estás seguro de que deseas remover este miembro?")) return
 
     try {
       const response = await fetch(`/api/workspace/${workspaceId}/members?userId=${userId}`, {
@@ -376,7 +300,7 @@ export default function WorkspaceSettingsPage() {
         throw new Error(error.error || "Error al remover miembro")
       }
 
-      toast.success("Miembro removido exitosamente")
+      toast.success("Miembro removido")
       await loadMembers()
     } catch (error: any) {
       toast.error(error.message)
@@ -384,26 +308,11 @@ export default function WorkspaceSettingsPage() {
   }
 
   const copyToClipboard = async (value: string) => {
-    if (typeof navigator === "undefined") return false
-
     try {
       await navigator.clipboard.writeText(value)
       return true
     } catch {
-      try {
-        const el = document.createElement("textarea")
-        el.value = value
-        el.setAttribute("readonly", "true")
-        el.style.position = "absolute"
-        el.style.left = "-9999px"
-        document.body.appendChild(el)
-        el.select()
-        document.execCommand("copy")
-        document.body.removeChild(el)
-        return true
-      } catch {
-        return false
-      }
+      return false
     }
   }
 
@@ -420,25 +329,23 @@ export default function WorkspaceSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: inviteEmail, role: inviteRole })
       })
-      const responseClone = response.clone()
 
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.error || "Error al enviar invitación")
       }
 
-      toast.success("Invitación enviada exitosamente")
+      const data = await response.json()
+      toast.success("Invitación enviada")
       setInviteEmail("")
-      setInviteRole("VIEWER")
-      await loadInvitations()
 
-      const data = await responseClone.json().catch(() => ({} as any))
-      const token = data?.token as string | undefined
-      if (token) {
-        const inviteUrl = `${window.location.origin}/invite/${token}`
+      if (data.token) {
+        const inviteUrl = `${window.location.origin}/invite/${data.token}`
         const copied = await copyToClipboard(inviteUrl)
-        toast.success(copied ? "Enlace de invitación copiado." : "Invitación creada.")
+        if (copied) toast.success("Enlace copiado")
       }
+
+      await loadInvitations()
     } catch (error: any) {
       toast.error(error.message)
     } finally {
@@ -452,22 +359,27 @@ export default function WorkspaceSettingsPage() {
       const response = await fetch(`/api/workspace/${workspaceId}/invitations`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "link", role: inviteRole })
+        body: JSON.stringify({
+          mode: "link",
+          role: inviteRole,
+          label: inviteLinkLabel || undefined,
+          expirationDays: parseInt(linkExpiration),
+          maxUses: linkMaxUses === "unlimited" ? null : parseInt(linkMaxUses)
+        })
       })
 
-      const data = await response.json().catch(() => ({} as any))
+      const data = await response.json()
       if (!response.ok) {
-        throw new Error(data.error || "Error al crear enlace de invitación")
+        throw new Error(data.error || "Error al crear enlace")
       }
 
-      const token = data?.token as string | undefined
-      if (!token) {
-        throw new Error("Invitación creada sin token")
+      if (data.token) {
+        const inviteUrl = `${window.location.origin}/invite/${data.token}`
+        const copied = await copyToClipboard(inviteUrl)
+        toast.success(copied ? "Enlace copiado" : "Enlace creado")
       }
 
-      const inviteUrl = `${window.location.origin}/invite/${token}`
-      const copied = await copyToClipboard(inviteUrl)
-      toast.success(copied ? "Enlace de invitación copiado." : "Enlace de invitación creado.")
+      setInviteLinkLabel("")
       await loadInvitations()
     } catch (error: any) {
       toast.error(error.message)
@@ -486,19 +398,11 @@ export default function WorkspaceSettingsPage() {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.error || "Error al revocar invitación")
+        throw new Error(error.error || "Error al revocar")
       }
 
       toast.success("Invitación revocada")
       await loadInvitations()
-
-      const data = await responseClone.json().catch(() => ({} as any))
-      const token = data?.token as string | undefined
-      if (token) {
-        const inviteUrl = `${window.location.origin}/invite/${token}`
-        const copied = await copyToClipboard(inviteUrl)
-        toast.success(copied ? "Enlace copiado." : "Enlace generado.")
-      }
     } catch (error: any) {
       toast.error(error.message)
     }
@@ -511,14 +415,20 @@ export default function WorkspaceSettingsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ invitationId, action: 'resend' })
       })
-      const responseClone = response.clone()
 
+      const data = await response.json()
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || "Error al reenviar invitación")
+        throw new Error(data.error || "Error al reenviar")
       }
 
-      toast.success("Invitación reenviada")
+      if (data.token) {
+        const inviteUrl = `${window.location.origin}/invite/${data.token}`
+        const copied = await copyToClipboard(inviteUrl)
+        toast.success(copied ? "Enlace copiado" : "Invitación reenviada")
+      } else {
+        toast.success("Invitación reenviada")
+      }
+
       await loadInvitations()
     } catch (error: any) {
       toast.error(error.message)
@@ -538,398 +448,252 @@ export default function WorkspaceSettingsPage() {
   }
 
   const isPersonal = workspace.is_home
-  const showAdminTabs = isAdmin
+  const showAccessTab = isAdmin && !isPersonal
+  const pendingInvitations = invitations.filter(i => i.status === "PENDING")
 
   return (
-    <div className="container mx-auto p-6 max-w-6xl">
+    <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-6">
         <div className="flex items-center gap-2">
           <h1 className="text-3xl font-bold">Configuración del Espacio</h1>
           {isPersonal && <IconHome className="text-primary" size={24} />}
         </div>
         <p className="text-muted-foreground mt-2">
-          {isPersonal 
+          {isPersonal
             ? "Espacio personal. Solo tú tienes acceso."
-            : "Workspace compartido. Cambios visibles para miembros."}
+            : "Espacio compartido. Cambios visibles para miembros."}
         </p>
       </div>
 
-      <Tabs defaultValue={showAdminTabs ? "general" : "assistant"} className="w-full">
-        <TabsList className={showAdminTabs ? "grid w-full grid-cols-5" : "grid w-full grid-cols-1"}>
-          {showAdminTabs && (
-            <>
-              <TabsTrigger value="general">General</TabsTrigger>
-              <TabsTrigger value="members">Miembros</TabsTrigger>
-              <TabsTrigger value="invitations">Invitaciones</TabsTrigger>
-              <TabsTrigger value="audit">Auditoría</TabsTrigger>
-            </>
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList className={`grid w-full ${showAccessTab ? "grid-cols-3" : "grid-cols-2"} bg-muted/50 rounded-lg p-1`}>
+          <TabsTrigger
+            value="profile"
+            className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            Perfil
+          </TabsTrigger>
+
+          {showAccessTab && (
+            <TabsTrigger
+              value="access"
+              className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              onClick={() => {
+                loadMembers()
+                loadInvitations()
+              }}
+            >
+              Acceso
+            </TabsTrigger>
           )}
-          <TabsTrigger value="assistant">Asistente</TabsTrigger>
+
+          <TabsTrigger
+            value="policies"
+            className="rounded-md data-[state=active]:bg-background data-[state=active]:shadow-sm"
+          >
+            Políticas
+          </TabsTrigger>
         </TabsList>
 
-        {/* General Tab - Solo ADMIN */}
-        {showAdminTabs && (
-          <TabsContent value="general" className="mt-6 space-y-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label>Nombre del Workspace</Label>
-                <Input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Nombre del workspace"
-                  maxLength={100}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Descripción</Label>
-                <TextareaAutosize
-                  value={description}
-                  onValueChange={setDescription}
-                  placeholder="Descripción del workspace (opcional)"
-                  minRows={3}
-                  maxRows={6}
-                  maxLength={WORKSPACE_DESCRIPTION_MAX}
-                />
-                {description.length > 0 && (
-                  <LimitDisplay
-                    used={description.length}
-                    limit={WORKSPACE_DESCRIPTION_MAX}
-                  />
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label>Imagen/Avatar del Workspace</Label>
-                <div className="rounded-lg border border-border/60 p-4 bg-muted/30">
-                  <ImagePicker
-                    src={imageLink}
-                    image={selectedImage}
-                    onSrcChange={setImageLink}
-                    onImageChange={setSelectedImage}
-                    width={80}
-                    height={80}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-2 pt-4 border-t">
-              <Button onClick={handleSaveGeneral} disabled={saving}>
-                {saving ? (
-                  <>
-                    <IconLoader2 className="animate-spin mr-2" size={16} />
-                    Guardando...
-                  </>
-                ) : (
-                  "Guardar cambios"
-                )}
-              </Button>
-              <WithTooltip
-                display={<div>Funcionalidad próximamente disponible</div>}
-                trigger={
-                  <Button variant="outline" disabled>
-                    Eliminar workspace
-                  </Button>
-                }
+        {/* Perfil del Espacio */}
+        <TabsContent value="profile" className="mt-6 space-y-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Nombre del Espacio</Label>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Nombre del espacio"
+                maxLength={100}
+                className="rounded-lg"
               />
             </div>
-          </TabsContent>
-        )}
 
-        {/* Members Tab - Solo ADMIN */}
-        {showAdminTabs && (
-          <TabsContent value="members" className="mt-6">
-            {loadingMembers ? (
-              <div className="flex items-center justify-center py-8">
-                <IconLoader2 className="animate-spin" size={24} />
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Usuario</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Rol</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {members.map((member) => (
-                      <TableRow key={member.id}>
-                        <TableCell>
-                          {member.user?.email?.split('@')[0] || 'Usuario'}
-                        </TableCell>
-                        <TableCell>{member.user?.email || 'N/A'}</TableCell>
-                        <TableCell>
-                          <Select
-                            value={member.role}
-                            onValueChange={(value) =>
-                              handleUpdateMemberRole(member.user_id, value as WorkspaceRole)
-                            }
-                          >
-                            <SelectTrigger className="w-[140px]">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="ADMIN">Admin</SelectItem>
-                              <SelectItem value="LAWYER">Abogado</SelectItem>
-                              <SelectItem value="ASSISTANT">Asistente</SelectItem>
-                              <SelectItem value="VIEWER">Visualizador</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleRemoveMember(member.user_id)}
-                          >
-                            <IconTrash size={16} />
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </TabsContent>
-        )}
-
-        {/* Invitations Tab - Solo ADMIN */}
-        {showAdminTabs && (
-          <TabsContent value="invitations" className="mt-6 space-y-6">
-            <div className="border rounded-lg p-4 space-y-4">
-              <h3 className="font-semibold">Invitar miembro</h3>
-              <div className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="email@ejemplo.com"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  className="flex-1"
-                />
-                <Select value={inviteRole} onValueChange={(value) => setInviteRole(value as WorkspaceRole)}>
-                  <SelectTrigger className="w-[160px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="VIEWER">Visualizador</SelectItem>
-                    <SelectItem value="ASSISTANT">Asistente</SelectItem>
-                    <SelectItem value="LAWYER">Abogado</SelectItem>
-                    <SelectItem value="ADMIN">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button onClick={handleSendInvitation} disabled={sendingInvite}>
-                  {sendingInvite ? (
-                    <IconLoader2 className="animate-spin" size={16} />
-                  ) : (
-                    <>
-                      <IconSend size={16} className="mr-2" />
-                      Enviar
-                    </>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleCreateInviteLink}
-                  disabled={creatingInviteLink}
-                >
-                  {creatingInviteLink ? (
-                    <IconLoader2 className="animate-spin" size={16} />
-                  ) : (
-                    <>
-                      <IconLink size={16} className="mr-2" />
-                      Crear enlace
-                    </>
-                  )}
-                </Button>
-              </div>
-            </div>
-
-            {loadingInvitations ? (
-              <div className="flex items-center justify-center py-8">
-                <IconLoader2 className="animate-spin" size={24} />
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <h3 className="font-semibold">Invitaciones pendientes</h3>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Rol</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Expira</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {invitations.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className="text-center text-muted-foreground">
-                          No hay invitaciones
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      invitations.map((invitation) => (
-                        <TableRow key={invitation.id}>
-                          <TableCell>{invitation.email}</TableCell>
-                          <TableCell>{invitation.role}</TableCell>
-                          <TableCell>
-                            <span
-                              className={`px-2 py-1 rounded text-xs ${
-                                invitation.status === 'PENDING'
-                                  ? 'bg-yellow-500/20 text-yellow-600'
-                                  : invitation.status === 'ACCEPTED'
-                                  ? 'bg-green-500/20 text-green-600'
-                                  : 'bg-gray-500/20 text-gray-600'
-                              }`}
-                            >
-                              {invitation.status === 'PENDING' ? 'Pendiente' :
-                               invitation.status === 'ACCEPTED' ? 'Aceptada' :
-                               invitation.status === 'EXPIRED' ? 'Expirada' : 'Revocada'}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            {new Date(invitation.expires_at).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex gap-2">
-                              {(invitation.status === 'PENDING' || invitation.status === 'EXPIRED') && (
-                                <>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => handleResendInvitation(invitation.id)}
-                                  >
-                                    <IconCopy size={16} />
-                                  </Button>
-                                  {invitation.status === 'PENDING' && (
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => handleRevokeInvitation(invitation.id)}
-                                    >
-                                      <IconX size={16} />
-                                    </Button>
-                                  )}
-                                </>
-                              )}
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </TabsContent>
-        )}
-
-        {/* Audit Tab - Solo ADMIN */}
-        {showAdminTabs && (
-          <TabsContent value="audit" className="mt-6">
-            {loadingAudit ? (
-              <div className="flex items-center justify-center py-8">
-                <IconLoader2 className="animate-spin" size={24} />
-              </div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Fecha/Hora</TableHead>
-                    <TableHead>Actor</TableHead>
-                    <TableHead>Acción</TableHead>
-                    <TableHead>Detalle</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {auditLogs.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center text-muted-foreground">
-                        No hay registros de auditoría
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    auditLogs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell>
-                          {new Date(log.created_at).toLocaleString()}
-                        </TableCell>
-                        <TableCell>{log.actor?.email || 'Sistema'}</TableCell>
-                        <TableCell>{log.action_type}</TableCell>
-                        <TableCell>
-                          <pre className="text-xs max-w-md overflow-auto">
-                            {JSON.stringify(log.details, null, 2)}
-                          </pre>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            )}
-          </TabsContent>
-        )}
-
-        {/* Assistant Tab - Visible para todos */}
-        <TabsContent value="assistant" className="mt-6 space-y-4">
-          <div className="space-y-2">
-            <Label>
-              ¿Cómo te gustaría que el asistente responda en este workspace?
-            </Label>
-            <p className="text-sm text-muted-foreground">
-              Se aplica a los chats de este workspace.
-            </p>
-            <div className="rounded-lg border border-border/60 bg-muted/30 p-4">
-              <TextareaAutosize
-                value={instructions}
-                onValueChange={setInstructions}
-                placeholder="Instrucciones para el asistente... (opcional)"
-                minRows={5}
-                maxRows={10}
-                maxLength={WORKSPACE_INSTRUCTIONS_MAX}
-                className="w-full bg-transparent border-0 focus:ring-0 resize-none text-sm"
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Descripción</Label>
+              <Input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Descripción breve del espacio (opcional)"
+                className="rounded-lg"
               />
-              {(instructions.length > 0 || instructions.length > WORKSPACE_INSTRUCTIONS_MAX * 0.9) && (
-                <LimitDisplay
-                  used={instructions.length}
-                  limit={WORKSPACE_INSTRUCTIONS_MAX}
-                />
-              )}
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label className="text-sm">Presets rápidos</Label>
-            <div className="flex flex-wrap gap-2">
-              {ASSISTANT_PRESETS.map((preset) => (
-                <Button
-                  key={preset.label}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePresetClick(preset.text)}
-                  className="text-xs"
-                >
-                  {preset.label}
-                </Button>
-              ))}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Imagen del Espacio</Label>
+              <div className="rounded-lg border border-border/60 p-4 bg-muted/30">
+                <ImagePicker
+                  src={imageLink}
+                  image={selectedImage}
+                  onSrcChange={setImageLink}
+                  onImageChange={setSelectedImage}
+                  width={80}
+                  height={80}
+                />
+              </div>
             </div>
           </div>
 
           <div className="flex gap-2 pt-4 border-t">
-            <Button onClick={handleSaveInstructions} disabled={savingInstructions}>
-              {savingInstructions ? (
+            <Button onClick={handleSaveProfile} disabled={saving}>
+              {saving ? (
                 <>
                   <IconLoader2 className="animate-spin mr-2" size={16} />
                   Guardando...
                 </>
               ) : (
-                "Guardar instrucciones"
+                "Guardar perfil"
+              )}
+            </Button>
+          </div>
+
+          {/* Danger Zone */}
+          {!isPersonal && workspace && (
+            <DangerZone
+              title="Zona de Peligro"
+              description="Las acciones en esta sección son permanentes e irreversibles."
+            >
+              <DeleteWorkspace
+                workspace={workspace}
+                onDelete={() => router.push("/")}
+              />
+            </DangerZone>
+          )}
+        </TabsContent>
+
+        {/* Acceso */}
+        {showAccessTab && (
+          <TabsContent value="access" className="mt-6 space-y-6">
+            {/* Access Summary */}
+            <AccessSummary
+              memberCount={members.length}
+              pendingInviteCount={pendingInvitations.length}
+            />
+
+            {/* Invite Section */}
+            <InviteSection
+              inviteEmail={inviteEmail}
+              setInviteEmail={setInviteEmail}
+              inviteRole={inviteRole}
+              setInviteRole={setInviteRole}
+              inviteLinkLabel={inviteLinkLabel}
+              setInviteLinkLabel={setInviteLinkLabel}
+              onSendInvitation={handleSendInvitation}
+              onCreateInviteLink={handleCreateInviteLink}
+              sendingInvite={sendingInvite}
+              creatingInviteLink={creatingInviteLink}
+              linkExpiration={linkExpiration}
+              setLinkExpiration={setLinkExpiration}
+              linkMaxUses={linkMaxUses}
+              setLinkMaxUses={setLinkMaxUses}
+            />
+
+            {/* Members Section */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Miembros</h3>
+                <Button variant="ghost" size="sm" onClick={loadMembers} className="text-xs">
+                  Actualizar
+                </Button>
+              </div>
+
+              {loadingMembers ? (
+                <div className="p-8 text-center text-sm text-muted-foreground bg-muted/20 rounded-xl border border-border/50">
+                  Cargando miembros...
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {/* Current User Card */}
+                  {profile && (
+                    <MemberCard
+                      member={{
+                        id: "current-user",
+                        workspace_id: workspaceId,
+                        user_id: profile.user_id,
+                        role: isAdmin ? "ADMIN" : "LAWYER", // Fallback role if logic differs
+                        created_at: new Date().toISOString(),
+                        user: {
+                          id: profile.user_id,
+                          email: "Tú (Propietario)"
+                        }
+                      }}
+                      isOwner={true} // Visually distinct
+                      canManage={false} // Can't remove yourself here
+                    />
+                  )}
+
+                  {/* Other Members */}
+                  <AnimatePresence mode="popLayout">
+                    {members.map((member) => (
+                      <MemberCard
+                        key={member.id}
+                        member={member}
+                        isOwner={workspace?.user_id === member.user_id}
+                        canManage={isAdmin}
+                        onUpdateRole={(userId, role) => handleUpdateMemberRole(userId, role)}
+                        onRemove={(userId) => handleRemoveMember(userId)}
+                      />
+                    ))}
+                  </AnimatePresence>
+
+                  {members.length === 0 && (
+                    <p className="text-xs text-muted-foreground text-center py-2">
+                      No hay otros miembros en este espacio.
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Invitations Section */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-semibold">Invitaciones pendientes</h3>
+
+              {loadingInvitations ? (
+                <div className="p-8 text-center text-sm text-muted-foreground bg-muted/20 rounded-xl border border-border/50">
+                  Cargando invitaciones...
+                </div>
+              ) : pendingInvitations.length === 0 ? (
+                <div className="p-8 text-center text-sm text-muted-foreground bg-muted/20 rounded-xl border border-border/50">
+                  No hay invitaciones pendientes.
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <AnimatePresence mode="popLayout">
+                    {pendingInvitations.map((invite) => (
+                      <InvitationCard
+                        key={invite.id}
+                        invitation={invite}
+                        onRevoke={(id) => handleRevokeInvitation(id)}
+                        onResend={(id) => handleResendInvitation(id)}
+                      />
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        )}
+
+        {/* Políticas del Asistente */}
+        <TabsContent value="policies" className="mt-6 space-y-6">
+          {/* Assistant Policies */}
+          <AssistantPolicies
+            policies={assistantPolicies}
+            onChange={setAssistantPolicies}
+          />
+
+          {/* Chat Defaults removed as per requirement */}
+
+          <div className="flex gap-2 pt-4 border-t">
+            <Button onClick={handleSavePolicies} disabled={savingPolicies}>
+              {savingPolicies ? (
+                <>
+                  <IconLoader2 className="animate-spin mr-2" size={16} />
+                  Guardando...
+                </>
+              ) : (
+                "Guardar políticas"
               )}
             </Button>
           </div>

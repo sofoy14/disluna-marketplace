@@ -10,6 +10,8 @@ import {
 } from "@/db/workspace-invitations"
 import { logWorkspaceAction } from "@/db/workspace-audit-logs"
 import { getSupabaseServer } from "@/lib/supabase/server-client"
+import { sendEmail, emailTemplates } from "@/lib/billing/email-notifications"
+import { getWorkspaceById } from "@/db/workspaces"
 import crypto from "crypto"
 
 export async function GET(
@@ -103,7 +105,7 @@ export async function POST(
       invited_by: user.id,
       email: invitee,
       role
-    }, supabaseServer)
+    } as any, supabaseServer)
 
     // Log action
     await logWorkspaceAction(
@@ -119,9 +121,22 @@ export async function POST(
       }
     )
 
-    // TODO: Send email with invitation link
-    // const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite/${token}`
-    // await sendInvitationEmail(email, inviteUrl, params.workspaceId)
+    // Send email with invitation link
+    if (invitationMode === 'email' && email) {
+      try {
+        const workspace = await getWorkspaceById(params.workspaceId, supabaseServer)
+        const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite/${token}`
+
+        await sendEmail(email as string, emailTemplates.workspaceInvitation({
+          workspaceName: workspace.name,
+          inviteUrl,
+          invitedBy: user.email || "Un administrador"
+        }))
+      } catch (emailError) {
+        console.error("Error sending invitation email:", emailError)
+        // We don't fail the request if email fails, as the invitation was created
+      }
+    }
 
     return NextResponse.json({ invitation, token })
   } catch (error: any) {
@@ -197,9 +212,19 @@ export async function PATCH(
         }
       )
 
-      // TODO: Send email with new invitation link
-      // const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite/${token}`
-      // await sendInvitationEmail(invitation.email, inviteUrl, params.workspaceId)
+      // Send email with new invitation link
+      try {
+        const workspace = await getWorkspaceById(params.workspaceId, supabaseServer)
+        const inviteUrl = `${process.env.NEXT_PUBLIC_APP_URL}/invite/${token}`
+
+        await sendEmail(invitation.email, emailTemplates.workspaceInvitation({
+          workspaceName: workspace.name,
+          inviteUrl,
+          invitedBy: user.email || "Un administrador"
+        }))
+      } catch (emailError) {
+        console.error("Error resending invitation email:", emailError)
+      }
 
       return NextResponse.json({ invitation, token })
     } else {

@@ -10,6 +10,7 @@ import OpenAI from "openai"
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { convertDocumentFromUrl } from "@/lib/docling"
 import { assertWorkspaceAccess } from "@/src/server/workspaces/access"
+import { ragBackendService } from "@/lib/services/rag-backend"
 
 // Process-specific chunking: 500-800 tokens (using 650 as middle ground)
 // Overlap: 100 tokens (~15%)
@@ -22,17 +23,17 @@ export async function POST(
 ) {
   try {
     console.log("📥 Starting ingestion process...")
-    
+
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
-    
+
     const supabaseAdmin = createSupabaseClient<Database>(
       env.supabaseUrl(),
       env.supabaseServiceRole()
     )
-    
+
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       console.error("❌ Auth error:", authError)
       return NextResponse.json(
@@ -46,6 +47,8 @@ export async function POST(
     const { processId } = params
     const body = await request.json()
     const documentId = body.document_id as string | undefined
+    const skipProcessing = body.skip_processing as boolean | undefined
+    const providedMarkdown = body.markdown as string | undefined
 
     // Verify user has access to the process using admin client
     const { data: processRecord, error: processError } = await supabaseAdmin
@@ -53,6 +56,9 @@ export async function POST(
       .select("id,user_id,workspace_id,name,indexing_status")
       .eq("id", processId)
       .single()
+    // ... imports need to be added separately or I can try to add them if I replace the whole file? No, replace_file_content is better for chunks.
+    // I will use two calls. One for import, one for logic.
+
 
     if (processError || !processRecord) {
       return NextResponse.json(
@@ -82,7 +88,7 @@ export async function POST(
     }
 
     // Get profile for API keys
-    const profile = await getServerProfile()
+    const profile = await getServerProfile() as any
 
     // Get documents to process using admin client
     let documentsToProcess
@@ -152,7 +158,7 @@ export async function POST(
     for (const document of documentsToProcess) {
       try {
         console.log(`📄 Processing document: ${document.file_name} (${document.id})`)
-        
+
         // Update status to processing using admin client
         const { error: updateError } = await supabaseAdmin
           .from("process_documents")
@@ -164,206 +170,126 @@ export async function POST(
           throw new Error(`Error actualizando estado: ${updateError.message}`)
         }
 
-        console.log(`🔗 Creating signed URL for file: ${document.storage_path}`)
+        // Bypassing local processing if requested (for external RAG backend)
+        if (skipProcessing) {
+          console.log(`⏩ Skipping local processing for document: ${document.file_name} (using external RAG status)`)
 
-        // Create signed URL for Docling to access the file (10 minutes TTL)
-        const { data: signedUrlData, error: signedUrlError } = await supabaseAdmin.storage
+          if (providedMarkdown) {
+            console.log(`💾 Saving provided markdown (${providedMarkdown.length} chars)`)
+
+            // Save as a single section for retrieval
+            const { error: sectionError } = await supabaseAdmin
+              .from("process_document_sections")
+              .insert({
+                process_id: processId,
+                document_id: document.id,
+                user_id: user.id,
+                content: providedMarkdown,
+                tokens: encode(providedMarkdown).length,
+                openai_embedding: [] as any, // Placeholder
+                metadata: {
+                  type: "full_markdown",
+                  file_name: document.file_name
+                }
+              })
+
+            if (sectionError) {
+              console.warn(`⚠️ Error saving markdown section:`, sectionError)
+            }
+          }
+
+          // Update status to indexed immediately
+          const { error: indexedError } = await supabaseAdmin
+            .from("process_documents")
+            .update({
+              status: "indexed",
+              error_message: null,
+              metadata: {
+                ...(document.metadata || {}),
+                processed_with: "external_rag",
+                processed_at: new Date().toISOString()
+              },
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", document.id)
+
+          if (indexedError) {
+            throw new Error(`Error actualizando estado a indexed: ${indexedError.message}`)
+          }
+
+          console.log(`✅ Documento ${document.file_name} marcado como indexado (externo)`)
+          continue; // Create signed URL skipped, conversion skipped
+        }
+
+        console.log(`🔗 Downloading file from storage: ${document.storage_path}`)
+
+        // Download file from Supabase Storage
+        const { data: fileData, error: downloadError } = await supabaseAdmin.storage
           .from("files")
-          .createSignedUrl(document.storage_path, 600) // 10 minutes
+          .download(document.storage_path)
 
-        if (signedUrlError || !signedUrlData) {
-          console.error(`❌ Error creating signed URL:`, signedUrlError)
-          console.error(`File path: ${document.storage_path}`)
-          throw new Error(`Error generando URL firmada: ${signedUrlError?.message || "No se pudo generar URL"}`)
+        if (downloadError || !fileData) {
+          console.error(`❌ Error downloading file:`, downloadError)
+          throw new Error(`Error descargando archivo: ${downloadError?.message}`)
         }
 
-        const signedUrl = signedUrlData.signedUrl
-        console.log(`✅ Signed URL created successfully`)
+        console.log(`✅ File downloaded successfully, size: ${fileData.size} bytes`)
 
-        // Determine file type to validate support
-        const fileExtension = document.file_name.split(".").pop()?.toLowerCase()
-        
-        // Docling supports: PDF, DOCX, PPTX, HTML, images, Markdown, etc.
-        // For now, we'll try Docling for all types and mark as error if it fails
-        // In the future, we could add fallback to old parsing for unsupported types
-        
-        console.log(`🔄 Converting document with Docling: ${document.file_name}`)
-        
-        let markdownContent: string
-        let doclingRawJson: any = undefined
-        
-        try {
-          const conversionResult = await convertDocumentFromUrl(signedUrl)
-          markdownContent = conversionResult.markdown
-          doclingRawJson = conversionResult.rawJson
-          
-          if (!markdownContent || markdownContent.trim().length === 0) {
-            throw new Error("Docling retornó contenido vacío")
-          }
-          
-          // Verificar si el markdown es realmente JSON (fallback)
-          if (markdownContent.trim().startsWith("{") || markdownContent.trim().startsWith("[")) {
-            console.warn("⚠️ Markdown parece ser JSON, intentando extraer texto...")
-            try {
-              const jsonData = JSON.parse(markdownContent)
-              // Intentar extraer texto del JSON
-              const extractText = (obj: any): string => {
-                if (typeof obj === "string") return obj
-                if (Array.isArray(obj)) {
-                  return obj.map(extractText).filter(Boolean).join("\n")
-                }
-                if (typeof obj === "object" && obj !== null) {
-                  const texts: string[] = []
-                  for (const key in obj) {
-                    if (["text", "content", "markdown", "body"].includes(key) && typeof obj[key] === "string") {
-                      texts.push(obj[key])
-                    } else if (typeof obj[key] === "object") {
-                      const extracted = extractText(obj[key])
-                      if (extracted) texts.push(extracted)
-                    }
-                  }
-                  return texts.join("\n")
-                }
-                return ""
-              }
-              const extractedText = extractText(jsonData)
-              if (extractedText && extractedText.length > 100) {
-                markdownContent = extractedText
-                console.log(`✅ Texto extraído del JSON: ${markdownContent.length} chars`)
-              }
-            } catch (e) {
-              console.warn("⚠️ No se pudo parsear como JSON, usando contenido tal cual")
-            }
-          }
-          
-          console.log(`✅ Document converted successfully, markdown length: ${markdownContent.length} chars`)
-          if (doclingRawJson) {
-            console.log(`✅ Docling JSON structured data available`)
-          }
-        } catch (doclingError: any) {
-          console.error(`❌ Error converting document with Docling:`, doclingError)
-          console.error(`Error details:`, {
-            message: doclingError.message,
-            stack: doclingError.stack
-          })
-          
-          // Provide user-friendly error message without exposing internal details
-          let errorMessage = "Error al procesar el documento. Por favor, inténtalo de nuevo o contacta soporte."
-          
-          if (doclingError.message?.includes("DOCLING_BASE_URL")) {
-            errorMessage = "Servicio de conversión de documentos no configurado"
-          } else if (doclingError.message?.includes("Timeout") || doclingError.message?.includes("AbortError")) {
-            errorMessage = "El documento es demasiado grande o el procesamiento tardó demasiado"
-          } else if (doclingError.message?.includes("URL de Docling inválida") || doclingError.message?.includes("Failed to parse URL")) {
-            errorMessage = "Error de configuración del servicio de procesamiento. Verifica la configuración."
-            // Log más detallado para debugging
-            console.error(`⚠️ Problema con DOCLING_BASE_URL. Verifica que esté correctamente configurada.`)
-          } else if (doclingError.message?.includes("fetch") || doclingError.message?.includes("network") || doclingError.message?.includes("ECONNREFUSED")) {
-            errorMessage = "Error de conexión al procesar el documento. Verifica que el servicio esté disponible."
-          }
-          
-          throw new Error(errorMessage)
-        }
+        // Create File object for ingestion
+        const file = new File([fileData], document.file_name, { type: document.mime_type })
 
-        // Chunk the markdown content with process-specific settings (500-800 tokens)
-        const splitter = new RecursiveCharacterTextSplitter({
-          chunkSize: PROCESS_CHUNK_SIZE,
-          chunkOverlap: PROCESS_CHUNK_OVERLAP
-        })
+        // Ingest to External RAG
+        console.log(`🚀 Ingesting ${document.file_name} to RAG backend...`)
 
-        const splitDocs = await splitter.createDocuments([markdownContent])
-
-        // Generate embeddings for all chunks
-        const chunkTexts = splitDocs.map(doc => doc.pageContent)
-        const embeddingResponse = await openai.embeddings.create({
-          model: "text-embedding-3-small",
-          input: chunkTexts
-        })
-
-        const embeddings = embeddingResponse.data.map(item => item.embedding)
-
-        // Prepare metadata for document (including Docling rawJson if available)
-        // Store rawJson at document level, not in each chunk (more efficient)
-        const documentMetadata: any = {
-          ...(document.metadata || {}),
-          file_name: document.file_name,
-          processed_with: "docling",
-          processed_at: new Date().toISOString()
-        }
-        
-        // Store Docling rawJson in document metadata (not in each chunk)
-        if (doclingRawJson) {
-          // Limit size to avoid JSONB limits (typically 1GB, but be conservative)
-          // Store a summary or truncated version if too large
-          try {
-            const jsonString = JSON.stringify(doclingRawJson)
-            if (jsonString.length > 1000000) { // 1MB limit
-              console.warn(`⚠️ Docling rawJson is large (${jsonString.length} bytes), storing summary only`)
-              documentMetadata.docling_raw = {
-                summary: "Document structure available",
-                size: jsonString.length,
-                truncated: true
-              }
-            } else {
-              documentMetadata.docling_raw = doclingRawJson
-            }
-          } catch (jsonError) {
-            console.warn(`⚠️ Could not serialize Docling rawJson:`, jsonError)
-            documentMetadata.docling_raw = { error: "Could not serialize" }
-          }
-        }
-
-        // Save chunks to process_document_sections
-        // Only include chunk-specific metadata, not the full rawJson
-        const sectionsToInsert = splitDocs.map((doc, index) => ({
+        const metadata = {
           process_id: processId,
-          document_id: document.id,
+          file_name: document.file_name,
+          mime_type: document.mime_type || "application/octet-stream",
           user_id: user.id,
-          content: doc.pageContent,
-          tokens: encode(doc.pageContent).length,
-          openai_embedding: embeddings[index] as any,
-          metadata: {
-            chunk_index: index,
-            total_chunks: splitDocs.length,
-            file_name: document.file_name
-            // Note: Docling-specific metadata (page, block type, etc.) could be added here
-            // if extracted from rawJson, but we keep it minimal for now
+          document_id: document.id
+        }
+
+        try {
+          await ragBackendService.ingestDocument(
+            file,
+            processRecord.workspace_id,
+            processId,
+            metadata
+          )
+
+          // Update status to indexed
+          const { error: indexedError } = await supabaseAdmin
+            .from("process_documents")
+            .update({
+              status: "indexed",
+              error_message: null,
+              metadata: {
+                ...(document.metadata || {}),
+                processed_with: "external_rag",
+                processed_at: new Date().toISOString()
+              },
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", document.id)
+
+          if (indexedError) {
+            throw new Error(`Error actualizando estado a indexed: ${indexedError.message}`)
           }
-        }))
 
-        const { error: insertError } = await supabaseAdmin
-          .from("process_document_sections")
-          .insert(sectionsToInsert)
+          console.log(`✅ Documento ${document.file_name} indexado correctamente (externo)`)
 
-        if (insertError) {
-          throw new Error(`Error guardando chunks: ${insertError.message}`)
+        } catch (ragError: any) {
+          console.error(`❌ Error ingesting to RAG backend:`, ragError)
+          throw new Error(`Error en ingestión externa: ${ragError.message}`)
         }
-
-        // Update document status to indexed and save metadata (including Docling rawJson)
-        const { error: indexedError } = await supabaseAdmin
-          .from("process_documents")
-          .update({ 
-            status: "indexed",
-            error_message: null,
-            metadata: documentMetadata,
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", document.id)
-
-        if (indexedError) {
-          console.error(`❌ Error updating document status to indexed:`, indexedError)
-          throw new Error(`Error actualizando estado a indexed: ${indexedError.message}`)
-        }
-
-        console.log(`✅ Documento ${document.file_name} indexado correctamente (${sectionsToInsert.length} chunks)`)
 
       } catch (error: any) {
         console.error(`❌ Error procesando documento ${document.file_name}:`, error)
         console.error("Error stack:", error.stack)
-        
+
         // Provide user-friendly error message (don't expose internal details like DOCLING_BASE_URL)
         let userFriendlyMessage = error.message || "Error desconocido al procesar el documento"
-        
+
         // Sanitize error messages to avoid exposing internal details
         if (userFriendlyMessage.includes("DOCLING_BASE_URL")) {
           userFriendlyMessage = "Error de configuración del servicio de procesamiento"
@@ -372,7 +298,7 @@ export async function POST(
         } else if (userFriendlyMessage.includes("fetch") || userFriendlyMessage.includes("network")) {
           userFriendlyMessage = "Error de conexión al procesar el documento. Por favor, inténtalo de nuevo."
         }
-        
+
         // Update document status to error using admin client
         const { error: errorUpdateError } = await supabaseAdmin
           .from("process_documents")
@@ -386,7 +312,7 @@ export async function POST(
         if (errorUpdateError) {
           console.error(`❌ Error updating document status to error:`, errorUpdateError)
         }
-        
+
         // Continue processing other documents even if one fails
         console.log(`⚠️ Continuing with other documents despite error in ${document.file_name}`)
       }
@@ -439,7 +365,7 @@ export async function POST(
       // Update last_indexed_at
       const { error: updateError } = await supabaseAdmin
         .from("processes")
-        .update({ 
+        .update({
           indexing_status: "ready",
           last_indexed_at: new Date().toISOString()
         })
@@ -480,7 +406,7 @@ export async function POST(
     console.error("❌ Error en ingestión:", error)
     console.error("Error stack:", error.stack)
     return NextResponse.json(
-      { 
+      {
         error: "Error al procesar documentos",
         details: error.message,
         stack: process.env.NODE_ENV === "development" ? error.stack : undefined

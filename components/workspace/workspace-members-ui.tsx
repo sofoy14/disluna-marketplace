@@ -336,7 +336,10 @@ export function InvitationCard({
     )
 }
 
-// Invite Section Component
+// Invite Section Component with enhanced link controls
+export type LinkExpiration = "7" | "14" | "30"
+export type LinkMaxUses = "1" | "5" | "unlimited"
+
 export function InviteSection({
     inviteEmail,
     setInviteEmail,
@@ -347,7 +350,12 @@ export function InviteSection({
     onSendInvitation,
     onCreateInviteLink,
     sendingInvite,
-    creatingInviteLink
+    creatingInviteLink,
+    // New props for link controls
+    linkExpiration = "7",
+    setLinkExpiration,
+    linkMaxUses = "1",
+    setLinkMaxUses
 }: {
     inviteEmail: string
     setInviteEmail: (email: string) => void
@@ -359,35 +367,18 @@ export function InviteSection({
     onCreateInviteLink: () => void
     sendingInvite: boolean
     creatingInviteLink: boolean
+    // Optional enhanced controls
+    linkExpiration?: LinkExpiration
+    setLinkExpiration?: (exp: LinkExpiration) => void
+    linkMaxUses?: LinkMaxUses
+    setLinkMaxUses?: (uses: LinkMaxUses) => void
 }) {
-    const [mode, setMode] = useState<"email" | "link">("email")
+
 
     return (
         <div className="rounded-xl bg-gradient-to-br from-purple-500/10 to-blue-500/10 border border-white/10 p-5 space-y-4">
             <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-white">Invitar personas</h3>
-                <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5">
-                    <button
-                        onClick={() => setMode("email")}
-                        className={`px-3 py-1 text-xs rounded-md transition-all ${mode === "email"
-                                ? "bg-purple-500/30 text-purple-300"
-                                : "text-gray-400 hover:text-white"
-                            }`}
-                    >
-                        <Mail className="w-3.5 h-3.5 inline-block mr-1.5" />
-                        Email
-                    </button>
-                    <button
-                        onClick={() => setMode("link")}
-                        className={`px-3 py-1 text-xs rounded-md transition-all ${mode === "link"
-                                ? "bg-purple-500/30 text-purple-300"
-                                : "text-gray-400 hover:text-white"
-                            }`}
-                    >
-                        <LinkIcon className="w-3.5 h-3.5 inline-block mr-1.5" />
-                        Enlace
-                    </button>
-                </div>
             </div>
 
             <div className="flex items-center gap-3">
@@ -395,68 +386,53 @@ export function InviteSection({
                 <RoleSelector value={inviteRole} onValueChange={setInviteRole} />
             </div>
 
-            <AnimatePresence mode="wait">
-                {mode === "email" ? (
-                    <motion.div
-                        key="email"
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 10 }}
-                        className="flex gap-2"
-                    >
-                        <Input
-                            value={inviteEmail}
-                            onChange={(e) => setInviteEmail(e.target.value)}
-                            placeholder="correo@ejemplo.com"
-                            type="email"
-                            className="flex-1 bg-white/5 border-white/10 focus:border-purple-500/50"
-                        />
-                        <Button
-                            onClick={onSendInvitation}
-                            disabled={sendingInvite || !inviteEmail}
-                            className="bg-purple-600 hover:bg-purple-500 whitespace-nowrap"
-                        >
-                            {sendingInvite ? (
-                                <RefreshCw className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <>
-                                    <Mail className="w-4 h-4 mr-2" />
-                                    Invitar
-                                </>
-                            )}
-                        </Button>
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        key="link"
-                        initial={{ opacity: 0, x: 10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -10 }}
-                        className="flex gap-2"
-                    >
-                        <Input
-                            value={inviteLinkLabel}
-                            onChange={(e) => setInviteLinkLabel(e.target.value)}
-                            placeholder="Etiqueta (opcional)"
-                            className="flex-1 bg-white/5 border-white/10 focus:border-purple-500/50"
-                        />
-                        <Button
-                            onClick={onCreateInviteLink}
-                            disabled={creatingInviteLink}
-                            className="bg-purple-600 hover:bg-purple-500 whitespace-nowrap"
-                        >
-                            {creatingInviteLink ? (
-                                <RefreshCw className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <>
-                                    <Copy className="w-4 h-4 mr-2" />
-                                    Crear enlace
-                                </>
-                            )}
-                        </Button>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            <div className="flex gap-2">
+                <Input
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    placeholder="correo@ejemplo.com"
+                    type="email"
+                    className="flex-1 bg-white/5 border-white/10 focus:border-purple-500/50"
+                />
+                <Button
+                    onClick={onSendInvitation}
+                    disabled={sendingInvite || !inviteEmail}
+                    className="bg-purple-600 hover:bg-purple-500 whitespace-nowrap"
+                >
+                    {sendingInvite ? (
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                    ) : (
+                        <>
+                            <Mail className="w-4 h-4 mr-2" />
+                            Invitar
+                        </>
+                    )}
+                </Button>
+            </div>
         </div>
     )
 }
+
+// Access Summary Header Component
+export function AccessSummary({
+    memberCount,
+    pendingInviteCount
+}: {
+    memberCount: number
+    pendingInviteCount: number
+}) {
+    return (
+        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+            <div className="flex items-center gap-2">
+                <UserCircle className="w-4 h-4" />
+                <span>{memberCount} {memberCount === 1 ? "miembro" : "miembros"}</span>
+            </div>
+            <span className="text-white/20">·</span>
+            <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                <span>{pendingInviteCount} {pendingInviteCount === 1 ? "invitación pendiente" : "invitaciones pendientes"}</span>
+            </div>
+        </div>
+    )
+}
+

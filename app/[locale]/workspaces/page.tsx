@@ -18,8 +18,11 @@ import {
     Shield,
     Eye,
     Briefcase,
-    Scale
+    Scale,
+    Loader2
 } from "lucide-react"
+
+import { supabase } from "@/lib/supabase/browser-client"
 
 import { ALIContext } from "@/context/context"
 import { Button } from "@/components/ui/button"
@@ -32,7 +35,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import { WorkspaceSettings } from "@/components/workspace/workspace-settings"
+
 import { createWorkspaceWithPlanCheck } from "@/db/workspaces"
 import { toast } from "sonner"
 import { Tables } from "@/supabase/types"
@@ -112,13 +115,15 @@ function WorkspaceCard({
     isSelected,
     onSelect,
     onOpenSettings,
-    userRole
+    userRole,
+    membersCount
 }: {
     workspace: Tables<"workspaces">
     isSelected: boolean
     onSelect: () => void
     onOpenSettings: () => void
     userRole?: string
+    membersCount?: number
 }) {
     return (
         <motion.div variants={fadeIn} custom={0}>
@@ -216,7 +221,7 @@ function WorkspaceCard({
                             {!workspace.is_home && (
                                 <div className="flex items-center gap-1 text-xs text-gray-500">
                                     <Users className="w-3 h-3" />
-                                    <span>--</span>
+                                    <span>{membersCount || "--"}</span>
                                 </div>
                             )}
                         </div>
@@ -251,7 +256,42 @@ export default function WorkspacesPage() {
 
     const [searchQuery, setSearchQuery] = useState("")
     const [isCreating, setIsCreating] = useState(false)
-    const [settingsWorkspace, setSettingsWorkspace] = useState<Tables<"workspaces"> | null>(null)
+    const [memberships, setMemberships] = useState<any[]>([])
+    const [loadingMemberships, setLoadingMemberships] = useState(true)
+
+    // Load memberships to get roles and member counts
+    useEffect(() => {
+        if (!profile) return
+
+        const loadData = async () => {
+            try {
+                setLoadingMemberships(true)
+                const { data, error } = await (supabase as any)
+                    .from("workspace_members")
+                    .select("*, user:user_id(id, email)")
+
+                if (error) throw error
+                setMemberships(data || [])
+            } catch (error) {
+                console.error("Error loading memberships:", error)
+            } finally {
+                setLoadingMemberships(false)
+            }
+        }
+
+        loadData()
+    }, [profile, workspaces])
+
+    // Get role for a specific workspace
+    const getWorkspaceRole = (workspaceId: string) => {
+        const membership = memberships.find(m => m.workspace_id === workspaceId && m.user_id === profile?.user_id)
+        return membership?.role || (workspaces.find(w => w.id === workspaceId)?.user_id === profile?.user_id ? "ADMIN" : "VIEWER")
+    }
+
+    // Get member count for a specific workspace
+    const getMemberCount = (workspaceId: string) => {
+        return memberships.filter(m => m.workspace_id === workspaceId).length
+    }
 
     // Filter workspaces based on search
     const filteredWorkspaces = workspaces.filter(
@@ -288,7 +328,7 @@ export default function WorkspacesPage() {
 
             if (result.success && result.workspace) {
                 setWorkspaces([...workspaces, result.workspace])
-                setSettingsWorkspace(result.workspace)
+                router.push(`/${result.workspace.id}/settings`)
                 toast.success("Workspace creado")
             } else if (result.needsUpgrade) {
                 toast.error("Límite alcanzado", {
@@ -379,8 +419,8 @@ export default function WorkspacesPage() {
                                 workspace={homeWorkspace}
                                 isSelected={selectedWorkspace?.id === homeWorkspace.id}
                                 onSelect={() => handleSelectWorkspace(homeWorkspace)}
-                                onOpenSettings={() => setSettingsWorkspace(homeWorkspace)}
-                                userRole="ADMIN"
+                                onOpenSettings={() => router.push(`/${homeWorkspace.id}/settings`)}
+                                userRole={getWorkspaceRole(homeWorkspace.id)}
                             />
                         </div>
                     </motion.div>
@@ -431,8 +471,9 @@ export default function WorkspacesPage() {
                                     workspace={workspace}
                                     isSelected={selectedWorkspace?.id === workspace.id}
                                     onSelect={() => handleSelectWorkspace(workspace)}
-                                    onOpenSettings={() => setSettingsWorkspace(workspace)}
-                                    userRole="ADMIN" // TODO: Get actual role from workspace_members
+                                    onOpenSettings={() => router.push(`/${workspace.id}/settings`)}
+                                    userRole={getWorkspaceRole(workspace.id)}
+                                    membersCount={getMemberCount(workspace.id)}
                                 />
                             ))}
                         </motion.div>
@@ -440,36 +481,7 @@ export default function WorkspacesPage() {
                 </motion.div>
             </div>
 
-            {/* Workspace Settings Drawer */}
-            {settingsWorkspace && (
-                <WorkspaceSettings
-                    workspace={settingsWorkspace}
-                    trigger={<span className="hidden" />}
-                />
-            )}
 
-            {/* Hidden trigger to open settings externally */}
-            <AnimatePresence>
-                {settingsWorkspace && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50"
-                    >
-                        <WorkspaceSettings
-                            workspace={settingsWorkspace}
-                            trigger={
-                                <Button
-                                    variant="ghost"
-                                    className="hidden"
-                                    onClick={() => setSettingsWorkspace(null)}
-                                />
-                            }
-                        />
-                    </motion.div>
-                )}
-            </AnimatePresence>
         </div>
     )
 }

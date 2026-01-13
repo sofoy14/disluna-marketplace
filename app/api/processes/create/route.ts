@@ -3,14 +3,18 @@ import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
 import { canCreateProcess } from "@/lib/billing/plan-access"
 import { incrementProcessCount } from "@/db/usage-tracking"
+import { ragBackendService } from "@/lib/services/rag-backend"
+import { Database } from "@/supabase/types"
+import { createClient as createSupabaseClient } from "@supabase/supabase-js"
+import { env } from "@/lib/env/runtime-env"
 
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies()
     const supabase = createClient(cookieStore)
-    
+
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: "No autorizado" },
@@ -23,10 +27,10 @@ export async function POST(request: Request) {
     // ═══════════════════════════════════════════════════════════════════════
     if (process.env.NEXT_PUBLIC_BILLING_ENABLED === 'true') {
       const canCreate = await canCreateProcess(user.id)
-      
+
       if (!canCreate.allowed) {
         return NextResponse.json(
-          { 
+          {
             error: canCreate.reason || "Tu plan no permite crear más procesos",
             code: "PLAN_LIMIT_EXCEEDED",
             needsUpgrade: true
@@ -41,7 +45,7 @@ export async function POST(request: Request) {
     const name = formData.get('name') as string
     const description = formData.get('description') as string || ''
     const context = formData.get('context') as string || description || ''
-    
+
     // Validar campos requeridos
     if (!name || !name.trim()) {
       return NextResponse.json(
@@ -49,18 +53,18 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
-    
+
     // Usar description o context, pero asegurar que no esté vacío (description es NOT NULL en la BD)
     const processDescription = description.trim() || context.trim() || 'Sin descripción'
 
     // Obtener workspace_id del body o del query string
     const workspaceId = formData.get("workspace_id") as string | null
-    
+
     console.log("📋 Creating process - workspace_id from formData:", workspaceId)
     console.log("📋 User ID:", user.id)
-    
+
     let workspace
-    
+
     if (workspaceId) {
       // Verificar que el workspace pertenezca al usuario
       const { data: workspaceData, error: workspaceError } = await supabase
@@ -77,7 +81,7 @@ export async function POST(request: Request) {
           { status: 404 }
         )
       }
-      
+
       workspace = workspaceData
       console.log("✅ Using provided workspace:", { id: workspace.id, name: workspaceData.name })
     } else {
@@ -134,10 +138,10 @@ export async function POST(request: Request) {
       console.error("Error code:", newProcess.error.code)
       console.error("Error details:", newProcess.error.details)
       console.error("Error hint:", newProcess.error.hint)
-      
+
       return NextResponse.json(
-        { 
-          error: "Error al crear el proceso", 
+        {
+          error: "Error al crear el proceso",
           details: newProcess.error.message || 'Unknown error',
           code: newProcess.error.code,
           hint: newProcess.error.hint
@@ -145,7 +149,7 @@ export async function POST(request: Request) {
         { status: 500 }
       )
     }
-    
+
     console.log("Process created successfully:", newProcess.data)
 
     // ═══════════════════════════════════════════════════════════════════════
@@ -160,34 +164,142 @@ export async function POST(request: Request) {
         // Don't fail the request for tracking errors
       }
     }
-    
+
     // Ya no necesitamos actualizar el workspace_id porque lo incluimos desde el inicio
 
     // Si hay archivos, procesarlos
     const files: File[] = []
     const entries = Array.from(formData.entries())
-    
+
     for (const [key, value] of entries) {
       if (key.startsWith('file_') && value instanceof File) {
         files.push(value)
       }
     }
 
-    // TODO: Implementar subida de archivos y procesamiento de ZIP
-    // Por ahora solo retornamos el proceso creado
+    if (files.length > 0) {
+      console.log(`📂 Processing ${files.length} files for new process ${newProcess.data.id}`)
+
+      const supabaseAdmin = createSupabaseClient<Database>(
+        env.supabaseUrl(),
+        env.supabaseServiceRole()
+      )
+
+      for (const file of files) {
+        try {
+          console.log(`Processing file: ${file.name}`)
+
+          // 1. Upload to Supabase Storage
+          // Use same path structure as upload route: userId/base64(uuid)
+          const fileId = crypto.randomUUID()
+          // We don't have Buffer in Edge runtime by default depending on Next.js config, 
+          // but assuming Node runtime (default for API routes unless specified)
+          // const storagePath = `${user.id}/${Buffer.from(fileId).toString("base64")}`
+          // Safer generic way:
+          const storagePath = `${user.id}/${fileId}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
+
+          const { error: uploadError } = await supabaseAdmin.storage
+            .from("files")
+            .upload(storagePath, file, { upsert: true })
+
+          if (uploadError) {
+            console.error(`❌ Error uploading file ${file.name} to storage:`, uploadError)
+            continue
+          }
+
+          // 2. Create document record
+          const { data: doc, error: docError } = await supabaseAdmin
+            .from("process_documents")
+            .insert({
+              process_id: newProcess.data.id,
+              user_id: user.id,
+              file_name: file.name,
+              storage_path: storagePath,
+              mime_type: file.type || "application/octet-stream",
+              size_bytes: file.size,
+              status: "processing", // Start as processing
+              metadata: {
+                source: "create_process_upload"
+              }
+            })
+            .select()
+            .single()
+
+          if (docError || !doc) {
+            console.error(`❌ Error creating document record for ${file.name}:`, docError)
+            continue
+          }
+
+          // 3. Ingest to RAG Backend
+          try {
+            console.log(`🚀 Ingesting ${file.name} to RAG backend...`)
+            const metadata = {
+              process_id: newProcess.data.id, // CRITICAL: Pass process_id in metadata for extraction
+              file_name: file.name,
+              mime_type: file.type,
+              user_id: user.id,
+              document_id: doc.id
+            }
+
+            await ragBackendService.ingestDocument(
+              file,
+              workspace.id,
+              newProcess.data.id, // Pass processId explicitly as 3rd arg per our recent fix
+              metadata
+            )
+
+            // 4. Update status to indexed
+            await supabaseAdmin
+              .from("process_documents")
+              .update({
+                status: "indexed",
+                metadata: {
+                  ...doc.metadata as any,
+                  processed_with: "external_rag",
+                  processed_at: new Date().toISOString()
+                }
+              })
+              .eq("id", doc.id)
+
+            console.log(`✅ File ${file.name} successfully ingested and indexed`)
+
+          } catch (ragError) {
+            console.error(`❌ Error ingesting ${file.name} to RAG backend:`, ragError)
+
+            // Update status to error
+            await supabaseAdmin
+              .from("process_documents")
+              .update({
+                status: "error",
+                error_message: ragError instanceof Error ? ragError.message : "RAG Ingestion failed"
+              })
+              .eq("id", doc.id)
+          }
+
+        } catch (fileError) {
+          console.error(`❌ Error processing file ${file.name}:`, fileError)
+        }
+      }
+    }
+
+    // Return process created response
+    // We do this after file processing so the client gets the final state, 
+    // although for large files this might be slow. 
+    // Ideally we should process async, but Vercel limits background execution.
+    // For now, this is acceptable for few small files.
 
     return NextResponse.json({
       success: true,
       process: newProcess.data,
-      message: "Proceso creado exitosamente"
+      message: `Proceso creado con ${files.length} archivos procesados`
     })
 
   } catch (error) {
     console.error("Error creating process:", error)
     return NextResponse.json(
-      { 
-        error: "Error al crear el proceso", 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+      {
+        error: "Error al crear el proceso",
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     )

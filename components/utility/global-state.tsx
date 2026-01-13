@@ -3,6 +3,7 @@
 "use client"
 
 import { ALIContext } from "@/context/context"
+import { toast } from "sonner"
 import { getProfileByUserId } from "@/db/profile"
 import { getWorkspaceImageFromStorage } from "@/db/storage/workspace-images"
 import { getWorkspacesByUserId } from "@/db/workspaces"
@@ -45,7 +46,7 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [collections, setCollections] = useState<Tables<"processes">[]>([])
   const [chats, setChats] = useState<Tables<"chats">[]>([])
   const [files, setFiles] = useState<Tables<"files">[]>([])
-  const [folders, setFolders] = useState<Tables<"folders">[]>([])
+  const [folders, setFolders] = useState<any[]>([])
   const [models, setModels] = useState<Tables<"models">[]>([])
   const [presets, setPresets] = useState<Tables<"presets">[]>([])
   const [prompts, setPrompts] = useState<Tables<"prompts">[]>([])
@@ -230,7 +231,7 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[Auth State Change]', event, session?.user?.email || 'no user')
-      
+
       // If signed out or token refresh failed, redirect to login
       if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
         console.log('[Auth State Change] Session ended, redirecting to login')
@@ -247,7 +248,7 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
   }, [router])
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       try {
         // Cargar datos en segundo plano sin mostrar pantalla de carga
         const profile = await fetchStartingData()
@@ -274,11 +275,13 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
         if (localModels) {
           setAvailableLocalModels(localModels)
         }
-         
+
         // Los datos se cargan en segundo plano, no hay pantalla de carga
-      } catch (error) {
+      } catch (error: any) {
         console.error("❌ Error cargando datos iniciales:", error)
-        // Los errores se manejan silenciosamente
+        toast.error("Error al cargar tus datos", {
+          description: error.message || "Por favor recarga la página"
+        })
       }
     })()
   }, [])
@@ -339,6 +342,12 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
         }
       }
 
+      // Select home workspace by default if none selected
+      const homeWorkspace = workspaces.find(w => w.is_home)
+      if (homeWorkspace && !selectedWorkspace) {
+        setSelectedWorkspace(homeWorkspace)
+      }
+
       return profile
     }
   }
@@ -347,142 +356,142 @@ Responde SIEMPRE en español y con un enfoque 100% profesional específico para 
     <ThemePreferencesProvider profile={profile}>
       <ALIContext.Provider
         value={{
-        // PROFILE STORE
-        profile,
-        setProfile,
+          // PROFILE STORE
+          profile,
+          setProfile,
 
-        // ITEMS STORE
-        assistants,
-        setAssistants,
-        collections,
-        setCollections,
-        chats,
-        setChats,
-        files,
-        setFiles,
-        folders,
-        setFolders,
-        models,
-        setModels,
-        presets,
-        setPresets,
-        prompts,
-        setPrompts,
-        tools,
-        setTools,
-        workspaces,
-        setWorkspaces,
-        transcriptions,
-        setTranscriptions,
+          // ITEMS STORE
+          assistants,
+          setAssistants,
+          collections,
+          setCollections,
+          chats,
+          setChats,
+          files,
+          setFiles,
+          folders,
+          setFolders,
+          models,
+          setModels,
+          presets,
+          setPresets,
+          prompts,
+          setPrompts,
+          tools,
+          setTools,
+          workspaces,
+          setWorkspaces,
+          transcriptions,
+          setTranscriptions,
 
-        // MODELS STORE
-        envKeyMap,
-        setEnvKeyMap,
-        availableHostedModels,
-        setAvailableHostedModels,
-        availableLocalModels,
-        setAvailableLocalModels,
-        availableOpenRouterModels,
-        setAvailableOpenRouterModels,
+          // MODELS STORE
+          envKeyMap,
+          setEnvKeyMap,
+          availableHostedModels,
+          setAvailableHostedModels,
+          availableLocalModels,
+          setAvailableLocalModels,
+          availableOpenRouterModels,
+          setAvailableOpenRouterModels,
 
-        // WORKSPACE STORE
-        selectedWorkspace,
-        setSelectedWorkspace,
-        workspaceImages,
-        setWorkspaceImages,
+          // WORKSPACE STORE
+          selectedWorkspace,
+          setSelectedWorkspace,
+          workspaceImages,
+          setWorkspaceImages,
 
-        // PRESET STORE
-        selectedPreset,
-        setSelectedPreset,
+          // PRESET STORE
+          selectedPreset,
+          setSelectedPreset,
 
-        // ASSISTANT STORE
-        selectedAssistant,
-        setSelectedAssistant,
-        assistantImages,
-        setAssistantImages,
-        openaiAssistants,
-        setOpenaiAssistants,
+          // ASSISTANT STORE
+          selectedAssistant,
+          setSelectedAssistant,
+          assistantImages,
+          setAssistantImages,
+          openaiAssistants,
+          setOpenaiAssistants,
 
-        // PASSIVE CHAT STORE
-        userInput,
-        setUserInput,
-        chatMessages,
-        setChatMessages,
-        chatSettings,
-        setChatSettings,
-        selectedChat,
-        setSelectedChat,
-        chatFileItems,
-        setChatFileItems,
+          // PASSIVE CHAT STORE
+          userInput,
+          setUserInput,
+          chatMessages,
+          setChatMessages,
+          chatSettings,
+          setChatSettings,
+          selectedChat,
+          setSelectedChat,
+          chatFileItems,
+          setChatFileItems,
 
-        // ACTIVE CHAT STORE
-        isGenerating,
-        setIsGenerating,
-        firstTokenReceived,
-        setFirstTokenReceived,
-        abortController,
-        setAbortController,
+          // ACTIVE CHAT STORE
+          isGenerating,
+          setIsGenerating,
+          firstTokenReceived,
+          setFirstTokenReceived,
+          abortController,
+          setAbortController,
 
-        // CHAT INPUT COMMAND STORE
-        isPromptPickerOpen,
-        setIsPromptPickerOpen,
-        slashCommand,
-        setSlashCommand,
-        isFilePickerOpen,
-        setIsFilePickerOpen,
-        hashtagCommand,
-        setHashtagCommand,
-        isToolPickerOpen,
-        setIsToolPickerOpen,
-        toolCommand,
-        setToolCommand,
-        focusPrompt,
-        setFocusPrompt,
-        focusFile,
-        setFocusFile,
-        focusTool,
-        setFocusTool,
-        focusAssistant,
-        setFocusAssistant,
-        atCommand,
-        setAtCommand,
-        isAssistantPickerOpen,
-        setIsAssistantPickerOpen,
+          // CHAT INPUT COMMAND STORE
+          isPromptPickerOpen,
+          setIsPromptPickerOpen,
+          slashCommand,
+          setSlashCommand,
+          isFilePickerOpen,
+          setIsFilePickerOpen,
+          hashtagCommand,
+          setHashtagCommand,
+          isToolPickerOpen,
+          setIsToolPickerOpen,
+          toolCommand,
+          setToolCommand,
+          focusPrompt,
+          setFocusPrompt,
+          focusFile,
+          setFocusFile,
+          focusTool,
+          setFocusTool,
+          focusAssistant,
+          setFocusAssistant,
+          atCommand,
+          setAtCommand,
+          isAssistantPickerOpen,
+          setIsAssistantPickerOpen,
 
-        // ATTACHMENT STORE
-        chatFiles,
-        setChatFiles,
-        chatImages,
-        setChatImages,
-        newMessageFiles,
-        setNewMessageFiles,
-        newMessageImages,
-        setNewMessageImages,
-        showFilesDisplay,
-        setShowFilesDisplay,
+          // ATTACHMENT STORE
+          chatFiles,
+          setChatFiles,
+          chatImages,
+          setChatImages,
+          newMessageFiles,
+          setNewMessageFiles,
+          newMessageImages,
+          setNewMessageImages,
+          showFilesDisplay,
+          setShowFilesDisplay,
 
-        // RETRIEVAL STORE
-        useRetrieval,
-        setUseRetrieval,
-        sourceCount,
-        setSourceCount,
+          // RETRIEVAL STORE
+          useRetrieval,
+          setUseRetrieval,
+          sourceCount,
+          setSourceCount,
 
-        // TOOL STORE
-        selectedTools,
-        setSelectedTools,
-        toolInUse,
-        setToolInUse,
+          // TOOL STORE
+          selectedTools,
+          setSelectedTools,
+          toolInUse,
+          setToolInUse,
 
-        // SUGGESTIONS STORE
-        showPlaceholderSuggestions,
-        setShowPlaceholderSuggestions,
+          // SUGGESTIONS STORE
+          showPlaceholderSuggestions,
+          setShowPlaceholderSuggestions,
 
-        // SUGGESTED QUESTIONS STORE
-        suggestedQuestions,
-        setSuggestedQuestions,
-        showSuggestedQuestions,
-        setShowSuggestedQuestions
-      }}
+          // SUGGESTED QUESTIONS STORE
+          suggestedQuestions,
+          setSuggestedQuestions,
+          showSuggestedQuestions,
+          setShowSuggestedQuestions
+        }}
       >
         {isLoading ? <LoadingScreen message={loadingMessage} /> : children}
       </ALIContext.Provider>

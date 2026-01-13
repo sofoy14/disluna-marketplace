@@ -114,6 +114,31 @@ export const emailTemplates = {
       </div>
     `,
     text: `Método de pago próximo a vencer (${new Date(paymentSource.expires_at).toLocaleDateString('es-CO')}). Actualiza en: ${process.env.NEXT_PUBLIC_APP_URL}/billing`
+  }),
+
+  workspaceInvitation: (invitationData: { workspaceName: string, inviteUrl: string, invitedBy: string }): EmailTemplate => ({
+    subject: `Te han invitado a colaborar en "${invitationData.workspaceName}"`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #1f2937;">
+        <h2 style="color: #6366f1; text-align: center;">🤝 Invitación a Workspace</h2>
+        <p>Hola,</p>
+        <p><strong>${invitationData.invitedBy}</strong> te ha invitado a colaborar en el espacio de trabajo <strong>"${invitationData.workspaceName}"</strong>.</p>
+        <div style="background: #f3f4f6; padding: 25px; border-radius: 12px; margin: 30px 0; text-align: center;">
+          <h3 style="margin-top: 0;">¿Listo para empezar?</h3>
+          <p>Haz clic en el botón de abajo para aceptar la invitación y unirte al equipo.</p>
+          <a href="${invitationData.inviteUrl}" style="background: #6366f1; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold; margin-top: 10px;">Aceptar Invitación</a>
+        </div>
+        <p style="font-size: 14px; color: #6b7280; text-align: center;">
+          Este enlace expirará en 7 días.<br>
+          Si no esperabas esta invitación, puedes ignorar este correo.
+        </p>
+        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;">
+        <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+          © ${new Date().getFullYear()} Asistente Legal Inteligente. Todos los derechos reservados.
+        </p>
+      </div>
+    `,
+    text: `Te han invitado a colaborar en "${invitationData.workspaceName}". Acepta la invitación aquí: ${invitationData.inviteUrl}`
   })
 };
 
@@ -131,7 +156,7 @@ function formatCurrency(amountInCents: number): string {
 export async function sendEmail(to: string, template: EmailTemplate): Promise<void> {
   // Implementar según tu proveedor de email (SendGrid, Resend, etc.)
   console.log(`Sending email to ${to}:`, template.subject);
-  
+
   // Ejemplo con fetch a tu API de email
   try {
     const response = await fetch('/api/send-email', {
@@ -144,7 +169,7 @@ export async function sendEmail(to: string, template: EmailTemplate): Promise<vo
         text: template.text
       })
     });
-    
+
     if (!response.ok) {
       throw new Error(`Failed to send email: ${response.statusText}`);
     }

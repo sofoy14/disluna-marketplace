@@ -62,3 +62,206 @@
 {"location":"db/workspaces.ts:43","message":"getWorkspaceById exit","data":{"workspaceId":"d43087ce-1282-4dcd-9785-5b528f1ba258"},"timestamp":1765785281333,"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}
 {"location":"db/workspaces.ts:37","message":"After supabase query","data":{"workspace":{"id":"d43087ce-1282-4dcd-9785-5b528f1ba258","name":"Hogar"},"hasData":true,"dataLength":1},"timestamp":1765785281504,"sessionId":"debug-session","runId":"run1","hypothesisId":"D"}
 {"location":"db/workspaces.ts:43","message":"getWorkspaceById exit","data":{"workspaceId":"d43087ce-1282-4dcd-9785-5b528f1ba258"},"timestamp":1765785281506,"sessionId":"debug-session","runId":"run1","hypothesisId":"A"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"0a5ea1ba-d54f-45cc-b465-1616f84eeee6"},"timestamp":1768149758413,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768149758416,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768149758604,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768149758604,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768149758605,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"0a5ea1ba-d54f-45cc-b465-1616f84eeee6","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768149758606,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768149758734,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"0a5ea1ba-d54f-45cc-b465-1616f84eeee6"},"timestamp":1768149758734,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo","isHome":false},"timestamp":1768149758862,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"0a5ea1ba-d54f-45cc-b465-1616f84eeee6","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768149758862,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768149759068,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768149759069,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768149759220,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768149759221,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"0a5ea1ba-d54f-45cc-b465-1616f84eeee6"},"timestamp":1768149759494,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768149759495,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768149759637,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768149759638,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768149759638,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"0a5ea1ba-d54f-45cc-b465-1616f84eeee6","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768149759638,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":false},"timestamp":1768149759771,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"c51c62b7-4ee5-48bb-b225-804d6bfbdc8e"},"timestamp":1768150990336,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768150990338,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768150990528,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768150990528,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768150990529,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"c51c62b7-4ee5-48bb-b225-804d6bfbdc8e","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768150990529,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768150990691,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"c51c62b7-4ee5-48bb-b225-804d6bfbdc8e"},"timestamp":1768150990692,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (6)","isHome":false},"timestamp":1768150990851,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"c51c62b7-4ee5-48bb-b225-804d6bfbdc8e","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768150990851,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768150991127,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768150991128,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768150991270,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768150991271,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"f806e2df-e405-4fb3-b451-a696b1fc1c61"},"timestamp":1768151004817,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768151004818,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768151004986,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768151004987,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768151004987,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"f806e2df-e405-4fb3-b451-a696b1fc1c61","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768151004988,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768151005123,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"f806e2df-e405-4fb3-b451-a696b1fc1c61"},"timestamp":1768151005123,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (1)","isHome":false},"timestamp":1768151005256,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"f806e2df-e405-4fb3-b451-a696b1fc1c61","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768151005257,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768151005391,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768151005391,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768151005522,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768151005522,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"8fa29563-9416-45e6-a567-2204ea5426c5"},"timestamp":1768151018197,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768151018198,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768151018374,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768151018375,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768151018375,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"8fa29563-9416-45e6-a567-2204ea5426c5","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768151018376,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768151018507,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"8fa29563-9416-45e6-a567-2204ea5426c5"},"timestamp":1768151018507,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (2)","isHome":false},"timestamp":1768151018637,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"8fa29563-9416-45e6-a567-2204ea5426c5","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768151018638,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768151018778,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768151018779,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768151018915,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768151018916,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"0e7e06a0-4dbb-41f3-a117-dd1a1c3ac94f"},"timestamp":1768151030669,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768151030670,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768151030809,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768151030810,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768151030810,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"0e7e06a0-4dbb-41f3-a117-dd1a1c3ac94f","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768151030810,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768151030937,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"0e7e06a0-4dbb-41f3-a117-dd1a1c3ac94f"},"timestamp":1768151030938,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (7)","isHome":false},"timestamp":1768151031076,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"0e7e06a0-4dbb-41f3-a117-dd1a1c3ac94f","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768151031076,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768151031207,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768151031208,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768151031338,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768151031338,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"1deab6ef-fb48-475a-b86a-44af6f176ea5"},"timestamp":1768151038129,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768151038130,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768151038310,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768151038310,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768151038311,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"1deab6ef-fb48-475a-b86a-44af6f176ea5","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768151038311,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768151038447,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"1deab6ef-fb48-475a-b86a-44af6f176ea5"},"timestamp":1768151038448,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (9)","isHome":false},"timestamp":1768151038575,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"1deab6ef-fb48-475a-b86a-44af6f176ea5","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768151038576,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768151038712,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768151038712,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768151038846,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768151038847,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"4a19936f-224b-42e0-9732-407e18d5d264"},"timestamp":1768151045950,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768151045951,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768151046129,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768151046130,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768151046130,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"4a19936f-224b-42e0-9732-407e18d5d264","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768151046130,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768151046265,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"4a19936f-224b-42e0-9732-407e18d5d264"},"timestamp":1768151046265,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (3)","isHome":false},"timestamp":1768151046399,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"4a19936f-224b-42e0-9732-407e18d5d264","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768151046399,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768151046536,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768151046537,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768151046673,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768151046673,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"1add5573-bcbd-42bc-bc9a-e29c307e708a"},"timestamp":1768151053765,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768151053766,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768151053941,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768151053942,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768151053942,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"1add5573-bcbd-42bc-bc9a-e29c307e708a","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768151053942,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768151054080,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"1add5573-bcbd-42bc-bc9a-e29c307e708a"},"timestamp":1768151054081,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (4)","isHome":false},"timestamp":1768151054215,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"1add5573-bcbd-42bc-bc9a-e29c307e708a","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768151054216,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768151054349,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768151054350,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768151054480,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768151054481,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"d36f7787-714b-4895-a8e3-1448dbdd52fa"},"timestamp":1768151107486,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768151107486,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768151107672,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768151107672,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768151107672,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"d36f7787-714b-4895-a8e3-1448dbdd52fa","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768151107673,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768151107823,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"d36f7787-714b-4895-a8e3-1448dbdd52fa"},"timestamp":1768151107823,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (5)","isHome":false},"timestamp":1768151108002,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"d36f7787-714b-4895-a8e3-1448dbdd52fa","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768151108003,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768151108137,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768151108138,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768151108276,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768151108277,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"c9424204-4f88-4a11-847d-c2fbeb30f61a"},"timestamp":1768151114063,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768151114063,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768151114187,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768151114188,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768151114188,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"c9424204-4f88-4a11-847d-c2fbeb30f61a","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768151114189,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768151114315,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"c9424204-4f88-4a11-847d-c2fbeb30f61a"},"timestamp":1768151114315,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (8)","isHome":false},"timestamp":1768151114453,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"c9424204-4f88-4a11-847d-c2fbeb30f61a","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768151114453,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768151114594,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768151114594,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768151114731,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768151114731,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"506579d5-1b44-47b1-a6e3-aad963866d5d"},"timestamp":1768154561767,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768154561768,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768154561910,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768154561911,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768154561911,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"506579d5-1b44-47b1-a6e3-aad963866d5d","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768154561912,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768154562076,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"506579d5-1b44-47b1-a6e3-aad963866d5d"},"timestamp":1768154562077,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (1)","isHome":false},"timestamp":1768154562257,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"506579d5-1b44-47b1-a6e3-aad963866d5d","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768154562257,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768154562548,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768154562549,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768154562733,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768154562733,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"7bfd7047-5c66-486a-89be-9decd1448012"},"timestamp":1768184121023,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768184121025,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768184121461,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768184121461,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768184121462,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"7bfd7047-5c66-486a-89be-9decd1448012","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768184121462,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768184121642,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"7bfd7047-5c66-486a-89be-9decd1448012"},"timestamp":1768184121643,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (1)","isHome":false},"timestamp":1768184122052,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"7bfd7047-5c66-486a-89be-9decd1448012","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768184122052,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768184122413,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768184122413,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768184122586,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768184122586,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"e78faf36-5f55-46c9-b6af-bb8a8799b02f"},"timestamp":1768186859736,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768186859737,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768186859952,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768186859952,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768186859953,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"e78faf36-5f55-46c9-b6af-bb8a8799b02f","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768186859954,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768186860083,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"e78faf36-5f55-46c9-b6af-bb8a8799b02f"},"timestamp":1768186860084,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo (1)","isHome":false},"timestamp":1768186860247,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"e78faf36-5f55-46c9-b6af-bb8a8799b02f","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768186860248,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768186860479,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768186860480,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768186860635,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768186860635,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler started","data":{"workspaceId":"b16e9eae-2765-4a27-b02c-f1b184e90438"},"timestamp":1768186888537,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Created supabase client","data":{},"timestamp":1768186888538,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got user","data":{"userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b","hasUser":true},"timestamp":1768186888716,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before getSupabaseServer","data":{},"timestamp":1768186888716,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Got supabaseServer","data":{"hasClient":true,"supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co...","hasServiceKey":true},"timestamp":1768186888717,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before canUserManageWorkspace","data":{"workspaceId":"b16e9eae-2765-4a27-b02c-f1b184e90438","userId":"cb7c7ce6-3fa2-45ab-bae7-89bd9a12826b"},"timestamp":1768186888717,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After canUserManageWorkspace","data":{"canManage":true},"timestamp":1768186888853,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before workspace query","data":{"workspaceId":"b16e9eae-2765-4a27-b02c-f1b184e90438"},"timestamp":1768186888853,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After workspace query","data":{"hasData":true,"workspaceName":"Nuevo Espacio de Trabajo","isHome":false},"timestamp":1768186889235,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before delete operation","data":{"workspaceId":"b16e9eae-2765-4a27-b02c-f1b184e90438","supabaseUrl":"https://givjfonqaiqhsjjjzedc.supabase.co..."},"timestamp":1768186889236,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After delete operation","data":{},"timestamp":1768186889371,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"Before audit log","data":{},"timestamp":1768186889371,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"After audit log success","data":{},"timestamp":1768186889513,"sessionId":"debug-session","runId":"run4"}
+{"location":"route.ts","message":"DELETE handler success","data":{},"timestamp":1768186889514,"sessionId":"debug-session","runId":"run4"}

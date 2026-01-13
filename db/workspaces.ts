@@ -28,48 +28,37 @@ export const getWorkspaceById = async (
   workspaceId: string,
   client?: SupabaseClient<any>
 ) => {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:26',message:'getWorkspaceById entry',data:{workspaceId,hasClient:!!client},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-  // #endregion
+
   // Validate that workspaceId is a valid UUID
   const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   if (!uuidRegex.test(workspaceId)) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:30',message:'Invalid UUID format',data:{workspaceId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-    // #endregion
+
     throw new Error(`Invalid workspace ID format: ${workspaceId}`)
   }
 
   const supabaseClient = client || supabase
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:33',message:'Before supabase query',data:{workspaceId,usingClient:!!client},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-  // #endregion
+
   const { data: workspace, error } = await supabaseClient
     .from("workspaces")
     .select("*")
     .eq("id", workspaceId)
     .single()
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:37',message:'After supabase query',data:{workspace:workspace?{id:workspace.id,name:workspace.name}:null,error:error?.message,code:error?.code,hasData:!!workspace,dataLength:Array.isArray(workspace)?workspace.length:workspace?1:0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-  // #endregion
+
 
   if (!workspace) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:40',message:'Workspace not found',data:{workspaceId,error:error?.message,code:error?.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
+
     throw new Error(error?.message || 'Workspace not found')
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:43',message:'getWorkspaceById exit',data:{workspaceId,workspaceId:workspace.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
+
   return workspace
 }
 
 export const getWorkspacesByUserId = async (userId: string) => {
-  const { data: memberships, error: membershipsError } = await supabase
+  // 1. Get workspaces where user is a member
+  const { data: memberships, error: membershipsError } = await (supabase as any)
     .from("workspace_members")
     .select("workspace_id")
     .eq("user_id", userId)
@@ -78,18 +67,33 @@ export const getWorkspacesByUserId = async (userId: string) => {
     throw new Error(membershipsError.message)
   }
 
-  const workspaceIds = Array.from(
-    new Set((memberships || []).map(m => m.workspace_id).filter(Boolean))
-  )
+  // 2. Get workspaces owned by user (just in case trigger failed or for redundancy)
+  const { data: ownedWorkspaces, error: ownedError } = await supabase
+    .from("workspaces")
+    .select("id")
+    .eq("user_id", userId)
 
-  if (workspaceIds.length === 0) {
+  if (ownedError) {
+    throw new Error(ownedError.message)
+  }
+
+  // 3. Combine unique IDs
+  const memberWorkspaceIds = (memberships || []).map((m: any) => m.workspace_id)
+  const ownedWorkspaceIds = (ownedWorkspaces || []).map((w: any) => w.id)
+
+  const allWorkspaceIds = Array.from(
+    new Set([...memberWorkspaceIds, ...ownedWorkspaceIds])
+  ).filter(Boolean)
+
+  if (allWorkspaceIds.length === 0) {
     return []
   }
 
+  // 4. Fetch full workspace details
   const { data: workspaces, error } = await supabase
     .from("workspaces")
     .select("*")
-    .in("id", workspaceIds)
+    .in("id", allWorkspaceIds as string[])
     .order("created_at", { ascending: false })
 
   if (!workspaces) {
@@ -155,40 +159,40 @@ export const generateUniqueWorkspaceName = async (
 export const createWorkspace = async (
   workspace: TablesInsert<"workspaces">
 ) => {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:132',message:'createWorkspace entry',data:{userId:workspace.user_id,name:workspace.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-  // #endregion
+
   // Validate that workspace name is unique for this user
   const nameExists = await workspaceNameExists(workspace.user_id, workspace.name)
-  
+
   if (nameExists) {
     // Generate a unique name by appending a number
     workspace.name = await generateUniqueWorkspaceName(workspace.user_id, workspace.name)
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:140',message:'Before supabase insert',data:{userId:workspace.user_id,name:workspace.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-  // #endregion
+
   const { data: createdWorkspace, error } = await supabase
     .from("workspaces")
     .insert([workspace])
     .select("*")
     .single()
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:147',message:'After supabase insert',data:{workspaceId:createdWorkspace?.id,workspaceName:createdWorkspace?.name,error:error?.message,code:error?.code,hasData:!!createdWorkspace},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-  // #endregion
-
   if (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:150',message:'createWorkspace error',data:{error:error.message,code:error.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-    // #endregion
     throw new Error(error.message)
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:155',message:'createWorkspace exit',data:{workspaceId:createdWorkspace.id,workspaceName:createdWorkspace.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-  // #endregion
+  // Ensure member is created (redundancy for SQL trigger)
+  try {
+    await (supabase as any)
+      .from("workspace_members")
+      .insert({
+        workspace_id: createdWorkspace.id,
+        user_id: workspace.user_id,
+        role: "ADMIN"
+      })
+  } catch (err) {
+    // Ignore error if trigger already created it
+    console.log("Member creation redundant or failed:", err)
+  }
+
   return createdWorkspace
 }
 
@@ -197,33 +201,27 @@ export const updateWorkspace = async (
   workspace: TablesUpdate<"workspaces">,
   client?: SupabaseClient<any>
 ) => {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:178',message:'updateWorkspace entry',data:{workspaceId,hasClient:!!client,updateFields:Object.keys(workspace)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
+
   const supabaseClient = client || supabase
 
   // If name is being updated, validate it's unique
   if (workspace.name) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:186',message:'Validating name uniqueness',data:{workspaceId,name:workspace.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
+
     // First, get the current workspace to get the user_id
     const currentWorkspace = await getWorkspaceById(workspaceId, supabaseClient)
-    
+
     const nameExists = await workspaceNameExists(
       currentWorkspace.user_id,
       workspace.name,
       workspaceId // Exclude current workspace from check
     )
-    
+
     if (nameExists) {
       throw new Error(`Ya existe un espacio de trabajo con el nombre "${workspace.name}". Por favor, elige un nombre diferente.`)
     }
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:201',message:'Before supabase update',data:{workspaceId,updateData:workspace},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
+
   const { data: updatedWorkspace, error } = await supabaseClient
     .from("workspaces")
     .update(workspace)
@@ -231,20 +229,14 @@ export const updateWorkspace = async (
     .select("*")
     .single()
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:207',message:'After supabase update',data:{workspaceId,hasData:!!updatedWorkspace,error:error?.message,code:error?.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
+
 
   if (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:210',message:'updateWorkspace error',data:{workspaceId,error:error.message,code:error.code},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-    // #endregion
+
     throw new Error(error.message)
   }
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/b658f2bd-0f91-497b-b1d0-7a2ee8de0eea',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'db/workspaces.ts:215',message:'updateWorkspace exit',data:{workspaceId:updatedWorkspace.id},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
+
   return updatedWorkspace
 }
 

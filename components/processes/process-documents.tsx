@@ -20,12 +20,14 @@ interface ProcessDocument {
 
 interface ProcessDocumentsProps {
   processId: string
+  workspaceId: string
   documents: ProcessDocument[]
   onDocumentsChange: () => void
 }
 
 export const ProcessDocuments: FC<ProcessDocumentsProps> = ({
   processId,
+  workspaceId,
   documents,
   onDocumentsChange
 }) => {
@@ -57,16 +59,52 @@ export const ProcessDocuments: FC<ProcessDocumentsProps> = ({
         throw new Error(error.error || "Error al subir documentos")
       }
 
-      // Start ingestion
+      // 1. Ingest into RAG backend FIRST
+      let ragIngestionSuccess = true
+
+      for (const file of uploadFiles) {
+        try {
+          const ragFormData = new FormData()
+          ragFormData.append('file', file)
+          ragFormData.append('workspace_id', workspaceId)
+          ragFormData.append('metadata', JSON.stringify({
+            process_id: processId,
+            file_name: file.name,
+            mime_type: file.type
+          }))
+
+          const ragResponse = await fetch('/api/rag/ingest', {
+            method: 'POST',
+            body: ragFormData
+          })
+
+          if (!ragResponse.ok) throw new Error("Error en backend RAG")
+
+          console.log(`✅ Documento ${file.name} ingestado en backend RAG`)
+        } catch (ragError) {
+          console.error(`⚠️ Error al ingestar ${file.name} en RAG backend:`, ragError)
+          ragIngestionSuccess = false
+          toast.error(`Error al indexar ${file.name} en RAG backend`)
+        }
+      }
+
+      // 2. Update local status (skip local processing)
+      // Call ingest endpoint with skip_processing=true to just mark them as indexed
       await fetch(`/api/processes/${processId}/ingest`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({
+          skip_processing: true
+        })
       })
 
-      toast.success("Documentos subidos. Se están indexando...")
+      if (ragIngestionSuccess) {
+        toast.success("Documentos subidos e indexados correctamente")
+      } else {
+        toast.warning("Algunos documentos no se pudieron indexar en el RAG backend")
+      }
       setUploadFiles([])
       setShowUpload(false)
       onDocumentsChange()

@@ -19,7 +19,7 @@ export async function GET(
     }
 
     // Check if user is workspace owner
-    const workspace = await getWorkspaceById(params.workspaceId)
+    const workspace = await getWorkspaceById(params.workspaceId, supabase)
     const isOwner = workspace.user_id === user.id
 
     // Check if user is admin member

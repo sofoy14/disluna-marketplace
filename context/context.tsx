@@ -26,8 +26,8 @@ interface ALIContext {
   setChats: Dispatch<SetStateAction<Tables<"chats">[]>>
   files: Tables<"files">[]
   setFiles: Dispatch<SetStateAction<Tables<"files">[]>>
-  folders: Tables<"folders">[]
-  setFolders: Dispatch<SetStateAction<Tables<"folders">[]>>
+  folders: any[]
+  setFolders: Dispatch<SetStateAction<any[]>>
   models: Tables<"models">[]
   setModels: Dispatch<SetStateAction<Tables<"models">[]>>
   presets: Tables<"presets">[]
@@ -153,137 +153,137 @@ interface ALIContext {
 export const ALIContext = createContext<ALIContext>({
   // PROFILE STORE
   profile: null,
-  setProfile: () => {},
+  setProfile: () => { },
 
   // ITEMS STORE
   assistants: [],
-  setAssistants: () => {},
+  setAssistants: () => { },
   collections: [],
-  setCollections: () => {},
+  setCollections: () => { },
   chats: [],
-  setChats: () => {},
+  setChats: () => { },
   files: [],
-  setFiles: () => {},
+  setFiles: () => { },
   folders: [],
-  setFolders: () => {},
+  setFolders: () => { },
   models: [],
-  setModels: () => {},
+  setModels: () => { },
   presets: [],
-  setPresets: () => {},
+  setPresets: () => { },
   prompts: [],
-  setPrompts: () => {},
+  setPrompts: () => { },
   tools: [],
-  setTools: () => {},
+  setTools: () => { },
   workspaces: [],
-  setWorkspaces: () => {},
+  setWorkspaces: () => { },
   transcriptions: [],
-  setTranscriptions: () => {},
+  setTranscriptions: () => { },
 
   // MODELS STORE
   envKeyMap: {},
-  setEnvKeyMap: () => {},
+  setEnvKeyMap: () => { },
   availableHostedModels: [],
-  setAvailableHostedModels: () => {},
+  setAvailableHostedModels: () => { },
   availableLocalModels: [],
-  setAvailableLocalModels: () => {},
+  setAvailableLocalModels: () => { },
   availableOpenRouterModels: [],
-  setAvailableOpenRouterModels: () => {},
+  setAvailableOpenRouterModels: () => { },
 
   // WORKSPACE STORE
   selectedWorkspace: null,
-  setSelectedWorkspace: () => {},
+  setSelectedWorkspace: () => { },
   workspaceImages: [],
-  setWorkspaceImages: () => {},
+  setWorkspaceImages: () => { },
 
   // PRESET STORE
   selectedPreset: null,
-  setSelectedPreset: () => {},
+  setSelectedPreset: () => { },
 
   // ASSISTANT STORE
   selectedAssistant: null,
-  setSelectedAssistant: () => {},
+  setSelectedAssistant: () => { },
   assistantImages: [],
-  setAssistantImages: () => {},
+  setAssistantImages: () => { },
   openaiAssistants: [],
-  setOpenaiAssistants: () => {},
+  setOpenaiAssistants: () => { },
 
   // PASSIVE CHAT STORE
   userInput: "",
-  setUserInput: () => {},
+  setUserInput: () => { },
   selectedChat: null,
-  setSelectedChat: () => {},
+  setSelectedChat: () => { },
   chatMessages: [],
-  setChatMessages: () => {},
+  setChatMessages: () => { },
   chatSettings: null,
-  setChatSettings: () => {},
+  setChatSettings: () => { },
   chatFileItems: [],
-  setChatFileItems: () => {},
+  setChatFileItems: () => { },
 
   // ACTIVE CHAT STORE
   isGenerating: false,
-  setIsGenerating: () => {},
+  setIsGenerating: () => { },
   firstTokenReceived: false,
-  setFirstTokenReceived: () => {},
+  setFirstTokenReceived: () => { },
   abortController: null,
-  setAbortController: () => {},
+  setAbortController: () => { },
 
   // CHAT INPUT COMMAND STORE
   isPromptPickerOpen: false,
-  setIsPromptPickerOpen: () => {},
+  setIsPromptPickerOpen: () => { },
   slashCommand: "",
-  setSlashCommand: () => {},
+  setSlashCommand: () => { },
   isFilePickerOpen: false,
-  setIsFilePickerOpen: () => {},
+  setIsFilePickerOpen: () => { },
   hashtagCommand: "",
-  setHashtagCommand: () => {},
+  setHashtagCommand: () => { },
   isToolPickerOpen: false,
-  setIsToolPickerOpen: () => {},
+  setIsToolPickerOpen: () => { },
   toolCommand: "",
-  setToolCommand: () => {},
+  setToolCommand: () => { },
   focusPrompt: false,
-  setFocusPrompt: () => {},
+  setFocusPrompt: () => { },
   focusFile: false,
-  setFocusFile: () => {},
+  setFocusFile: () => { },
   focusTool: false,
-  setFocusTool: () => {},
+  setFocusTool: () => { },
   focusAssistant: false,
-  setFocusAssistant: () => {},
+  setFocusAssistant: () => { },
   atCommand: "",
-  setAtCommand: () => {},
+  setAtCommand: () => { },
   isAssistantPickerOpen: false,
-  setIsAssistantPickerOpen: () => {},
+  setIsAssistantPickerOpen: () => { },
 
   // ATTACHMENTS STORE
   chatFiles: [],
-  setChatFiles: () => {},
+  setChatFiles: () => { },
   chatImages: [],
-  setChatImages: () => {},
+  setChatImages: () => { },
   newMessageFiles: [],
-  setNewMessageFiles: () => {},
+  setNewMessageFiles: () => { },
   newMessageImages: [],
-  setNewMessageImages: () => {},
+  setNewMessageImages: () => { },
   showFilesDisplay: false,
-  setShowFilesDisplay: () => {},
+  setShowFilesDisplay: () => { },
 
   // RETRIEVAL STORE
   useRetrieval: false,
-  setUseRetrieval: () => {},
+  setUseRetrieval: () => { },
   sourceCount: 4,
-  setSourceCount: () => {},
+  setSourceCount: () => { },
 
   // TOOL STORE
   selectedTools: [],
-  setSelectedTools: () => {},
+  setSelectedTools: () => { },
   toolInUse: "none",
-  setToolInUse: () => {},
+  setToolInUse: () => { },
 
   // SUGGESTIONS STORE
   showPlaceholderSuggestions: true,
-  setShowPlaceholderSuggestions: () => {},
+  setShowPlaceholderSuggestions: () => { },
 
   // SUGGESTED QUESTIONS STORE
   suggestedQuestions: [],
-  setSuggestedQuestions: () => {},
+  setSuggestedQuestions: () => { },
   showSuggestedQuestions: false,
-  setShowSuggestedQuestions: () => {}
+  setShowSuggestedQuestions: () => { }
 })
