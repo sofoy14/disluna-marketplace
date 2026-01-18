@@ -2,6 +2,7 @@ import { env } from '@/lib/env/runtime-env'
 import { createClient } from '@/lib/supabase/server'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { checkRateLimit, getIdentifierFromRequest, formatRateLimitHeaders, authRateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,6 +20,24 @@ function sanitizeRedirect(path: string | null): string | null {
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limiting check
+  const identifier = getIdentifierFromRequest(req);
+  const rateLimitResult = await checkRateLimit(identifier, authRateLimit);
+
+  if (!rateLimitResult.success) {
+    const headers = formatRateLimitHeaders(rateLimitResult);
+    return NextResponse.json(
+      {
+        error: 'Too many login attempts. Please try again later.',
+        retryAfter: headers['Retry-After'],
+      },
+      {
+        status: 429,
+        headers,
+      }
+    );
+  }
+
   const cookieStore = cookies()
   const formData = await req.formData()
 

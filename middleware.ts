@@ -4,6 +4,15 @@ import { NextResponse, type NextRequest } from "next/server"
 import i18nConfig from "./i18nConfig"
 import { isAdmin } from "@/lib/admin/check-admin"
 import { getEnvVar } from "@/lib/env/runtime-env"
+import {
+  checkRateLimit,
+  getIdentifierFromRequest,
+  formatRateLimitHeaders,
+  authRateLimit,
+  chatRateLimit,
+  ingestRateLimit,
+  apiRateLimit,
+} from "@/lib/rate-limit"
 
 // Rutas que requieren suscripción activa para acceder
 const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
@@ -16,7 +25,50 @@ const isBillingEnabled = () => getEnvVar('NEXT_PUBLIC_BILLING_ENABLED') === 'tru
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
-  
+
+  // Rate limiting for API routes
+  if (pathname.startsWith('/api/')) {
+    const identifier = getIdentifierFromRequest(request);
+    let rateLimiter = apiRateLimit; // Default API rate limiter
+
+    // Select specific rate limiter based on endpoint
+    if (pathname.startsWith('/api/auth')) {
+      rateLimiter = authRateLimit;
+    } else if (pathname.includes('/chat')) {
+      rateLimiter = chatRateLimit;
+    } else if (pathname.includes('/ingest') || pathname.includes('/documents')) {
+      rateLimiter = ingestRateLimit;
+    }
+
+    // Check rate limit
+    const rateLimitResult = await checkRateLimit(identifier, rateLimiter);
+
+    if (!rateLimitResult.success) {
+      // Rate limit exceeded
+      const headers = formatRateLimitHeaders(rateLimitResult);
+      return new NextResponse(
+        JSON.stringify({
+          error: 'Too many requests. Please try again later.',
+          retryAfter: headers['Retry-After'],
+        }),
+        {
+          status: 429,
+          headers: {
+            ...headers,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+    }
+
+    // Add rate limit headers to successful responses
+    const response = NextResponse.next();
+    const headers = formatRateLimitHeaders(rateLimitResult);
+    Object.entries(headers).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+  }
+
   // If a stale client is still attempting to call a Server Action from an older build,
   // short-circuit the request with a controlled response to avoid noisy "Failed to find Server Action" logs.
   if (request.method === 'POST' && request.headers.get('next-action')) {

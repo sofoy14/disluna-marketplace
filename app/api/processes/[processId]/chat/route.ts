@@ -8,6 +8,7 @@ import { createMessage } from "@/db/messages"
 import { assertWorkspaceAccess } from "@/src/server/workspaces/access"
 import { ragBackendService } from "@/lib/services/rag-backend"
 import { StreamingTextResponse } from "ai"
+import { checkRateLimit, formatRateLimitHeaders, chatRateLimit } from "@/lib/rate-limit"
 
 export const runtime = "nodejs"
 export const maxDuration = 60
@@ -42,6 +43,23 @@ export async function POST(
         { error: "No autorizado" },
         { status: 401 }
       )
+    }
+
+    // Rate limiting check (per user)
+    const rateLimitResult = await checkRateLimit(user.id, chatRateLimit);
+
+    if (!rateLimitResult.success) {
+      const headers = formatRateLimitHeaders(rateLimitResult);
+      return NextResponse.json(
+        {
+          error: 'Too many chat requests. Please wait a moment.',
+          retryAfter: headers['Retry-After'],
+        },
+        {
+          status: 429,
+          headers,
+        }
+      );
     }
 
     const { processId } = params
