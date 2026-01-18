@@ -14,6 +14,12 @@ import {
   apiRateLimit,
 } from "@/lib/rate-limit"
 import { addSecurityHeaders } from "@/lib/security-headers"
+import {
+  addCORSHeaders,
+  isOriginAllowed,
+  API_CORS_CONFIG,
+  handleCORSPreflight,
+} from "@/lib/cors"
 
 // Rutas que requieren suscripción activa para acceder
 const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
@@ -29,6 +35,14 @@ export async function middleware(request: NextRequest) {
 
   // Rate limiting for API routes
   if (pathname.startsWith('/api/')) {
+    const origin = request.headers.get('origin');
+
+    // Handle CORS preflight
+    const preflightResponse = handleCORSPreflight(request, API_CORS_CONFIG);
+    if (preflightResponse) {
+      return addSecurityHeaders(preflightResponse);
+    }
+
     const identifier = getIdentifierFromRequest(request);
     let rateLimiter = apiRateLimit; // Default API rate limiter
 
@@ -60,7 +74,8 @@ export async function middleware(request: NextRequest) {
           },
         }
       );
-      return addSecurityHeaders(errorResponse);
+      const response = addSecurityHeaders(errorResponse);
+      return addCORSHeaders(response, API_CORS_CONFIG, origin);
     }
 
     // Add rate limit headers and security headers to successful responses
@@ -69,7 +84,9 @@ export async function middleware(request: NextRequest) {
     Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value);
     });
-    return addSecurityHeaders(response);
+
+    const secureResponse = addSecurityHeaders(response);
+    return addCORSHeaders(secureResponse, API_CORS_CONFIG, origin);
   }
 
   // If a stale client is still attempting to call a Server Action from an older build,
