@@ -39,7 +39,6 @@ const BaseEnvSchema = z.object({
   WOMPI_INTEGRITY_SECRET: z.string().min(1).optional(),
   WOMPI_WEBHOOK_SECRET: z.string().min(1).optional(),
   WOMPI_CRON_SECRET: z.string().min(1).optional(),
-  WOMPI_SKIP_SIGNATURE_VALIDATION: z.enum(["true", "false"]).optional(),
 
   DOCLING_BASE_URL: z.string().min(1).optional(),
 
@@ -119,7 +118,6 @@ export function validateEnv(): BaseEnv {
     "WOMPI_INTEGRITY_SECRET",
     "WOMPI_WEBHOOK_SECRET",
     "WOMPI_CRON_SECRET",
-    "WOMPI_SKIP_SIGNATURE_VALIDATION",
 
     "DOCLING_BASE_URL",
 

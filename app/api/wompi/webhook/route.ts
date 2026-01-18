@@ -73,28 +73,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unsupported event payload' }, { status: 400 });
     }
 
-    // Validate signature if present
-    // Temporarily skip strict validation to allow payments through
-    // TODO: Fix signature validation with correct Wompi secret
-    const isDev = process.env.NODE_ENV === 'development';
-    const skipSignatureValidation = process.env.WOMPI_SKIP_SIGNATURE_VALIDATION === 'true';
-    
-    if (!isDev && !skipSignatureValidation) {
-      if (!process.env.WOMPI_WEBHOOK_SECRET) {
-        return NextResponse.json({ error: 'WOMPI_WEBHOOK_SECRET missing' }, { status: 500 });
-      }
+    // SECURITY: Webhook signature validation is ALWAYS required
+    // This prevents fraudulent payment attempts and ensures webhooks are genuinely from Wompi
+    if (!process.env.WOMPI_WEBHOOK_SECRET) {
+      console.error('❌ WOMPI_WEBHOOK_SECRET not configured');
+      return NextResponse.json(
+        { error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
 
-      if (!signature) {
-        return NextResponse.json({ error: 'Missing webhook signature' }, { status: 401 });
-      }
-      const isValid = verifyWompiWebhookSignature({
-        payload: body,
-        signature,
-        secret: process.env.WOMPI_WEBHOOK_SECRET || ""
+    if (!signature) {
+      console.warn('⚠️ Webhook received without signature - rejected');
+      return NextResponse.json(
+        { error: 'Missing webhook signature' },
+        { status: 401 }
+      );
+    }
+
+    const isValid = verifyWompiWebhookSignature({
+      payload: body,
+      signature,
+      secret: process.env.WOMPI_WEBHOOK_SECRET
+    });
+
+    if (!isValid) {
+      // Log failed signature validation for security monitoring
+      console.error('❌ Invalid webhook signature:', {
+        signaturePresent: !!signature,
+        signatureLength: signature?.length,
+        bodyLength: body.length,
+        ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown',
+        timestamp: new Date().toISOString(),
+        userAgent: req.headers.get('user-agent'),
       });
-      if (!isValid) {
-        return NextResponse.json({ error: 'Invalid webhook signature' }, { status: 401 });
-      }
+      return NextResponse.json(
+        { error: 'Invalid webhook signature' },
+        { status: 401 }
+      );
     }
 
     try {
