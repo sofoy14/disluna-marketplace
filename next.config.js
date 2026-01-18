@@ -1,5 +1,6 @@
 const defaultRuntimeCaching = require("next-pwa/cache")
 const webpack = require("webpack")
+const { getSecurityHeaders } = require("./lib/security-headers")
 
 const withPWA = require("next-pwa")({
   dest: "public",
@@ -40,6 +41,21 @@ module.exports = withPWA({
       { protocol: "http", hostname: "127.0.0.1" },
       { protocol: "https", hostname: "**" }
     ]
+  },
+
+  // Apply security headers to all routes
+  async headers() {
+    const securityHeaders = getSecurityHeaders();
+
+    return [
+      {
+        source: '/:path*',
+        headers: Object.entries(securityHeaders).map(([key, value]) => ({
+          key,
+          value,
+        })),
+      },
+    ];
   },
   experimental: {
     serverComponentsExternalPackages: ["sharp", "onnxruntime-node", "undici", "cheerio"]

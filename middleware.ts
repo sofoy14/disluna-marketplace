@@ -13,6 +13,7 @@ import {
   ingestRateLimit,
   apiRateLimit,
 } from "@/lib/rate-limit"
+import { addSecurityHeaders } from "@/lib/security-headers"
 
 // Rutas que requieren suscripción activa para acceder
 const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
@@ -46,7 +47,7 @@ export async function middleware(request: NextRequest) {
     if (!rateLimitResult.success) {
       // Rate limit exceeded
       const headers = formatRateLimitHeaders(rateLimitResult);
-      return new NextResponse(
+      const errorResponse = new NextResponse(
         JSON.stringify({
           error: 'Too many requests. Please try again later.',
           retryAfter: headers['Retry-After'],
@@ -59,14 +60,16 @@ export async function middleware(request: NextRequest) {
           },
         }
       );
+      return addSecurityHeaders(errorResponse);
     }
 
-    // Add rate limit headers to successful responses
+    // Add rate limit headers and security headers to successful responses
     const response = NextResponse.next();
     const headers = formatRateLimitHeaders(rateLimitResult);
     Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value);
     });
+    return addSecurityHeaders(response);
   }
 
   // If a stale client is still attempting to call a Server Action from an older build,
