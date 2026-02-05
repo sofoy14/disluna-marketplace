@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInvoicesByWorkspaceId } from '@/db/invoices';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
-import { getSessionUser } from '@/src/server/auth/session';
-import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
+import { getSessionUser } from '@/lib/server/auth/session';
+import { assertWorkspaceAccess } from '@/lib/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -18,9 +18,9 @@ export async function GET(req: NextRequest) {
 
     if (!workspaceId) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing workspace_id parameter' 
+        {
+          success: false,
+          error: 'Missing workspace_id parameter'
         },
         { status: 400 }
       );
@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
     }
 
     const invoices = await getInvoicesByWorkspaceId(workspaceId, limit, offset, supabase);
-    
+
     return NextResponse.json({
       success: true,
       data: invoices,
@@ -59,8 +59,8 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error fetching invoices:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error fetching invoices',
         message: error instanceof Error ? error.message : 'Unknown error'
       },

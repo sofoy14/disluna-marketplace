@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig, getWompiConfigStatus } from '@/lib/wompi/config';
-import { getSessionUser } from '@/src/server/auth/session';
-import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
+import { getSessionUser } from '@/lib/server/auth/session';
+import { assertWorkspaceAccess } from '@/lib/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -19,7 +19,7 @@ function getErrorRedirectUrl(req: NextRequest, error: string, details?: string):
   const referer = req.headers.get('referer') || '';
   const isFromPrecios = referer.includes('/precios') || referer.includes('/billing');
   const redirectPath = isFromPrecios ? '/precios' : '/onboarding';
-  
+
   const url = new URL(redirectPath, req.nextUrl.origin);
   url.searchParams.set('error', error);
   if (details) {
@@ -42,16 +42,16 @@ function calculatePeriodEnd(billingPeriod: string, startDate: Date = new Date())
 async function getSpecialOffer(planId: string, workspaceId: string) {
   const supabase = getSupabaseServer();
   console.log('[Checkout Redirect] Checking special offer for plan:', planId, 'workspace:', workspaceId);
-  
+
   // Check if user has had any previous subscriptions (active, canceled, or expired)
   const { count: prevSubCount, error: subError } = await supabase
     .from('subscriptions')
     .select('id', { count: 'exact', head: true })
     .eq('workspace_id', workspaceId)
     .in('status', ['active', 'canceled', 'expired']);
-  
+
   console.log('[Checkout Redirect] Previous subscriptions count:', prevSubCount, subError?.message);
-  
+
   // Only apply first month offers if user has no previous subscriptions
   if (prevSubCount && prevSubCount > 0) {
     console.log('[Checkout Redirect] User has previous subscriptions, no special offer');
@@ -62,7 +62,7 @@ async function getSpecialOffer(planId: string, workspaceId: string) {
   // Using simpler query without .or() to avoid syntax issues
   const now = new Date().toISOString();
   console.log('[Checkout Redirect] Querying special offers for plan_id:', planId, 'at:', now);
-  
+
   const { data: offers, error } = await supabase
     .from('special_offers')
     .select('*')
@@ -96,16 +96,16 @@ async function getSpecialOffer(planId: string, workspaceId: string) {
 export async function GET(req: NextRequest) {
   const supabase = getSupabaseServer();
   console.log('[Checkout Redirect] ========== START ==========');
-  
+
   // Get base URL for redirects
   const baseUrl = req.nextUrl.origin;
   console.log('[Checkout Redirect] Base URL:', baseUrl);
-  
+
   try {
     const { searchParams } = new URL(req.url);
     const plan_id = searchParams.get('plan_id');
     const workspace_id = searchParams.get('workspace_id');
-    
+
     console.log('[Checkout Redirect] Params:', { plan_id, workspace_id });
 
     // Validate params
@@ -168,7 +168,7 @@ export async function GET(req: NextRequest) {
 
     // Get user email
     const { data: userData, error: userError } = await supabase.auth.admin.getUserById(workspace.user_id);
-    
+
     if (userError || !userData.user?.email) {
       console.error('[Checkout Redirect] User email not found:', userError);
       return NextResponse.redirect(getErrorRedirectUrl(req, 'user_not_found'));
@@ -179,15 +179,15 @@ export async function GET(req: NextRequest) {
     const wompiReference = generateTransactionReference('SUB');
     const now = new Date();
     const periodEnd = calculatePeriodEnd(plan.billing_period, now);
-    
+
     // Determine amount to charge (check for special offers on monthly plans)
     let amountToCharge = plan.amount_in_cents;
     let specialOffer = null;
     let isFirstMonth = false;
-    
+
     if (plan.billing_period === 'monthly') {
       specialOffer = await getSpecialOffer(plan_id, workspace_id);
-      
+
       if (specialOffer) {
         if (specialOffer.discount_type === 'fixed_price') {
           // Fixed price - charge exactly this amount (e.g., $0.99 USD = 3960 COP centavos)
@@ -207,7 +207,7 @@ export async function GET(req: NextRequest) {
         }
       }
     }
-    
+
     console.log('[Checkout Redirect] Amount to charge:', amountToCharge, isFirstMonth ? '(FIRST MONTH SPECIAL)' : '(regular price)');
 
     // Check for existing pending subscription
@@ -221,7 +221,7 @@ export async function GET(req: NextRequest) {
       .single();
 
     let subscription;
-    
+
     if (!pendingSubscription) {
       const { data: newSubscription, error: createSubError } = await supabase
         .from('subscriptions')
@@ -273,7 +273,7 @@ export async function GET(req: NextRequest) {
       .select('*')
       .eq('reference', wompiReference)
       .single();
-    
+
     if (!existingInvoice) {
       const { error: invoiceError } = await supabase
         .from('invoices')
@@ -311,7 +311,7 @@ export async function GET(req: NextRequest) {
     // Build Wompi checkout URL with all params
     // Note: Wompi uses custom parameter names with colons, which need special handling
     const checkoutBaseUrl = getWompiCheckoutUrl();
-    
+
     // Build query string manually to preserve colons in parameter names
     // URLSearchParams would URL-encode the colons which breaks Wompi's parsing
     const queryParams = [
@@ -328,7 +328,7 @@ export async function GET(req: NextRequest) {
     ].join('&');
 
     const fullCheckoutUrl = `${checkoutBaseUrl}?${queryParams}`;
-    
+
     console.log('[Checkout Redirect] SUCCESS! Redirecting to Wompi');
     console.log('[Checkout Redirect] Checkout URL:', fullCheckoutUrl);
     console.log('[Checkout Redirect] Reference:', wompiReference);

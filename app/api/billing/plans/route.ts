@@ -35,7 +35,7 @@ const DEFAULT_PLANS: Plan[] = [
     id: 'basic',
     name: 'Plan Básico',
     description: 'Ideal para abogados que buscan asistencia IA en sus consultas diarias',
-    amount_in_cents: 2900000, // $29,000 COP
+    amount_in_cents: 2000000, // $20,000 COP
     currency: 'COP',
     billing_period: 'monthly',
     features: [
@@ -61,7 +61,7 @@ const DEFAULT_PLANS: Plan[] = [
     id: 'pro',
     name: 'Plan PRO',
     description: 'La solución completa para profesionales del derecho',
-    amount_in_cents: 6800000, // $68,000 COP
+    amount_in_cents: 5000000, // $50,000 COP
     currency: 'COP',
     billing_period: 'monthly',
     features: [

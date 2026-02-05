@@ -1,23 +1,27 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { Plus, Search, Filter } from "lucide-react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ProcessCard } from "@/components/processes/process-card"
-import { ProcessStatusBadge } from "@/components/processes/process-status-badge"
-import { supabase } from "@/lib/supabase/robust-client"
+import { ProcessCard } from "@/features/processes/components/ProcessCard"
+import { ProcessStatsStrip } from "@/features/processes/components/ProcessStatsStrip"
+import { ProcessEmptyState } from "@/features/processes/components/ProcessEmptyState"
 import { getProcessWorkspacesByWorkspaceId } from "@/db/processes"
 import { getProcessDocumentsByProcessId } from "@/db/process-documents"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { getProcessInsights, hasInsightValues } from "@/features/processes/utils/insights"
+import { es } from "@/lib/i18n/es"
+import type { Process } from "@/lib/types"
 
 export default function ProcessesPage() {
   const params = useParams()
   const router = useRouter()
   const workspaceId = params.workspaceid as string
 
-  const [processes, setProcesses] = useState<any[]>([])
+  const [processes, setProcesses] = useState<Process[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -32,7 +36,6 @@ export default function ProcessesPage() {
       const processData = await getProcessWorkspacesByWorkspaceId(workspaceId)
       const processesList = processData?.processes || []
 
-      // Load document counts for each process
       const processesWithCounts = await Promise.all(
         processesList.map(async (process: any) => {
           try {
@@ -62,109 +65,122 @@ export default function ProcessesPage() {
     router.push(`/${workspaceId}/processes/new`)
   }
 
-  const filteredProcesses = processes.filter(process => {
-    const matchesSearch =
-      process.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (process.description || "").toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredProcesses = useMemo(() => {
+    return processes.filter((process) => {
+      const matchesSearch =
+        process.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (process.description || "").toLowerCase().includes(searchQuery.toLowerCase())
 
-    const matchesStatus =
-      statusFilter === "all" ||
-      process.indexing_status === statusFilter
+      const matchesStatus = statusFilter === "all" || process.status === statusFilter
 
-    return matchesSearch && matchesStatus
-  })
+      return matchesSearch && matchesStatus
+    })
+  }, [processes, searchQuery, statusFilter])
+
+  const stats = useMemo(() => {
+    const insights = processes.map((process) => getProcessInsights(process))
+    const highRisk = insights.filter((item) => item.riskLevel === "high").length
+    const pending = processes.filter((process, index) => {
+      const isReady = process.indexing_status === "ready"
+      return !isReady || !hasInsightValues(insights[index])
+    }).length
+
+    return {
+      total: processes.length,
+      highRisk,
+      pending
+    }
+  }, [processes])
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-muted-foreground">Cargando procesos...</div>
+        <div className="text-muted-foreground">{es.processes.loading}</div>
       </div>
     )
   }
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b bg-card p-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="border-b bg-card px-6 py-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold mb-1">Procesos</h1>
-            <p className="text-sm text-muted-foreground">
-              Organiza tus casos y chatea con la IA sobre sus documentos
-            </p>
+            <h1 className="text-xl font-semibold tracking-tight">{es.processes.title}</h1>
           </div>
-          <Button onClick={handleNewProcess} className="w-full md:w-auto">
+          <Button onClick={handleNewProcess} className="w-full lg:w-auto">
             <Plus className="w-4 h-4 mr-2" />
-            Nuevo proceso
+            {es.processes.actions.new}
           </Button>
         </div>
 
-        {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mt-6">
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-4">
+          <ProcessStatsStrip
+            total={stats.total}
+            highRisk={stats.highRisk}
+            pending={stats.pending}
+          />
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Buscar por nombre o descripción..."
+              placeholder={es.processes.searchPlaceholder}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectTrigger className="w-full sm:w-[200px]">
               <Filter className="w-4 h-4 mr-2" />
-              <SelectValue placeholder="Filtrar por estado" />
+              <SelectValue placeholder={es.processes.filterPlaceholder} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos los estados</SelectItem>
-              <SelectItem value="pending">Pendiente</SelectItem>
-              <SelectItem value="processing">Procesando</SelectItem>
-              <SelectItem value="ready">Listo</SelectItem>
-              <SelectItem value="error">Error</SelectItem>
+              <SelectItem value="all">{es.processes.filters.all}</SelectItem>
+              <SelectItem value="activo">{es.processes.filters.active}</SelectItem>
+              <SelectItem value="archivado">{es.processes.filters.archived}</SelectItem>
+              <SelectItem value="cerrado">{es.processes.filters.closed}</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Processes List */}
-      <div className="flex-1 overflow-y-auto p-6">
+      <div className="flex-1 overflow-y-auto px-6 py-6">
         {filteredProcesses.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="text-muted-foreground mb-4">
-              {processes.length === 0 ? (
-                <>
-                  <p className="text-lg mb-2">No hay procesos aún</p>
-                  <p className="text-sm">Crea tu primer proceso para empezar</p>
-                </>
-              ) : (
-                <>
-                  <p className="text-lg mb-2">No se encontraron procesos</p>
-                  <p className="text-sm">Intenta con otros términos de búsqueda</p>
-                </>
-              )}
+          processes.length === 0 ? (
+            <div className="max-w-2xl mx-auto">
+              <ProcessEmptyState onCreate={handleNewProcess} />
             </div>
-            {processes.length === 0 && (
-              <Button onClick={handleNewProcess}>
-                <Plus className="w-4 h-4 mr-2" />
-                Crear primer proceso
+          ) : (
+            <div className="premium-card max-w-2xl mx-auto flex flex-col items-center text-center px-8 py-12 animate-in fade-in">
+              <h2 className="text-xl font-semibold mb-2">{es.processes.emptyFiltered.title}</h2>
+              <p className="text-sm text-muted-foreground mb-6">
+                {es.processes.emptyFiltered.description}
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchQuery("")
+                  setStatusFilter("all")
+                }}
+              >
+                {es.processes.actions.clearFilters}
               </Button>
-            )}
-          </div>
+            </div>
+          )
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {filteredProcesses.map((process) => (
-              <ProcessCard key={process.id} process={process} />
+              <ProcessCard key={process.id} process={process} onRefresh={loadProcesses} />
             ))}
           </div>
         )}
       </div>
 
-      {/* FAB for mobile */}
       <div className="md:hidden fixed bottom-6 right-6">
         <Button
           onClick={handleNewProcess}
           size="icon"
           className="rounded-full w-14 h-14 shadow-lg"
+          aria-label={es.processes.actions.new}
         >
           <Plus className="w-6 h-6" />
         </Button>
@@ -172,8 +188,3 @@ export default function ProcessesPage() {
     </div>
   )
 }
-
-
-
-
-

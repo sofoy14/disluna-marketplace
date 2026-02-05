@@ -4,8 +4,8 @@ import { createClient } from "@/lib/supabase/server"
 import { cookies } from "next/headers"
 import { createClient as createSupabaseClient } from "@supabase/supabase-js"
 import { Database } from "@/supabase/types"
-import { assertProcessAccess } from "@/src/server/access/processes"
-import { ForbiddenError, NotFoundError } from "@/src/server/errors"
+import { assertProcessAccess } from "@/lib/server/access/processes"
+import { ForbiddenError, NotFoundError } from "@/lib/server/errors"
 
 export async function POST(
   request: Request,

@@ -7,9 +7,9 @@ import { Label } from "../ui/label"
 import { TextareaAutosize } from "../ui/textarea-autosize"
 import { usePromptAndCommand } from "./chat-hooks/use-prompt-and-command"
 
-interface PromptPickerProps {}
+interface PromptPickerProps { }
 
-export const PromptPicker: FC<PromptPickerProps> = ({}) => {
+export const PromptPicker: FC<PromptPickerProps> = ({ }) => {
   const {
     prompts,
     isPromptPickerOpen,
@@ -136,7 +136,7 @@ export const PromptPicker: FC<PromptPickerProps> = ({}) => {
   return (
     <>
       {isPromptPickerOpen && (
-        <div className="bg-background flex flex-col space-y-1 rounded-xl border-2 p-2 text-sm">
+        <div className="bg-background flex flex-col space-y-1 rounded-xl border-2 p-2 text-sm pointer-events-auto">
           {showPromptVariables ? (
             <Dialog
               open={showPromptVariables}

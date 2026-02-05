@@ -7,8 +7,8 @@ import { getInvoiceByReference } from '@/db/invoices';
 import { getSubscriptionById } from '@/db/subscriptions';
 import { formatCurrency } from '@/lib/wompi/utils';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
-import { getSessionUser } from '@/src/server/auth/session';
-import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
+import { getSessionUser } from '@/lib/server/auth/session';
+import { assertWorkspaceAccess } from '@/lib/server/workspaces/access';
 
 export async function GET(req: NextRequest) {
   try {
@@ -135,8 +135,8 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error verifying transaction:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error verifying transaction',
         message: error instanceof Error ? error.message : 'Unknown error'
       },

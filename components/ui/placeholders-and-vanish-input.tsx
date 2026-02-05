@@ -173,6 +173,7 @@ export function PlaceholdersAndVanishInput({
       <div className="flex items-center gap-2 px-3 py-2 h-full relative z-10">
         {leftElement && (
           <motion.div
+            key="left-element"
             className="flex-shrink-0 z-20 self-end mb-1"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

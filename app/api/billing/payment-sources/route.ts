@@ -1,14 +1,14 @@
 // app/api/billing/payment-sources/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { 
-  getPaymentSourcesByWorkspaceId, 
-  createPaymentSource, 
+import {
+  getPaymentSourcesByWorkspaceId,
+  createPaymentSource,
   deletePaymentSource,
-  setDefaultPaymentSource 
+  setDefaultPaymentSource
 } from '@/db/payment-sources';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
-import { getSessionUser } from '@/src/server/auth/session';
-import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
+import { getSessionUser } from '@/lib/server/auth/session';
+import { assertWorkspaceAccess } from '@/lib/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -21,9 +21,9 @@ export async function GET(req: NextRequest) {
 
     if (!workspaceId) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing workspace_id parameter' 
+        {
+          success: false,
+          error: 'Missing workspace_id parameter'
         },
         { status: 400 }
       );
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     }
 
     const paymentSources = await getPaymentSourcesByWorkspaceId(workspaceId, supabase);
-    
+
     return NextResponse.json({
       success: true,
       data: paymentSources
@@ -63,8 +63,8 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error fetching payment sources:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error fetching payment sources',
         message: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -79,9 +79,9 @@ export async function POST(req: NextRequest) {
 
     if (!workspace_id || !wompi_id || !type || !customer_email) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing required fields: workspace_id, wompi_id, type, and customer_email' 
+        {
+          success: false,
+          error: 'Missing required fields: workspace_id, wompi_id, type, and customer_email'
         },
         { status: 400 }
       );
@@ -120,9 +120,9 @@ export async function POST(req: NextRequest) {
 
     if (workspaceError || !workspace) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Workspace not found' 
+        {
+          success: false,
+          error: 'Workspace not found'
         },
         { status: 404 }
       );
@@ -149,8 +149,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error creating payment source:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error creating payment source',
         message: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -166,9 +166,9 @@ export async function DELETE(req: NextRequest) {
 
     if (!paymentSourceId) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing payment source ID' 
+        {
+          success: false,
+          error: 'Missing payment source ID'
         },
         { status: 400 }
       );
@@ -214,8 +214,8 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     console.error('Error deleting payment source:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error deleting payment source',
         message: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -230,9 +230,9 @@ export async function PATCH(req: NextRequest) {
 
     if (!payment_source_id || !action) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing required fields: payment_source_id and action' 
+        {
+          success: false,
+          error: 'Missing required fields: payment_source_id and action'
         },
         { status: 400 }
       );
@@ -276,9 +276,9 @@ export async function PATCH(req: NextRequest) {
         break;
       default:
         return NextResponse.json(
-          { 
-            success: false, 
-            error: 'Invalid action. Supported actions: set_default' 
+          {
+            success: false,
+            error: 'Invalid action. Supported actions: set_default'
           },
           { status: 400 }
         );
@@ -292,8 +292,8 @@ export async function PATCH(req: NextRequest) {
   } catch (error) {
     console.error('Error updating payment source:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error updating payment source',
         message: error instanceof Error ? error.message : 'Unknown error'
       },

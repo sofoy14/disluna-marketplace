@@ -1314,7 +1314,7 @@ function PricingDark() {
     {
       id: "basic",
       name: "Plan Básico",
-      price: "$29.000",
+      price: "$20.000",
       period: "/mes",
       description: "Para abogados que necesitan asistencia en consultas y búsquedas legales frecuentes",
       icon: FileText,
@@ -1338,7 +1338,7 @@ function PricingDark() {
     {
       id: "pro",
       name: "Plan PRO",
-      price: "$68.000",
+      price: "$50.000",
       period: "/mes",
       description: "Para despachos y profesionales que gestionan múltiples casos y necesitan herramientas completas",
       icon: Scale,
@@ -1530,8 +1530,8 @@ function FinalCTADark() {
             Comienza a trabajar de manera más eficiente hoy
           </h2>
           <p className="text-xl text-gray-400">
-            Elige el <span className="text-blue-400 font-semibold">Plan Básico desde $29.000/mes</span> para consultas y búsquedas,
-            o el <span className="text-purple-400 font-semibold">Plan PRO a $68.000/mes</span> con gestión completa de procesos y transcripciones.
+            Elige el <span className="text-blue-400 font-semibold">Plan Básico desde $20.000/mes</span> para consultas y búsquedas,
+            o el <span className="text-purple-400 font-semibold">Plan PRO a $50.000/mes</span> con gestión completa de procesos y transcripciones.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
             <Button size="lg" className="h-16 px-10 rounded-full text-lg bg-white text-black hover:scale-105 transition-transform font-bold" asChild>

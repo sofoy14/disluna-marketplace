@@ -17,8 +17,8 @@ import { Database } from "@/supabase/types"
 import { FileItemChunk } from "@/types"
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
-import { assertFileAccess } from "@/src/server/access/files"
-import { ForbiddenError, NotFoundError } from "@/src/server/errors"
+import { assertFileAccess } from "@/lib/server/access/files"
+import { ForbiddenError, NotFoundError } from "@/lib/server/errors"
 
 // Dynamic import function for local embeddings (only loaded when needed)
 // Force dynamic rendering to prevent build-time execution
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
     const file_id = formData.get("file_id") as string
     let embeddingsProvider = formData.get("embeddingsProvider") as string
-    
+
     // 🔥 FORZAR OpenAI Embeddings - SOLUCIÓN DEFINITIVA
     // OpenRouter no tiene embeddings, local tiene problemas de descarga
     // OpenAI embeddings son baratos (~$0.0001/1K tokens) y muy confiables
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
         const buffer = Buffer.from(arrayBuffer)
         const result = await mammoth.extractRawText({ buffer })
         const textContent = result.value
-        
+
         // Use the same chunking approach as other text files
         const splitter = new RecursiveCharacterTextSplitter({
           chunkSize: CHUNK_SIZE,
@@ -164,12 +164,12 @@ export async function POST(req: Request) {
       // 🔥 USAR OpenRouter para embeddings
       console.log('🚀 Using OpenRouter embeddings for document processing')
       const openrouterKey = profile.openrouter_api_key || process.env.OPENROUTER_API_KEY
-      
+
       embeddings = await generateMultipleOpenRouterEmbeddings(
         chunks.map(chunk => chunk.content),
         openrouterKey!
       )
-      
+
       console.log(`✅ Generated ${embeddings.length} OpenRouter embeddings`)
     } else {
       // Usar embeddings locales solo si se especifica explícitamente

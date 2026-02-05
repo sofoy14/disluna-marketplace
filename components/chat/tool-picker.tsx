@@ -4,9 +4,9 @@ import { IconBolt } from "@tabler/icons-react"
 import { FC, useContext, useEffect, useRef } from "react"
 import { usePromptAndCommand } from "./chat-hooks/use-prompt-and-command"
 
-interface ToolPickerProps {}
+interface ToolPickerProps { }
 
-export const ToolPicker: FC<ToolPickerProps> = ({}) => {
+export const ToolPicker: FC<ToolPickerProps> = ({ }) => {
   const {
     tools,
     focusTool,
@@ -72,7 +72,7 @@ export const ToolPicker: FC<ToolPickerProps> = ({}) => {
   return (
     <>
       {isToolPickerOpen && (
-        <div className="bg-background flex flex-col space-y-1 rounded-xl border-2 p-2 text-sm">
+        <div className="bg-background flex flex-col space-y-1 rounded-xl border-2 p-2 text-sm pointer-events-auto">
           {filteredTools.length === 0 ? (
             <div className="text-md flex h-14 cursor-pointer items-center justify-center italic hover:opacity-50">
               No se encontraron herramientas.

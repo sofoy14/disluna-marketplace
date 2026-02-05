@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
+import { getPublicEnvVar } from '@/lib/env/public-env';
 
 export default function TestSignupPage() {
   const [email, setEmail] = useState('');
@@ -28,7 +29,7 @@ export default function TestSignupPage() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/auth/verify-email`
+          emailRedirectTo: `${getPublicEnvVar('NEXT_PUBLIC_APP_URL') || getPublicEnvVar('NEXT_PUBLIC_SITE_URL') || 'https://aliado.pro'}/auth/callback?next=/auth/verify-email`
         }
       });
 
@@ -96,7 +97,7 @@ export default function TestSignupPage() {
 
             <div className="mt-4 text-xs text-gray-500">
               <strong>URL de redirección:</strong><br />
-              {typeof window !== 'undefined' ? `${window.location.origin}/auth/callback?next=/auth/verify-email` : 'Cargando...'}
+              {getPublicEnvVar('NEXT_PUBLIC_APP_URL') || getPublicEnvVar('NEXT_PUBLIC_SITE_URL') || 'https://aliado.pro'}/auth/callback?next=/auth/verify-email
             </div>
           </CardContent>
         </Card>

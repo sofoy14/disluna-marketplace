@@ -4,35 +4,35 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isTransactionSuccessful, isTransactionFinal } from '@/lib/wompi/utils';
 import { wompiClient } from '@/lib/wompi/client';
-import { 
+import {
   getInvoiceByReference,
   markInvoiceAsFailed,
-  markInvoiceAsPaid, 
+  markInvoiceAsPaid,
   updateInvoice
 } from '@/db/invoices';
-import { 
+import {
   activateSubscription,
   updateSubscription,
   getSubscriptionById
 } from '@/db/subscriptions';
-import { 
+import {
   createTransaction,
   getTransactionByWompiId,
-  updateTransactionByWompiId 
+  updateTransactionByWompiId
 } from '@/db/transactions';
-import { 
-  getPaymentSourceByWompiId, 
-  createPaymentSource 
+import {
+  getPaymentSourceByWompiId,
+  createPaymentSource
 } from '@/db/payment-sources';
 import { sendEmail, emailTemplates } from '@/lib/billing/email-notifications';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
-import { getWompiIdempotencyKey, verifyWompiWebhookSignature } from '@/src/integrations/wompi/webhook';
+import { getWompiIdempotencyKey, verifyWompiWebhookSignature } from '@/lib/wompi/webhook';
 import {
   getWompiWebhookEventByKey,
   markWompiWebhookEventFailed,
   markWompiWebhookEventProcessed,
   upsertWompiWebhookEventProcessing
-} from '@/src/integrations/wompi/webhook-event-store';
+} from '@/lib/wompi/webhook-event-store';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -43,13 +43,13 @@ export async function POST(req: NextRequest) {
   let idempotencyKey: string | null = null;
   try {
     const body = await req.text();
-    
+
     // Wompi sends signature in different headers depending on version
-    const signature = req.headers.get('x-event-checksum') || 
-                      req.headers.get('X-Event-Checksum') ||
-                      req.headers.get('x-wompi-signature') || 
-                      req.headers.get('wompi-signature') || '';
-    
+    const signature = req.headers.get('x-event-checksum') ||
+      req.headers.get('X-Event-Checksum') ||
+      req.headers.get('x-wompi-signature') ||
+      req.headers.get('wompi-signature') || '';
+
     console.log('📨 Received Wompi webhook:', {
       signatureHeader: signature ? signature.substring(0, 30) + '...' : 'none',
       bodyLength: body.length,
@@ -205,10 +205,10 @@ async function processTransactionUpdate(
   // Buscar invoice por referencia
   console.log(`🔍 Searching for invoice with reference: "${reference}"`);
   const invoice = await getInvoiceByReference(reference, supabase);
-  
+
   if (!invoice) {
     console.log(`⚠️ Invoice not found for reference: ${reference}`);
-    
+
     // Try to find invoice with different reference patterns
     // Sometimes reference might be stored differently
     const possibleRefs = [
@@ -218,9 +218,9 @@ async function processTransactionUpdate(
       reference.replace(/^SUB-/, ''),
       `SUB-${reference}`
     ];
-    
+
     console.log(`🔍 Trying alternative reference patterns:`, possibleRefs);
-    
+
     // Log recent invoices for debugging
     try {
       const { data: recentInvoices } = await supabase
@@ -228,7 +228,7 @@ async function processTransactionUpdate(
         .select('id, reference, status, created_at')
         .order('created_at', { ascending: false })
         .limit(10);
-      
+
       console.log(`📋 Recent invoices in database:`, recentInvoices?.map(inv => ({
         id: inv.id.substring(0, 8) + '...',
         reference: inv.reference,
@@ -237,7 +237,7 @@ async function processTransactionUpdate(
     } catch (e) {
       console.log('⚠️ Could not fetch recent invoices for debugging');
     }
-    
+
     // If we still can't find it, create a record for manual review
     console.log(`❌ Invoice not found. Transaction ${wompiTransactionId} needs manual review.`);
     console.log(`📧 Customer email: ${transactionData.customer_email}`);
@@ -260,7 +260,7 @@ async function processTransactionUpdate(
 
   // Verificar si ya tenemos esta transacción registrada
   let transaction = await getTransactionByWompiId(wompiTransactionId, supabase);
-  
+
   if (!transaction) {
     // Crear registro de transacción
     try {
@@ -312,22 +312,22 @@ async function handleSuccessfulPayment(
     // 2. Obtener la suscripción si existe
     if (invoice.subscription_id) {
       const subscription = await getSubscriptionById(invoice.subscription_id, supabase);
-      
+
       if (subscription) {
         // 3. Crear/actualizar payment source si viene de tarjeta
         let paymentSourceId = subscription.payment_source_id;
-        
+
         if (transactionData.payment_source_id) {
           try {
             const existingSource = await getPaymentSourceByWompiId(
               transactionData.payment_source_id,
               supabase
             );
-            
+
             if (!existingSource) {
               // Obtener detalles del payment source de Wompi
               const wompiSource = await wompiClient.getPaymentSource(transactionData.payment_source_id);
-              
+
               const newSource = await createPaymentSource({
                 workspace_id: invoice.workspace_id,
                 user_id: subscription.user_id,
@@ -339,7 +339,7 @@ async function handleSuccessfulPayment(
                 expires_at: wompiSource.expires_at,
                 is_default: true
               }, supabase);
-              
+
               paymentSourceId = newSource.id;
               console.log(`💳 Created payment source: ${newSource.id}`);
             } else {
@@ -358,9 +358,9 @@ async function handleSuccessfulPayment(
         if (subscription.user_id) {
           await supabase
             .from('profiles')
-            .update({ 
-              onboarding_completed: true, 
-              onboarding_step: 'completed' 
+            .update({
+              onboarding_completed: true,
+              onboarding_step: 'completed'
             })
             .eq('user_id', subscription.user_id);
         }
@@ -425,8 +425,8 @@ async function handleFailedPayment(
 
 // GET para verificar que el endpoint está activo
 export async function GET() {
-  return NextResponse.json({ 
-    status: 'ok', 
+  return NextResponse.json({
+    status: 'ok',
     message: 'Wompi webhook endpoint active',
     timestamp: new Date().toISOString()
   });

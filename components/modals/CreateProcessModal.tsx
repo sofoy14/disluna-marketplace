@@ -13,12 +13,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { 
-  FolderOpen, 
-  Plus, 
-  FileText, 
-  Users, 
-  Calendar, 
+import {
+  FolderOpen,
+  Plus,
+  FileText,
+  Users,
+  Calendar,
   Tag,
   Sparkles,
   ArrowRight,
@@ -139,7 +139,7 @@ export function CreateProcessModal({ children, onProcessCreated }: CreateProcess
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    
+
     const files = Array.from(e.dataTransfer.files);
     setSelectedFiles(prev => [...prev, ...files]);
   };
@@ -176,11 +176,11 @@ export function CreateProcessModal({ children, onProcessCreated }: CreateProcess
       formData.append('name', processName);
       formData.append('description', processDescription || '');
       formData.append('context', processContext);
-      
+
       // Agregar workspace_id del workspace actual
       // Prioridad: selectedWorkspace del contexto > workspaceId de la URL
       const workspaceId = selectedWorkspace?.id || workspaceIdFromUrl;
-      
+
       if (workspaceId) {
         formData.append('workspace_id', workspaceId);
         console.log('📌 Creating process with workspace_id:', workspaceId);
@@ -193,7 +193,7 @@ export function CreateProcessModal({ children, onProcessCreated }: CreateProcess
         alert('Error: No se pudo determinar el workspace actual. Por favor, recarga la página.');
         throw new Error('No workspace_id available');
       }
-      
+
       // Agregar archivos al FormData
       selectedFiles.forEach((file, index) => {
         formData.append(`file_${index}`, file);
@@ -215,52 +215,36 @@ export function CreateProcessModal({ children, onProcessCreated }: CreateProcess
       console.log('📌 Proceso creado en workspace:', data.process?.workspace_id);
       console.log('📌 Workspace actual (contexto):', selectedWorkspace?.id);
       console.log('📌 Workspace actual (URL):', workspaceIdFromUrl);
-      
+
       // Cerrar el modal primero
       setIsOpen(false);
-      
+
       // Reset form
       setSelectedTemplate(null);
       setProcessName('');
       setProcessDescription('');
       setProcessContext('');
       setSelectedFiles([]);
-      
+
       // Llamar callback si existe
       onProcessCreated?.(data.process);
-      
-      // Verificar si el proceso se creó en el workspace actual
-      const currentWorkspaceId = selectedWorkspace?.id || workspaceIdFromUrl;
-      const createdInCurrentWorkspace = data.process?.workspace_id === currentWorkspaceId;
-      
-      if (createdInCurrentWorkspace) {
-        // Si se creó en el workspace actual, intentar recargar solo los procesos
-        console.log('✅ Proceso creado en workspace actual, recargando procesos...');
-        
-        // Intentar usar la función de recarga si está disponible
-        if (typeof window !== 'undefined' && (window as any).reloadProcesses) {
-          setTimeout(() => {
-            (window as any).reloadProcesses();
-          }, 300);
-        } else {
-          // Fallback: recargar toda la página
-          setTimeout(() => {
-            window.location.reload();
-          }, 300);
-        }
+
+      // Navigate to the created process immediately
+      if (data.process?.id && data.process?.workspace_id) {
+        console.log(`🚀 Redirecting to new process: ${data.process.id}`);
+        // Close modal immediately
+        setIsOpen(false);
+        // Redirect
+        window.location.href = `/${data.process.workspace_id}/processes/${data.process.id}`;
       } else {
-        // Si se creó en otro workspace, mostrar mensaje
-        console.warn('⚠️ Proceso creado en workspace diferente:', {
-          creadoEn: data.process?.workspace_id,
-          workspaceActual: currentWorkspaceId
-        });
-        alert(`Proceso creado exitosamente en otro workspace. Por favor, cambia al workspace "${data.process?.workspace_id}" para verlo.`);
-        // No recargar si se creó en otro workspace
+        // Fallback if no ID (should not happen)
+        console.warn('⚠️ No process ID returned, refreshing page');
+        window.location.reload();
       }
-      
+
       // onProcessCreated?.(data.process);
       // setIsOpen(false);
-      
+
       // Reset form
       // setSelectedTemplate(null);
       // setProcessName('');
@@ -313,12 +297,12 @@ export function CreateProcessModal({ children, onProcessCreated }: CreateProcess
                 <ScrollArea className="flex-1 pr-4 h-[calc(95vh-250px)]">
                   <div className="grid grid-cols-1 gap-4">
                     {processTemplates.map((template) => (
-                      <Card 
+                      <Card
                         key={template.id}
                         className={cn(
                           "cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] border-2",
-                          selectedTemplate?.id === template.id 
-                            ? "ring-2 ring-blue-500 bg-blue-50 border-blue-200" 
+                          selectedTemplate?.id === template.id
+                            ? "ring-2 ring-blue-500 bg-blue-50 border-blue-200"
                             : "border-gray-200 hover:border-gray-300"
                         )}
                         onClick={() => handleTemplateSelect(template)}
@@ -376,201 +360,201 @@ export function CreateProcessModal({ children, onProcessCreated }: CreateProcess
                 <ScrollArea className="h-[calc(95vh-200px)]">
                   {selectedTemplate || processName ? (
                     <div className="space-y-6 pr-4">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-4 text-gray-800">
-                        {selectedTemplate ? 'Configurar Proceso' : 'Crear Proceso Personalizado'}
-                      </h3>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="process-name" className="text-sm font-medium text-gray-700">Nombre del Proceso</Label>
-                          <Input
-                            id="process-name"
-                            value={processName}
-                            onChange={(e) => setProcessName(e.target.value)}
-                            placeholder="Ingresa el nombre del proceso"
-                            className="mt-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="process-description" className="text-sm font-medium text-gray-700">Descripción</Label>
-                          <Textarea
-                            id="process-description"
-                            value={processDescription}
-                            onChange={(e) => setProcessDescription(e.target.value)}
-                            placeholder="Describe el propósito de este proceso"
-                            className="mt-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                            rows={3}
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="process-context" className="text-sm font-medium text-gray-700">
-                            Contexto del Proceso <span className="text-red-500">*</span>
-                          </Label>
-                          <Textarea
-                            id="process-context"
-                            value={processContext}
-                            onChange={(e) => setProcessContext(e.target.value)}
-                            placeholder="Proporciona información detallada del contexto del proceso para la IA..."
-                            className="mt-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                            rows={5}
-                          />
-                          <p className="text-xs text-gray-500 mt-1">
-                            Esta información será usada por la IA para entender el contexto de trabajo de este proceso
-                          </p>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-4 text-gray-800">
+                          {selectedTemplate ? 'Configurar Proceso' : 'Crear Proceso Personalizado'}
+                        </h3>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="process-name" className="text-sm font-medium text-gray-700">Nombre del Proceso</Label>
+                            <Input
+                              id="process-name"
+                              value={processName}
+                              onChange={(e) => setProcessName(e.target.value)}
+                              placeholder="Ingresa el nombre del proceso"
+                              className="mt-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="process-description" className="text-sm font-medium text-gray-700">Descripción</Label>
+                            <Textarea
+                              id="process-description"
+                              value={processDescription}
+                              onChange={(e) => setProcessDescription(e.target.value)}
+                              placeholder="Describe el propósito de este proceso"
+                              className="mt-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              rows={3}
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="process-context" className="text-sm font-medium text-gray-700">
+                              Contexto del Proceso <span className="text-red-500">*</span>
+                            </Label>
+                            <Textarea
+                              id="process-context"
+                              value={processContext}
+                              onChange={(e) => setProcessContext(e.target.value)}
+                              placeholder="Proporciona información detallada del contexto del proceso para la IA..."
+                              className="mt-1 rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                              rows={5}
+                            />
+                            <p className="text-xs text-gray-500 mt-1">
+                              Esta información será usada por la IA para entender el contexto de trabajo de este proceso
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <Separator className="my-4" />
+                      <Separator className="my-4" />
 
-                    {/* Sección de Archivos */}
-                    <div className="flex-1">
-                      <h4 className="font-semibold mb-3 text-gray-800">Archivos del Proceso</h4>
-                      
-                      {/* Área de Drop */}
-                      <div
-                        onDrop={handleDrop}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        className={cn(
-                          "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
-                          isDragging 
-                            ? "border-blue-500 bg-blue-50" 
-                            : "border-gray-300 hover:border-gray-400"
-                        )}
-                      >
-                        <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                        <p className="text-sm font-medium text-gray-700 mb-2">
-                          Arrastra archivos aquí o haz click para seleccionar
-                        </p>
-                        <p className="text-xs text-gray-500 mb-4">
-                          Soporta ZIP, PDF, DOCX y más
-                        </p>
-                        <Input
-                          type="file"
-                          multiple
-                          onChange={handleFileSelect}
-                          className="hidden"
-                          id="file-upload"
-                        />
-                        <Label 
-                          htmlFor="file-upload" 
-                          className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      {/* Sección de Archivos */}
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-3 text-gray-800">Archivos del Proceso</h4>
+
+                        {/* Área de Drop */}
+                        <div
+                          onDrop={handleDrop}
+                          onDragOver={handleDragOver}
+                          onDragLeave={handleDragLeave}
+                          className={cn(
+                            "border-2 border-dashed rounded-lg p-6 text-center transition-colors",
+                            isDragging
+                              ? "border-blue-500 bg-blue-50"
+                              : "border-gray-300 hover:border-gray-400"
+                          )}
                         >
-                          <Upload className="h-4 w-4 mr-2" />
-                          Seleccionar Archivos
-                        </Label>
+                          <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+                          <p className="text-sm font-medium text-gray-700 mb-2">
+                            Arrastra archivos aquí o haz click para seleccionar
+                          </p>
+                          <p className="text-xs text-gray-500 mb-4">
+                            Soporta ZIP, PDF, DOCX y más
+                          </p>
+                          <Input
+                            type="file"
+                            multiple
+                            onChange={handleFileSelect}
+                            className="hidden"
+                            id="file-upload"
+                          />
+                          <Label
+                            htmlFor="file-upload"
+                            className="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Seleccionar Archivos
+                          </Label>
+                        </div>
+
+                        {/* Lista de Archivos Seleccionados */}
+                        {selectedFiles.length > 0 && (
+                          <div className="mt-4 space-y-2">
+                            <p className="text-sm font-medium text-gray-700">Archivos seleccionados:</p>
+                            <ScrollArea className="max-h-32">
+                              <div className="space-y-2">
+                                {selectedFiles.map((file, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200"
+                                  >
+                                    {isZipFile(file) ? (
+                                      <FileArchive className="h-4 w-4 text-orange-500 flex-shrink-0" />
+                                    ) : (
+                                      <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium truncate">{file.name}</p>
+                                      <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                                    </div>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={() => handleRemoveFile(index)}
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                ))}
+                              </div>
+                            </ScrollArea>
+                          </div>
+                        )}
                       </div>
 
-                      {/* Lista de Archivos Seleccionados */}
-                      {selectedFiles.length > 0 && (
-                        <div className="mt-4 space-y-2">
-                          <p className="text-sm font-medium text-gray-700">Archivos seleccionados:</p>
-                          <ScrollArea className="max-h-32">
+                      {selectedTemplate && (
+                        <>
+                          <Separator className="my-4" />
+                          <div className="flex-1">
+                            <h4 className="font-semibold mb-3 text-gray-800">Características del Proceso</h4>
                             <div className="space-y-2">
-                              {selectedFiles.map((file, index) => (
-                                <div 
-                                  key={index}
-                                  className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200"
-                                >
-                                  {isZipFile(file) ? (
-                                    <FileArchive className="h-4 w-4 text-orange-500 flex-shrink-0" />
-                                  ) : (
-                                    <FileText className="h-4 w-4 text-blue-500 flex-shrink-0" />
-                                  )}
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium truncate">{file.name}</p>
-                                    <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
-                                  </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={() => handleRemoveFile(index)}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
+                              {selectedTemplate.features.map((feature, index) => (
+                                <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
+                                  <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                                  <span className="truncate">{feature}</span>
                                 </div>
                               ))}
                             </div>
-                          </ScrollArea>
-                        </div>
-                      )}
-                    </div>
-
-                    {selectedTemplate && (
-                      <>
-                        <Separator className="my-4" />
-                        <div className="flex-1">
-                          <h4 className="font-semibold mb-3 text-gray-800">Características del Proceso</h4>
-                          <div className="space-y-2">
-                            {selectedTemplate.features.map((feature, index) => (
-                              <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                                <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                                <span className="truncate">{feature}</span>
-                              </div>
-                            ))}
                           </div>
-                        </div>
-                      </>
-                    )}
+                        </>
+                      )}
 
-                    <div className="flex gap-3 pt-4 border-t mt-4">
-                      <Button
-                        onClick={handleCreateProcess}
-                        disabled={!processName.trim() || !processContext.trim() || isCreating}
-                        className="flex-1 rounded-lg bg-blue-600 hover:bg-blue-700"
-                      >
-                        {isCreating ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                            Creando...
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Crear Proceso
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setSelectedTemplate(null);
-                          setProcessName('');
-                          setProcessContext('');
-                          setProcessDescription('');
-                          setSelectedFiles([]);
-                        }}
-                        className="rounded-lg border-gray-300 hover:bg-gray-50"
-                      >
-                        Cancelar
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center h-full text-center">
-                    <div className="max-w-sm space-y-4">
-                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                        <FolderOpen className="h-8 w-8 text-gray-400" />
+                      <div className="flex gap-3 pt-4 border-t mt-4">
+                        <Button
+                          onClick={handleCreateProcess}
+                          disabled={!processName.trim() || !processContext.trim() || isCreating}
+                          className="flex-1 rounded-lg bg-blue-600 hover:bg-blue-700"
+                        >
+                          {isCreating ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                              Creando...
+                            </>
+                          ) : (
+                            <>
+                              <Plus className="h-4 w-4 mr-2" />
+                              Crear Proceso
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setSelectedTemplate(null);
+                            setProcessName('');
+                            setProcessContext('');
+                            setProcessDescription('');
+                            setSelectedFiles([]);
+                          }}
+                          className="rounded-lg border-gray-300 hover:bg-gray-50"
+                        >
+                          Cancelar
+                        </Button>
                       </div>
-                      <h3 className="text-lg font-semibold text-gray-600 mb-2">
-                        Selecciona una Plantilla
-                      </h3>
-                      <p className="text-gray-500 text-sm mb-4">
-                        Elige una plantilla del panel izquierdo para comenzar a configurar tu proceso
-                      </p>
-                      <Button 
-                        onClick={() => setProcessName('Proceso Personalizado')}
-                        variant="outline"
-                        className="w-full"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Crear Proceso Personalizado
-                      </Button>
                     </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-center">
+                      <div className="max-w-sm space-y-4">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                          <FolderOpen className="h-8 w-8 text-gray-400" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                          Selecciona una Plantilla
+                        </h3>
+                        <p className="text-gray-500 text-sm mb-4">
+                          Elige una plantilla del panel izquierdo para comenzar a configurar tu proceso
+                        </p>
+                        <Button
+                          onClick={() => setProcessName('Proceso Personalizado')}
+                          variant="outline"
+                          className="w-full"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Crear Proceso Personalizado
+                        </Button>
                       </div>
-                    )
+                    </div>
+                  )
                   }
                 </ScrollArea>
               </div>

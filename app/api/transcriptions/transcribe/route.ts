@@ -1,20 +1,21 @@
 import { env } from "@/lib/env/runtime-env"
-import { getServerProfile } from "@/lib/server/server-chat-helpers"
+import { getServerProfile, ProfileWithKeys } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import { createClient } from "@supabase/supabase-js"
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
 import { FileItemChunk } from "@/types"
 import { encode } from "gpt-tokenizer"
-import { assertWorkspaceAccess } from "@/src/server/workspaces/access"
+import { assertWorkspaceAccess } from "@/lib/server/workspaces/access"
 
 export const maxDuration = 300 // 5 minutos para transcripción
 
 export async function POST(request: Request) {
   let transcription_id: string | null = null
-  
+  let profile: ProfileWithKeys | null = null
+
   try {
-    const profile = await getServerProfile()
+    profile = await getServerProfile()
     const supabaseAdmin = createClient<Database>(
       env.supabaseUrl(),
       env.supabaseServiceRole()
@@ -155,7 +156,7 @@ export async function POST(request: Request) {
       user_id: profile.user_id,
       content: chunk.content,
       tokens: chunk.tokens,
-      openai_embedding: embeddings[index] || null,
+      openai_embedding: (embeddings[index] as any) || null,
       local_embedding: null
     }))
 
@@ -173,9 +174,9 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error("Error transcribing audio:", error)
-    
+
     // Intentar actualizar estado a "failed" usando el cliente admin
-    if (transcription_id) {
+    if (transcription_id && profile) {
       try {
         const supabaseAdmin = createClient<Database>(
           env.supabaseUrl(),
@@ -201,13 +202,13 @@ export async function POST(request: Request) {
 function splitTranscriptionIntoChunks(text: string): FileItemChunk[] {
   const maxChunkSize = 1000 // caracteres
   const chunks: FileItemChunk[] = []
-  
+
   // Dividir por párrafos primero
   const paragraphs = text.split(/\n\n+/)
-  
+
   for (const paragraph of paragraphs) {
     if (paragraph.trim().length === 0) continue
-    
+
     // Si el párrafo es pequeño, añadirlo como chunk
     if (paragraph.length <= maxChunkSize) {
       chunks.push({
@@ -218,7 +219,7 @@ function splitTranscriptionIntoChunks(text: string): FileItemChunk[] {
       // Si es grande, dividir en oraciones
       const sentences = paragraph.match(/[^.!?]+[.!?]+/g) || []
       let currentChunk = ""
-      
+
       for (const sentence of sentences) {
         if ((currentChunk + sentence).length <= maxChunkSize) {
           currentChunk += sentence
@@ -232,7 +233,7 @@ function splitTranscriptionIntoChunks(text: string): FileItemChunk[] {
           currentChunk = sentence
         }
       }
-      
+
       // Añadir último chunk
       if (currentChunk) {
         chunks.push({
@@ -242,6 +243,6 @@ function splitTranscriptionIntoChunks(text: string): FileItemChunk[] {
       }
     }
   }
-  
+
   return chunks
 }

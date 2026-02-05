@@ -6,9 +6,10 @@ import { cn } from "@/lib/utils"
 interface ProcessStatusBadgeProps {
   status: "pending" | "processing" | "ready" | "error"
   className?: string
+  size?: "sm" | "default"
 }
 
-export function ProcessStatusBadge({ status, className }: ProcessStatusBadgeProps) {
+export function ProcessStatusBadge({ status, className, size = "default" }: ProcessStatusBadgeProps) {
   const statusConfig = {
     pending: {
       label: "Pendiente",
@@ -39,11 +40,14 @@ export function ProcessStatusBadge({ status, className }: ProcessStatusBadgeProp
       variant={config.variant}
       className={cn(
         "font-normal tracking-wide",
+        size === "sm" && "text-[10px] px-1.5 py-0 h-5",
         config.className,
         className
       )}
     >
-      <span className={cn("mr-1.5 h-1.5 w-1.5 rounded-full",
+      <span className={cn(
+        "mr-1.5 rounded-full",
+        size === "sm" ? "h-1 w-1" : "h-1.5 w-1.5",
         status === 'ready' ? "bg-green-500" :
           status === 'processing' ? "bg-blue-500 animate-pulse" :
             status === 'error' ? "bg-red-500" :

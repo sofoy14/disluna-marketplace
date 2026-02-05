@@ -1,6 +1,6 @@
 const defaultRuntimeCaching = require("next-pwa/cache")
 const webpack = require("webpack")
-const { getSecurityHeaders } = require("./lib/security-headers")
+const { getSecurityHeaders } = require("./lib/security-headers-config")
 
 const withPWA = require("next-pwa")({
   dest: "public",

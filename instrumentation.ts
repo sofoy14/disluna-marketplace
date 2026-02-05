@@ -1,4 +1,4 @@
-import { assertRuntimeEnv } from "@/src/config/env"
+import { assertRuntimeEnv } from "@/lib/env"
 
 export function register() {
   if (process.env.NODE_ENV === "test") return

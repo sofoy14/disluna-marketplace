@@ -286,6 +286,41 @@ class RAGBackendService {
     }
 
     /**
+     * Obtener grafo de conocimiento
+     */
+    async getGraph(
+        workspaceId: string,
+        processId: string,
+        status: string = 'active',
+        limit: number = 100,
+        maxDepth: number = 3
+    ): Promise<any> {
+        try {
+            const params = new URLSearchParams()
+            if (workspaceId) params.append('workspace_id', workspaceId)
+            if (processId) params.append('process_id', processId)
+            params.append('status', status)
+            params.append('limit', limit.toString())
+            params.append('max_depth', maxDepth.toString())
+
+            const response = await fetch(`${this.baseUrl}/graph?${params.toString()}`, {
+                method: 'GET',
+                ...this.getFetchOptions()
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}))
+                throw new Error(errorData.error || `Graph request failed: ${response.status}`)
+            }
+
+            return await response.json()
+        } catch (error) {
+            console.error('❌ RAG Backend graph error:', error)
+            throw error
+        }
+    }
+
+    /**
      * Verificar si el backend está configurado
      */
     isConfigured(): boolean {

@@ -1,7 +1,7 @@
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { getSupabaseServer } from "@/lib/supabase/server-client"
-import { assertProcessAccess } from "@/src/server/access/processes"
-import { ForbiddenError, NotFoundError } from "@/src/server/errors"
+import { assertProcessAccess } from "@/lib/server/access/processes"
+import { ForbiddenError, NotFoundError } from "@/lib/server/errors"
 import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {

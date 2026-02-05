@@ -8,8 +8,8 @@ import {
   reactivateSubscription
 } from '@/db/subscriptions';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
-import { getSessionUser } from '@/src/server/auth/session';
-import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
+import { getSessionUser } from '@/lib/server/auth/session';
+import { assertWorkspaceAccess } from '@/lib/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
 
     if (!workspaceId) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing workspace_id parameter' 
+        {
+          success: false,
+          error: 'Missing workspace_id parameter'
         },
         { status: 400 }
       );
@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     }
 
     const subscription = await getSubscriptionByWorkspaceId(workspaceId, supabase);
-    
+
     return NextResponse.json({
       success: true,
       data: subscription
@@ -58,8 +58,8 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('Error fetching subscription:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error fetching subscription',
         message: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -74,9 +74,9 @@ export async function POST(req: NextRequest) {
 
     if (!plan_id || !workspace_id || !transaction_id) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing required fields: plan_id, workspace_id, and transaction_id' 
+        {
+          success: false,
+          error: 'Missing required fields: plan_id, workspace_id, and transaction_id'
         },
         { status: 400 }
       );
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
         { status: 403 }
       );
     }
-    
+
     // Get workspace details
     const { data: workspace, error: workspaceError } = await supabase
       .from('workspaces')
@@ -115,9 +115,9 @@ export async function POST(req: NextRequest) {
 
     if (workspaceError || !workspace) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Workspace not found' 
+        {
+          success: false,
+          error: 'Workspace not found'
         },
         { status: 404 }
       );
@@ -127,9 +127,9 @@ export async function POST(req: NextRequest) {
     const existingSubscription = await getSubscriptionByWorkspaceId(workspace_id, supabase);
     if (existingSubscription) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Subscription already exists for this workspace' 
+        {
+          success: false,
+          error: 'Subscription already exists for this workspace'
         },
         { status: 409 }
       );
@@ -160,8 +160,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error creating subscription:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error creating subscription',
         message: error instanceof Error ? error.message : 'Unknown error'
       },
@@ -176,9 +176,9 @@ export async function PATCH(req: NextRequest) {
 
     if (!subscription_id || !action) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing required fields: subscription_id and action' 
+        {
+          success: false,
+          error: 'Missing required fields: subscription_id and action'
         },
         { status: 400 }
       );
@@ -228,9 +228,9 @@ export async function PATCH(req: NextRequest) {
         break;
       default:
         return NextResponse.json(
-          { 
-            success: false, 
-            error: 'Invalid action. Supported actions: cancel, reactivate' 
+          {
+            success: false,
+            error: 'Invalid action. Supported actions: cancel, reactivate'
           },
           { status: 400 }
         );
@@ -244,8 +244,8 @@ export async function PATCH(req: NextRequest) {
   } catch (error) {
     console.error('Error updating subscription:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error updating subscription',
         message: error instanceof Error ? error.message : 'Unknown error'
       },

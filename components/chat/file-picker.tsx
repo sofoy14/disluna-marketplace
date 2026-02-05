@@ -64,47 +64,47 @@ export const FilePicker: FC<FilePickerProps> = ({
 
   const getKeyDownHandler =
     (index: number, type: "file" | "collection", item: any) =>
-    (e: React.KeyboardEvent<HTMLDivElement>) => {
-      if (e.key === "Escape") {
-        e.preventDefault()
-        setIsFilePickerOpen(false)
-      } else if (e.key === "Backspace") {
-        e.preventDefault()
-      } else if (e.key === "Enter") {
-        e.preventDefault()
+      (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === "Escape") {
+          e.preventDefault()
+          setIsFilePickerOpen(false)
+        } else if (e.key === "Backspace") {
+          e.preventDefault()
+        } else if (e.key === "Enter") {
+          e.preventDefault()
 
-        if (type === "file") {
-          handleSelectFile(item)
-        } else {
-          handleSelectCollection(item)
+          if (type === "file") {
+            handleSelectFile(item)
+          } else {
+            handleSelectCollection(item)
+          }
+        } else if (
+          (e.key === "Tab" || e.key === "ArrowDown") &&
+          !e.shiftKey &&
+          index === filteredFiles.length + filteredCollections.length - 1
+        ) {
+          e.preventDefault()
+          itemsRef.current[0]?.focus()
+        } else if (e.key === "ArrowUp" && !e.shiftKey && index === 0) {
+          // go to last element if arrow up is pressed on first element
+          e.preventDefault()
+          itemsRef.current[itemsRef.current.length - 1]?.focus()
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault()
+          const prevIndex =
+            index - 1 >= 0 ? index - 1 : itemsRef.current.length - 1
+          itemsRef.current[prevIndex]?.focus()
+        } else if (e.key === "ArrowDown") {
+          e.preventDefault()
+          const nextIndex = index + 1 < itemsRef.current.length ? index + 1 : 0
+          itemsRef.current[nextIndex]?.focus()
         }
-      } else if (
-        (e.key === "Tab" || e.key === "ArrowDown") &&
-        !e.shiftKey &&
-        index === filteredFiles.length + filteredCollections.length - 1
-      ) {
-        e.preventDefault()
-        itemsRef.current[0]?.focus()
-      } else if (e.key === "ArrowUp" && !e.shiftKey && index === 0) {
-        // go to last element if arrow up is pressed on first element
-        e.preventDefault()
-        itemsRef.current[itemsRef.current.length - 1]?.focus()
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault()
-        const prevIndex =
-          index - 1 >= 0 ? index - 1 : itemsRef.current.length - 1
-        itemsRef.current[prevIndex]?.focus()
-      } else if (e.key === "ArrowDown") {
-        e.preventDefault()
-        const nextIndex = index + 1 < itemsRef.current.length ? index + 1 : 0
-        itemsRef.current[nextIndex]?.focus()
       }
-    }
 
   return (
     <>
       {isOpen && (
-        <div className="bg-background flex flex-col space-y-1 rounded-xl border-2 p-2 text-sm">
+        <div className="bg-background flex flex-col space-y-1 rounded-xl border-2 p-2 text-sm pointer-events-auto">
           {filteredFiles.length === 0 && filteredCollections.length === 0 ? (
             <div className="text-md flex h-14 cursor-pointer items-center justify-center italic hover:opacity-50">
               No se encontraron archivos.

@@ -2,12 +2,6 @@ import { ALIContext } from "@/context/context"
 import useHotkey from "@/lib/hooks/use-hotkey"
 import { LLM_LIST } from "@/lib/models/llm/llm-list"
 import { cn } from "@/lib/utils"
-import {
-  IconBolt,
-  IconCirclePlus,
-  IconPlayerStopFilled,
-  IconSend
-} from "@tabler/icons-react"
 import { Plus, Square } from "lucide-react"
 import { motion } from "framer-motion"
 import Image from "next/image"
@@ -15,7 +9,8 @@ import { FC, useContext, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Input } from "../ui/input"
-import { PlaceholdersAndVanishInput, ModernSendIcon } from "../ui/placeholders-and-vanish-input"
+import { ModernSendIcon } from "../ui/placeholders-and-vanish-input"
+import { ChatInputArea } from "./chat-input-area"
 import { ChatCommandInput } from "./chat-command-input"
 import { ChatFilesDisplay } from "./chat-files-display"
 import { useChatHandler } from "./chat-hooks/use-chat-handler"
@@ -87,7 +82,7 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
   }, [selectedPreset, selectedAssistant])
 
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (!isTyping && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
       setIsPromptPickerOpen(false)
@@ -208,7 +203,7 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
       </div>
 
       <div className="relative mt-3 w-full">
-        <div className="absolute bottom-[76px] left-0 z-[60] max-h-[300px] w-full overflow-auto rounded-xl dark:border-none">
+        <div className="absolute bottom-[76px] left-0 z-[60] max-h-[300px] w-full overflow-auto rounded-xl dark:border-none pointer-events-none">
           <ChatCommandInput />
         </div>
 
@@ -227,7 +222,16 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
           accept={filesToAccept}
         />
 
-        <PlaceholdersAndVanishInput
+        <ChatInputArea
+          textareaRef={chatInputRef}
+          value={userInput}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          onPaste={handlePaste}
+          onCompositionStart={() => setIsTyping(true)}
+          onCompositionEnd={() => setIsTyping(false)}
+          disabled={isGenerating}
+          showSuggestions={showPlaceholderSuggestions}
           placeholders={[
             "¿Cuáles son los requisitos para una demanda de responsabilidad civil?",
             "Redacta una tutela por violación al debido proceso",
@@ -237,15 +241,6 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
             "¿Cuál es el procedimiento para una acción de cumplimiento?",
             "Escribe un derecho de petición para solicitar información pública"
           ]}
-          textareaRef={chatInputRef}
-          value={userInput}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onPaste={handlePaste}
-          onCompositionStart={() => setIsTyping(true)}
-          onCompositionEnd={() => setIsTyping(false)}
-          disabled={isGenerating}
-          showSuggestions={showPlaceholderSuggestions}
           leftElement={
             <CreateFileModal onFileCreated={(file) => {
               console.log('Archivo creado:', file)

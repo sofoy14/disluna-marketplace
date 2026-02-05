@@ -4,8 +4,8 @@ import { generateOpenRouterEmbedding } from "@/lib/generate-openrouter-embedding
 import { checkApiKey, getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"
 import OpenAI from "openai"
-import { assertFilesAccess } from "@/src/server/access/files"
-import { ForbiddenError, NotFoundError } from "@/src/server/errors"
+import { assertFilesAccess } from "@/lib/server/access/files"
+import { ForbiddenError, NotFoundError } from "@/lib/server/errors"
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     embeddingsProvider: "openai" | "local" | "openrouter"
     sourceCount: number
   }
-  
+
   // 🔥 FORZAR OpenAI Embeddings para retrieval
   // OpenRouter no tiene API de embeddings, local tiene problemas
   if (embeddingsProvider === "openrouter" || embeddingsProvider === "local") {
@@ -101,15 +101,15 @@ export async function POST(request: Request) {
       try {
         const openrouterKey = profile.openrouter_api_key || process.env.OPENROUTER_API_KEY
         console.log('🔍 Generando embedding de búsqueda con OpenRouter...')
-        
+
         const openrouterEmbedding = await generateOpenRouterEmbedding(
-          userInput, 
-          openrouterKey!, 
+          userInput,
+          openrouterKey!,
           'text-embedding-3-small'
         )
 
         console.log('✅ Embedding generado, buscando en base de datos...')
-        
+
         const { data: openrouterFileItems, error: openrouterError } =
           await supabaseAdmin.rpc("match_file_items_openai", {
             query_embedding: openrouterEmbedding as any,

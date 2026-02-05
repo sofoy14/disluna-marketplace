@@ -298,3 +298,643 @@
 .animate-shimmer {
   animation: shimmer 2s infinite;
 }
+
+/* ==========================================================================
+   ALI Premium UI Design System
+   ========================================================================== */
+
+/* Premium Mode Backgrounds */
+@layer base {
+  :root {
+    /* Mode backgrounds - subtle variations */
+    --mode-chat-bg: 0 0% 5%;
+    --mode-documents-bg: 0 0% 4.5%;
+    --mode-graph-bg: 0 0% 2.5%;
+    
+    /* Status ambient colors */
+    --status-active-border: 270 70% 50%;
+    --status-processing-border: 220 90% 50%;
+    --status-ready-border: 150 70% 40%;
+    --status-error-border: 0 70% 50%;
+    --status-archived-opacity: 0.6;
+    
+    /* Glow effects (strict policy: only for active nodes, primary CTA, selected tab) */
+    --glow-primary: 0 0 20px hsla(270, 70%, 50%, 0.4);
+    --glow-node-active: 0 0 12px hsla(270, 70%, 60%, 0.6);
+    --glow-node-hover: 0 0 8px hsla(270, 70%, 50%, 0.3);
+    
+    /* Mode transition */
+    --mode-transition: 200ms ease-out;
+  }
+}
+
+/* Mode-specific styling */
+@layer components {
+  /* Chat Mode - Lighter, airy, conversational */
+  .mode-chat {
+    background-color: hsl(var(--mode-chat-bg));
+    transition: background-color var(--mode-transition);
+  }
+  
+  /* Documents Mode - Structured, neutral */
+  .mode-documents {
+    background-color: hsl(var(--mode-documents-bg));
+    transition: background-color var(--mode-transition);
+  }
+  
+  /* Graph Mode - Dark, immersive */
+  .mode-graph {
+    background-color: hsl(var(--mode-graph-bg));
+    transition: background-color var(--mode-transition);
+  }
+}
+
+/* Glow Effects - STRICTLY LIMITED (only nodes, primary CTA, selected tab) */
+@layer utilities {
+  /* Primary CTA glow - ONLY for main action buttons */
+  .glow-cta {
+    box-shadow: var(--glow-primary);
+    transition: box-shadow 200ms ease-out;
+  }
+  
+  .glow-cta:hover {
+    box-shadow: 0 0 28px hsla(270, 70%, 50%, 0.5);
+  }
+  
+  /* Graph node glow - ONLY for active/hovered nodes */
+  .glow-node-active {
+    filter: drop-shadow(var(--glow-node-active));
+  }
+  
+  .glow-node-hover {
+    filter: drop-shadow(var(--glow-node-hover));
+  }
+  
+  /* Selected tab indicator glow */
+  .glow-tab-selected {
+    box-shadow: 0 2px 8px hsla(270, 70%, 50%, 0.3);
+  }
+}
+
+/* Status Ambient Styling - Border tints, not badges */
+@layer utilities {
+  .status-ambient-active {
+    border-color: hsla(var(--status-active-border), 0.4);
+  }
+  
+  .status-ambient-active:hover {
+    border-color: hsla(var(--status-active-border), 0.6);
+  }
+  
+  .status-ambient-processing {
+    border-color: hsla(var(--status-processing-border), 0.4);
+  }
+  
+  .status-ambient-ready {
+    border-color: hsla(var(--status-ready-border), 0.4);
+  }
+  
+  .status-ambient-error {
+    border-color: hsla(var(--status-error-border), 0.4);
+  }
+  
+  .status-ambient-archived {
+    opacity: var(--status-archived-opacity);
+  }
+}
+
+/* Premium Card Styling */
+@layer components {
+  .card-editorial {
+    @apply relative overflow-hidden;
+    transition: transform 150ms ease-out, border-color 200ms ease-out;
+  }
+  
+  .card-editorial:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Subtle gradient overlay on hover */
+  .card-editorial::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, hsla(270, 70%, 50%, 0.02) 100%);
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+    pointer-events: none;
+  }
+  
+  .card-editorial:hover::after {
+    opacity: 1;
+  }
+}
+
+/* Intelligence Summary Styling */
+@layer components {
+  .intelligence-summary {
+    @apply text-sm text-muted-foreground;
+    background: linear-gradient(90deg, hsla(270, 50%, 50%, 0.08) 0%, transparent 100%);
+    border-left: 2px solid hsla(270, 70%, 50%, 0.5);
+    padding: 0.75rem 1rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+  
+  .intelligence-summary strong {
+    @apply text-foreground font-semibold;
+  }
+}
+
+/* Suggestion Chips */
+@layer components {
+  .suggestion-chip {
+    @apply px-3 py-1.5 text-sm rounded-full border border-border/50 bg-card/50;
+    @apply hover:border-primary/40 hover:bg-primary/5;
+    @apply transition-all duration-150 cursor-pointer whitespace-nowrap;
+  }
+  
+  .suggestion-chips-container {
+    @apply flex gap-2 overflow-x-auto pb-2;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .suggestion-chips-container::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Graph Layer Controls */
+@layer components {
+  .layer-toggle {
+    @apply px-3 py-1.5 text-xs font-medium rounded-md border;
+    @apply transition-all duration-150;
+  }
+  
+  .layer-toggle-active {
+    @apply bg-primary/20 border-primary/50 text-primary;
+  }
+  
+  .layer-toggle-inactive {
+    @apply bg-transparent border-border/50 text-muted-foreground hover:border-border;
+  }
+}
+
+/* Bottom Sheet for Mobile */
+@layer components {
+  .bottom-sheet {
+    @apply fixed inset-x-0 bottom-0 z-50;
+    @apply bg-card border-t border-border rounded-t-2xl;
+    @apply transform transition-transform duration-300 ease-out;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .bottom-sheet-handle {
+    @apply w-10 h-1 bg-muted-foreground/30 rounded-full mx-auto my-3;
+  }
+}
+
+/* Mode Transition Container */
+@layer components {
+  .mode-transition-container {
+    transition: background-color var(--mode-transition), 
+                padding var(--mode-transition);
+  }
+}
+
+/* Graph Side Panel */
+@layer components {
+  .graph-side-panel {
+    @apply fixed top-0 right-0 h-full w-80 max-w-[90vw];
+    @apply bg-card/95 backdrop-blur-sm border-l border-border;
+    @apply transform transition-transform duration-300 ease-out;
+    @apply z-40 overflow-y-auto;
+  }
+  
+  .graph-side-panel-enter {
+    transform: translateX(100%);
+  }
+  
+  .graph-side-panel-enter-active {
+    transform: translateX(0);
+  }
+  
+  .graph-side-panel-exit {
+    transform: translateX(0);
+  }
+  
+  .graph-side-panel-exit-active {
+    transform: translateX(100%);
+  }
+}
+
+/* Premium Surfaces + Chips */
+@layer components {
+  .premium-card {
+    @apply relative overflow-hidden transition-all duration-200 ease-out;
+  }
+
+  .premium-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    border-color: hsla(var(--status-active-border), 0.35);
+  }
+
+  .premium-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.02) 0%, rgba(139, 92, 246, 0.06) 100%);
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+    pointer-events: none;
+  }
+
+  .premium-card:hover::after {
+    opacity: 1;
+  }
+}
+
+@layer components {
+  .stat-strip {
+    @apply grid gap-3 rounded-2xl border border-border/60 bg-card/60 p-4 backdrop-blur-sm;
+  }
+
+  .stat-tile {
+    @apply flex flex-col gap-1 rounded-xl border border-border/50 bg-muted/30 p-3;
+  }
+}
+/* ==========================================================================
+   Glassmorphism Design System
+   ========================================================================== */
+
+@layer components {
+  /* Glass Card - Efecto cristal principal */
+  .glass-card {
+    @apply relative overflow-hidden;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.6) 0%,
+      hsl(var(--card) / 0.3) 50%,
+      hsl(var(--card) / 0.5) 100%
+    );
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 
+      0 4px 24px rgba(0, 0, 0, 0.1),
+      0 1px 2px rgba(255, 255, 255, 0.02) inset;
+    transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.15),
+      0 1px 2px rgba(255, 255, 255, 0.03) inset;
+  }
+  
+  /* Glass Card con gradiente sutil */
+  .glass-card-gradient {
+    @apply glass-card;
+    background: linear-gradient(
+      135deg,
+      hsl(var(--card) / 0.7) 0%,
+      hsla(var(--custom-primary-hue), 50%, 50%, 0.05) 50%,
+      hsl(var(--card) / 0.4) 100%
+    );
+  }
+  
+  /* Glass Panel - Para sidebars y paneles */
+  .glass-panel {
+    background: linear-gradient(
+      180deg,
+      hsl(var(--card) / 0.4) 0%,
+      hsl(var(--card) / 0.2) 100%
+    );
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  /* Glass Input - Inputs con efecto cristal */
+  .glass-input {
+    @apply px-4 py-3 rounded-xl;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 200ms ease-out;
+  }
+  
+  .glass-input:focus {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: hsla(var(--custom-primary-hue), 70%, 60%, 0.5);
+    box-shadow: 
+      0 0 0 3px hsla(var(--custom-primary-hue), 70%, 60%, 0.1),
+      0 2px 8px rgba(0, 0, 0, 0.1);
+    outline: none;
+  }
+  
+  .glass-input::placeholder {
+    color: hsl(var(--muted-foreground) / 0.5);
+  }
+  
+  /* Glass Button - Botones con efecto cristal */
+  .glass-button {
+    @apply px-4 py-2 rounded-xl font-medium;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 200ms ease-out;
+  }
+  
+  .glass-button:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.15) 0%,
+      rgba(255, 255, 255, 0.08) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+  }
+  
+  /* Glow effects para glassmorphism */
+  .glass-glow {
+    position: relative;
+  }
+  
+  .glass-glow::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(
+      135deg,
+      hsla(var(--custom-primary-hue), 70%, 60%, 0.3) 0%,
+      transparent 50%,
+      hsla(var(--custom-primary-hue), 70%, 60%, 0.1) 100%
+    );
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 300ms ease-out;
+  }
+  
+  .glass-glow:hover::before {
+    opacity: 1;
+  }
+  
+  /* Nav Item Glass - Items de navegación */
+  .glass-nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200;
+    background: transparent;
+    border: 1px solid transparent;
+  }
+  
+  .glass-nav-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  
+  .glass-nav-item.active {
+    background: linear-gradient(
+      135deg,
+      hsla(var(--custom-primary-hue), 50%, 50%, 0.15) 0%,
+      hsla(var(--custom-primary-hue), 50%, 50%, 0.05) 100%
+    );
+    border-color: hsla(var(--custom-primary-hue), 50%, 50%, 0.2);
+  }
+  
+  /* Avatar ring glow */
+  .glass-avatar-ring {
+    box-shadow: 
+      0 0 0 2px hsl(var(--background)),
+      0 0 0 4px hsla(var(--custom-primary-hue), 70%, 60%, 0.3),
+      0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@layer utilities {
+  /* Efecto de brillo en bordes */
+  .border-glow {
+    position: relative;
+  }
+  
+  .border-glow::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.2) 0%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.1) 100%
+    );
+    -webkit-mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    mask: 
+      linear-gradient(#fff 0 0) content-box, 
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  
+  /* Animación de entrada suave */
+  @keyframes glass-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .glass-animate-in {
+    animation: glass-fade-in 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  /* Shimmer effect para glass */
+  @keyframes glass-shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  
+  .glass-shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.03) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: glass-shimmer 3s infinite;
+  }
+}
+
+/* ==========================================================================
+   Integrated Graph Sidebar Styles (Obsidian-like)
+   ========================================================================== */
+
+/* Resizable Panel Customization */
+@layer components {
+  /* Custom resize handle styling */
+  [data-panel-group-direction="horizontal"] > [data-resize-handle] {
+    @apply relative;
+    width: 1px;
+    background: hsl(var(--border) / 0.5);
+    transition: background-color 200ms ease-out, width 200ms ease-out;
+  }
+  
+  [data-panel-group-direction="horizontal"] > [data-resize-handle]:hover,
+  [data-panel-group-direction="horizontal"] > [data-resize-handle][data-resize-handle-active] {
+    width: 3px;
+    background: hsl(var(--primary) / 0.5);
+  }
+  
+  /* Graph sidebar collapsed state */
+  .graph-sidebar-collapsed {
+    @apply flex flex-col items-center py-4 px-2;
+    @apply bg-card/30 border-r border-border/50;
+    min-width: 48px;
+  }
+  
+  /* Graph sidebar expanded state */
+  .graph-sidebar-expanded {
+    @apply flex flex-col h-full;
+    @apply bg-card/20 border-r border-border/50;
+    background: linear-gradient(180deg, 
+      hsl(var(--card) / 0.4) 0%, 
+      hsl(var(--mode-graph-bg)) 100%
+    );
+  }
+  
+  /* Mini graph container */
+  .mini-graph-container {
+    @apply relative flex-1;
+    background: radial-gradient(
+      circle at 50% 50%,
+      hsl(var(--primary) / 0.03) 0%,
+      transparent 70%
+    );
+  }
+  
+  /* Mini graph overlay gradient for depth */
+  .mini-graph-container::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 80%,
+      hsl(var(--background) / 0.3) 100%
+    );
+    z-index: 1;
+  }
+}
+
+/* Graph Sidebar Animations */
+@layer utilities {
+  .graph-sidebar-expand {
+    animation: sidebarExpand 300ms ease-out forwards;
+  }
+  
+  .graph-sidebar-collapse {
+    animation: sidebarCollapse 300ms ease-out forwards;
+  }
+  
+  @keyframes sidebarExpand {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes sidebarCollapse {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+  }
+}
+
+/* Node Selection Panel */
+@layer components {
+  .node-selection-panel {
+    @apply border-t bg-card/60;
+    @apply p-3;
+    box-shadow: 0 -4px 12px hsl(var(--background) / 0.5);
+  }
+  
+  .node-selection-panel-title {
+    @apply text-sm font-medium truncate;
+  }
+  
+  .node-selection-panel-type {
+    @apply text-[10px] uppercase tracking-wide text-muted-foreground;
+  }
+}
+
+/* Layer filter buttons */
+@layer components {
+  .layer-filter-btn {
+    @apply px-2 py-0.5 rounded-full text-[10px] font-medium;
+    @apply transition-all duration-150;
+  }
+  
+  .layer-filter-btn-active {
+    @apply text-white shadow-sm;
+  }
+  
+  .layer-filter-btn-inactive {
+    @apply bg-muted/50 text-muted-foreground hover:bg-muted;
+  }
+}
+
+/* Hover tooltip for graph nodes */
+@layer components {
+  .node-hover-tooltip {
+    @apply absolute bg-popover border rounded-lg px-3 py-2 shadow-lg;
+    @apply max-w-[200px] pointer-events-none;
+    z-index: 50;
+    transform: translate(-50%, -100%);
+    margin-top: -8px;
+  }
+  
+  .node-hover-tooltip::after {
+    content: '';
+    @apply absolute left-1/2 -bottom-1;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid hsl(var(--popover));
+  }
+}
+
+/* Integrated view responsive adjustments */
+@media (max-width: 768px) {
+  .graph-sidebar-expanded {
+    @apply absolute inset-y-0 left-0 z-40;
+    max-width: 80vw;
+    box-shadow: 4px 0 24px hsl(var(--background) / 0.8);
+  }
+}

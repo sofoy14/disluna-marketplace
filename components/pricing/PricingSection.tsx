@@ -35,7 +35,7 @@ const defaultPlans = [
     id: "basic",
     name: "Plan Básico",
     description: "Ideal para abogados que buscan asistencia IA en sus consultas diarias",
-    amount_in_cents: 2900000,
+    amount_in_cents: 2000000, // $20.000 COP
     currency: "COP",
     plan_type: "basic",
     max_output_tokens_monthly: 2000000,
@@ -57,7 +57,7 @@ const defaultPlans = [
     id: "pro",
     name: "Plan PRO",
     description: "La solución completa para profesionales del derecho que necesitan todo",
-    amount_in_cents: 6800000,
+    amount_in_cents: 5000000, // $50.000 COP
     currency: "COP",
     plan_type: "pro",
     max_output_tokens_monthly: -1,

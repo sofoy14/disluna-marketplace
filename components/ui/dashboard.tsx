@@ -107,7 +107,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
   }
 
   return (
-    <div className="flex size-full">
+    <div className="flex h-screen w-full">
       <CommandK />
 
       {/* Overlay para móviles con animación suave */}
@@ -212,7 +212,7 @@ export const Dashboard: FC<DashboardProps> = ({ children }) => {
       </motion.div>
 
       <div
-        className="relative flex flex-1 min-w-0 flex-col bg-gradient-to-br from-background via-background to-primary/20 overflow-hidden"
+        className="relative flex flex-1 min-w-0 h-full flex-col bg-gradient-to-br from-background via-background to-primary/20 overflow-hidden"
         onDrop={onFileDrop}
         onDragOver={onDragOver}
         onDragEnter={handleDragEnter}

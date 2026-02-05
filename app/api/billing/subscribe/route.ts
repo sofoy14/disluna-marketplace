@@ -6,8 +6,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
 import { generateIntegritySignature, generateTransactionReference } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl, wompiConfig } from '@/lib/wompi/config';
-import { getSessionUser } from '@/src/server/auth/session';
-import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
+import { getSessionUser } from '@/lib/server/auth/session';
+import { assertWorkspaceAccess } from '@/lib/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -33,7 +33,7 @@ async function getSpecialOffer(planId: string, workspaceId: string) {
     .select('id', { count: 'exact', head: true })
     .eq('workspace_id', workspaceId)
     .in('status', ['active', 'canceled', 'expired']);
-  
+
   // Only apply first month offers if user has no previous subscriptions
   if (prevSubCount && prevSubCount > 0) {
     return null;
@@ -56,7 +56,7 @@ async function getSpecialOffer(planId: string, workspaceId: string) {
 export async function POST(req: NextRequest) {
   const supabase = getSupabaseServer();
   console.log('[Subscribe API] ========== START ==========');
-  
+
   try {
     // Verificar configuración de Wompi
     console.log('[Subscribe API] Validating Wompi config...');
@@ -64,8 +64,8 @@ export async function POST(req: NextRequest) {
     if (!validation.isValid) {
       console.error('[Subscribe API] Wompi config invalid:', validation.missingFields);
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Configuración de Wompi incompleta',
           missingFields: validation.missingFields
         },
@@ -118,8 +118,8 @@ export async function POST(req: NextRequest) {
 
     if (existingSubscription) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Ya tienes una suscripción activa',
           subscription: existingSubscription
         },
@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
 
     console.log('[Subscribe API] Fetching user email...');
     const { data: userData, error: userError } = await supabase.auth.admin.getUserById(workspace.user_id);
-    
+
     if (userError || !userData.user?.email) {
       console.error('[Subscribe API] User email error:', userError);
       return NextResponse.json(
@@ -193,11 +193,11 @@ export async function POST(req: NextRequest) {
     let amountToCharge = plan.amount_in_cents;
     let specialOffer = null;
     let isFirstMonth = false;
-    
+
     // Check for special offers (only for monthly plans)
     if (plan.billing_period === 'monthly') {
       specialOffer = await getSpecialOffer(plan_id, workspace_id);
-      
+
       if (specialOffer) {
         if (specialOffer.discount_type === 'fixed_price') {
           amountToCharge = specialOffer.discount_value;
@@ -220,7 +220,7 @@ export async function POST(req: NextRequest) {
       .single();
 
     let subscription;
-    
+
     if (!pendingSubscription) {
       // Crear nueva suscripción en estado pending
       const { data: newSubscription, error: createSubError } = await supabase
@@ -271,7 +271,7 @@ export async function POST(req: NextRequest) {
       .select('*')
       .eq('reference', wompiReference)
       .single();
-    
+
     let invoice;
     if (!existingInvoice) {
       // Crear invoice con el monto a cobrar (puede ser precio especial o normal)
@@ -361,8 +361,8 @@ export async function POST(req: NextRequest) {
         },
         amount_to_charge: amountToCharge,
         original_amount: plan.amount_in_cents,
-        amount_display: isFirstMonth 
-          ? `$${formatAmount(amountToCharge)} COP (primer mes especial - luego $${formatAmount(plan.amount_in_cents)} COP/mes)` 
+        amount_display: isFirstMonth
+          ? `$${formatAmount(amountToCharge)} COP (primer mes especial - luego $${formatAmount(plan.amount_in_cents)} COP/mes)`
           : `$${formatAmount(amountToCharge)} COP${plan.billing_period === 'yearly' ? '/año' : '/mes'}`
       }
     };
@@ -371,15 +371,15 @@ export async function POST(req: NextRequest) {
     console.log('[Subscribe API] Reference:', responseData.data.reference);
     console.log('[Subscribe API] Amount:', responseData.data.amount_to_charge);
     console.log('[Subscribe API] ========== END SUCCESS ==========');
-    
+
     return NextResponse.json(responseData);
 
   } catch (error) {
     console.error('[Subscribe API] ========== ERROR ==========');
     console.error('[Subscribe API] Error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error initiating subscription',
         message: error instanceof Error ? error.message : 'Unknown error'
       },

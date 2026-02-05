@@ -1,0 +1,155 @@
+/* ==========================================================================
+   Integrated Graph Sidebar Styles (Obsidian-like)
+   ========================================================================== */
+
+/* Resizable Panel Customization */
+@layer components {
+  /* Custom resize handle styling */
+  [data-panel-group-direction="horizontal"] > [data-resize-handle] {
+    @apply relative;
+    width: 1px;
+    background: hsl(var(--border) / 0.5);
+    transition: background-color 200ms ease-out, width 200ms ease-out;
+  }
+  
+  [data-panel-group-direction="horizontal"] > [data-resize-handle]:hover,
+  [data-panel-group-direction="horizontal"] > [data-resize-handle][data-resize-handle-active] {
+    width: 3px;
+    background: hsl(var(--primary) / 0.5);
+  }
+  
+  /* Graph sidebar collapsed state */
+  .graph-sidebar-collapsed {
+    @apply flex flex-col items-center py-4 px-2;
+    @apply bg-card/30 border-r border-border/50;
+    min-width: 48px;
+  }
+  
+  /* Graph sidebar expanded state */
+  .graph-sidebar-expanded {
+    @apply flex flex-col h-full;
+    @apply bg-card/20 border-r border-border/50;
+    background: linear-gradient(180deg, 
+      hsl(var(--card) / 0.4) 0%, 
+      hsl(var(--mode-graph-bg)) 100%
+    );
+  }
+  
+  /* Mini graph container */
+  .mini-graph-container {
+    @apply relative flex-1;
+    background: radial-gradient(
+      circle at 50% 50%,
+      hsl(var(--primary) / 0.03) 0%,
+      transparent 70%
+    );
+  }
+  
+  /* Mini graph overlay gradient for depth */
+  .mini-graph-container::before {
+    content: '';
+    @apply absolute inset-0 pointer-events-none;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 80%,
+      hsl(var(--background) / 0.3) 100%
+    );
+    z-index: 1;
+  }
+}
+
+/* Graph Sidebar Animations */
+@layer utilities {
+  .graph-sidebar-expand {
+    animation: sidebarExpand 300ms ease-out forwards;
+  }
+  
+  .graph-sidebar-collapse {
+    animation: sidebarCollapse 300ms ease-out forwards;
+  }
+  
+  @keyframes sidebarExpand {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes sidebarCollapse {
+    from {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+  }
+}
+
+/* Node Selection Panel */
+@layer components {
+  .node-selection-panel {
+    @apply border-t bg-card/60;
+    @apply p-3;
+    box-shadow: 0 -4px 12px hsl(var(--background) / 0.5);
+  }
+  
+  .node-selection-panel-title {
+    @apply text-sm font-medium truncate;
+  }
+  
+  .node-selection-panel-type {
+    @apply text-[10px] uppercase tracking-wide text-muted-foreground;
+  }
+}
+
+/* Layer filter buttons */
+@layer components {
+  .layer-filter-btn {
+    @apply px-2 py-0.5 rounded-full text-[10px] font-medium;
+    @apply transition-all duration-150;
+  }
+  
+  .layer-filter-btn-active {
+    @apply text-white shadow-sm;
+  }
+  
+  .layer-filter-btn-inactive {
+    @apply bg-muted/50 text-muted-foreground hover:bg-muted;
+  }
+}
+
+/* Hover tooltip for graph nodes */
+@layer components {
+  .node-hover-tooltip {
+    @apply absolute bg-popover border rounded-lg px-3 py-2 shadow-lg;
+    @apply max-w-[200px] pointer-events-none;
+    z-index: 50;
+    transform: translate(-50%, -100%);
+    margin-top: -8px;
+  }
+  
+  .node-hover-tooltip::after {
+    content: '';
+    @apply absolute left-1/2 -bottom-1;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid hsl(var(--popover));
+  }
+}
+
+/* Integrated view responsive adjustments */
+@media (max-width: 768px) {
+  .graph-sidebar-expanded {
+    @apply absolute inset-y-0 left-0 z-40;
+    max-width: 80vw;
+    box-shadow: 4px 0 24px hsl(var(--background) / 0.8);
+  }
+}

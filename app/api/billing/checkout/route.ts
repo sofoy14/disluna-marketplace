@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateCheckoutData } from '@/lib/wompi/utils';
 import { validateWompiConfig, getWompiCheckoutUrl } from '@/lib/wompi/config';
 import { getSupabaseServer } from '@/lib/supabase/server-client';
-import { getSessionUser } from '@/src/server/auth/session';
-import { assertWorkspaceAccess } from '@/src/server/workspaces/access';
+import { getSessionUser } from '@/lib/server/auth/session';
+import { assertWorkspaceAccess } from '@/lib/server/workspaces/access';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
@@ -17,8 +17,8 @@ export async function POST(req: NextRequest) {
     const validation = validateWompiConfig();
     if (!validation.isValid) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Configuración de Wompi incompleta',
           message: `Faltan campos: ${validation.missingFields.join(', ')}`,
           missingFields: validation.missingFields
@@ -31,9 +31,9 @@ export async function POST(req: NextRequest) {
 
     if (!plan_id || !workspace_id) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Missing required fields: plan_id and workspace_id' 
+        {
+          success: false,
+          error: 'Missing required fields: plan_id and workspace_id'
         },
         { status: 400 }
       );
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
         { status: 404 }
       );
     }
-    
+
     // Get workspace details using service role client
     const { data: workspace, error: workspaceError } = await supabase
       .from("workspaces")
@@ -90,15 +90,15 @@ export async function POST(req: NextRequest) {
 
     if (workspaceError || !workspace) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'Workspace not found',
           message: workspaceError?.message || 'Unknown error'
         },
         { status: 404 }
       );
     }
-    
+
     // Get user profile for email and name
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -108,8 +108,8 @@ export async function POST(req: NextRequest) {
 
     if (profileError || !profile) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'User profile not found',
           message: profileError?.message || 'Unknown error'
         },
@@ -119,11 +119,11 @@ export async function POST(req: NextRequest) {
 
     // Get user email from auth
     const { data: authUserData, error: userError } = await supabase.auth.admin.getUserById(workspace.user_id);
-    
+
     if (userError || !authUserData.user?.email) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: 'User email not found',
           message: userError?.message || 'Unknown error'
         },
@@ -133,7 +133,7 @@ export async function POST(req: NextRequest) {
 
     // Use production URL as default
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://aliado.pro';
-    
+
     // Generate checkout data
     const checkoutData = generateCheckoutData({
       planId: plan.id,
@@ -163,8 +163,8 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Error generating checkout data:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: 'Error generating checkout data',
         message: error instanceof Error ? error.message : 'Unknown error'
       },

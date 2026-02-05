@@ -4,7 +4,25 @@ import { VALID_ENV_KEYS } from "@/types/valid-keys"
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-export async function getServerProfile() {
+export type ProfileWithKeys = Tables<"profiles"> & {
+  openai_api_key?: string
+  anthropic_api_key?: string
+  google_gemini_api_key?: string
+  mistral_api_key?: string
+  groq_api_key?: string
+  perplexity_api_key?: string
+  azure_openai_api_key?: string
+  openrouter_api_key?: string
+  openai_organization_id?: string
+  azure_openai_endpoint?: string
+  azure_openai_35_turbo_id?: string
+  azure_openai_45_vision_id?: string
+  azure_openai_45_turbo_id?: string
+  azure_openai_embeddings_id?: string
+  use_azure_openai?: boolean
+}
+
+export async function getServerProfile(): Promise<ProfileWithKeys> {
   const cookieStore = cookies()
   const supabase = createServerClient<Database>(
     env.supabaseUrl(),
@@ -38,7 +56,7 @@ export async function getServerProfile() {
   return profileWithKeys
 }
 
-function addApiKeysToProfile(profile: Tables<"profiles">) {
+function addApiKeysToProfile(profile: Tables<"profiles">): ProfileWithKeys {
   const apiKeys = {
     [VALID_ENV_KEYS.OPENAI_API_KEY]: "openai_api_key",
     [VALID_ENV_KEYS.ANTHROPIC_API_KEY]: "anthropic_api_key",
@@ -58,13 +76,15 @@ function addApiKeysToProfile(profile: Tables<"profiles">) {
     [VALID_ENV_KEYS.AZURE_EMBEDDINGS_NAME]: "azure_openai_embeddings_id"
   }
 
+  const profileWithKeys = profile as ProfileWithKeys
+
   for (const [envKey, profileKey] of Object.entries(apiKeys)) {
     if (process.env[envKey]) {
-      ;(profile as any)[profileKey] = process.env[envKey]
+      (profileWithKeys as any)[profileKey] = process.env[envKey]
     }
   }
 
-  return profile
+  return profileWithKeys
 }
 
 export function checkApiKey(apiKey: string | null, keyName: string) {

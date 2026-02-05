@@ -190,17 +190,15 @@ export async function POST(request: Request) {
           console.log(`Processing file: ${file.name}`)
 
           // 1. Upload to Supabase Storage
-          // Use same path structure as upload route: userId/base64(uuid)
-          const fileId = crypto.randomUUID()
-          // We don't have Buffer in Edge runtime by default depending on Next.js config, 
-          // but assuming Node runtime (default for API routes unless specified)
-          // const storagePath = `${user.id}/${Buffer.from(fileId).toString("base64")}`
           // Safer generic way:
+          const fileId = crypto.randomUUID()
           const storagePath = `${user.id}/${fileId}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`
 
-          const { error: uploadError } = await supabaseAdmin.storage
-            .from("files")
-            .upload(storagePath, file, { upsert: true })
+          const { error: uploadError } = await workspace.id // Accessing workspace to ensure it exists
+            ? await supabaseAdmin.storage
+              .from("files")
+              .upload(storagePath, file, { upsert: true })
+            : { error: new Error("Workspace undefined") }
 
           if (uploadError) {
             console.error(`❌ Error uploading file ${file.name} to storage:`, uploadError)
@@ -217,7 +215,7 @@ export async function POST(request: Request) {
               storage_path: storagePath,
               mime_type: file.type || "application/octet-stream",
               size_bytes: file.size,
-              status: "processing", // Start as processing
+              status: "pending", // Start as pending, client will trigger ingestion
               metadata: {
                 source: "create_process_upload"
               }
@@ -230,51 +228,7 @@ export async function POST(request: Request) {
             continue
           }
 
-          // 3. Ingest to RAG Backend
-          try {
-            console.log(`🚀 Ingesting ${file.name} to RAG backend...`)
-            const metadata = {
-              process_id: newProcess.data.id, // CRITICAL: Pass process_id in metadata for extraction
-              file_name: file.name,
-              mime_type: file.type,
-              user_id: user.id,
-              document_id: doc.id
-            }
-
-            await ragBackendService.ingestDocument(
-              file,
-              workspace.id,
-              newProcess.data.id, // Pass processId explicitly as 3rd arg per our recent fix
-              metadata
-            )
-
-            // 4. Update status to indexed
-            await supabaseAdmin
-              .from("process_documents")
-              .update({
-                status: "indexed",
-                metadata: {
-                  ...doc.metadata as any,
-                  processed_with: "external_rag",
-                  processed_at: new Date().toISOString()
-                }
-              })
-              .eq("id", doc.id)
-
-            console.log(`✅ File ${file.name} successfully ingested and indexed`)
-
-          } catch (ragError) {
-            console.error(`❌ Error ingesting ${file.name} to RAG backend:`, ragError)
-
-            // Update status to error
-            await supabaseAdmin
-              .from("process_documents")
-              .update({
-                status: "error",
-                error_message: ragError instanceof Error ? ragError.message : "RAG Ingestion failed"
-              })
-              .eq("id", doc.id)
-          }
+          console.log(`✅ File ${file.name} uploaded and registered (pending ingestion)`)
 
         } catch (fileError) {
           console.error(`❌ Error processing file ${file.name}:`, fileError)

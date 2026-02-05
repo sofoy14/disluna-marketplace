@@ -9,7 +9,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter"
 import OpenAI from "openai"
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { convertDocumentFromUrl } from "@/lib/docling"
-import { assertWorkspaceAccess } from "@/src/server/workspaces/access"
+import { assertWorkspaceAccess } from "@/lib/server/workspaces/access"
 import { ragBackendService } from "@/lib/services/rag-backend"
 
 // Process-specific chunking: 500-800 tokens (using 650 as middle ground)
