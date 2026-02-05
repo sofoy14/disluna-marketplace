@@ -112,6 +112,11 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning className="dark" style={{ colorScheme: 'dark' }}>
       <head>
         <Script src="/env.js" strategy="beforeInteractive" />
+        {/* Fallback: Inject environment variables as meta tags for runtime access */}
+        {/* This ensures variables are available even if env.js was built with empty values */}
+        <meta name="supabase-url" content={getEnvVar('NEXT_PUBLIC_SUPABASE_URL', { fallback: '' })} />
+        <meta name="supabase-anon-key" content={getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY', { fallback: '' })} />
+        <meta name="app-url" content={getEnvVar('NEXT_PUBLIC_APP_URL', { fallback: '' })} />
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <link rel="icon" href="/favicon-ali.svg" type="image/svg+xml" />
         <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />

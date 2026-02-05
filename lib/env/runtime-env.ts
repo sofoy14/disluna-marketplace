@@ -18,6 +18,13 @@ type OptionalEnvKey =
 
 const runtimeEnv: NodeJS.ProcessEnv = process.env
 
+// Read from window.__ENV__ on client-side (for runtime-loaded environment variables)
+function readWindowEnv(key: string): string | undefined {
+  if (typeof window === 'undefined') return undefined
+  const candidate = (window as any)?.__ENV?.[key]
+  return typeof candidate === 'string' && candidate.trim() ? candidate.trim() : undefined
+}
+
 // Build-time fallbacks for NEXT_PUBLIC_* variables.
 // Next.js may inline these reads during build; bracket-access won't.
 const buildTimePublicEnv = {
@@ -35,11 +42,18 @@ export function getEnvVar(
   key: RequiredEnvKey | OptionalEnvKey,
   options: { required?: boolean; fallback?: string } = {}
 ): string {
+  // Try server-side process.env first
   const rawRuntime = runtimeEnv[key as keyof NodeJS.ProcessEnv]
   const runtimeValue = typeof rawRuntime === 'string' ? rawRuntime.trim() : rawRuntime
 
   if (runtimeValue) {
     return runtimeValue
+  }
+
+  // Try client-side window.__ENV__ (for runtime-loaded env.js)
+  const windowValue = readWindowEnv(key)
+  if (windowValue) {
+    return windowValue
   }
 
   // If runtime doesn't have the key, allow build-time inlined values for NEXT_PUBLIC_*.
