@@ -1,0 +1,286 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "D DISLUNA Tu distribuidor de confianza" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: D
+        - generic [ref=e8]:
+          - generic [ref=e9]: DISLUNA
+          - generic [ref=e10]: Tu distribuidor de confianza
+      - navigation [ref=e11]:
+        - link "Inicio" [ref=e12] [cursor=pointer]:
+          - /url: /
+        - link "Productos" [ref=e13] [cursor=pointer]:
+          - /url: /productos/
+        - link "Nosotros" [ref=e14] [cursor=pointer]:
+          - /url: /nosotros/
+      - generic [ref=e17]:
+        - img [ref=e19]
+        - textbox "Buscar productos..." [ref=e22]
+      - generic [ref=e23]:
+        - link "Cotizar" [ref=e24] [cursor=pointer]:
+          - /url: https://wa.me/573143395376
+          - img [ref=e25]
+          - generic [ref=e27]: Cotizar
+        - button "Abrir carrito" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+          - generic [ref=e33]: "1"
+  - dialog "Carrito de compras" [ref=e34]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - img [ref=e39]
+          - generic [ref=e42]:
+            - heading "Tu Carrito" [level=2] [ref=e43]
+            - paragraph [ref=e44]: 1 producto
+        - button "Cerrar carrito" [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+      - generic [ref=e51]:
+        - img [ref=e53]
+        - generic [ref=e57]:
+          - heading "Coca-Cola Original" [level=4] [ref=e58]
+          - paragraph [ref=e59]: Unidad
+          - paragraph [ref=e60]: $ 2.200
+          - generic [ref=e61]:
+            - generic [ref=e62]:
+              - button "Disminuir cantidad" [ref=e63] [cursor=pointer]:
+                - img [ref=e64]
+              - generic [ref=e65]: "1"
+              - button "Aumentar cantidad" [ref=e66] [cursor=pointer]:
+                - img [ref=e67]
+            - generic [ref=e68]:
+              - generic [ref=e69]: $ 2.200
+              - button "Eliminar item" [ref=e70] [cursor=pointer]:
+                - img [ref=e71]
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]: Total estimado
+          - generic [ref=e77]: $ 2.200
+        - generic [ref=e78]:
+          - link "Proceder al pago" [ref=e79] [cursor=pointer]:
+            - /url: /checkout/
+            - text: Proceder al pago
+            - img [ref=e80]
+          - generic [ref=e82]:
+            - button "Seguir comprando" [ref=e83] [cursor=pointer]
+            - button "Vaciar" [ref=e84] [cursor=pointer]
+  - main [ref=e85]:
+    - generic [ref=e86]:
+      - navigation [ref=e89]:
+        - link "Inicio" [ref=e90] [cursor=pointer]:
+          - /url: /
+          - img [ref=e91]
+          - generic [ref=e94]: Inicio
+        - img [ref=e95]
+        - link "Productos" [ref=e97] [cursor=pointer]:
+          - /url: /productos/
+        - img [ref=e98]
+        - generic [ref=e100]: Coca-Cola Original
+      - generic [ref=e101]:
+        - generic [ref=e102]:
+          - generic [ref=e104]:
+            - generic [ref=e106]:
+              - img [ref=e107]
+              - text: 250 ml
+            - generic [ref=e111]: 🥤Colas
+          - generic [ref=e112]:
+            - generic [ref=e113]:
+              - paragraph [ref=e114]: "SKU: COKE001"
+              - heading "Coca-Cola Original" [level=1] [ref=e115]
+              - paragraph [ref=e116]: El sabor original de Coca-Cola en presentación individual.
+              - generic [ref=e117]:
+                - generic [ref=e118]:
+                  - img [ref=e119]
+                  - paragraph [ref=e123]: Presentación
+                  - paragraph [ref=e124]: 250 ml
+                - generic [ref=e125]:
+                  - img [ref=e126]
+                  - paragraph [ref=e129]: Unidades/Caja
+                  - paragraph [ref=e130]: "24"
+                - generic [ref=e131]:
+                  - img [ref=e132]
+                  - paragraph [ref=e136]: Categoría
+                  - paragraph [ref=e137]: Colas
+              - generic [ref=e138]:
+                - paragraph [ref=e139]: Modo de compra
+                - generic [ref=e140]:
+                  - button "Por unidad" [ref=e141] [cursor=pointer]:
+                    - img [ref=e142]
+                    - text: Por unidad
+                  - button "Por caja (24 unidades)" [active] [ref=e146] [cursor=pointer]:
+                    - img [ref=e147]
+                    - text: Por caja (24 unidades)
+              - generic [ref=e150]:
+                - paragraph [ref=e151]: Precio por caja
+                - generic [ref=e152]:
+                  - generic [ref=e153]: $ 52.800
+                  - generic [ref=e154]: ($ 2.200 / unidad)
+              - generic [ref=e155]:
+                - paragraph [ref=e156]: Cantidad
+                - generic [ref=e157]:
+                  - generic [ref=e158]:
+                    - button [disabled] [ref=e159]:
+                      - img [ref=e160]
+                    - generic [ref=e161]: "1"
+                    - button [ref=e162] [cursor=pointer]:
+                      - img [ref=e163]
+                  - generic [ref=e164]:
+                    - text: =
+                    - generic [ref=e165]: 24 unidades
+            - generic [ref=e166]:
+              - generic [ref=e167]:
+                - paragraph [ref=e168]: Total
+                - paragraph [ref=e169]: $ 52.800
+              - button "Agregado al carrito" [ref=e170] [cursor=pointer]:
+                - img [ref=e171]
+                - text: Agregado al carrito
+        - generic [ref=e173]:
+          - heading "Productos relacionados" [level=2] [ref=e174]
+          - generic [ref=e175]:
+            - generic [ref=e176]:
+              - link "400 ml COLAS Ver detalle" [ref=e177] [cursor=pointer]:
+                - /url: /productos/COKE002/
+                - generic [ref=e178]:
+                  - generic [ref=e180]:
+                    - img [ref=e181]
+                    - text: 400 ml
+                  - generic [ref=e185]: COLAS
+                  - generic [ref=e187]:
+                    - text: Ver detalle
+                    - img [ref=e188]
+              - generic [ref=e191]:
+                - paragraph [ref=e192]: COKE002
+                - link "Coca-Cola Original 400 ml" [ref=e193] [cursor=pointer]:
+                  - /url: /productos/COKE002/
+                  - heading "Coca-Cola Original 400 ml" [level=3] [ref=e194]
+                - generic [ref=e195]:
+                  - generic [ref=e196]:
+                    - paragraph [ref=e197]: Unidad
+                    - paragraph [ref=e198]: $ 3.200
+                  - generic [ref=e199]:
+                    - paragraph [ref=e200]: Caja x12
+                    - paragraph [ref=e201]: $ 38.400
+            - generic [ref=e202]:
+              - link "1.5 L COLAS Ver detalle" [ref=e203] [cursor=pointer]:
+                - /url: /productos/COKE003/
+                - generic [ref=e204]:
+                  - generic [ref=e206]:
+                    - img [ref=e207]
+                    - text: 1.5 L
+                  - generic [ref=e211]: COLAS
+                  - generic [ref=e213]:
+                    - text: Ver detalle
+                    - img [ref=e214]
+              - generic [ref=e217]:
+                - paragraph [ref=e218]: COKE003
+                - link "Coca-Cola Original 1.5 L" [ref=e219] [cursor=pointer]:
+                  - /url: /productos/COKE003/
+                  - heading "Coca-Cola Original 1.5 L" [level=3] [ref=e220]
+                - generic [ref=e221]:
+                  - generic [ref=e222]:
+                    - paragraph [ref=e223]: Unidad
+                    - paragraph [ref=e224]: $ 7.500
+                  - generic [ref=e225]:
+                    - paragraph [ref=e226]: Caja x6
+                    - paragraph [ref=e227]: $ 45.000
+            - generic [ref=e228]:
+              - link "3 L COLAS Ver detalle" [ref=e229] [cursor=pointer]:
+                - /url: /productos/COKE004/
+                - generic [ref=e230]:
+                  - generic [ref=e232]:
+                    - img [ref=e233]
+                    - text: 3 L
+                  - generic [ref=e237]: COLAS
+                  - generic [ref=e239]:
+                    - text: Ver detalle
+                    - img [ref=e240]
+              - generic [ref=e243]:
+                - paragraph [ref=e244]: COKE004
+                - link "Coca-Cola Original 3 L" [ref=e245] [cursor=pointer]:
+                  - /url: /productos/COKE004/
+                  - heading "Coca-Cola Original 3 L" [level=3] [ref=e246]
+                - generic [ref=e247]:
+                  - generic [ref=e248]:
+                    - paragraph [ref=e249]: Unidad
+                    - paragraph [ref=e250]: $ 12.000
+                  - generic [ref=e251]:
+                    - paragraph [ref=e252]: Caja x3
+                    - paragraph [ref=e253]: $ 36.000
+            - generic [ref=e254]:
+              - link "250 ml COLAS Ver detalle" [ref=e255] [cursor=pointer]:
+                - /url: /productos/COKE005/
+                - generic [ref=e256]:
+                  - generic [ref=e258]:
+                    - img [ref=e259]
+                    - text: 250 ml
+                  - generic [ref=e263]: COLAS
+                  - generic [ref=e265]:
+                    - text: Ver detalle
+                    - img [ref=e266]
+              - generic [ref=e269]:
+                - paragraph [ref=e270]: COKE005
+                - link "Coca-Cola Sin Azúcar 250 ml" [ref=e271] [cursor=pointer]:
+                  - /url: /productos/COKE005/
+                  - heading "Coca-Cola Sin Azúcar 250 ml" [level=3] [ref=e272]
+                - generic [ref=e273]:
+                  - generic [ref=e274]:
+                    - paragraph [ref=e275]: Unidad
+                    - paragraph [ref=e276]: $ 2.200
+                  - generic [ref=e277]:
+                    - paragraph [ref=e278]: Caja x24
+                    - paragraph [ref=e279]: $ 52.800
+  - contentinfo [ref=e280]:
+    - generic [ref=e281]:
+      - generic [ref=e282]:
+        - generic [ref=e283]:
+          - heading "DISLUNA" [level=3] [ref=e284]
+          - paragraph [ref=e285]: Tu distribuidor de confianza en Ibagué. Ofrecemos las mejores bebidas con precios competitivos y servicio de entrega confiable.
+        - generic [ref=e286]:
+          - heading "Enlaces Rápidos" [level=4] [ref=e287]
+          - list [ref=e288]:
+            - listitem [ref=e289]:
+              - link "Inicio" [ref=e290] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e291]:
+              - link "Productos" [ref=e292] [cursor=pointer]:
+                - /url: /productos/
+            - listitem [ref=e293]:
+              - link "Nosotros" [ref=e294] [cursor=pointer]:
+                - /url: /nosotros/
+            - listitem [ref=e295]:
+              - link "Contacto" [ref=e296] [cursor=pointer]:
+                - /url: /#contacto
+        - generic [ref=e297]:
+          - heading "Contacto" [level=4] [ref=e298]
+          - list [ref=e299]:
+            - listitem [ref=e300]:
+              - img [ref=e301]
+              - generic [ref=e304]:
+                - text: "Calle 5b #13- Esquina"
+                - text: Ibagué, Tolima
+            - listitem [ref=e305]:
+              - img [ref=e306]
+              - link "+57 3XX XXX XXXX" [ref=e308] [cursor=pointer]:
+                - /url: tel:+573XXXXXXXXX
+            - listitem [ref=e309]:
+              - img [ref=e310]
+              - link "info@disluna.com" [ref=e313] [cursor=pointer]:
+                - /url: mailto:info@disluna.com
+        - generic [ref=e314]:
+          - heading "Síguenos" [level=4] [ref=e315]
+          - generic [ref=e316]:
+            - link [ref=e317] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e318]
+            - link [ref=e320] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e321]
+            - link [ref=e324] [cursor=pointer]:
+              - /url: https://wa.me/573XXXXXXXXX
+              - img [ref=e325]
+      - paragraph [ref=e328]: © 2026 DISLUNA. Todos los derechos reservados.
+  - alert [ref=e329]
+```

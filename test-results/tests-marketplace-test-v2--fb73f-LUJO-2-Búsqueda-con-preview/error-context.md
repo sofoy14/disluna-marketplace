@@ -1,0 +1,436 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "D DISLUNA Tu distribuidor de confianza" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: D
+        - generic [ref=e8]:
+          - generic [ref=e9]: DISLUNA
+          - generic [ref=e10]: Tu distribuidor de confianza
+      - navigation [ref=e11]:
+        - link "Inicio" [ref=e12] [cursor=pointer]:
+          - /url: /
+        - link "Productos" [ref=e13] [cursor=pointer]:
+          - /url: /productos/
+        - link "Nosotros" [ref=e14] [cursor=pointer]:
+          - /url: /nosotros/
+      - generic [ref=e17]:
+        - img [ref=e19]
+        - textbox "Buscar productos..." [ref=e22]
+      - generic [ref=e23]:
+        - link "Cotizar" [ref=e24] [cursor=pointer]:
+          - /url: https://wa.me/573143395376
+          - img [ref=e25]
+          - generic [ref=e27]: Cotizar
+        - button "Abrir carrito" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+  - dialog "Carrito de compras" [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - img [ref=e38]
+          - heading "Tu Carrito" [level=2] [ref=e42]
+        - button "Cerrar carrito" [ref=e43] [cursor=pointer]:
+          - img [ref=e44]
+      - generic [ref=e48]:
+        - img [ref=e50]
+        - heading "Tu carrito está vacío" [level=3] [ref=e53]
+        - paragraph [ref=e54]: Explora nuestros productos y agrega lo que necesites
+        - button "Continuar comprando" [ref=e55] [cursor=pointer]
+  - main [ref=e56]:
+    - generic [ref=e57]:
+      - generic [ref=e65]:
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - img [ref=e68]
+            - generic [ref=e70]: Distribuidor autorizado en Ibagué
+          - generic [ref=e71]:
+            - heading "Tu distribuidor de confianza" [level=1] [ref=e72]:
+              - text: Tu distribuidor
+              - generic [ref=e73]: de confianza
+            - paragraph [ref=e74]: Bebidas de las mejores marcas para tu negocio. Precios competitivos, entrega el mismo día en Ibagué.
+          - generic [ref=e76]:
+            - generic [ref=e77]:
+              - img [ref=e79]
+              - textbox "Busca tu bebida favorita..." [active] [ref=e82]: sprite
+              - button [ref=e83] [cursor=pointer]:
+                - img [ref=e84]
+              - button "Buscar" [ref=e87] [cursor=pointer]
+            - generic [ref=e90]:
+              - link "Sprite 400 ml • SABORES $3,200" [ref=e91] [cursor=pointer]:
+                - /url: /productos/SPRI001/
+                - img [ref=e93]
+                - generic [ref=e97]:
+                  - paragraph [ref=e98]: Sprite
+                  - paragraph [ref=e99]: 400 ml • SABORES
+                - paragraph [ref=e101]: $3,200
+                - img [ref=e102]
+              - link "Sprite 1.5 L • SABORES $7,500" [ref=e104] [cursor=pointer]:
+                - /url: /productos/SPRI002/
+                - img [ref=e106]
+                - generic [ref=e110]:
+                  - paragraph [ref=e111]: Sprite
+                  - paragraph [ref=e112]: 1.5 L • SABORES
+                - paragraph [ref=e114]: $7,500
+                - img [ref=e115]
+              - link "Sprite Sin Azúcar 400 ml • SABORES $3,200" [ref=e117] [cursor=pointer]:
+                - /url: /productos/SPRI003/
+                - img [ref=e119]
+                - generic [ref=e123]:
+                  - paragraph [ref=e124]: Sprite Sin Azúcar
+                  - paragraph [ref=e125]: 400 ml • SABORES
+                - paragraph [ref=e127]: $3,200
+                - img [ref=e128]
+              - link "Ver todos los resultados" [ref=e131] [cursor=pointer]:
+                - /url: /productos/?busqueda=sprite
+                - text: Ver todos los resultados
+                - img [ref=e132]
+          - generic [ref=e134]:
+            - link "Ver catálogo" [ref=e135] [cursor=pointer]:
+              - /url: /productos/
+              - generic [ref=e136]: Ver catálogo
+              - img [ref=e137]
+            - link "Cotizar" [ref=e139] [cursor=pointer]:
+              - /url: https://wa.me/573143395376
+              - img [ref=e140]
+              - generic [ref=e142]: Cotizar
+          - generic [ref=e143]:
+            - generic [ref=e144]:
+              - img [ref=e145]
+              - generic [ref=e148]: Precios de mayorista
+            - generic [ref=e149]:
+              - img [ref=e150]
+              - generic [ref=e155]: Entrega el mismo día
+        - generic [ref=e157]:
+          - generic [ref=e159]:
+            - generic [ref=e160]:
+              - img [ref=e161]
+              - generic [ref=e164]: 10+
+              - generic [ref=e165]: Años de experiencia
+            - generic [ref=e166]:
+              - img [ref=e167]
+              - generic [ref=e172]: 500+
+              - generic [ref=e173]: Clientes satisfechos
+            - generic [ref=e174]:
+              - img [ref=e175]
+              - generic [ref=e179]: "37"
+              - generic [ref=e180]: Productos disponibles
+            - generic [ref=e181]:
+              - img [ref=e182]
+              - generic [ref=e187]: 24h
+              - generic [ref=e188]: Entrega express
+          - generic [ref=e190]:
+            - img [ref=e192]
+            - generic [ref=e195]:
+              - paragraph [ref=e196]: Entregado
+              - paragraph [ref=e197]: "Pedido #1234"
+          - generic [ref=e199]:
+            - img [ref=e201]
+            - generic [ref=e205]:
+              - paragraph [ref=e206]: Nuevo pedido
+              - paragraph [ref=e207]: 12 productos
+      - generic [ref=e210]:
+        - generic [ref=e211]:
+          - generic [ref=e212]:
+            - heading "Explora por categoría" [level=2] [ref=e213]
+            - paragraph [ref=e214]: Encuentra lo que necesitas para tu negocio. Desde agua purificada hasta bebidas energizantes.
+          - link "Ver todo el catálogo" [ref=e215] [cursor=pointer]:
+            - /url: /productos/
+            - text: Ver todo el catálogo
+            - img [ref=e216]
+        - generic [ref=e218]:
+          - link "Agua 9 productos Explorar" [ref=e219] [cursor=pointer]:
+            - /url: /productos/?categoria=agua
+            - img [ref=e222]
+            - heading "Agua" [level=3] [ref=e225]
+            - paragraph [ref=e226]: 9 productos
+            - generic [ref=e227]:
+              - generic [ref=e228]: Explorar
+              - img [ref=e229]
+          - link "Colas 9 productos Explorar" [ref=e231] [cursor=pointer]:
+            - /url: /productos/?categoria=colas
+            - img [ref=e234]
+            - heading "Colas" [level=3] [ref=e238]
+            - paragraph [ref=e239]: 9 productos
+            - generic [ref=e240]:
+              - generic [ref=e241]: Explorar
+              - img [ref=e242]
+          - link "Jugos 6 productos Explorar" [ref=e244] [cursor=pointer]:
+            - /url: /productos/?categoria=jugos
+            - img [ref=e247]
+            - heading "Jugos" [level=3] [ref=e252]
+            - paragraph [ref=e253]: 6 productos
+            - generic [ref=e254]:
+              - generic [ref=e255]: Explorar
+              - img [ref=e256]
+          - link "Isotónicos 7 productos Explorar" [ref=e258] [cursor=pointer]:
+            - /url: /productos/?categoria=isotonicos
+            - img [ref=e261]
+            - heading "Isotónicos" [level=3] [ref=e263]
+            - paragraph [ref=e264]: 7 productos
+            - generic [ref=e265]:
+              - generic [ref=e266]: Explorar
+              - img [ref=e267]
+          - link "Sabores 6 productos Explorar" [ref=e269] [cursor=pointer]:
+            - /url: /productos/?categoria=sabores
+            - img [ref=e272]
+            - heading "Sabores" [level=3] [ref=e278]
+            - paragraph [ref=e279]: 6 productos
+            - generic [ref=e280]:
+              - generic [ref=e281]: Explorar
+              - img [ref=e282]
+      - generic [ref=e285]:
+        - generic [ref=e286]:
+          - generic [ref=e287]:
+            - heading "Productos destacados" [level=2] [ref=e288]
+            - paragraph [ref=e289]: Los más solicitados por nuestros clientes
+          - link "Ver todos" [ref=e290] [cursor=pointer]:
+            - /url: /productos/
+            - text: Ver todos
+            - img [ref=e291]
+        - generic [ref=e293]:
+          - generic [ref=e295]:
+            - link "600 ml AGUA Ver detalle" [ref=e296] [cursor=pointer]:
+              - /url: /productos/BRIS001/
+              - generic [ref=e297]:
+                - generic [ref=e299]:
+                  - img [ref=e300]
+                  - text: 600 ml
+                - generic [ref=e304]: AGUA
+                - generic [ref=e306]:
+                  - text: Ver detalle
+                  - img [ref=e307]
+            - generic [ref=e310]:
+              - paragraph [ref=e311]: BRIS001
+              - link "Brisa Lima Limón PET 600 ml" [ref=e312] [cursor=pointer]:
+                - /url: /productos/BRIS001/
+                - heading "Brisa Lima Limón PET 600 ml" [level=3] [ref=e313]
+              - generic [ref=e314]:
+                - generic [ref=e315]:
+                  - paragraph [ref=e316]: Unidad
+                  - paragraph [ref=e317]: $ 2.800
+                - generic [ref=e318]:
+                  - paragraph [ref=e319]: Caja x12
+                  - paragraph [ref=e320]: $ 33.600
+          - generic [ref=e322]:
+            - link "1.5 L AGUA Ver detalle" [ref=e323] [cursor=pointer]:
+              - /url: /productos/BRIS002/
+              - generic [ref=e324]:
+                - generic [ref=e326]:
+                  - img [ref=e327]
+                  - text: 1.5 L
+                - generic [ref=e331]: AGUA
+                - generic [ref=e333]:
+                  - text: Ver detalle
+                  - img [ref=e334]
+            - generic [ref=e337]:
+              - paragraph [ref=e338]: BRIS002
+              - link "Brisa Lima Limón PET 1.5 L" [ref=e339] [cursor=pointer]:
+                - /url: /productos/BRIS002/
+                - heading "Brisa Lima Limón PET 1.5 L" [level=3] [ref=e340]
+              - generic [ref=e341]:
+                - generic [ref=e342]:
+                  - paragraph [ref=e343]: Unidad
+                  - paragraph [ref=e344]: $ 4.500
+                - generic [ref=e345]:
+                  - paragraph [ref=e346]: Caja x6
+                  - paragraph [ref=e347]: $ 27.000
+          - generic [ref=e349]:
+            - link "600 ml AGUA Ver detalle" [ref=e350] [cursor=pointer]:
+              - /url: /productos/BRIS003/
+              - generic [ref=e351]:
+                - generic [ref=e353]:
+                  - img [ref=e354]
+                  - text: 600 ml
+                - generic [ref=e358]: AGUA
+                - generic [ref=e360]:
+                  - text: Ver detalle
+                  - img [ref=e361]
+            - generic [ref=e364]:
+              - paragraph [ref=e365]: BRIS003
+              - link "Brisa Manzana PET 600 ml" [ref=e366] [cursor=pointer]:
+                - /url: /productos/BRIS003/
+                - heading "Brisa Manzana PET 600 ml" [level=3] [ref=e367]
+              - generic [ref=e368]:
+                - generic [ref=e369]:
+                  - paragraph [ref=e370]: Unidad
+                  - paragraph [ref=e371]: $ 2.800
+                - generic [ref=e372]:
+                  - paragraph [ref=e373]: Caja x12
+                  - paragraph [ref=e374]: $ 33.600
+          - generic [ref=e376]:
+            - link "1.5 L AGUA Ver detalle" [ref=e377] [cursor=pointer]:
+              - /url: /productos/BRIS004/
+              - generic [ref=e378]:
+                - generic [ref=e380]:
+                  - img [ref=e381]
+                  - text: 1.5 L
+                - generic [ref=e385]: AGUA
+                - generic [ref=e387]:
+                  - text: Ver detalle
+                  - img [ref=e388]
+            - generic [ref=e391]:
+              - paragraph [ref=e392]: BRIS004
+              - link "Brisa Manzana PET 1.5 L" [ref=e393] [cursor=pointer]:
+                - /url: /productos/BRIS004/
+                - heading "Brisa Manzana PET 1.5 L" [level=3] [ref=e394]
+              - generic [ref=e395]:
+                - generic [ref=e396]:
+                  - paragraph [ref=e397]: Unidad
+                  - paragraph [ref=e398]: $ 4.500
+                - generic [ref=e399]:
+                  - paragraph [ref=e400]: Caja x6
+                  - paragraph [ref=e401]: $ 27.000
+          - generic [ref=e403]:
+            - link "600 ml AGUA Ver detalle" [ref=e404] [cursor=pointer]:
+              - /url: /productos/BRIS005/
+              - generic [ref=e405]:
+                - generic [ref=e407]:
+                  - img [ref=e408]
+                  - text: 600 ml
+                - generic [ref=e412]: AGUA
+                - generic [ref=e414]:
+                  - text: Ver detalle
+                  - img [ref=e415]
+            - generic [ref=e418]:
+              - paragraph [ref=e419]: BRIS005
+              - link "Brisa Sin Gas PET 600 ml" [ref=e420] [cursor=pointer]:
+                - /url: /productos/BRIS005/
+                - heading "Brisa Sin Gas PET 600 ml" [level=3] [ref=e421]
+              - generic [ref=e422]:
+                - generic [ref=e423]:
+                  - paragraph [ref=e424]: Unidad
+                  - paragraph [ref=e425]: $ 2.200
+                - generic [ref=e426]:
+                  - paragraph [ref=e427]: Caja x12
+                  - paragraph [ref=e428]: $ 26.400
+          - generic [ref=e430]:
+            - link "1 L AGUA Ver detalle" [ref=e431] [cursor=pointer]:
+              - /url: /productos/BRIS006/
+              - generic [ref=e432]:
+                - generic [ref=e434]:
+                  - img [ref=e435]
+                  - text: 1 L
+                - generic [ref=e439]: AGUA
+                - generic [ref=e441]:
+                  - text: Ver detalle
+                  - img [ref=e442]
+            - generic [ref=e445]:
+              - paragraph [ref=e446]: BRIS006
+              - link "Brisa Sin Gas PET 1 L" [ref=e447] [cursor=pointer]:
+                - /url: /productos/BRIS006/
+                - heading "Brisa Sin Gas PET 1 L" [level=3] [ref=e448]
+              - generic [ref=e449]:
+                - generic [ref=e450]:
+                  - paragraph [ref=e451]: Unidad
+                  - paragraph [ref=e452]: $ 3.200
+                - generic [ref=e453]:
+                  - paragraph [ref=e454]: Caja x8
+                  - paragraph [ref=e455]: $ 25.600
+      - generic [ref=e460]:
+        - generic [ref=e461]:
+          - heading "Así de fácil es pedir" [level=2] [ref=e462]
+          - paragraph [ref=e463]: Tres simples pasos para recibir tu pedido en la puerta de tu negocio
+        - generic [ref=e464]:
+          - generic [ref=e466]:
+            - img [ref=e468]
+            - generic [ref=e472]: "01"
+            - heading "Elige tus productos" [level=3] [ref=e473]
+            - paragraph [ref=e474]: Explora nuestro catálogo y selecciona por unidad o caja
+          - generic [ref=e477]:
+            - img [ref=e479]
+            - generic [ref=e481]: "02"
+            - heading "Cotiza o compra" [level=3] [ref=e482]
+            - paragraph [ref=e483]: Compra directo o escríbenos para una cotización personalizada
+          - generic [ref=e486]:
+            - img [ref=e488]
+            - generic [ref=e493]: "03"
+            - heading "Recibe en tu puerta" [level=3] [ref=e494]
+            - paragraph [ref=e495]: Entregamos el mismo día en Ibagué. Rápido y seguro.
+      - generic [ref=e500]:
+        - generic [ref=e501]:
+          - heading "¿Listo para surtir tu negocio?" [level=2] [ref=e502]
+          - paragraph [ref=e503]: Contáctanos hoy y descubre por qué somos el distribuidor preferido en Ibagué.
+          - generic [ref=e504]:
+            - link "Escribir por WhatsApp" [ref=e505] [cursor=pointer]:
+              - /url: https://wa.me/573143395376
+              - img [ref=e506]
+              - generic [ref=e508]: Escribir por WhatsApp
+            - link "Llamar ahora" [ref=e509] [cursor=pointer]:
+              - /url: tel:+573216389995
+              - img [ref=e510]
+              - generic [ref=e512]: Llamar ahora
+        - generic [ref=e513]:
+          - heading "Información de contacto" [level=3] [ref=e514]
+          - generic [ref=e515]:
+            - link "Teléfono / WhatsApp 321 638 9995" [ref=e516] [cursor=pointer]:
+              - /url: tel:+573216389995
+              - img [ref=e518]
+              - generic [ref=e520]:
+                - paragraph [ref=e521]: Teléfono / WhatsApp
+                - paragraph [ref=e522]: 321 638 9995
+            - generic [ref=e523]:
+              - img [ref=e525]
+              - generic [ref=e528]:
+                - paragraph [ref=e529]: Dirección
+                - paragraph [ref=e530]: "Calle 5b #13 - Esquina, Ibagué"
+            - generic [ref=e531]:
+              - img [ref=e533]
+              - generic [ref=e536]:
+                - paragraph [ref=e537]: Horario
+                - paragraph [ref=e538]: "Lun - Sáb: 8:00 AM - 6:00 PM"
+  - contentinfo [ref=e539]:
+    - generic [ref=e540]:
+      - generic [ref=e541]:
+        - generic [ref=e542]:
+          - heading "DISLUNA" [level=3] [ref=e543]
+          - paragraph [ref=e544]: Tu distribuidor de confianza en Ibagué. Ofrecemos las mejores bebidas con precios competitivos y servicio de entrega confiable.
+        - generic [ref=e545]:
+          - heading "Enlaces Rápidos" [level=4] [ref=e546]
+          - list [ref=e547]:
+            - listitem [ref=e548]:
+              - link "Inicio" [ref=e549] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e550]:
+              - link "Productos" [ref=e551] [cursor=pointer]:
+                - /url: /productos/
+            - listitem [ref=e552]:
+              - link "Nosotros" [ref=e553] [cursor=pointer]:
+                - /url: /nosotros/
+            - listitem [ref=e554]:
+              - link "Contacto" [ref=e555] [cursor=pointer]:
+                - /url: /#contacto
+        - generic [ref=e556]:
+          - heading "Contacto" [level=4] [ref=e557]
+          - list [ref=e558]:
+            - listitem [ref=e559]:
+              - img [ref=e560]
+              - generic [ref=e563]:
+                - text: "Calle 5b #13- Esquina"
+                - text: Ibagué, Tolima
+            - listitem [ref=e564]:
+              - img [ref=e565]
+              - link "+57 3XX XXX XXXX" [ref=e567] [cursor=pointer]:
+                - /url: tel:+573XXXXXXXXX
+            - listitem [ref=e568]:
+              - img [ref=e569]
+              - link "info@disluna.com" [ref=e572] [cursor=pointer]:
+                - /url: mailto:info@disluna.com
+        - generic [ref=e573]:
+          - heading "Síguenos" [level=4] [ref=e574]
+          - generic [ref=e575]:
+            - link [ref=e576] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e577]
+            - link [ref=e579] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e580]
+            - link [ref=e583] [cursor=pointer]:
+              - /url: https://wa.me/573XXXXXXXXX
+              - img [ref=e584]
+      - paragraph [ref=e587]: © 2026 DISLUNA. Todos los derechos reservados.
+  - alert [ref=e588]
+```

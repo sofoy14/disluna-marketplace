@@ -1,0 +1,186 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e4]:
+      - link "D DISLUNA Tu distribuidor de confianza" [ref=e5] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: D
+        - generic [ref=e8]:
+          - generic [ref=e9]: DISLUNA
+          - generic [ref=e10]: Tu distribuidor de confianza
+      - navigation [ref=e11]:
+        - link "Inicio" [ref=e12] [cursor=pointer]:
+          - /url: /
+        - link "Productos" [ref=e13] [cursor=pointer]:
+          - /url: /productos/
+        - link "Nosotros" [ref=e14] [cursor=pointer]:
+          - /url: /nosotros/
+      - generic [ref=e17]:
+        - img [ref=e19]
+        - textbox "Buscar productos..." [ref=e22]
+      - generic [ref=e23]:
+        - link "Cotizar" [ref=e24] [cursor=pointer]:
+          - /url: https://wa.me/573143395376
+          - img [ref=e25]
+          - generic [ref=e27]: Cotizar
+        - button "Abrir carrito" [ref=e28] [cursor=pointer]:
+          - img [ref=e29]
+          - generic [ref=e33]: "1"
+  - dialog "Carrito de compras" [ref=e34]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - img [ref=e39]
+          - generic [ref=e42]:
+            - heading "Tu Carrito" [level=2] [ref=e43]
+            - paragraph [ref=e44]: 1 producto
+        - button "Cerrar carrito" [ref=e45] [cursor=pointer]:
+          - img [ref=e46]
+      - generic [ref=e51]:
+        - img [ref=e53]
+        - generic [ref=e57]:
+          - heading "Coca-Cola Original" [level=4] [ref=e58]
+          - paragraph [ref=e59]: Unidad
+          - paragraph [ref=e60]: $ 2.200
+          - generic [ref=e61]:
+            - generic [ref=e62]:
+              - button "Disminuir cantidad" [ref=e63] [cursor=pointer]:
+                - img [ref=e64]
+              - generic [ref=e65]: "1"
+              - button "Aumentar cantidad" [ref=e66] [cursor=pointer]:
+                - img [ref=e67]
+            - generic [ref=e68]:
+              - generic [ref=e69]: $ 2.200
+              - button "Eliminar item" [ref=e70] [cursor=pointer]:
+                - img [ref=e71]
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]: Total estimado
+          - generic [ref=e77]: $ 2.200
+        - generic [ref=e78]:
+          - link "Proceder al pago" [ref=e79] [cursor=pointer]:
+            - /url: /checkout/
+            - text: Proceder al pago
+            - img [ref=e80]
+          - generic [ref=e82]:
+            - button "Seguir comprando" [ref=e83] [cursor=pointer]
+            - button "Vaciar" [ref=e84] [cursor=pointer]
+  - main [ref=e85]:
+    - generic [ref=e87]:
+      - link "Seguir comprando" [ref=e89] [cursor=pointer]:
+        - /url: /productos/
+        - img [ref=e90]
+        - text: Seguir comprando
+      - heading "Carrito de Compras" [level=1] [ref=e92]:
+        - img [ref=e93]
+        - text: Carrito de Compras
+      - generic [ref=e97]:
+        - generic [ref=e98]:
+          - generic [ref=e99]:
+            - generic [ref=e101]:
+              - heading "Productos (1 items)" [level=2] [ref=e102]
+              - button "Vaciar carrito" [ref=e103] [cursor=pointer]:
+                - img [ref=e104]
+                - text: Vaciar carrito
+            - generic [ref=e108]:
+              - img "Coca-Cola Original" [ref=e110]
+              - generic [ref=e111]:
+                - heading "Coca-Cola Original" [level=3] [ref=e112]
+                - paragraph [ref=e113]: Por unidad
+                - paragraph [ref=e114]: $ 2.200 / unidad
+              - generic [ref=e115]:
+                - button [disabled] [ref=e116]:
+                  - img [ref=e117]
+                - generic [ref=e118]: "1"
+                - button [ref=e119] [cursor=pointer]:
+                  - img [ref=e120]
+              - generic [ref=e121]:
+                - paragraph [ref=e122]: $ 2.200
+                - button "Eliminar" [ref=e123] [cursor=pointer]:
+                  - img [ref=e124]
+                  - text: Eliminar
+          - generic [ref=e127]:
+            - img [ref=e128]
+            - generic [ref=e130]:
+              - paragraph [ref=e131]: Información importante
+              - paragraph [ref=e132]: Los precios pueden variar según disponibilidad. Te contactaremos para confirmar tu pedido.
+        - generic [ref=e134]:
+          - heading "Resumen del pedido" [level=2] [ref=e136]
+          - generic [ref=e137]:
+            - generic [ref=e138]:
+              - generic [ref=e139]: Subtotal (1 items)
+              - generic [ref=e140]: $ 2.200
+            - generic [ref=e141]:
+              - generic [ref=e142]: Envío
+              - generic [ref=e143]: Se calcula en checkout
+            - generic [ref=e144]:
+              - generic [ref=e145]:
+                - generic [ref=e146]: Total estimado
+                - generic [ref=e147]: $ 2.200
+              - paragraph [ref=e148]: IVA incluido en todos los productos
+            - link "Proceder al pago" [ref=e149] [cursor=pointer]:
+              - /url: /checkout/
+              - generic [ref=e150]: Proceder al pago
+              - img [ref=e151]
+            - link "Seguir comprando" [ref=e153] [cursor=pointer]:
+              - /url: /productos/
+          - generic [ref=e154]:
+            - paragraph [ref=e155]: Métodos de pago aceptados
+            - generic [ref=e156]:
+              - generic [ref=e157]: Efectivo
+              - generic [ref=e158]: Transferencia
+              - generic [ref=e159]: PSE
+  - contentinfo [ref=e160]:
+    - generic [ref=e161]:
+      - generic [ref=e162]:
+        - generic [ref=e163]:
+          - heading "DISLUNA" [level=3] [ref=e164]
+          - paragraph [ref=e165]: Tu distribuidor de confianza en Ibagué. Ofrecemos las mejores bebidas con precios competitivos y servicio de entrega confiable.
+        - generic [ref=e166]:
+          - heading "Enlaces Rápidos" [level=4] [ref=e167]
+          - list [ref=e168]:
+            - listitem [ref=e169]:
+              - link "Inicio" [ref=e170] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e171]:
+              - link "Productos" [ref=e172] [cursor=pointer]:
+                - /url: /productos/
+            - listitem [ref=e173]:
+              - link "Nosotros" [ref=e174] [cursor=pointer]:
+                - /url: /nosotros/
+            - listitem [ref=e175]:
+              - link "Contacto" [ref=e176] [cursor=pointer]:
+                - /url: /#contacto
+        - generic [ref=e177]:
+          - heading "Contacto" [level=4] [ref=e178]
+          - list [ref=e179]:
+            - listitem [ref=e180]:
+              - img [ref=e181]
+              - generic [ref=e184]:
+                - text: "Calle 5b #13- Esquina"
+                - text: Ibagué, Tolima
+            - listitem [ref=e185]:
+              - img [ref=e186]
+              - link "+57 3XX XXX XXXX" [ref=e188] [cursor=pointer]:
+                - /url: tel:+573XXXXXXXXX
+            - listitem [ref=e189]:
+              - img [ref=e190]
+              - link "info@disluna.com" [ref=e193] [cursor=pointer]:
+                - /url: mailto:info@disluna.com
+        - generic [ref=e194]:
+          - heading "Síguenos" [level=4] [ref=e195]
+          - generic [ref=e196]:
+            - link [ref=e197] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e198]
+            - link [ref=e200] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e201]
+            - link [ref=e204] [cursor=pointer]:
+              - /url: https://wa.me/573XXXXXXXXX
+              - img [ref=e205]
+      - paragraph [ref=e208]: © 2026 DISLUNA. Todos los derechos reservados.
+  - alert [ref=e209]
+```

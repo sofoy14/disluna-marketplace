@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/Header";
+import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { CartProvider } from "@/context/CartContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DISLUNA - Tu Distribuidor de Bebidas de Confianza",
-  description: "Distribuidor mayorista de bebidas, agua, colas, jugos e isotónicos en Ibagué. Precios competitivos y entrega rápida.",
+  title: "DISLUNA - Tu distribuidor de confianza",
+  description: "Distribuidor de bebidas en Ibagué",
 };
 
 export default function RootLayout({
@@ -19,11 +20,13 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <Footer />
+        <CartProvider>
+          <Header />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );
