@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
+        # Public environment variables (NEXT_PUBLIC_*)
         - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL:-}
         - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
         - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-}
@@ -11,6 +12,17 @@ services:
         - NEXT_PUBLIC_BILLING_ENABLED=${NEXT_PUBLIC_BILLING_ENABLED:-}
         - NEXT_PUBLIC_WOMPI_PUBLIC_KEY=${NEXT_PUBLIC_WOMPI_PUBLIC_KEY:-}
         - NEXT_PUBLIC_WOMPI_BASE_URL=${NEXT_PUBLIC_WOMPI_BASE_URL:-}
+        # Server-side environment variables (needed during build)
+        - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY:-}
+        - WOMPI_PRIVATE_KEY=${WOMPI_PRIVATE_KEY:-}
+        - WOMPI_INTEGRITY_SECRET=${WOMPI_INTEGRITY_SECRET:-}
+        - WOMPI_WEBHOOK_SECRET=${WOMPI_WEBHOOK_SECRET:-}
+        - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+        - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+        - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY:-}
+        - SERPER_API_KEY=${SERPER_API_KEY:-}
+        - ADMIN_EMAILS=${ADMIN_EMAILS:-}
+        - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
     # No mapeamos puertos - Dokploy maneja el enrutamiento a través de su proxy reverso
     # El puerto 3000 está expuesto internamente en el contenedor (ver Dockerfile EXPOSE 3000)
     # IMPORTANTE: Dokploy inyecta automáticamente TODAS las variables de entorno configuradas

@@ -20,7 +20,6 @@ RUN rm -rf "Landing-Design" "Chatbot Design" "esfera 3d" || true
 
 # Accept build arguments for NEXT_PUBLIC_* variables
 # These MUST be passed during docker build for them to be available during Next.js build
-# If not provided, they will be empty and runtime env vars will be used instead
 ARG NEXT_PUBLIC_SUPABASE_URL=""
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=""
 ARG NEXT_PUBLIC_APP_URL=""
@@ -29,8 +28,19 @@ ARG NEXT_PUBLIC_BILLING_ENABLED=""
 ARG NEXT_PUBLIC_WOMPI_PUBLIC_KEY=""
 ARG NEXT_PUBLIC_WOMPI_BASE_URL=""
 
-# Set as environment variables for the build process
-# If ARG values are empty, ENV will be empty, but Next.js will use runtime env vars for Server Components
+# Accept server-side environment variables (needed during build for API routes)
+ARG SUPABASE_SERVICE_ROLE_KEY=""
+ARG WOMPI_PRIVATE_KEY=""
+ARG WOMPI_INTEGRITY_SECRET=""
+ARG WOMPI_WEBHOOK_SECRET=""
+ARG OPENROUTER_API_KEY=""
+ARG OPENAI_API_KEY=""
+ARG FIRECRAWL_API_KEY=""
+ARG SERPER_API_KEY=""
+ARG ADMIN_EMAILS=""
+ARG ADMIN_PASSWORD=""
+
+# Set public env vars for the build process
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=$NEXT_PUBLIC_SUPABASE_ANON_KEY
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
@@ -38,6 +48,18 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_BILLING_ENABLED=$NEXT_PUBLIC_BILLING_ENABLED
 ENV NEXT_PUBLIC_WOMPI_PUBLIC_KEY=$NEXT_PUBLIC_WOMPI_PUBLIC_KEY
 ENV NEXT_PUBLIC_WOMPI_BASE_URL=$NEXT_PUBLIC_WOMPI_BASE_URL
+
+# Set server-side env vars for the build process
+ENV SUPABASE_SERVICE_ROLE_KEY=$SUPABASE_SERVICE_ROLE_KEY
+ENV WOMPI_PRIVATE_KEY=$WOMPI_PRIVATE_KEY
+ENV WOMPI_INTEGRITY_SECRET=$WOMPI_INTEGRITY_SECRET
+ENV WOMPI_WEBHOOK_SECRET=$WOMPI_WEBHOOK_SECRET
+ENV OPENROUTER_API_KEY=$OPENROUTER_API_KEY
+ENV OPENAI_API_KEY=$OPENAI_API_KEY
+ENV FIRECRAWL_API_KEY=$FIRECRAWL_API_KEY
+ENV SERPER_API_KEY=$SERPER_API_KEY
+ENV ADMIN_EMAILS=$ADMIN_EMAILS
+ENV ADMIN_PASSWORD=$ADMIN_PASSWORD
 
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -50,8 +72,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Accept build arguments for public NEXT_PUBLIC_* variables and set them in the runtime image.
-# This guarantees the server runtime can read them even if the orchestrator doesn't inject env vars.
+# Accept build arguments for runtime (Dokploy will override these)
 ARG NEXT_PUBLIC_SUPABASE_URL=""
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=""
 ARG NEXT_PUBLIC_APP_URL=""
@@ -67,17 +88,6 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_BILLING_ENABLED=$NEXT_PUBLIC_BILLING_ENABLED
 ENV NEXT_PUBLIC_WOMPI_PUBLIC_KEY=$NEXT_PUBLIC_WOMPI_PUBLIC_KEY
 ENV NEXT_PUBLIC_WOMPI_BASE_URL=$NEXT_PUBLIC_WOMPI_BASE_URL
-
-# NOTE: We set NEXT_PUBLIC_* ENV variables in the runner stage from build args as a safe fallback.
-# Runtime env vars (e.g. from Dokploy) will override these values if provided at container start.
-# IMPORTANT: Make sure Dokploy has these variables configured in Settings > Environment Variables:
-# - NEXT_PUBLIC_SUPABASE_URL
-# - NEXT_PUBLIC_SUPABASE_ANON_KEY
-# - NEXT_PUBLIC_APP_URL
-# - NEXT_PUBLIC_SITE_URL
-# - NEXT_PUBLIC_BILLING_ENABLED
-# - NEXT_PUBLIC_WOMPI_PUBLIC_KEY
-# - NEXT_PUBLIC_WOMPI_BASE_URL
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

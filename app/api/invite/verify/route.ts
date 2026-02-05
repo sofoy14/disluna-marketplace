@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from "next/server"
 import { verifyInvitationToken } from "@/db/workspace-invitations"
 import { getWorkspaceById } from "@/db/workspaces"

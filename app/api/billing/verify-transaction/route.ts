@@ -1,6 +1,8 @@
 // app/api/billing/verify-transaction/route.ts
 // Endpoint para verificar el estado de una transacción desde el cliente
 
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from 'next/server';
 import { wompiClient } from '@/lib/wompi/client';
 import { getInvoiceByReference } from '@/db/invoices';

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { getTranscriptionsByUserId } from "@/db/transcriptions"
 import { NextResponse } from "next/server"
