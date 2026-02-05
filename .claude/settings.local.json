@@ -19,7 +19,8 @@
       "mcp__plugin_playwright_playwright__browser_snapshot",
       "mcp__plugin_playwright_playwright__browser_console_messages",
       "mcp__plugin_playwright_playwright__browser_close",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(git push:*)"
     ]
   }
 }
