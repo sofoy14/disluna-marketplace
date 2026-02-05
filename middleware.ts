@@ -4,15 +4,6 @@ import { NextResponse, type NextRequest } from "next/server"
 import i18nConfig from "./i18nConfig"
 import { isAdmin } from "@/lib/admin/check-admin"
 import { getEnvVar } from "@/lib/env/runtime-env"
-import {
-  checkRateLimit,
-  getIdentifierFromRequest,
-  formatRateLimitHeaders,
-  authRateLimit,
-  chatRateLimit,
-  ingestRateLimit,
-  apiRateLimit,
-} from "@/lib/rate-limit"
 import { addSecurityHeaders } from "@/lib/security-headers"
 import {
   addCORSHeaders,
@@ -20,6 +11,39 @@ import {
   API_CORS_CONFIG,
   handleCORSPreflight,
 } from "@/lib/cors"
+
+// Rate limiting - made lazy to avoid Edge Runtime issues during import
+let rateLimitModule: {
+  checkRateLimit: any
+  getIdentifierFromRequest: any
+  formatRateLimitHeaders: any
+  authRateLimit: any
+  chatRateLimit: any
+  ingestRateLimit: any
+  apiRateLimit: any
+} | null = null
+
+const getRateLimitModule = async () => {
+  if (rateLimitModule === null) {
+    try {
+      // Dynamic import to avoid Edge Runtime issues
+      const mod = await import("@/lib/rate-limit")
+      rateLimitModule = {
+        checkRateLimit: mod.checkRateLimit,
+        getIdentifierFromRequest: mod.getIdentifierFromRequest,
+        formatRateLimitHeaders: mod.formatRateLimitHeaders,
+        authRateLimit: mod.authRateLimit,
+        chatRateLimit: mod.chatRateLimit,
+        ingestRateLimit: mod.ingestRateLimit,
+        apiRateLimit: mod.apiRateLimit,
+      }
+    } catch (error) {
+      console.warn('Rate limiting module not available:', error)
+      rateLimitModule = { checkRateLimit: null, getIdentifierFromRequest: null, formatRateLimitHeaders: null, authRateLimit: null, chatRateLimit: null, ingestRateLimit: null, apiRateLimit: null }
+    }
+  }
+  return rateLimitModule
+}
 
 // Rutas que requieren suscripción activa para acceder
 const SUBSCRIPTION_REQUIRED_ROUTES = ['/chat'];
@@ -43,50 +67,67 @@ export async function middleware(request: NextRequest) {
       return addSecurityHeaders(preflightResponse);
     }
 
-    const identifier = getIdentifierFromRequest(request);
-    let rateLimiter = apiRateLimit; // Default API rate limiter
+    // Try rate limiting if available
+    try {
+      const rateLimitMod = await getRateLimitModule()
 
-    // Select specific rate limiter based on endpoint
-    if (pathname.startsWith('/api/auth')) {
-      rateLimiter = authRateLimit;
-    } else if (pathname.includes('/chat')) {
-      rateLimiter = chatRateLimit;
-    } else if (pathname.includes('/ingest') || pathname.includes('/documents')) {
-      rateLimiter = ingestRateLimit;
-    }
+      if (rateLimitMod?.checkRateLimit && rateLimitMod?.getIdentifierFromRequest && rateLimitMod?.formatRateLimitHeaders) {
+        const identifier = rateLimitMod.getIdentifierFromRequest(request)
+        let rateLimiter = rateLimitMod.apiRateLimit // Default API rate limiter
 
-    // Check rate limit
-    const rateLimitResult = await checkRateLimit(identifier, rateLimiter);
-
-    if (!rateLimitResult.success) {
-      // Rate limit exceeded
-      const headers = formatRateLimitHeaders(rateLimitResult);
-      const errorResponse = new NextResponse(
-        JSON.stringify({
-          error: 'Too many requests. Please try again later.',
-          retryAfter: headers['Retry-After'],
-        }),
-        {
-          status: 429,
-          headers: {
-            ...headers,
-            'Content-Type': 'application/json',
-          },
+        // Select specific rate limiter based on endpoint
+        if (pathname.startsWith('/api/auth')) {
+          rateLimiter = rateLimitMod.authRateLimit
+        } else if (pathname.includes('/chat')) {
+          rateLimiter = rateLimitMod.chatRateLimit
+        } else if (pathname.includes('/ingest') || pathname.includes('/documents')) {
+          rateLimiter = rateLimitMod.ingestRateLimit
         }
-      );
-      const response = addSecurityHeaders(errorResponse);
-      return addCORSHeaders(response, API_CORS_CONFIG, origin);
+
+        // Check rate limit if limiter is available
+        if (rateLimiter) {
+          const rateLimitResult = await rateLimitMod.checkRateLimit(identifier, rateLimiter)
+
+          if (!rateLimitResult.success) {
+            // Rate limit exceeded
+            const headers = rateLimitMod.formatRateLimitHeaders(rateLimitResult)
+            const errorResponse = new NextResponse(
+              JSON.stringify({
+                error: 'Too many requests. Please try again later.',
+                retryAfter: headers['Retry-After'],
+              }),
+              {
+                status: 429,
+                headers: {
+                  ...headers,
+                  'Content-Type': 'application/json',
+                },
+              }
+            )
+            const response = addSecurityHeaders(errorResponse)
+            return addCORSHeaders(response, API_CORS_CONFIG, origin)
+          }
+
+          // Add rate limit headers and security headers to successful responses
+          const response = NextResponse.next()
+          const headers = rateLimitMod.formatRateLimitHeaders(rateLimitResult)
+          Object.entries(headers).forEach(([key, value]) => {
+            response.headers.set(key, value)
+          })
+
+          const secureResponse = addSecurityHeaders(response)
+          return addCORSHeaders(secureResponse, API_CORS_CONFIG, origin)
+        }
+      }
+    } catch (error) {
+      // If rate limiting fails, log and continue without it
+      console.warn('Rate limiting failed, continuing without rate limit:', error)
     }
 
-    // Add rate limit headers and security headers to successful responses
-    const response = NextResponse.next();
-    const headers = formatRateLimitHeaders(rateLimitResult);
-    Object.entries(headers).forEach(([key, value]) => {
-      response.headers.set(key, value);
-    });
-
-    const secureResponse = addSecurityHeaders(response);
-    return addCORSHeaders(secureResponse, API_CORS_CONFIG, origin);
+    // If rate limiting is not available or failed, apply security headers and continue
+    const response = NextResponse.next()
+    const secureResponse = addSecurityHeaders(response)
+    return addCORSHeaders(secureResponse, API_CORS_CONFIG, origin)
   }
 
   // If a stale client is still attempting to call a Server Action from an older build,
@@ -354,3 +395,6 @@ export const config = {
   // Include auth routes but NOT api, static files, _next
   matcher: "/((?!api|static|.*\\..*|_next).*)"
 }
+
+// Force Node.js runtime instead of Edge Runtime to avoid compatibility issues
+export const runtime = 'nodejs'
