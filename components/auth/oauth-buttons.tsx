@@ -1,6 +1,6 @@
 'use client'
 
-import { getPublicEnvVar } from "@/lib/env/public-env"
+import { env } from "@/lib/env/runtime-env"
 import { createClient } from "@/lib/supabase/browser-client"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -17,10 +17,8 @@ export function OAuthButtons() {
 
       // ALWAYS force redirect to production domain - never use window.location.origin
       // This ensures OAuth always redirects to aliado.pro, not to Supabase or other domains
-      const appUrl =
-        getPublicEnvVar('NEXT_PUBLIC_APP_URL') ||
-        getPublicEnvVar('NEXT_PUBLIC_SITE_URL') ||
-        'https://aliado.pro'
+      // Use env.appUrl() which has proper fallback to https://aliado.pro
+      const appUrl = env.appUrl()
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,

@@ -49,16 +49,12 @@ export function initClientEnv(): void {
       winEnv?.NEXT_PUBLIC_APP_URL ||
       readMetaTag("app-url") ||
       readMetaTag("site-url") ||
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "",
+      (typeof window !== "undefined" ? window.location.origin : "https://aliado.pro"),
     NEXT_PUBLIC_SITE_URL:
       winEnv?.NEXT_PUBLIC_SITE_URL ||
       readMetaTag("site-url") ||
       readMetaTag("app-url") ||
-      typeof window !== "undefined"
-        ? window.location.origin
-        : "",
+      (typeof window !== "undefined" ? window.location.origin : "https://aliado.pro"),
     NEXT_PUBLIC_BILLING_ENABLED:
       winEnv?.NEXT_PUBLIC_BILLING_ENABLED ||
       readMetaTag("billing-enabled") ||
