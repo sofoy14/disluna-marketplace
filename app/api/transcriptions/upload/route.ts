@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { env } from "@/lib/env/runtime-env"
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { Database } from "@/supabase/types"

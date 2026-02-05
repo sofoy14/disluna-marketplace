@@ -22,6 +22,8 @@
  * - {"type": "done"} - Fin del stream
  */
 
+export const dynamic = 'force-dynamic'
+
 import { NextRequest, NextResponse } from "next/server"
 import { HumanMessage, AIMessage, BaseMessage } from "@langchain/core/messages"
 import { LegalAgent, getModelConfig, RESEARCH_MODELS } from "@/lib/langchain"

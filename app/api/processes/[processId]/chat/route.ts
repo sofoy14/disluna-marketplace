@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { env } from "@/lib/env/runtime-env"
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"

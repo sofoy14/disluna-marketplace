@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextRequest } from 'next/server'
 import { ragBackendService } from '@/lib/services/rag-backend'
 import { createClient } from '@/lib/supabase/server'

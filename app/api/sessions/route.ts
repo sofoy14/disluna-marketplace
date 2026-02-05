@@ -1,6 +1,8 @@
 // app/api/sessions/route.ts
 // API endpoint for user session management (device limit)
 
+export const dynamic = 'force-dynamic'
+
 import { env, getEnvVar } from '@/lib/env/runtime-env';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NextResponse } from 'next/server'
 import { searchWebEnriched, formatSearchResultsForContext } from '@/lib/tools/web-search'
 

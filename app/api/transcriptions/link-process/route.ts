@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getServerProfile } from "@/lib/server/server-chat-helpers"
 import { getSupabaseServer } from "@/lib/supabase/server-client"
 import { assertProcessAccess } from "@/lib/server/access/processes"
