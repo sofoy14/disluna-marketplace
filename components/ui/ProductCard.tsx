@@ -66,10 +66,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
         
-        {/* Badge de categoría */}
-        <div className="absolute top-3 left-3">
-          <CategoryBadge category={category} color={categoryColor} />
-        </div>
+
       </div>
 
       {/* Contenido */}

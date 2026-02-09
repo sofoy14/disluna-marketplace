@@ -159,17 +159,7 @@ function ProductDetail({ product }: { product: Product }) {
                 </>
               )}
 
-              {/* Category Badge */}
-              <div
-                className={cn(
-                  "absolute top-4 left-4 px-3 py-1.5 rounded-full text-sm font-medium",
-                  categoryStyles.bg,
-                  categoryStyles.text
-                )}
-              >
-                <span className="mr-1">{category?.icon}</span>
-                {category?.name}
-              </div>
+
             </div>
           </div>
 

@@ -97,16 +97,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </>
           )}
 
-          {/* Category Badge */}
-          <div
-            className={cn(
-              "absolute top-3 left-3 px-3 py-1.5 rounded-full text-xs font-medium",
-              "backdrop-blur-md bg-white/80 shadow-sm",
-              categoryStyles.text
-            )}
-          >
-            {product.category.split(' ')[0]}
-          </div>
+
 
           {/* Hover overlay with CTA */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-6">
