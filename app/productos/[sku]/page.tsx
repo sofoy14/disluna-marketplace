@@ -109,31 +109,55 @@ function ProductDetail({ product }: { product: Product }) {
       {/* Product Detail */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-          {/* Product Image - Placeholder con color de marca */}
+          {/* Product Image */}
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
             <div 
-              className="aspect-square relative rounded-xl overflow-hidden flex items-center justify-center"
-              style={{ backgroundColor: `${getBrandColor(product.name)}10` }}
+              className="aspect-square relative rounded-xl overflow-hidden flex items-center justify-center bg-gray-50"
             >
-              {/* Círculo de fondo */}
-              <div 
-                className="absolute w-48 h-48 rounded-full opacity-30"
-                style={{ backgroundColor: getBrandColor(product.name) }}
-              />
-              
-              {/* Icono */}
-              <div className="relative z-10 text-center">
-                <Package 
-                  className="w-24 h-24 mx-auto mb-4 opacity-40" 
-                  style={{ color: getBrandColor(product.name) }}
+              {product.image ? (
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-contain p-4"
+                  onError={(e) => {
+                    // Si la imagen falla, mostrar el placeholder
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = `
+                        <div class="absolute w-48 h-48 rounded-full opacity-30" style="background-color: ${getBrandColor(product.name)}"></div>
+                        <div class="relative z-10 text-center">
+                          <svg class="w-24 h-24 mx-auto mb-4 opacity-40" style="color: ${getBrandColor(product.name)}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                          </svg>
+                          <span class="text-sm font-medium uppercase tracking-wider opacity-60" style="color: ${getBrandColor(product.name)}">${product.size}</span>
+                        </div>
+                      `;
+                    }
+                  }}
                 />
-                <span 
-                  className="text-sm font-medium uppercase tracking-wider opacity-60"
-                  style={{ color: getBrandColor(product.name) }}
-                >
-                  {product.size}
-                </span>
-              </div>
+              ) : (
+                <>
+                  {/* Placeholder cuando no hay imagen */}
+                  <div 
+                    className="absolute w-48 h-48 rounded-full opacity-30"
+                    style={{ backgroundColor: getBrandColor(product.name) }}
+                  />
+                  <div className="relative z-10 text-center">
+                    <Package 
+                      className="w-24 h-24 mx-auto mb-4 opacity-40" 
+                      style={{ color: getBrandColor(product.name) }}
+                    />
+                    <span 
+                      className="text-sm font-medium uppercase tracking-wider opacity-60"
+                      style={{ color: getBrandColor(product.name) }}
+                    >
+                      {product.size}
+                    </span>
+                  </div>
+                </>
+              )}
 
               {/* Category Badge */}
               <div
