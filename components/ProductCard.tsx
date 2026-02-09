@@ -49,28 +49,53 @@ export function ProductCard({ product, className }: ProductCardProps) {
       {/* Image Container */}
       <Link href={`/productos/${product.sku}`} className="block relative">
         <div 
-          className="aspect-square relative flex items-center justify-center overflow-hidden"
-          style={{ backgroundColor: `${brandColor}08` }}
+          className="aspect-square relative flex items-center justify-center overflow-hidden bg-gray-50"
         >
-          {/* Background circle */}
-          <div 
-            className="absolute w-32 h-32 rounded-full opacity-20 transition-transform duration-700 group-hover:scale-150"
-            style={{ backgroundColor: brandColor }}
-          />
-          
-          {/* Icon */}
-          <div className="relative z-10 text-center transition-transform duration-500 group-hover:scale-110">
-            <Package 
-              className="w-14 h-14 mx-auto mb-2 opacity-40 transition-all duration-500 group-hover:opacity-60" 
-              style={{ color: brandColor }}
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-contain p-4 transition-transform duration-500 group-hover:scale-110"
+              onError={(e) => {
+                // Si la imagen falla, mostrar el placeholder
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="text-center">
+                      <svg class="w-14 h-14 mx-auto mb-2 opacity-40" style="color: ${brandColor}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                      </svg>
+                      <span class="text-xs font-medium uppercase tracking-wider opacity-50" style="color: ${brandColor}">${product.size}</span>
+                    </div>
+                  `;
+                }
+              }}
             />
-            <span 
-              className="text-xs font-medium uppercase tracking-wider opacity-50"
-              style={{ color: brandColor }}
-            >
-              {product.size}
-            </span>
-          </div>
+          ) : (
+            <>
+              {/* Background circle */}
+              <div 
+                className="absolute w-32 h-32 rounded-full opacity-20 transition-transform duration-700 group-hover:scale-150"
+                style={{ backgroundColor: brandColor }}
+              />
+              
+              {/* Icon */}
+              <div className="relative z-10 text-center transition-transform duration-500 group-hover:scale-110">
+                <Package 
+                  className="w-14 h-14 mx-auto mb-2 opacity-40 transition-all duration-500 group-hover:opacity-60" 
+                  style={{ color: brandColor }}
+                />
+                <span 
+                  className="text-xs font-medium uppercase tracking-wider opacity-50"
+                  style={{ color: brandColor }}
+                >
+                  {product.size}
+                </span>
+              </div>
+            </>
+          )}
 
           {/* Category Badge */}
           <div
