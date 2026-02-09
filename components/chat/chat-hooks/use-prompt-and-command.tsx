@@ -5,7 +5,15 @@ import { getAssistantToolsByAssistantId } from "@/db/assistant-tools"
 import { getCollectionFilesByCollectionId } from "@/db/collection-files"
 import { Tables } from "@/supabase/types"
 import { LLMID } from "@/types"
-import { useContext } from "react"
+import { useContext, useCallback } from "react"
+
+// Regex patterns compilados una sola vez para mejor rendimiento
+const COMMAND_PATTERNS = {
+  at: /@([^ ]*)$/,
+  slash: /\/([^ ]*)$/,
+  hashtag: /#([^ ]*)$/,
+  tool: /!([^ ]*)$/
+}
 
 export const usePromptAndCommand = () => {
   const {
@@ -24,53 +32,89 @@ export const usePromptAndCommand = () => {
     setSelectedTools,
     setAtCommand,
     setIsAssistantPickerOpen,
-    setSelectedAssistant,
     setChatSettings,
     setChatFiles
   } = useContext(ALIContext)
 
-  const handleInputChange = (value: string) => {
-    const atTextRegex = /@([^ ]*)$/
-    const slashTextRegex = /\/([^ ]*)$/
-    const hashtagTextRegex = /#([^ ]*)$/
-    const toolTextRegex = /!([^ ]*)$/
-    const atMatch = value.match(atTextRegex)
-    const slashMatch = value.match(slashTextRegex)
-    const hashtagMatch = value.match(hashtagTextRegex)
-    const toolMatch = value.match(toolTextRegex)
+  /**
+   * Maneja los cambios en el input de chat
+   * Detecta comandos especiales (@, /, #, !) y abre los pickers correspondientes
+   */
+  const handleInputChange = useCallback((value: string) => {
+    // Detectar comandos
+    const atMatch = value.match(COMMAND_PATTERNS.at)
+    const slashMatch = value.match(COMMAND_PATTERNS.slash)
+    const hashtagMatch = value.match(COMMAND_PATTERNS.hashtag)
+    const toolMatch = value.match(COMMAND_PATTERNS.tool)
 
+    // Manejar comandos en orden de prioridad
     if (atMatch) {
       setIsAssistantPickerOpen(true)
       setAtCommand(atMatch[1])
+      // Cerrar otros pickers
+      setIsPromptPickerOpen(false)
+      setIsFilePickerOpen(false)
+      setIsToolPickerOpen(false)
     } else if (slashMatch) {
       setIsPromptPickerOpen(true)
       setSlashCommand(slashMatch[1])
+      // Cerrar otros pickers
+      setIsFilePickerOpen(false)
+      setIsToolPickerOpen(false)
+      setIsAssistantPickerOpen(false)
     } else if (hashtagMatch) {
       setIsFilePickerOpen(true)
       setHashtagCommand(hashtagMatch[1])
+      // Cerrar otros pickers
+      setIsPromptPickerOpen(false)
+      setIsToolPickerOpen(false)
+      setIsAssistantPickerOpen(false)
     } else if (toolMatch) {
       setIsToolPickerOpen(true)
       setToolCommand(toolMatch[1])
+      // Cerrar otros pickers
+      setIsPromptPickerOpen(false)
+      setIsFilePickerOpen(false)
+      setIsAssistantPickerOpen(false)
     } else {
+      // Cerrar todos los pickers si no hay comandos
       setIsPromptPickerOpen(false)
       setIsFilePickerOpen(false)
       setIsToolPickerOpen(false)
       setIsAssistantPickerOpen(false)
+      // Limpiar comandos
       setSlashCommand("")
       setHashtagCommand("")
       setToolCommand("")
       setAtCommand("")
     }
 
+    // Actualizar el input del usuario
     setUserInput(value)
-  }
+  }, [
+    setIsAssistantPickerOpen,
+    setAtCommand,
+    setIsPromptPickerOpen,
+    setSlashCommand,
+    setIsFilePickerOpen,
+    setHashtagCommand,
+    setIsToolPickerOpen,
+    setToolCommand,
+    setUserInput
+  ])
 
-  const handleSelectPrompt = (prompt: Tables<"prompts">) => {
+  /**
+   * Selecciona un prompt y lo inserta en el input
+   */
+  const handleSelectPrompt = useCallback((prompt: Tables<"prompts">) => {
     setIsPromptPickerOpen(false)
-    setUserInput(userInput.replace(/\/[^ ]*$/, "") + prompt.content)
-  }
+    setUserInput(prev => prev.replace(/\/[^ ]*$/, "") + prompt.content)
+  }, [setIsPromptPickerOpen, setUserInput])
 
-  const handleSelectUserFile = async (file: Tables<"files">) => {
+  /**
+   * Selecciona un archivo para adjuntar al mensaje
+   */
+  const handleSelectUserFile = useCallback(async (file: Tables<"files">) => {
     setShowFilesDisplay(true)
     setIsFilePickerOpen(false)
     setUseRetrieval(true)
@@ -94,10 +138,13 @@ export const usePromptAndCommand = () => {
       return prev
     })
 
-    setUserInput(userInput.replace(/#[^ ]*$/, ""))
-  }
+    setUserInput(prev => prev.replace(/#[^ ]*$/, ""))
+  }, [chatFiles, setChatFiles, setIsFilePickerOpen, setNewMessageFiles, setShowFilesDisplay, setUseRetrieval, setUserInput])
 
-  const handleSelectUserCollection = async (
+  /**
+   * Selecciona una colección/proceso y adjunta todos sus archivos
+   */
+  const handleSelectUserCollection = useCallback(async (
     collection: Tables<"processes">
   ) => {
     setShowFilesDisplay(true)
@@ -125,18 +172,24 @@ export const usePromptAndCommand = () => {
       return [...prev, ...newFiles]
     })
 
-    setUserInput(userInput.replace(/#[^ ]*$/, ""))
-  }
+    setUserInput(prev => prev.replace(/#[^ ]*$/, ""))
+  }, [chatFiles, setIsFilePickerOpen, setNewMessageFiles, setShowFilesDisplay, setUseRetrieval, setUserInput])
 
-  const handleSelectTool = (tool: Tables<"tools">) => {
+  /**
+   * Selecciona una herramienta para usar en el chat
+   */
+  const handleSelectTool = useCallback((tool: Tables<"tools">) => {
     setIsToolPickerOpen(false)
-    setUserInput(userInput.replace(/![^ ]*$/, ""))
+    setUserInput(prev => prev.replace(/![^ ]*$/, ""))
     setSelectedTools(prev => [...prev, tool])
-  }
+  }, [setIsToolPickerOpen, setSelectedTools, setUserInput])
 
-  const handleSelectAssistant = async (assistant: Tables<"assistants">) => {
+  /**
+   * Selecciona un asistente para el chat
+   */
+  const handleSelectAssistant = useCallback(async (assistant: Tables<"assistants">) => {
     setIsAssistantPickerOpen(false)
-    setUserInput(userInput.replace(/@[^ ]*$/, ""))
+    setUserInput(prev => prev.replace(/@[^ ]*$/, ""))
     setSelectedAssistant(assistant)
 
     setChatSettings({
@@ -177,7 +230,7 @@ export const usePromptAndCommand = () => {
     )
 
     if (allFiles.length > 0) setShowFilesDisplay(true)
-  }
+  }, [setIsAssistantPickerOpen, setSelectedTools, setChatFiles, setChatSettings, setShowFilesDisplay, setUserInput])
 
   return {
     handleInputChange,

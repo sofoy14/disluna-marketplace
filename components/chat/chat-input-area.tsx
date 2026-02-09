@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowUp, Square } from "lucide-react"
-import { FC, useEffect, useRef, useState, ReactNode } from "react"
+import { FC, useEffect, useRef, useState, ReactNode, useCallback } from "react"
 import ReactTextareaAutosize from "react-textarea-autosize"
 
 interface ChatInputAreaProps {
@@ -37,17 +37,84 @@ export const ChatInputArea: FC<ChatInputAreaProps> = ({
 }) => {
     const [isFocused, setIsFocused] = useState(false)
     const [currentPlaceholder, setCurrentPlaceholder] = useState(0)
+    const [internalValue, setInternalValue] = useState(value)
+    const isComposing = useRef(false)
+    const placeholderIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
-    // Rotating placeholders logic
+    // Sincronizar valor interno con el valor externo solo cuando no esté componiendo
     useEffect(() => {
-        if (!showSuggestions || value || placeholders.length === 0) return
+        if (!isComposing.current) {
+            setInternalValue(value)
+        }
+    }, [value])
 
-        const interval = setInterval(() => {
-            setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length)
-        }, 3000)
+    // Rotating placeholders logic - solo cuando showSuggestions=true Y no hay texto
+    useEffect(() => {
+        // Limpiar intervalo previo
+        if (placeholderIntervalRef.current) {
+            clearInterval(placeholderIntervalRef.current)
+            placeholderIntervalRef.current = null
+        }
 
-        return () => clearInterval(interval)
-    }, [showSuggestions, value, placeholders.length])
+        // Solo iniciar animación si debe mostrar sugerencias, no hay texto, y hay placeholders
+        if (showSuggestions && !internalValue && placeholders.length > 0) {
+            placeholderIntervalRef.current = setInterval(() => {
+                setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length)
+            }, 3000)
+        }
+
+        return () => {
+            if (placeholderIntervalRef.current) {
+                clearInterval(placeholderIntervalRef.current)
+                placeholderIntervalRef.current = null
+            }
+        }
+    }, [showSuggestions, internalValue, placeholders.length])
+
+    // Manejar cambios del textarea con optimización de rendimiento
+    const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const newValue = e.target.value
+        
+        // Actualizar valor interno inmediatamente para respuesta instantánea
+        setInternalValue(newValue)
+        
+        // Solo propagar al padre si no estamos en medio de una composición
+        if (!isComposing.current) {
+            onChange(newValue)
+        }
+    }, [onChange])
+
+    // Manejar inicio de composición (para input methods como CJK, emoji picker, etc.)
+    const handleCompositionStart = useCallback(() => {
+        isComposing.current = true
+        onCompositionStart?.()
+    }, [onCompositionStart])
+
+    // Manejar fin de composición
+    const handleCompositionEnd = useCallback((e: React.CompositionEvent<HTMLTextAreaElement>) => {
+        isComposing.current = false
+        // Propagar el valor final al padre
+        const finalValue = e.currentTarget.value
+        setInternalValue(finalValue)
+        onChange(finalValue)
+        onCompositionEnd?.()
+    }, [onChange, onCompositionEnd])
+
+    // Manejar keydown con prevención de comportamientos por defecto cuando sea necesario
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        // Si estamos componiendo, no propagar ciertas teclas
+        if (isComposing.current && (e.key === 'Enter' || e.key === 'Escape')) {
+            return
+        }
+        
+        onKeyDown?.(e)
+    }, [onKeyDown])
+
+    // Determinar si mostrar placeholders animados
+    const shouldShowAnimatedPlaceholders = showSuggestions && !internalValue && placeholders.length > 0
+    
+    // Determinar si mostrar placeholder estático
+    const shouldShowStaticPlaceholder = !internalValue && (!showSuggestions || placeholders.length === 0) && placeholder
 
     return (
         <div
@@ -58,7 +125,7 @@ export const ChatInputArea: FC<ChatInputAreaProps> = ({
                 "border border-white/10 dark:border-white/5",
                 "transition-colors duration-200",
                 isFocused && "border-primary/30",
-                value && "bg-background"
+                internalValue && "bg-background"
             )}
             style={{ minHeight: "60px" }}
         >
@@ -78,26 +145,31 @@ export const ChatInputArea: FC<ChatInputAreaProps> = ({
                             "w-full resize-none border-none bg-transparent",
                             "px-2 py-3",
                             "text-sm sm:text-base",
-                            "text-foreground placeholder:text-muted-foreground/0", // Hide default placeholder
+                            "text-foreground placeholder:text-transparent", // Hide default placeholder
                             "focus:outline-none focus:ring-0",
                             "relative z-20"
                         )}
                         minRows={1}
                         maxRows={8}
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                        onKeyDown={onKeyDown}
+                        value={internalValue}
+                        onChange={handleChange}
+                        onKeyDown={handleKeyDown}
                         onPaste={onPaste}
-                        onCompositionStart={onCompositionStart}
-                        onCompositionEnd={onCompositionEnd}
+                        onCompositionStart={handleCompositionStart}
+                        onCompositionEnd={handleCompositionEnd}
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
                         disabled={disabled}
+                        aria-label="Mensaje de chat"
+                        aria-multiline="true"
                     />
 
                     {/* Animated Placeholders */}
-                    {showSuggestions && !value && placeholders.length > 0 && (
-                        <div className="pointer-events-none absolute inset-0 flex items-center px-2 text-sm sm:text-base text-muted-foreground/50 z-10">
+                    {shouldShowAnimatedPlaceholders && (
+                        <div 
+                            className="pointer-events-none absolute inset-0 flex items-center px-2 text-sm sm:text-base text-muted-foreground/50 z-10"
+                            aria-hidden="true"
+                        >
                             <AnimatePresence mode="wait">
                                 <motion.p
                                     key={`placeholder-${currentPlaceholder}`}
@@ -114,8 +186,11 @@ export const ChatInputArea: FC<ChatInputAreaProps> = ({
                     )}
 
                     {/* Static Placeholder fallback */}
-                    {!value && (!showSuggestions || placeholders.length === 0) && placeholder && (
-                        <div className="pointer-events-none absolute inset-0 flex items-center px-2 text-sm sm:text-base text-muted-foreground/50 z-10">
+                    {shouldShowStaticPlaceholder && (
+                        <div 
+                            className="pointer-events-none absolute inset-0 flex items-center px-2 text-sm sm:text-base text-muted-foreground/50 z-10"
+                            aria-hidden="true"
+                        >
                             <p className="truncate">{placeholder}</p>
                         </div>
                     )}

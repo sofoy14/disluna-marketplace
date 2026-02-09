@@ -33,10 +33,18 @@
     "test:anti-hallucination": "jest --testPathPattern=anti-hallucination",
     "test:verification": "jest --testPathPattern=verification",
     "test:e2e": "jest --testPathPattern=end-to-end",
-    "tunnel": "cloudflared tunnel --url http://localhost:3000"
+    "tunnel": "cloudflared tunnel --url http://localhost:3000",
+    "test:wasabi": "ts-node scripts/test-wasabi-connection.ts",
+    "migrate:storage": "ts-node scripts/migrate-storage-to-s3.ts",
+    "migrate:storage:dry-run": "ts-node scripts/migrate-storage-to-s3.ts --dry-run",
+    "verify:storage": "ts-node scripts/verify-s3-migration.ts",
+    "setup:storage": "node scripts/setup-storage-system.js"
   },
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^14.2.1",
+    "@aws-sdk/client-s3": "^3.985.0",
+    "@aws-sdk/lib-storage": "^3.985.0",
+    "@aws-sdk/s3-request-presigner": "^3.985.0",
     "@hookform/resolvers": "^5.2.2",
     "@langchain/core": "^0.3.27",
     "@langchain/openai": "^0.3.17",

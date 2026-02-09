@@ -4,10 +4,21 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 
-// Load .env file if it exists
-const dotEnvPath = path.join(process.cwd(), '.env');
-if (fs.existsSync(dotEnvPath)) {
-  dotenv.config({ path: dotEnvPath });
+// Load environment files in order of priority (Next.js style)
+// .env.local has priority over .env
+const envFiles = ['.env.local', '.env'];
+
+for (const file of envFiles) {
+  const envPath = path.join(process.cwd(), file);
+  if (fs.existsSync(envPath)) {
+    const result = dotenv.config({ path: envPath });
+    if (result.error) {
+      console.warn(`⚠️  Warning: Could not load ${file}:`, result.error.message);
+    } else {
+      console.log(`✅ Loaded ${file}`);
+      break; // Stop after loading the first available file
+    }
+  }
 }
 
 // Read environment variables - prioritize process.env (loaded from .env or system)

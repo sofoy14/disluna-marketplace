@@ -167,8 +167,8 @@ export default async function RootLayout({
             `
           }}
         />
-        {/* Fallback: Load env.js for build-time values (will be overridden by inline script above if runtime values exist) */}
-        <Script src="/env.js" strategy="beforeInteractive" />
+        {/* Load env.js for client-side environment variables */}
+        <script src="/env.js" defer />
         {/* Meta tags as additional fallback mechanism */}
         <meta
           name="supabase-url"

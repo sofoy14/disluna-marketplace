@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils"
 import { Plus, Square } from "lucide-react"
 import { motion } from "framer-motion"
 import Image from "next/image"
-import { FC, useContext, useEffect, useRef, useState } from "react"
+import { FC, useContext, useEffect, useRef, useState, useCallback } from "react"
 import { useTranslation } from "react-i18next"
 import { toast } from "sonner"
 import { Input } from "../ui/input"
@@ -21,15 +21,27 @@ import { CreateFileModal } from "../modals/CreateFileModal"
 
 interface ChatInputProps { }
 
-export const ChatInput: FC<ChatInputProps> = ({ }) => {
+// Placeholders predefinidos fuera del componente para evitar recreación
+const DEFAULT_PLACEHOLDERS = [
+  "¿Cuáles son los requisitos para una demanda de responsabilidad civil?",
+  "Redacta una tutela por violación al debido proceso",
+  "Busca jurisprudencia sobre contratos laborales en Colombia",
+  "¿Qué dice el Código Civil sobre la posesión de inmuebles?",
+  "Analiza este contrato y extrae las cláusulas de penalización",
+  "¿Cuál es el procedimiento para una acción de cumplimiento?",
+  "Escribe un derecho de petición para solicitar información pública"
+]
+
+export const ChatInput: FC<ChatInputProps> = () => {
   const { t } = useTranslation()
-
-  useHotkey("l", () => {
-    handleFocusChatInput()
-  })
-
+  
+  // Estado local para tracking de composición
   const [isTyping, setIsTyping] = useState<boolean>(false)
+  
+  // Refs
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Context
   const {
     isAssistantPickerOpen,
     focusAssistant,
@@ -50,13 +62,12 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
     isFilePickerOpen,
     setFocusFile,
     chatSettings,
-    selectedTools,
-    setSelectedTools,
     assistantImages,
     showPlaceholderSuggestions,
     setShowPlaceholderSuggestions
   } = useContext(ALIContext)
 
+  // Hooks
   const {
     chatInputRef,
     handleSendMessage,
@@ -73,16 +84,34 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
     setNewMessageContentToPreviousUserMessage
   } = useChatHistoryHandler()
 
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  // Hotkey para enfocar el input
+  useHotkey("l", () => {
+    handleFocusChatInput()
+  })
 
+  // Enfocar input cuando cambia preset o asistente
   useEffect(() => {
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       handleFocusChatInput()
-    }, 200) // FIX: hacky
-  }, [selectedPreset, selectedAssistant])
+    }, 200)
+    return () => clearTimeout(timer)
+  }, [selectedPreset, selectedAssistant, handleFocusChatInput])
 
+  // Manejar envío de mensaje
+  const handleSend = useCallback(() => {
+    if (!userInput.trim()) return
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Desactivar sugerencias después de enviar la primera pregunta
+    if (showPlaceholderSuggestions) {
+      setShowPlaceholderSuggestions(false)
+    }
+
+    handleSendMessage(userInput, chatMessages, false)
+  }, [userInput, chatMessages, showPlaceholderSuggestions, setShowPlaceholderSuggestions, handleSendMessage])
+
+  // Manejar teclado
+  const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Enviar mensaje con Enter (sin Shift)
     if (!isTyping && event.key === "Enter" && !event.shiftKey) {
       event.preventDefault()
       setIsPromptPickerOpen(false)
@@ -92,64 +121,58 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
         setShowPlaceholderSuggestions(false)
       }
 
-      handleSendMessage(userInput, chatMessages, false)
-      handleInputChange("") // Explicitly clear input
+      handleSend()
+      return
     }
 
-    // Consolidate conditions to avoid TypeScript error
-    if (
-      isPromptPickerOpen ||
-      isFilePickerOpen ||
-      isToolPickerOpen ||
-      isAssistantPickerOpen
-    ) {
-      if (
-        event.key === "Tab" ||
-        event.key === "ArrowUp" ||
-        event.key === "ArrowDown"
-      ) {
-        event.preventDefault()
-        // Toggle focus based on picker type
-        if (isPromptPickerOpen) setFocusPrompt(!focusPrompt)
-        if (isFilePickerOpen) setFocusFile(!focusFile)
-        if (isToolPickerOpen) setFocusTool(!focusTool)
-        if (isAssistantPickerOpen) setFocusAssistant(!focusAssistant)
-      }
+    // Navegación en pickers abiertos
+    const anyPickerOpen = isPromptPickerOpen || isFilePickerOpen || isToolPickerOpen || isAssistantPickerOpen
+    if (anyPickerOpen && (event.key === "Tab" || event.key === "ArrowUp" || event.key === "ArrowDown")) {
+      event.preventDefault()
+      
+      if (isPromptPickerOpen) setFocusPrompt(!focusPrompt)
+      if (isFilePickerOpen) setFocusFile(!focusFile)
+      if (isToolPickerOpen) setFocusTool(!focusTool)
+      if (isAssistantPickerOpen) setFocusAssistant(!focusAssistant)
+      return
     }
 
+    // Historial de mensajes con Ctrl+Shift+Arrow
     if (event.key === "ArrowUp" && event.shiftKey && event.ctrlKey) {
       event.preventDefault()
       setNewMessageContentToPreviousUserMessage()
+      return
     }
 
     if (event.key === "ArrowDown" && event.shiftKey && event.ctrlKey) {
       event.preventDefault()
       setNewMessageContentToNextUserMessage()
+      return
     }
+  }, [
+    isTyping,
+    isPromptPickerOpen,
+    isFilePickerOpen,
+    isToolPickerOpen,
+    isAssistantPickerOpen,
+    showPlaceholderSuggestions,
+    setShowPlaceholderSuggestions,
+    setIsPromptPickerOpen,
+    setFocusPrompt,
+    setFocusFile,
+    setFocusTool,
+    setFocusAssistant,
+    focusPrompt,
+    focusFile,
+    focusTool,
+    focusAssistant,
+    setNewMessageContentToPreviousUserMessage,
+    setNewMessageContentToNextUserMessage,
+    handleSend
+  ])
 
-    //use shift+ctrl+up and shift+ctrl+down to navigate through chat history
-    if (event.key === "ArrowUp" && event.shiftKey && event.ctrlKey) {
-      event.preventDefault()
-      setNewMessageContentToPreviousUserMessage()
-    }
-
-    if (event.key === "ArrowDown" && event.shiftKey && event.ctrlKey) {
-      event.preventDefault()
-      setNewMessageContentToNextUserMessage()
-    }
-
-    if (
-      isAssistantPickerOpen &&
-      (event.key === "Tab" ||
-        event.key === "ArrowUp" ||
-        event.key === "ArrowDown")
-    ) {
-      event.preventDefault()
-      setFocusAssistant(!focusAssistant)
-    }
-  }
-
-  const handlePaste = (event: React.ClipboardEvent) => {
+  // Manejar pegado de imágenes
+  const handlePaste = useCallback((event: React.ClipboardEvent) => {
     const imagesAllowed = LLM_LIST.find(
       llm => llm.modelId === chatSettings?.model
     )?.imageInput
@@ -168,16 +191,21 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
         handleSelectDeviceFile(file)
       }
     }
-  }
+  }, [chatSettings?.model, handleSelectDeviceFile])
+
+  // Manejar selección de archivo desde dispositivo
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return
+    const file = e.target.files[0]
+    if (file) {
+      handleSelectDeviceFile(file)
+    }
+  }, [handleSelectDeviceFile])
 
   return (
     <>
       <div className="flex flex-col flex-wrap justify-center gap-1">
         <ChatFilesDisplay />
-
-        {/* Selector de Colección - Oculto por defecto */}
-
-        {/* Herramientas de búsqueda habilitadas automáticamente - Ocultas */}
 
         {selectedAssistant && (
           <div className="border-primary mx-auto flex w-fit items-center space-x-2 rounded-lg border p-1.5">
@@ -212,13 +240,7 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
           ref={fileInputRef}
           className="hidden"
           type="file"
-          onChange={e => {
-            if (!e.target.files || e.target.files.length === 0) return
-            const file = e.target.files[0]
-            if (file) {
-              handleSelectDeviceFile(file)
-            }
-          }}
+          onChange={handleFileInputChange}
           accept={filesToAccept}
         />
 
@@ -232,15 +254,7 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
           onCompositionEnd={() => setIsTyping(false)}
           disabled={isGenerating}
           showSuggestions={showPlaceholderSuggestions}
-          placeholders={[
-            "¿Cuáles son los requisitos para una demanda de responsabilidad civil?",
-            "Redacta una tutela por violación al debido proceso",
-            "Busca jurisprudencia sobre contratos laborales en Colombia",
-            "¿Qué dice el Código Civil sobre la posesión de inmuebles?",
-            "Analiza este contrato y extrae las cláusulas de penalización",
-            "¿Cuál es el procedimiento para una acción de cumplimiento?",
-            "Escribe un derecho de petición para solicitar información pública"
-          ]}
+          placeholders={DEFAULT_PLACEHOLDERS}
           leftElement={
             <CreateFileModal onFileCreated={(file) => {
               console.log('Archivo creado:', file)
@@ -279,18 +293,8 @@ export const ChatInput: FC<ChatInputProps> = ({ }) => {
               </motion.button>
             ) : (
               <ModernSendIcon
-                onClick={() => {
-                  if (!userInput) return
-
-                  // Desactivar sugerencias después de enviar la primera pregunta
-                  if (showPlaceholderSuggestions) {
-                    setShowPlaceholderSuggestions(false)
-                  }
-
-                  handleSendMessage(userInput, chatMessages, false)
-                  handleInputChange("") // Explicitly clear input
-                }}
-                disabled={!userInput}
+                onClick={handleSend}
+                disabled={!userInput.trim()}
               />
             )
           }
