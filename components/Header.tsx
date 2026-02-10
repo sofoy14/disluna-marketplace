@@ -53,29 +53,14 @@ const Header: React.FC = () => {
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl overflow-hidden transition-all duration-500 hover:scale-105">
+            <Link href="/" className="flex items-center group">
+              <div className="relative transition-all duration-500 hover:scale-105" style={{ width: '160px', height: '50px' }}>
                 <Image
-                  src="/logo.png"
+                  src={isScrolled ? "/disluna azul.png" : "/disluna blanco.png"}
                   alt="Disluna Logo"
-                  width={40}
-                  height={40}
-                  className="w-full h-full object-contain"
+                  fill
+                  className="object-contain"
                 />
-              </div>
-              <div className="flex flex-col">
-                <span className={cn(
-                  "text-xl font-bold tracking-tight transition-colors duration-300",
-                  isScrolled ? 'text-primary' : 'text-white'
-                )}>
-                  DISLUNA
-                </span>
-                <span className={cn(
-                  "text-[10px] -mt-1 transition-colors duration-300",
-                  isScrolled ? 'text-gray-500' : 'text-white/70'
-                )}>
-                  Tu distribuidor de confianza
-                </span>
               </div>
             </Link>
 

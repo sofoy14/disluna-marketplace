@@ -98,12 +98,6 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left Column - Content */}
             <div className="space-y-8">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 animate-fade-in">
-                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                <span className="text-white/90 text-sm font-medium">Distribuidor autorizado en Ibagué</span>
-              </div>
-              
               {/* Title */}
               <div className="space-y-4">
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[0.95] tracking-tight">
