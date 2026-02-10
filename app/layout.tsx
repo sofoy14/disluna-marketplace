@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { CustomerProvider } from "@/context/CustomerContext";
+import { OrderProvider } from "@/context/OrderContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -51,11 +52,13 @@ export default function RootLayout({
       <body className={inter.className}>
         <CartProvider>
           <CustomerProvider>
-            <Header />
-            <main className="min-h-screen">
-              {children}
-            </main>
-            <Footer />
+            <OrderProvider>
+              <Header />
+              <main className="min-h-screen">
+                {children}
+              </main>
+              <Footer />
+            </OrderProvider>
           </CustomerProvider>
         </CartProvider>
       </body>

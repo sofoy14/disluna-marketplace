@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useCustomers } from "@/context/CustomerContext";
+import { useOrders } from "@/context/OrderContext";
 import { 
   ShoppingCart, 
   MapPin, 
@@ -30,6 +31,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalPrice, clearCart } = useCart();
   const { getOrCreateCustomerId } = useCustomers();
+  const { addOrder } = useOrders();
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">("delivery");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "transfer" | "pse">("cash");
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -67,6 +69,33 @@ export default function CheckoutPage() {
       formData.name,
       formData.email
     );
+    
+    // Guardar pedido en el sistema
+    const order = addOrder({
+      orderNumber,
+      customerId,
+      customerName: formData.name,
+      customerPhone: formData.phone,
+      customerEmail: formData.email,
+      address: formData.address,
+      neighborhood: formData.neighborhood,
+      city: formData.city,
+      notes: formData.notes,
+      items: items.map(item => ({
+        sku: item.sku,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        type: item.type,
+        unitsPerBox: item.unitsPerBox,
+        image: item.image,
+      })),
+      subtotal: totalPrice,
+      deliveryCost,
+      total,
+      deliveryMethod,
+      paymentMethod,
+    });
     
     // Limpiar carrito
     clearCart();

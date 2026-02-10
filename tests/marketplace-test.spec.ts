@@ -1,6 +1,7 @@
 import { test, expect, chromium, type Browser, type Page } from '@playwright/test';
 
 const BASE_URL = 'http://localhost:3001';
+const WHATSAPP_NUMBER = '573174018932'; // Tu número de prueba
 
 // Helper para esperar que la página esté lista
 async function waitForPageLoad(page: Page) {
@@ -339,7 +340,7 @@ test.describe('DISLUNA Marketplace - Pruebas Completas', () => {
       { selector: 'a[href="/productos"]', name: 'Catálogo' },
       { selector: 'a[href="/nosotros"]', name: 'Nosotros' },
       { selector: 'a[href="/carrito"]', name: 'Carrito' },
-      { selector: 'a[href="https://wa.me/573143395376"]', name: 'WhatsApp' },
+      { selector: `a[href*="wa.me/${WHATSAPP_NUMBER}"]`, name: 'WhatsApp' },
     ];
     
     for (const link of linksToTest) {
