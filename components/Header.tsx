@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ShoppingCart, Phone } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import CartSidebar from './CartSidebar';
@@ -13,14 +15,23 @@ const Header: React.FC = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { isHydrated, totalItems } = useCart();
+  const pathname = usePathname();
+
+  // Determinar si debe iniciar como scrolled (para páginas sin imagen de fondo)
+  const shouldStartScrolled = pathname !== '/';
 
   useEffect(() => {
+    // Si no estamos en la home, iniciar como scrolled
+    if (shouldStartScrolled) {
+      setIsScrolled(true);
+    }
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 50 || shouldStartScrolled);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [shouldStartScrolled]);
 
   const navItems = [
     { label: 'Inicio', href: '/' },
@@ -42,13 +53,14 @@ const Header: React.FC = () => {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500",
-                isScrolled 
-                  ? "bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25" 
-                  : "bg-white/20 backdrop-blur-sm border border-white/30"
-              )}>
-                <span className="text-white font-bold text-lg">D</span>
+              <div className="w-10 h-10 rounded-xl overflow-hidden transition-all duration-500 hover:scale-105">
+                <Image
+                  src="/logo.png"
+                  alt="Disluna Logo"
+                  width={40}
+                  height={40}
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div className="flex flex-col">
                 <span className={cn(

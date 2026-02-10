@@ -90,7 +90,7 @@ export default function HomePage() {
             quality={90}
           />
           {/* Dark overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/60" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/75 via-primary/60 to-primary/40" />
           <div className="absolute inset-0 bg-black/30" />
         </div>
         
@@ -381,7 +381,32 @@ export default function HomePage() {
 
       {/* CTA FINAL - Glassmorphism */}
       <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary to-[#1565C0]">
+        {/* Background Image - Desktop and Mobile */}
+        <div className="absolute inset-0">
+          {/* Desktop Image */}
+          <div className="hidden lg:block absolute inset-0">
+            <Image
+              src="/ibague.png"
+              alt="Ibagué"
+              fill
+              className="object-cover"
+              priority
+              quality={90}
+            />
+          </div>
+          {/* Mobile Image */}
+          <div className="lg:hidden absolute inset-0">
+            <Image
+              src="/ibague movil.png"
+              alt="Ibagué"
+              fill
+              className="object-cover"
+              priority
+              quality={90}
+            />
+          </div>
+          {/* Blue gradient overlay with transparency */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/60 to-[#1565C0]/60" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
         </div>
         
