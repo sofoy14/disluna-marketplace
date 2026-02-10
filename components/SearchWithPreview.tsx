@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Search, X, ArrowRight, Package } from "lucide-react";
 import { products } from "@/data/products";
 import { cn } from "@/lib/utils";
@@ -177,9 +178,19 @@ export function SearchWithPreview({ isScrolled, variant = "header" }: SearchWith
                         : "hover:bg-white/5"
                     )}
                   >
-                    {/* Product Image Placeholder */}
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center flex-shrink-0">
-                      <Package className="w-6 h-6 text-primary/60" />
+                    {/* Product Image */}
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {product.image ? (
+                        <Image
+                          src={product.image}
+                          alt={product.name}
+                          width={48}
+                          height={48}
+                          className="object-contain w-full h-full p-1"
+                        />
+                      ) : (
+                        <Package className="w-6 h-6 text-gray-400" />
+                      )}
                     </div>
 
                     {/* Product Info */}
