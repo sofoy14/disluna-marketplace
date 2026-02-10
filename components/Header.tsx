@@ -9,6 +9,7 @@ import { useCart } from '@/context/CartContext';
 import CartSidebar from './CartSidebar';
 import { SearchWithPreview } from './SearchWithPreview';
 import { cn } from '@/lib/utils';
+import { WHATSAPP_URL, createWhatsAppLink } from '@/lib/whatsapp';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -92,7 +93,7 @@ const Header: React.FC = () => {
             <div className="flex items-center gap-3">
               {/* WhatsApp CTA - Desktop */}
               <a
-                href="https://wa.me/573174018932"
+                href={createWhatsAppLink("Hola, me gustaría cotizar productos")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
@@ -181,7 +182,7 @@ const Header: React.FC = () => {
               
               {/* Mobile WhatsApp */}
               <a
-                href="https://wa.me/573174018932"
+                href={createWhatsAppLink("Hola, me gustaría cotizar productos")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 py-3 px-4 mt-2 bg-whatsapp text-white rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"

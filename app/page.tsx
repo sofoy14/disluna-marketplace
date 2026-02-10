@@ -5,6 +5,7 @@ import { products } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchWithPreview } from "@/components/SearchWithPreview";
 import { cn } from "@/lib/utils";
+import { createWhatsAppLink, WHATSAPP_DISPLAY } from "@/lib/whatsapp";
 
 import Image from "next/image";
 import { 
@@ -126,9 +127,9 @@ export default function HomePage() {
                   <span>Ver catálogo</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
-                
+
                 <a
-                  href="https://wa.me/573143395376"
+                  href={createWhatsAppLink("Hola, me gustaría cotizar productos")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:bg-white/20 hover:scale-105 active:scale-95"
@@ -416,7 +417,7 @@ export default function HomePage() {
               
               <div className="flex flex-wrap gap-4">
                 <a
-                  href="https://wa.me/573143395376"
+                  href={createWhatsAppLink("Hola, me gustaría más información sobre sus productos")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-whatsapp text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-whatsapp/30 hover:scale-105 active:scale-95"
@@ -424,9 +425,9 @@ export default function HomePage() {
                   <MessageCircle className="w-5 h-5" />
                   <span>Escribir por WhatsApp</span>
                 </a>
-                
+
                 <a
-                  href="tel:+573216389995"
+                  href={`tel:+${WHATSAPP_DISPLAY.replace(/\s/g, "")}`}
                   className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:bg-white/20"
                 >
                   <Phone className="w-5 h-5" />
@@ -440,13 +441,13 @@ export default function HomePage() {
               <h3 className="text-2xl font-bold text-white mb-8">Información de contacto</h3>
               
               <div className="space-y-6">
-                <a href="tel:+573216389995" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10">
+                <a href={`tel:+${WHATSAPP_DISPLAY.replace(/\s/g, "")}`} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10">
                   <div className="w-14 h-14 rounded-xl bg-whatsapp/20 flex items-center justify-center">
                     <Phone className="w-6 h-6 text-whatsapp" />
                   </div>
                   <div>
                     <p className="text-white/60 text-sm">Teléfono / WhatsApp</p>
-                    <p className="text-white font-semibold text-lg">321 638 9995</p>
+                    <p className="text-white font-semibold text-lg">{WHATSAPP_DISPLAY}</p>
                   </div>
                 </a>
                 

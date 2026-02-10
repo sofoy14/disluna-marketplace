@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { WhatsAppFloatButton } from "@/components/WhatsAppFloatButton";
 import { CartProvider } from "@/context/CartContext";
 import { CustomerProvider } from "@/context/CustomerContext";
 import { OrderProvider } from "@/context/OrderContext";
@@ -58,6 +59,7 @@ export default function RootLayout({
                 {children}
               </main>
               <Footer />
+              <WhatsAppFloatButton />
             </OrderProvider>
           </CustomerProvider>
         </CartProvider>
