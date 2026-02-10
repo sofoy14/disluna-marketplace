@@ -5,6 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
+import { useCustomers } from "@/context/CustomerContext";
+import { useOrders } from "@/context/OrderContext";
 import { 
   ShoppingCart, 
   MapPin, 
@@ -28,10 +30,23 @@ function formatPrice(price: number) {
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalPrice, clearCart } = useCart();
+  const { getOrCreateCustomerId } = useCustomers();
+  const { addOrder } = useOrders();
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">("delivery");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "transfer" | "pse">("cash");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Form fields
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
+    neighborhood: "",
+    city: "Ibagué",
+    notes: "",
+  });
 
   const deliveryCost = deliveryMethod === "delivery" ? 5000 : 0;
   const total = totalPrice + deliveryCost;
@@ -48,11 +63,53 @@ export default function CheckoutPage() {
     // Generar número de pedido
     const orderNumber = `DIS-${Date.now().toString(36).toUpperCase()}`;
     
+    // Generar/obtener ID de cliente basado en teléfono
+    const customerId = getOrCreateCustomerId(
+      formData.phone,
+      formData.name,
+      formData.email
+    );
+    
+    // Guardar pedido en el sistema
+    const order = addOrder({
+      orderNumber,
+      customerId,
+      customerName: formData.name,
+      customerPhone: formData.phone,
+      customerEmail: formData.email,
+      address: formData.address,
+      neighborhood: formData.neighborhood,
+      city: formData.city,
+      notes: formData.notes,
+      items: items.map(item => ({
+        sku: item.sku,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        type: item.type,
+        unitsPerBox: item.unitsPerBox,
+        image: item.image,
+      })),
+      subtotal: totalPrice,
+      deliveryCost,
+      total,
+      deliveryMethod,
+      paymentMethod,
+    });
+    
     // Limpiar carrito
     clearCart();
     
-    // Redirigir a página de confirmación
-    router.push(`/checkout/confirmacion?order=${orderNumber}&total=${total}`);
+    // Redirigir a página de confirmación con datos del cliente
+    const params = new URLSearchParams({
+      order: orderNumber,
+      total: total.toString(),
+      customerId: customerId,
+      customerName: encodeURIComponent(formData.name),
+      customerPhone: encodeURIComponent(formData.phone),
+    });
+    
+    router.push(`/checkout/confirmacion?${params.toString()}`);
   };
 
   // Si el carrito está vacío, redirigir a productos
@@ -115,6 +172,8 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                       placeholder="Juan Pérez"
                     />
@@ -126,6 +185,8 @@ export default function CheckoutPage() {
                     <input
                       type="tel"
                       required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                       placeholder="312 345 6789"
                     />
@@ -139,6 +200,8 @@ export default function CheckoutPage() {
                   <input
                     type="email"
                     required
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                     placeholder="juan@ejemplo.com"
                   />
@@ -151,6 +214,8 @@ export default function CheckoutPage() {
                   <input
                     type="text"
                     required
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                     placeholder="Calle 10 #5-45, Apartamento 301"
                   />
@@ -164,6 +229,8 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       required
+                      value={formData.neighborhood}
+                      onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                       placeholder="Centro"
                     />
@@ -175,7 +242,8 @@ export default function CheckoutPage() {
                     <input
                       type="text"
                       required
-                      defaultValue="Ibagué"
+                      value={formData.city}
+                      onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                     />
                   </div>
@@ -187,6 +255,8 @@ export default function CheckoutPage() {
                   </label>
                   <textarea
                     rows={3}
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
                     placeholder="Instrucciones especiales de entrega, referencias de ubicación, etc."
                   />

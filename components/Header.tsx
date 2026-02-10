@@ -37,6 +37,7 @@ const Header: React.FC = () => {
     { label: 'Inicio', href: '/' },
     { label: 'Productos', href: '/productos' },
     { label: 'Nosotros', href: '/nosotros' },
+    { label: 'Admin', href: '/admin/dashboard' },
   ];
 
   return (
@@ -106,7 +107,7 @@ const Header: React.FC = () => {
             <div className="flex items-center gap-3">
               {/* WhatsApp CTA - Desktop */}
               <a
-                href="https://wa.me/573143395376"
+                href="https://wa.me/573174018932"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
@@ -195,7 +196,7 @@ const Header: React.FC = () => {
               
               {/* Mobile WhatsApp */}
               <a
-                href="https://wa.me/573143395376"
+                href="https://wa.me/573174018932"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 py-3 px-4 mt-2 bg-whatsapp text-white rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"

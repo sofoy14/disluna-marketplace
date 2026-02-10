@@ -15,17 +15,15 @@ import {
   MessageCircle
 } from "lucide-react";
 
-// Datos de ejemplo del pedido
-const orderItems = [
-  { id: 1, name: "Coca-Cola 1.5L", price: 4500, quantity: 12 },
-  { id: 2, name: "Agua Cristal 600ml", price: 2200, quantity: 24 },
-  { id: 3, name: "Gatorade Naranja", price: 5200, quantity: 6 },
-];
+const WHATSAPP_NUMBER = "573174018932"; // Tu número
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get("order") || "DIS-XXXXXX";
   const total = searchParams.get("total") || "150,000";
+  const customerId = searchParams.get("customerId") || "--";
+  const customerName = decodeURIComponent(searchParams.get("customerName") || "");
+  const customerPhone = decodeURIComponent(searchParams.get("customerPhone") || "");
 
 
   return (
@@ -46,10 +44,23 @@ function ConfirmationContent() {
 
           {/* Order Details */}
           <div className="p-8">
-            {/* Order Number */}
+            {/* Order & Customer Info */}
             <div className="bg-gray-50 rounded-xl p-6 text-center mb-8">
-              <p className="text-sm text-gray-500 mb-1">Número de pedido</p>
-              <p className="text-2xl font-bold text-primary">{orderNumber}</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">Número de pedido</p>
+                  <p className="text-xl font-bold text-primary">{orderNumber}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500 mb-1">ID Cliente</p>
+                  <p className="text-xl font-bold text-secondary">#{customerId}</p>
+                </div>
+              </div>
+              {customerName && (
+                <p className="text-sm text-gray-600 mt-3">
+                  {customerName} • {customerPhone}
+                </p>
+              )}
             </div>
 
             {/* Timeline */}
@@ -92,23 +103,16 @@ function ConfirmationContent() {
             {/* Order Summary */}
             <div className="border-t border-gray-100 pt-6 mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4">Resumen del pedido</h3>
-              <div className="space-y-3">
-                {orderItems.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <span className="text-gray-600">
-                      {item.name} x{item.quantity}
-                    </span>
-                    <span className="text-gray-800 font-medium">
-                      ${(item.price * item.quantity).toLocaleString()}
-                    </span>
-                  </div>
-                ))}
-                <div className="border-t border-gray-100 pt-3 flex justify-between">
-                  <span className="font-semibold text-gray-800">Total</span>
-                  <span className="font-bold text-primary text-lg">
-                    ${Number(total).toLocaleString()}
-                  </span>
-                </div>
+              <div className="bg-blue-50 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-800">
+                  📧 Te enviaremos los detalles completos de tu pedido al correo proporcionado.
+                </p>
+              </div>
+              <div className="border-t border-gray-100 pt-3 flex justify-between">
+                <span className="font-semibold text-gray-800">Total</span>
+                <span className="font-bold text-primary text-lg">
+                  ${Number(total).toLocaleString()}
+                </span>
               </div>
             </div>
 
@@ -148,7 +152,7 @@ function ConfirmationContent() {
             {/* Actions */}
             <div className="space-y-3">
               <a
-                href="https://wa.me/573XXXXXXXXX?text=Hola,%20acabo%20de%20realizar%20un%20pedido%20(%23{orderNumber})%20y%20tengo%20una%20consulta"
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hola,%20acabo%20de%20realizar%20un%20pedido%20(${encodeURIComponent(orderNumber)})%20y%20tengo%20una%20consulta`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center space-x-2 bg-whatsapp text-white py-4 rounded-xl font-semibold hover:opacity-90 transition-opacity"
@@ -176,8 +180,8 @@ function ConfirmationContent() {
                   info@disluna.com
                 </a>
                 {" "}o llámanos al{" "}
-                <a href="tel:+573XXXXXXXXX" className="text-secondary hover:underline">
-                  +57 3XX XXX XXXX
+                <a href={`tel:+${WHATSAPP_NUMBER}`} className="text-secondary hover:underline">
+                  +57 317 401 8932
                 </a>
               </p>
             </div>
