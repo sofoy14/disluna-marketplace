@@ -8,6 +8,7 @@ export interface Category {
   icon?: string;
 }
 
+// Categorías detalladas para productos
 export const categories: Category[] = [
   {
     id: "AGUA ADICIONADA",
@@ -73,6 +74,56 @@ export const categories: Category[] = [
     icon: "🍋"
   }
 ];
+
+// Categorías agrupadas para mostrar en la interfaz (sin emojis)
+export const displayCategories = [
+  {
+    id: "Todas",
+    name: "Todas",
+    includes: [] // Muestra todos los productos
+  },
+  {
+    id: "Aguas",
+    name: "Aguas",
+    includes: ["AGUA ADICIONADA", "AGUA CON GAS", "AGUA SIN GAS"]
+  },
+  {
+    id: "Gaseosas",
+    name: "Gaseosas",
+    includes: ["COLAS"]
+  },
+  {
+    id: "Isotónicos",
+    name: "Isotónicos",
+    includes: ["ISOTONICO E HIDROTONICOS"]
+  },
+  {
+    id: "Bebidas de Fruta",
+    name: "Bebidas de Fruta",
+    includes: ["NARANJADAS Y BEBIDAS DE FRUTA"]
+  },
+  {
+    id: "Bebidas Saborizadas",
+    name: "Bebidas Saborizadas",
+    includes: ["SABORES"]
+  }
+];
+
+// Mapeo de categoría de producto a categoría de visualización
+export function getDisplayCategory(productCategory: string): string {
+  for (const displayCat of displayCategories) {
+    if (displayCat.includes.includes(productCategory)) {
+      return displayCat.name;
+    }
+  }
+  return productCategory; // Fallback a categoría original
+}
+
+// Obtener subcategorías de una categoría de visualización
+export function getSubcategories(displayCategory: string): string[] {
+  const cat = displayCategories.find(c => c.name === displayCategory || c.id === displayCategory);
+  return cat?.includes || [];
+}
 
 export function getCategoryById(id: string): Category | undefined {
   return categories.find((c) => c.id === id);

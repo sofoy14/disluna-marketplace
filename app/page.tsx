@@ -24,43 +24,43 @@ import {
 } from "lucide-react";
 
 const categories = [
-  { 
-    name: "Agua", 
-    image: "/images/products/brisa-manzana-600ml-6.png", 
-    slug: "agua", 
-    count: 9, 
+  {
+    name: "Aguas",
+    image: "/images/products/brisa-manzana-600ml-6.png",
+    slug: "Aguas",
+    count: 9,
     gradient: "from-cyan-500 to-blue-500",
     bgColor: "bg-cyan-50"
   },
-  { 
-    name: "Colas", 
-    image: "/images/products/coca-cola-2lt-rp9-nvo.png", 
-    slug: "colas", 
-    count: 9, 
+  {
+    name: "Gaseosas",
+    image: "/images/products/coca-cola-2lt-rp9-nvo.png",
+    slug: "Gaseosas",
+    count: 9,
     gradient: "from-red-500 to-rose-500",
     bgColor: "bg-red-50"
   },
-  { 
-    name: "Jugos", 
-    image: "/images/products/fresh-citrus-15lt-pet12nvo.png", 
-    slug: "jugos", 
-    count: 6, 
+  {
+    name: "Bebidas de Fruta",
+    image: "/images/products/fresh-citrus-15lt-pet12nvo.png",
+    slug: "Bebidas de Fruta",
+    count: 6,
     gradient: "from-orange-500 to-amber-500",
     bgColor: "bg-orange-50"
   },
-  { 
-    name: "Isotónicos", 
-    image: "/images/products/powerade-ion4-ft-500ml-pet6.png", 
-    slug: "isotonicos", 
-    count: 7, 
+  {
+    name: "Isotónicos",
+    image: "/images/products/powerade-ion4-ft-500ml-pet6.png",
+    slug: "Isotónicos",
+    count: 7,
     gradient: "from-violet-500 to-purple-500",
     bgColor: "bg-violet-50"
   },
-  { 
-    name: "Sabores", 
-    image: "/images/products/sprite-15l-pet-12.png", 
-    slug: "sabores", 
-    count: 6, 
+  {
+    name: "Bebidas Saborizadas",
+    image: "/images/products/sprite-15l-pet-12.png",
+    slug: "Bebidas Saborizadas",
+    count: 6,
     gradient: "from-green-500 to-emerald-500",
     bgColor: "bg-green-50"
   },
