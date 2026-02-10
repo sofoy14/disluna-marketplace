@@ -6,12 +6,8 @@ import { ProductCard } from "@/components/ProductCard";
 import { SearchWithPreview } from "@/components/SearchWithPreview";
 import { cn } from "@/lib/utils";
 
+import Image from "next/image";
 import { 
-  Droplets, 
-  CupSoda, 
-  Citrus, 
-  Zap, 
-  Palette,
   Truck,
   Package,
   BadgeCheck,
@@ -27,11 +23,46 @@ import {
 } from "lucide-react";
 
 const categories = [
-  { name: "Agua", icon: Droplets, slug: "agua", count: 9, gradient: "from-cyan-500 to-blue-500" },
-  { name: "Colas", icon: CupSoda, slug: "colas", count: 9, gradient: "from-red-500 to-rose-500" },
-  { name: "Jugos", icon: Citrus, slug: "jugos", count: 6, gradient: "from-orange-500 to-amber-500" },
-  { name: "Isotónicos", icon: Zap, slug: "isotonicos", count: 7, gradient: "from-violet-500 to-purple-500" },
-  { name: "Sabores", icon: Palette, slug: "sabores", count: 6, gradient: "from-green-500 to-emerald-500" },
+  { 
+    name: "Agua", 
+    image: "/images/products/brisa-manzana-600ml-6.png", 
+    slug: "agua", 
+    count: 9, 
+    gradient: "from-cyan-500 to-blue-500",
+    bgColor: "bg-cyan-50"
+  },
+  { 
+    name: "Colas", 
+    image: "/images/products/coca-cola-2lt-rp9-nvo.png", 
+    slug: "colas", 
+    count: 9, 
+    gradient: "from-red-500 to-rose-500",
+    bgColor: "bg-red-50"
+  },
+  { 
+    name: "Jugos", 
+    image: "/images/products/fresh-citrus-15lt-pet12nvo.png", 
+    slug: "jugos", 
+    count: 6, 
+    gradient: "from-orange-500 to-amber-500",
+    bgColor: "bg-orange-50"
+  },
+  { 
+    name: "Isotónicos", 
+    image: "/images/products/powerade-ion4-ft-500ml-pet6.png", 
+    slug: "isotonicos", 
+    count: 7, 
+    gradient: "from-violet-500 to-purple-500",
+    bgColor: "bg-violet-50"
+  },
+  { 
+    name: "Sabores", 
+    image: "/images/products/sprite-15l-pet-12.png", 
+    slug: "sabores", 
+    count: 6, 
+    gradient: "from-green-500 to-emerald-500",
+    bgColor: "bg-green-50"
+  },
 ];
 
 const featuredProducts = products.slice(0, 6);
@@ -208,7 +239,7 @@ export default function HomePage() {
               <Link
                 key={category.name}
                 href={`/productos?categoria=${category.slug}`}
-                className="group relative bg-white rounded-3xl p-6 lg:p-8 border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-soft-lg hover:-translate-y-2 overflow-hidden"
+                className="group relative bg-white rounded-3xl p-4 lg:p-6 border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-soft-lg hover:-translate-y-2 overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Hover gradient bg */}
@@ -217,18 +248,24 @@ export default function HomePage() {
                   category.gradient
                 )} />
                 
-                {/* Icon */}
+                {/* Product Image Container */}
                 <div className={cn(
-                  "w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-gradient-to-br flex items-center justify-center mb-6 shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
-                  category.gradient
+                  "relative w-full aspect-square rounded-2xl mb-4 overflow-hidden transition-all duration-500 group-hover:scale-105",
+                  category.bgColor
                 )}>
-                  <category.icon className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-contain p-2 lg:p-4 transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                  />
                 </div>
                 
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors duration-300">
                   {category.name}
                 </h3>
-                <p className="text-gray-400 mb-4">{category.count} productos</p>
+                <p className="text-gray-400 text-sm mb-3">{category.count} productos</p>
                 
                 <div className="flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                   <span>Explorar</span>
