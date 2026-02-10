@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import { useOrders } from "@/context/OrderContext";
-import Link from "next/link";
 import { 
   TrendingUp, 
   ShoppingBag, 
@@ -23,9 +22,7 @@ import {
   CheckCircle,
   Clock3,
   Truck,
-  XCircle,
-  Database,
-  AlertTriangle
+  XCircle
 } from "lucide-react";
 
 // Simple Line Chart Component
@@ -143,8 +140,7 @@ export default function DashboardPage() {
     topProducts, 
     recentOrders,
     customerFrequency,
-    updateOrderStatus,
-    isDbConnected 
+    updateOrderStatus 
   } = useOrders();
   
   const [viewMode, setViewMode] = useState<ViewMode>("dashboard");
@@ -233,29 +229,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Alerta de DB no configurada */}
-        {isDbConnected === false && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="font-medium text-amber-800">Base de datos no configurada</p>
-                <p className="text-sm text-amber-700 mt-1">
-                  Los pedidos se están guardando solo en el navegador. Configura PostgreSQL para tener 
-                  datos persistentes y accesibles desde cualquier dispositivo.
-                </p>
-              </div>
-              <Link
-                href="/admin/setup"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm"
-              >
-                <Database className="w-4 h-4" />
-                Configurar
-              </Link>
-            </div>
-          </div>
-        )}
-
         {/* DASHBOARD VIEW */}
         {viewMode === "dashboard" && (
           <div className="space-y-8">

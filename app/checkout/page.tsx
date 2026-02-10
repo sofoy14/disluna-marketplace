@@ -74,7 +74,7 @@ export default function CheckoutPage() {
     );
 
     // Guardar pedido en el sistema
-    const order = await addOrder({
+    const order = addOrder({
       orderNumber,
       customerId,
       customerName: formData.name,
