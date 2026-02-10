@@ -77,24 +77,21 @@ const stats = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* HERO - Glassmorphism Pro */}
+      {/* HERO - With Background Image */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#0a3580] to-[#1565C0]">
-          {/* Animated orbs */}
-          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-secondary/30 rounded-full blur-[128px] animate-pulse-slow" />
-          <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-accent/20 rounded-full blur-[128px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px]" />
-          
-          {/* Grid pattern overlay */}
-          <div 
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                               linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px'
-            }}
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/hero.png"
+            alt="Disluna distribución"
+            fill
+            className="object-cover"
+            priority
+            quality={90}
           />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/95 via-primary/80 to-primary/60" />
+          <div className="absolute inset-0 bg-black/30" />
         </div>
         
         <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-32 w-full">
