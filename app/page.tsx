@@ -5,13 +5,10 @@ import { products } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
 import { SearchWithPreview } from "@/components/SearchWithPreview";
 import { cn } from "@/lib/utils";
+import { createWhatsAppLink, WHATSAPP_DISPLAY } from "@/lib/whatsapp";
 
+import Image from "next/image";
 import { 
-  Droplets, 
-  CupSoda, 
-  Citrus, 
-  Zap, 
-  Palette,
   Truck,
   Package,
   BadgeCheck,
@@ -27,11 +24,46 @@ import {
 } from "lucide-react";
 
 const categories = [
-  { name: "Agua", icon: Droplets, slug: "agua", count: 9, gradient: "from-cyan-500 to-blue-500" },
-  { name: "Colas", icon: CupSoda, slug: "colas", count: 9, gradient: "from-red-500 to-rose-500" },
-  { name: "Jugos", icon: Citrus, slug: "jugos", count: 6, gradient: "from-orange-500 to-amber-500" },
-  { name: "Isotónicos", icon: Zap, slug: "isotonicos", count: 7, gradient: "from-violet-500 to-purple-500" },
-  { name: "Sabores", icon: Palette, slug: "sabores", count: 6, gradient: "from-green-500 to-emerald-500" },
+  {
+    name: "Aguas",
+    image: "/images/products/brisa-manzana-600ml-6.png",
+    slug: "Aguas",
+    count: 9,
+    gradient: "from-cyan-500 to-blue-500",
+    bgColor: "bg-cyan-50"
+  },
+  {
+    name: "Gaseosas",
+    image: "/images/products/coca-cola-2lt-rp9-nvo.png",
+    slug: "Gaseosas",
+    count: 9,
+    gradient: "from-red-500 to-rose-500",
+    bgColor: "bg-red-50"
+  },
+  {
+    name: "Bebidas de Fruta",
+    image: "/images/products/fresh-citrus-15lt-pet12nvo.png",
+    slug: "Bebidas de Fruta",
+    count: 6,
+    gradient: "from-orange-500 to-amber-500",
+    bgColor: "bg-orange-50"
+  },
+  {
+    name: "Isotónicos",
+    image: "/images/products/powerade-ion4-ft-500ml-pet6.png",
+    slug: "Isotónicos",
+    count: 7,
+    gradient: "from-violet-500 to-purple-500",
+    bgColor: "bg-violet-50"
+  },
+  {
+    name: "Bebidas Saborizadas",
+    image: "/images/products/sprite-15l-pet-12.png",
+    slug: "Bebidas Saborizadas",
+    count: 6,
+    gradient: "from-green-500 to-emerald-500",
+    bgColor: "bg-green-50"
+  },
 ];
 
 const featuredProducts = products.slice(0, 6);
@@ -46,36 +78,27 @@ const stats = [
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* HERO - Glassmorphism Pro */}
+      {/* HERO - With Background Image */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-[#0a3580] to-[#1565C0]">
-          {/* Animated orbs */}
-          <div className="absolute top-1/4 -left-32 w-96 h-96 bg-secondary/30 rounded-full blur-[128px] animate-pulse-slow" />
-          <div className="absolute bottom-1/4 -right-32 w-[500px] h-[500px] bg-accent/20 rounded-full blur-[128px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-[100px]" />
-          
-          {/* Grid pattern overlay */}
-          <div 
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                               linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
-              backgroundSize: '60px 60px'
-            }}
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/hero.png"
+            alt="Disluna distribución"
+            fill
+            className="object-cover"
+            priority
+            quality={90}
           />
+          {/* Dark overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/75 via-primary/60 to-primary/40" />
+          <div className="absolute inset-0 bg-black/30" />
         </div>
         
         <div className="relative max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-32 w-full">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Left Column - Content */}
             <div className="space-y-8">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 animate-fade-in">
-                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                <span className="text-white/90 text-sm font-medium">Distribuidor autorizado en Ibagué</span>
-              </div>
-              
               {/* Title */}
               <div className="space-y-4">
                 <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold text-white leading-[0.95] tracking-tight">
@@ -104,9 +127,9 @@ export default function HomePage() {
                   <span>Ver catálogo</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                 </Link>
-                
+
                 <a
-                  href="https://wa.me/573143395376"
+                  href={createWhatsAppLink("Hola, me gustaría cotizar productos")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:bg-white/20 hover:scale-105 active:scale-95"
@@ -208,7 +231,7 @@ export default function HomePage() {
               <Link
                 key={category.name}
                 href={`/productos?categoria=${category.slug}`}
-                className="group relative bg-white rounded-3xl p-6 lg:p-8 border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-soft-lg hover:-translate-y-2 overflow-hidden"
+                className="group relative bg-white rounded-3xl p-4 lg:p-6 border border-gray-100 hover:border-transparent transition-all duration-500 hover:shadow-soft-lg hover:-translate-y-2 overflow-hidden"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Hover gradient bg */}
@@ -217,18 +240,24 @@ export default function HomePage() {
                   category.gradient
                 )} />
                 
-                {/* Icon */}
+                {/* Product Image Container */}
                 <div className={cn(
-                  "w-16 h-16 lg:w-20 lg:h-20 rounded-2xl bg-gradient-to-br flex items-center justify-center mb-6 shadow-lg transition-all duration-500 group-hover:scale-110 group-hover:rotate-3",
-                  category.gradient
+                  "relative w-full aspect-square rounded-2xl mb-4 overflow-hidden transition-all duration-500 group-hover:scale-105",
+                  category.bgColor
                 )}>
-                  <category.icon className="w-8 h-8 lg:w-10 lg:h-10 text-white" />
+                  <Image
+                    src={category.image}
+                    alt={category.name}
+                    fill
+                    className="object-contain p-2 lg:p-4 transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                  />
                 </div>
                 
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-lg lg:text-xl font-bold text-gray-900 mb-1 group-hover:text-primary transition-colors duration-300">
                   {category.name}
                 </h3>
-                <p className="text-gray-400 mb-4">{category.count} productos</p>
+                <p className="text-gray-400 text-sm mb-3">{category.count} productos</p>
                 
                 <div className="flex items-center gap-1 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                   <span>Explorar</span>
@@ -347,7 +376,32 @@ export default function HomePage() {
 
       {/* CTA FINAL - Glassmorphism */}
       <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary to-[#1565C0]">
+        {/* Background Image - Desktop and Mobile */}
+        <div className="absolute inset-0">
+          {/* Desktop Image */}
+          <div className="hidden lg:block absolute inset-0">
+            <Image
+              src="/ibague.png"
+              alt="Ibagué"
+              fill
+              className="object-cover"
+              priority
+              quality={90}
+            />
+          </div>
+          {/* Mobile Image */}
+          <div className="lg:hidden absolute inset-0">
+            <Image
+              src="/ibague movil.png"
+              alt="Ibagué"
+              fill
+              className="object-cover"
+              priority
+              quality={90}
+            />
+          </div>
+          {/* Blue gradient overlay with transparency */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/60 to-[#1565C0]/60" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
         </div>
         
@@ -363,7 +417,7 @@ export default function HomePage() {
               
               <div className="flex flex-wrap gap-4">
                 <a
-                  href="https://wa.me/573143395376"
+                  href={createWhatsAppLink("Hola, me gustaría más información sobre sus productos")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-whatsapp text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:shadow-whatsapp/30 hover:scale-105 active:scale-95"
@@ -371,9 +425,9 @@ export default function HomePage() {
                   <MessageCircle className="w-5 h-5" />
                   <span>Escribir por WhatsApp</span>
                 </a>
-                
+
                 <a
-                  href="tel:+573216389995"
+                  href={`tel:+${WHATSAPP_DISPLAY.replace(/\s/g, "")}`}
                   className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 hover:bg-white/20"
                 >
                   <Phone className="w-5 h-5" />
@@ -387,13 +441,13 @@ export default function HomePage() {
               <h3 className="text-2xl font-bold text-white mb-8">Información de contacto</h3>
               
               <div className="space-y-6">
-                <a href="tel:+573216389995" className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10">
+                <a href={`tel:+${WHATSAPP_DISPLAY.replace(/\s/g, "")}`} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10">
                   <div className="w-14 h-14 rounded-xl bg-whatsapp/20 flex items-center justify-center">
                     <Phone className="w-6 h-6 text-whatsapp" />
                   </div>
                   <div>
                     <p className="text-white/60 text-sm">Teléfono / WhatsApp</p>
-                    <p className="text-white font-semibold text-lg">321 638 9995</p>
+                    <p className="text-white font-semibold text-lg">{WHATSAPP_DISPLAY}</p>
                   </div>
                 </a>
                 

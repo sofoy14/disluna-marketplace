@@ -7,17 +7,19 @@ import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useCustomers } from "@/context/CustomerContext";
 import { useOrders } from "@/context/OrderContext";
-import { 
-  ShoppingCart, 
-  MapPin, 
-  CreditCard, 
-  Truck, 
+import {
+  ShoppingCart,
+  MapPin,
+  CreditCard,
+  Truck,
   Store,
   ChevronLeft,
   Package,
   AlertCircle,
-  Check
+  Check,
+  MessageCircle
 } from "lucide-react";
+import { createWhatsAppLink, WHATSAPP_DISPLAY } from "@/lib/whatsapp";
 
 function formatPrice(price: number) {
   return new Intl.NumberFormat("es-CO", {
@@ -35,6 +37,7 @@ export default function CheckoutPage() {
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">("delivery");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "transfer" | "pse">("cash");
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [sendToWhatsApp, setSendToWhatsApp] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Form fields
@@ -54,22 +57,22 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!termsAccepted) return;
-    
+
     setIsSubmitting(true);
-    
+
     // Simular procesamiento
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     // Generar número de pedido
     const orderNumber = `DIS-${Date.now().toString(36).toUpperCase()}`;
-    
+
     // Generar/obtener ID de cliente basado en teléfono
     const customerId = getOrCreateCustomerId(
       formData.phone,
       formData.name,
       formData.email
     );
-    
+
     // Guardar pedido en el sistema
     const order = await addOrder({
       orderNumber,
@@ -96,10 +99,62 @@ export default function CheckoutPage() {
       deliveryMethod,
       paymentMethod,
     });
-    
+
     // Limpiar carrito
     clearCart();
-    
+
+    // Si el usuario quiere enviar por WhatsApp
+    if (sendToWhatsApp) {
+      // Generar mensaje de WhatsApp formateado
+      let message = `🛒 *NUEVO PEDIDO ${orderNumber}*\n\n`;
+      message += `👤 *Cliente:* ${formData.name}\n`;
+      message += `📱 *Teléfono:* ${formData.phone}\n\n`;
+
+      // Agregar dirección si es delivery
+      if (deliveryMethod === "delivery") {
+        message += `📍 *Dirección:* ${formData.address}, ${formData.neighborhood}\n`;
+        message += `🏙️ *Ciudad:* ${formData.city}\n\n`;
+      } else {
+        message += `📦 *Recoger en bodega*\n\n`;
+      }
+
+      message += `📦 *Productos:*\n`;
+      message += `─────────────────\n`;
+
+      items.forEach((item, index) => {
+        const units = item.type === "box" && item.unitsPerBox
+          ? ` (${item.quantity * item.unitsPerBox} un.)`
+          : "";
+        message += `${index + 1}. ${item.name}${units}\n`;
+        message += `   Cant: ${item.quantity} ${item.type === "box" ? "caja(s)" : "unidad(es)"}\n`;
+        message += `   $${new Intl.NumberFormat("es-CO", {
+          style: "currency",
+          currency: "COP",
+          minimumFractionDigits: 0,
+        }).format(item.price * item.quantity)}\n\n`;
+      });
+
+      message += `─────────────────\n`;
+      message += `💰 *Subtotal:* $${new Intl.NumberFormat("es-CO").format(totalPrice)}\n`;
+      message += `🚚 *Envío:* ${deliveryCost === 0 ? "Gratis" : "$5,000"}\n`;
+      message += `✨ *TOTAL:* $${new Intl.NumberFormat("es-CO").format(total)}\n\n`;
+
+      message += `💳 *Método de pago:* ${
+        paymentMethod === "cash" ? "Contraentrega" :
+        paymentMethod === "transfer" ? "Transferencia" : "PSE"
+      }\n\n`;
+
+      if (formData.notes) {
+        message += `📝 *Notas:* ${formData.notes}\n\n`;
+      }
+
+      message += `✅ Por favor confirmar mi pedido. Gracias.`;
+
+      // Abrir WhatsApp con el mensaje
+      const whatsappUrl = createWhatsAppLink(message);
+      window.open(whatsappUrl, "_blank");
+    }
+
     // Redirigir a página de confirmación con datos del cliente
     const params = new URLSearchParams({
       order: orderNumber,
@@ -108,7 +163,7 @@ export default function CheckoutPage() {
       customerName: encodeURIComponent(formData.name),
       customerPhone: encodeURIComponent(formData.phone),
     });
-    
+
     router.push(`/checkout/confirmacion?${params.toString()}`);
   };
 
@@ -389,6 +444,29 @@ export default function CheckoutPage() {
                   </div>
                 </label>
               </div>
+            </div>
+
+            {/* WhatsApp Option */}
+            <div className="bg-whatsapp/5 border border-whatsapp/20 rounded-xl p-6">
+              <label className="flex items-start cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={sendToWhatsApp}
+                  onChange={(e) => setSendToWhatsApp(e.target.checked)}
+                  className="w-5 h-5 text-whatsapp rounded focus:ring-whatsapp mt-0.5"
+                />
+                <div className="ml-3">
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="w-5 h-5 text-whatsapp" />
+                    <span className="text-sm font-medium text-gray-800">
+                      Enviar pedido por WhatsApp
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Recibirás tu pedido formateado listo para enviar al número {WHATSAPP_DISPLAY}
+                  </p>
+                </div>
+              </label>
             </div>
 
             {/* Términos */}

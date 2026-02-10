@@ -2,23 +2,24 @@
 
 import { useState, useMemo } from "react";
 import { Filter, Search, Package } from "lucide-react";
-import { products, getAllCategories } from "@/data/products";
+import { products } from "@/data/products";
 import { ProductCard } from "@/components/ProductCard";
-import { categories as categoryStyles } from "@/lib/categories";
+import { displayCategories, getSubcategories } from "@/lib/categories";
 
 export default function ProductosPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState("relevancia");
 
-  const allCategories = getAllCategories();
-
   const filteredProducts = useMemo(() => {
     let filtered = products;
 
-    // Filter by category
+    // Filter by category group
     if (selectedCategory) {
-      filtered = filtered.filter((p) => p.category === selectedCategory);
+      const subcategories = getSubcategories(selectedCategory);
+      if (subcategories.length > 0) {
+        filtered = filtered.filter((p) => subcategories.includes(p.category));
+      }
     }
 
     // Filter by search
@@ -47,6 +48,13 @@ export default function ProductosPage() {
 
     return filtered;
   }, [selectedCategory, searchQuery, sortBy]);
+
+  // Count products per display category
+  const getCategoryCount = (categoryId: string) => {
+    if (categoryId === "Todas") return products.length;
+    const subcategories = getSubcategories(categoryId);
+    return products.filter((p) => subcategories.includes(p.category)).length;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 pt-24">
@@ -95,42 +103,21 @@ export default function ProductosPage() {
               </div>
 
               <div className="space-y-2">
-                <button
-                  onClick={() => setSelectedCategory(null)}
-                  className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
-                    selectedCategory === null
-                      ? "bg-primary text-white"
-                      : "hover:bg-gray-50 text-gray-700"
-                  }`}
-                >
-                  <span>Todas</span>
-                  <span className={selectedCategory === null ? "text-white/80" : "text-gray-400"}>
-                    {products.length}
-                  </span>
-                </button>
-
-                {allCategories.map((category) => {
-                  const count = products.filter((p) => p.category === category).length;
-                  const styles = categoryStyles.find((c) => c.id === category);
+                {displayCategories.map((category) => {
+                  const count = getCategoryCount(category.id);
+                  const isSelected = selectedCategory === category.id || (category.id === "Todas" && selectedCategory === null);
                   return (
                     <button
-                      key={category}
-                      onClick={() => setSelectedCategory(category)}
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id === "Todas" ? null : category.id)}
                       className={`w-full flex items-center justify-between p-3 rounded-lg transition-colors text-left ${
-                        selectedCategory === category
+                        isSelected
                           ? "bg-primary text-white"
                           : "hover:bg-gray-50 text-gray-700"
                       }`}
                     >
-                      <div className="flex items-center gap-2">
-                        {styles?.icon && <span>{styles.icon}</span>}
-                        <span className="text-sm">{category}</span>
-                      </div>
-                      <span
-                        className={
-                          selectedCategory === category ? "text-white/80" : "text-gray-400"
-                        }
-                      >
+                      <span className="text-sm font-medium">{category.name}</span>
+                      <span className={isSelected ? "text-white/80" : "text-gray-400"}>
                         {count}
                       </span>
                     </button>
@@ -143,29 +130,22 @@ export default function ProductosPage() {
           {/* Mobile Category Pills */}
           <div className="lg:hidden overflow-x-auto pb-2 -mx-4 px-4">
             <div className="flex space-x-2">
-              <button
-                onClick={() => setSelectedCategory(null)}
-                className={`flex items-center space-x-2 px-4 py-2 border rounded-full whitespace-nowrap transition-colors ${
-                  selectedCategory === null
-                    ? "bg-primary text-white border-primary"
-                    : "bg-white border-gray-200 hover:border-secondary"
-                }`}
-              >
-                <span className="text-sm">Todas</span>
-              </button>
-              {allCategories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`flex items-center space-x-2 px-4 py-2 border rounded-full whitespace-nowrap transition-colors ${
-                    selectedCategory === category
-                      ? "bg-primary text-white border-primary"
-                      : "bg-white border-gray-200 hover:border-secondary"
-                  }`}
-                >
-                  <span className="text-sm">{category}</span>
-                </button>
-              ))}
+              {displayCategories.map((category) => {
+                const isSelected = selectedCategory === category.id || (category.id === "Todas" && selectedCategory === null);
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id === "Todas" ? null : category.id)}
+                    className={`flex items-center space-x-2 px-4 py-2 border rounded-full whitespace-nowrap transition-colors ${
+                      isSelected
+                        ? "bg-primary text-white border-primary"
+                        : "bg-white border-gray-200 hover:border-secondary"
+                    }`}
+                  >
+                    <span className="text-sm font-medium">{category.name}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

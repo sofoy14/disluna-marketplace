@@ -3,19 +3,18 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { 
-  CheckCircle, 
-  Package, 
-  Phone, 
-  ArrowLeft, 
+import {
+  CheckCircle,
+  Package,
+  Phone,
+  ArrowLeft,
   Clock,
   MapPin,
   CreditCard,
   Truck,
   MessageCircle
 } from "lucide-react";
-
-const WHATSAPP_NUMBER = "573174018932"; // Tu número
+import { WHATSAPP_NUMBER, WHATSAPP_DISPLAY, createWhatsAppLink } from "@/lib/whatsapp";
 
 function ConfirmationContent() {
   const searchParams = useSearchParams();
@@ -152,7 +151,7 @@ function ConfirmationContent() {
             {/* Actions */}
             <div className="space-y-3">
               <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=Hola,%20acabo%20de%20realizar%20un%20pedido%20(${encodeURIComponent(orderNumber)})%20y%20tengo%20una%20consulta`}
+                href={createWhatsAppLink(`Hola, acabo de realizar un pedido (${orderNumber}) y tengo una consulta`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center space-x-2 bg-whatsapp text-white py-4 rounded-xl font-semibold hover:opacity-90 transition-opacity"
@@ -181,7 +180,7 @@ function ConfirmationContent() {
                 </a>
                 {" "}o llámanos al{" "}
                 <a href={`tel:+${WHATSAPP_NUMBER}`} className="text-secondary hover:underline">
-                  +57 317 401 8932
+                  +57 {WHATSAPP_DISPLAY}
                 </a>
               </p>
             </div>

@@ -2,25 +2,37 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ShoppingCart, Phone } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import CartSidebar from './CartSidebar';
 import { SearchWithPreview } from './SearchWithPreview';
 import { cn } from '@/lib/utils';
+import { WHATSAPP_URL, createWhatsAppLink } from '@/lib/whatsapp';
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { isHydrated, totalItems } = useCart();
+  const pathname = usePathname();
+
+  // Determinar si debe iniciar como scrolled (para páginas sin imagen de fondo)
+  const shouldStartScrolled = pathname !== '/';
 
   useEffect(() => {
+    // Si no estamos en la home, iniciar como scrolled
+    if (shouldStartScrolled) {
+      setIsScrolled(true);
+    }
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      setIsScrolled(window.scrollY > 50 || shouldStartScrolled);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [shouldStartScrolled]);
 
   const navItems = [
     { label: 'Inicio', href: '/' },
@@ -42,28 +54,14 @@ const Header: React.FC = () => {
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className={cn(
-                "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500",
-                isScrolled 
-                  ? "bg-gradient-to-br from-primary to-secondary shadow-lg shadow-primary/25" 
-                  : "bg-white/20 backdrop-blur-sm border border-white/30"
-              )}>
-                <span className="text-white font-bold text-lg">D</span>
-              </div>
-              <div className="flex flex-col">
-                <span className={cn(
-                  "text-xl font-bold tracking-tight transition-colors duration-300",
-                  isScrolled ? 'text-primary' : 'text-white'
-                )}>
-                  DISLUNA
-                </span>
-                <span className={cn(
-                  "text-[10px] -mt-1 transition-colors duration-300",
-                  isScrolled ? 'text-gray-500' : 'text-white/70'
-                )}>
-                  Tu distribuidor de confianza
-                </span>
+            <Link href="/" className="flex items-center group">
+              <div className="relative transition-all duration-500 hover:scale-105" style={{ width: '160px', height: '50px' }}>
+                <Image
+                  src={isScrolled ? "/disluna azul.png" : "/disluna blanco.png"}
+                  alt="Disluna Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </Link>
 
@@ -95,7 +93,7 @@ const Header: React.FC = () => {
             <div className="flex items-center gap-3">
               {/* WhatsApp CTA - Desktop */}
               <a
-                href="https://wa.me/573174018932"
+                href={createWhatsAppLink("Hola, me gustaría cotizar productos")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={cn(
@@ -184,7 +182,7 @@ const Header: React.FC = () => {
               
               {/* Mobile WhatsApp */}
               <a
-                href="https://wa.me/573174018932"
+                href={createWhatsAppLink("Hola, me gustaría cotizar productos")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 py-3 px-4 mt-2 bg-whatsapp text-white rounded-xl font-medium transition-all duration-300 hover:scale-[1.02]"
