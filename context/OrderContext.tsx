@@ -73,8 +73,8 @@ interface TopProduct {
 
 interface OrderContextType {
   orders: Order[];
-  addOrder: (order: Omit<Order, "id" | "createdAt" | "updatedAt" | "status">) => Order;
-  updateOrderStatus: (orderId: string, status: Order["status"]) => void;
+  addOrder: (order: Omit<Order, "id" | "createdAt" | "updatedAt" | "status">) => Promise<Order>;
+  updateOrderStatus: (orderId: string, status: Order["status"]) => Promise<void>;
   getOrderById: (orderId: string) => Order | undefined;
   getOrdersByCustomerId: (customerId: string) => Order[];
   getOrdersByStatus: (status: Order["status"]) => Order[];
@@ -84,6 +84,10 @@ interface OrderContextType {
   topProducts: TopProduct[];
   recentOrders: Order[];
   customerFrequency: { customerId: string; name: string; phone: string; orders: number; totalSpent: number }[];
+  isLoading: boolean;
+  isDbConnected: boolean | null;
+  error: string | null;
+  refreshData: () => Promise<void>;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
@@ -94,63 +98,211 @@ interface OrderProviderProps {
   children: ReactNode;
 }
 
+// API base URL
+const API_BASE = "/api/orders";
+
 export function OrderProvider({ children }: OrderProviderProps) {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDbConnected, setIsDbConnected] = useState<boolean | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [usingLocalStorage, setUsingLocalStorage] = useState(false);
 
-  // Hydrate from localStorage on mount
-  useEffect(() => {
+  // Cargar datos iniciales
+  const loadData = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(ORDERS_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setOrders(parsed);
+      setIsLoading(true);
+      setError(null);
+
+      const response = await fetch(`${API_BASE}?include=stats`);
+      
+      if (response.status === 503) {
+        // DB no configurada, usar localStorage
+        const data = await response.json();
+        if (data.needsSetup) {
+          setIsDbConnected(false);
+          setUsingLocalStorage(true);
+          // Cargar desde localStorage
+          const stored = localStorage.getItem(ORDERS_STORAGE_KEY);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed)) {
+              setOrders(parsed);
+            }
+          }
+          return;
         }
       }
-    } catch (error) {
-      console.error("Error loading orders from localStorage:", error);
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+      }
+
+      const data = await response.json();
+      setIsDbConnected(true);
+      setUsingLocalStorage(false);
+      
+      if (data.orders) {
+        setOrders(data.orders);
+      }
+    } catch (err) {
+      console.error('Error loading orders:', err);
+      setError('Error al cargar los pedidos');
+      // Fallback a localStorage
+      setUsingLocalStorage(true);
+      const stored = localStorage.getItem(ORDERS_STORAGE_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            setOrders(parsed);
+          }
+        } catch {
+          // ignore parse error
+        }
+      }
+    } finally {
+      setIsLoading(false);
+      setIsHydrated(true);
     }
-    setIsHydrated(true);
   }, []);
 
-  // Persist to localStorage on changes
+  // Cargar datos al montar
   useEffect(() => {
-    if (isHydrated) {
+    loadData();
+  }, [loadData]);
+
+  // Persistir a localStorage si estamos usando modo offline
+  useEffect(() => {
+    if (isHydrated && usingLocalStorage) {
       try {
         localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
       } catch (error) {
         console.error("Error saving orders to localStorage:", error);
       }
     }
-  }, [orders, isHydrated]);
+  }, [orders, isHydrated, usingLocalStorage]);
 
   const addOrder = useCallback(
-    (orderData: Omit<Order, "id" | "createdAt" | "updatedAt" | "status">): Order => {
+    async (orderData: Omit<Order, "id" | "createdAt" | "updatedAt" | "status">): Promise<Order> => {
       const now = new Date().toISOString();
-      const newOrder: Order = {
-        ...orderData,
-        id: `ORD-${Date.now()}`,
-        status: "pending",
-        createdAt: now,
-        updatedAt: now,
-      };
+      
+      if (usingLocalStorage || !isDbConnected) {
+        // Modo offline - guardar en localStorage
+        const newOrder: Order = {
+          ...orderData,
+          id: `ORD-${Date.now()}`,
+          status: "pending",
+          createdAt: now,
+          updatedAt: now,
+        };
+        setOrders((prev) => [newOrder, ...prev]);
+        return newOrder;
+      }
 
-      setOrders((prev) => [newOrder, ...prev]);
-      return newOrder;
+      // Modo online - guardar en DB via API
+      try {
+        const response = await fetch(API_BASE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(orderData),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create order');
+        }
+
+        const { order } = await response.json();
+        
+        // Transformar formato de la API al formato del contexto
+        const newOrder: Order = {
+          id: order.id,
+          orderNumber: order.orderNumber,
+          customerId: order.customerId.toString(),
+          customerName: order.customerName,
+          customerPhone: order.customerPhone,
+          customerEmail: order.customerEmail,
+          address: order.address,
+          neighborhood: order.neighborhood,
+          city: order.city,
+          notes: order.notes,
+          items: order.items,
+          subtotal: order.subtotal,
+          deliveryCost: order.deliveryCost,
+          total: order.total,
+          deliveryMethod: order.deliveryMethod,
+          paymentMethod: order.paymentMethod,
+          status: order.status,
+          createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+        };
+
+        setOrders((prev) => [newOrder, ...prev]);
+        return newOrder;
+      } catch (error) {
+        console.error('Error creating order:', error);
+        // Fallback a localStorage
+        const newOrder: Order = {
+          ...orderData,
+          id: `ORD-${Date.now()}`,
+          status: "pending",
+          createdAt: now,
+          updatedAt: now,
+        };
+        setOrders((prev) => [newOrder, ...prev]);
+        return newOrder;
+      }
     },
-    []
+    [usingLocalStorage, isDbConnected]
   );
 
-  const updateOrderStatus = useCallback((orderId: string, status: Order["status"]) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === orderId
-          ? { ...order, status, updatedAt: new Date().toISOString() }
-          : order
-      )
-    );
-  }, []);
+  const updateOrderStatus = useCallback(async (orderId: string, status: Order["status"]) => {
+    if (usingLocalStorage || !isDbConnected) {
+      // Modo offline
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId
+            ? { ...order, status, updatedAt: new Date().toISOString() }
+            : order
+        )
+      );
+      return;
+    }
+
+    // Modo online
+    try {
+      const response = await fetch(`${API_BASE}/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update order');
+      }
+
+      // Actualizar estado local
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId
+            ? { ...order, status, updatedAt: new Date().toISOString() }
+            : order
+        )
+      );
+    } catch (error) {
+      console.error('Error updating order:', error);
+      // Fallback a localStorage
+      setOrders((prev) =>
+        prev.map((order) =>
+          order.id === orderId
+            ? { ...order, status, updatedAt: new Date().toISOString() }
+            : order
+        )
+      );
+    }
+  }, [usingLocalStorage, isDbConnected]);
 
   const getOrderById = useCallback(
     (orderId: string) => orders.find((o) => o.id === orderId),
@@ -167,7 +319,7 @@ export function OrderProvider({ children }: OrderProviderProps) {
     [orders]
   );
 
-  // Stats calculations
+  // Stats calculations (funcionan tanto para API como localStorage)
   const stats = useMemo((): OrderStats => {
     const today = new Date().toISOString().split("T")[0];
     const todayOrders = orders.filter((o) => o.createdAt.startsWith(today));
@@ -282,6 +434,14 @@ export function OrderProvider({ children }: OrderProviderProps) {
     return Object.values(customers).sort((a, b) => b.totalSpent - a.totalSpent);
   }, [orders]);
 
+  // Refresh data from API
+  const refreshData = useCallback(async () => {
+    if (usingLocalStorage || !isDbConnected) {
+      return; // No hay nada que refrescar en modo offline
+    }
+    await loadData();
+  }, [loadData, usingLocalStorage, isDbConnected]);
+
   const value = useMemo(
     () => ({
       orders,
@@ -296,6 +456,10 @@ export function OrderProvider({ children }: OrderProviderProps) {
       topProducts,
       recentOrders,
       customerFrequency,
+      isLoading,
+      isDbConnected,
+      error,
+      refreshData,
     }),
     [
       orders,
@@ -310,6 +474,10 @@ export function OrderProvider({ children }: OrderProviderProps) {
       topProducts,
       recentOrders,
       customerFrequency,
+      isLoading,
+      isDbConnected,
+      error,
+      refreshData,
     ]
   );
 
