@@ -213,24 +213,6 @@ export default function AdminLayout({
             </div>
           </div>
         )}
-
-        {!mobileMenuOpen && (
-          <div className="hidden lg:flex items-center space-x-3">
-            <div className="flex items-center space-x-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-lg text-sm">
-              <Shield className="w-4 h-4" />
-              <span className="font-medium">Sesión activa</span>
-            </div>
-
-            <button
-              onClick={handleLogout}
-              className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-              title="Cerrar sesión"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Cerrar sesión</span>
-            </button>
-          </div>
-        )}
       </header>
 
       {/* Main Content */}
