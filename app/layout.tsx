@@ -8,6 +8,7 @@ import { CartProvider } from "@/context/CartContext";
 import { CustomerProvider } from "@/context/CustomerContext";
 import { OrderProvider } from "@/context/OrderContext";
 import { ProductProvider } from "@/context/ProductContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -52,20 +53,22 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <ProductProvider>
-          <CartProvider>
-            <CustomerProvider>
-              <OrderProvider>
-                <Header />
-                <main className="min-h-screen">
-                  {children}
-                </main>
-                <Footer />
-                <WhatsAppFloatButton />
-              </OrderProvider>
-            </CustomerProvider>
-          </CartProvider>
-        </ProductProvider>
+        <ThemeProvider>
+          <ProductProvider>
+            <CartProvider>
+              <CustomerProvider>
+                <OrderProvider>
+                  <Header />
+                  <main className="min-h-screen">
+                    {children}
+                  </main>
+                  <Footer />
+                  <WhatsAppFloatButton />
+                </OrderProvider>
+              </CustomerProvider>
+            </CartProvider>
+          </ProductProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
