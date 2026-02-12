@@ -7,6 +7,7 @@ import { WhatsAppFloatButton } from "@/components/WhatsAppFloatButton";
 import { CartProvider } from "@/context/CartContext";
 import { CustomerProvider } from "@/context/CustomerContext";
 import { OrderProvider } from "@/context/OrderContext";
+import { ProductProvider } from "@/context/ProductContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -51,18 +52,20 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        <CartProvider>
-          <CustomerProvider>
-            <OrderProvider>
-              <Header />
-              <main className="min-h-screen">
-                {children}
-              </main>
-              <Footer />
-              <WhatsAppFloatButton />
-            </OrderProvider>
-          </CustomerProvider>
-        </CartProvider>
+        <ProductProvider>
+          <CartProvider>
+            <CustomerProvider>
+              <OrderProvider>
+                <Header />
+                <main className="min-h-screen">
+                  {children}
+                </main>
+                <Footer />
+                <WhatsAppFloatButton />
+              </OrderProvider>
+            </CustomerProvider>
+          </CartProvider>
+        </ProductProvider>
       </body>
     </html>
   );

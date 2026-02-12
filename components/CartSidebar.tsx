@@ -31,8 +31,16 @@ function CartItemRow({ item }: { item: CartItem }) {
   return (
     <div className="flex gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10 hover:border-white/20 group">
       {/* Product Image */}
-      <div className="relative w-20 h-20 flex-shrink-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center">
-        <Package className="w-8 h-8 text-primary/40" />
+      <div className="relative w-20 h-20 flex-shrink-0 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl flex items-center justify-center overflow-hidden">
+        {item.image ? (
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <Package className="w-8 h-8 text-primary/40" />
+        )}
       </div>
 
       {/* Product Details */}
@@ -138,7 +146,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed top-0 right-0 h-full w-full sm:w-[440px] z-50 transform transition-transform duration-500 ease-expo-out",
+          "fixed top-0 right-0 h-full w-full sm:w-[400px] z-50 transform transition-transform duration-500 ease-expo-out",
           isOpen ? "translate-x-0" : "translate-x-full"
         )}
         role="dialog"
